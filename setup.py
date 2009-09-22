@@ -17,8 +17,10 @@ def test_prereq():
 
     # Make sure that numpy is compiled with optimized LAPACK/BLAS
     st=time.time()
-    #a=N.ones((600,600),N.complex)
-    a=N.ones((60,60),N.complex)
+
+    # For release 600!
+    a=N.ones((600,600),N.complex)
+    #a=N.ones((60,60),N.complex)
     for ii in range(2):
         b=N.dot(a,a)
     c,d = LA.eigh(b)
