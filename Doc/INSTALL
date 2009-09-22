@@ -1,0 +1,17 @@
+Installing python packages are usually easy. 
+1: If you can install as superuser is is as easy as:
+a)   python setup.py install
+
+2: If you cannot install as superuser:
+a)   python setup.py install --prefix=/home/yourUser/local/python-packages
+b)   set PYTHONPATH to /home/yourUser/local/python-packages/lib/python2.6/site-packages/
+   Remember to include this in your .bashrc (export PYTHONPATH=/home/...) or
+   your .tcshrc (setenv PYTHONPATH /home/...)
+
+3: Inelastica requires a few additional packages that may not be installed on your machine. The install will tell you if that is the case.
+
+4: Good luck and remember that documentation is mainly at the wiki.
+
+
+
+   

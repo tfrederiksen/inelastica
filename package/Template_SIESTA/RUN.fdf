@@ -1,0 +1,44 @@
+SystemName          AuH2
+SystemLabel         AuH2
+
+PAO.BasisType split
+
+%block 	PAO.BasisSizes
+	Au_pbr  	SZP
+	H.mpn	  	SZP
+%endblock PAO.BasisSizes
+
+LongOutput      T
+
+MD.VariableCell F
+WriteCoorStep	T
+SolutionMethod	diagon
+WriteMDXmol     T
+
+NumberOfSpecies: 2
+
+%block ChemicalSpeciesLabel
+ 1  79  Au_pbr
+ 2   1  H.mpn
+%endblock ChemicalSpeciesLabel
+
+%block GeometryConstraints
+position from 17 to 32
+%endblock GeometryConstraints
+
+# Restat calculations?
+UseSaveData     T
+MD.UseSaveXV    T
+
+MD.TypeOfRun Nose
+MD.FinalTimeStep 60 
+MD.InitialTemperature 4.2 K
+MD.TargetTemperature 4.2 K
+MD.LengthTimeStep 1 fs
+
+%include ./STRUCT.fdf
+%include ./Default.fdf
+
+
+
+

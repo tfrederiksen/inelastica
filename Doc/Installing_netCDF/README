@@ -1,0 +1,14 @@
+1:  Download netCDF version >= 4.0 
+      http://www.unidata.ucar.edu/software/netcdf
+
+2:  Compile (usually "./configure;./make install;make test")
+2b: If needed: "./configure --prefix=/home/yourUser/local/netcdf"
+
+3:  Download ScientificPython >= 2.8
+      http://sourcesup.cru.fr/projects/scientific-py
+    NOTE: This is NOT SciPy !!!
+
+4:  If needed: edit setup.py: set netcdf_prefix to same as above
+
+5:  python setup.py install 
+    (remember --prefix=/home/yourUser/local/python-packages)

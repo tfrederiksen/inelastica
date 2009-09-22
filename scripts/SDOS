@@ -1,0 +1,127 @@
+#! /usr/bin/env python
+"""
+Calculate dos from the surface Green's function from a electrode calculation
+
+NOTE! The DOS is a sum over the atoms of the unitcell.
+NOTE! The outfile contains the DOS divided into s,p,d,f shells.
+      This decomposition is not perfect since polarized basis orbitals
+      will end up in L+1 part, i.e., 6s polarized orbital = 6p
+"""
+import sys, profile, glob
+#sys.path+=['../..']
+
+import Inelastica.pyTBT
+import numpy as N
+import Inelastica.SiestaIO as SIO
+
+def main():
+    # Read arguments minE maxE dE Nkx Nky eta with default values 
+    args = sys.argv[1:]
+
+    try:
+        minE=float(args[0])
+    except:
+        minE=-1.0
+
+    try:
+        maxE=float(args[1])
+    except:
+        maxE=1.0
+
+    try:
+        dE=float(args[2])
+    except:
+        dE=0.1
+
+    try:
+        Nkx=int(args[3])
+    except:
+        Nkx=1
+
+    try:
+        Nky=int(args[4])
+    except:
+        Nky=1
+
+    try:
+        eta=float(args[5])
+    except:
+        eta=1e-5
+
+    print "Surface DOS calculation for left electrode"
+    print "Usage SDOS: min energy, max energy, dE, Nkx, Nky"
+    print "DOS decomposed into different L-orbitals"
+    print "Warning: 4 p and 5 p (or 5s polarized) are all summed into p-shell"
+    
+    print
+    print "Energy: %f:%f:%f"%(minE,dE,maxE)
+    print "K-points: Nkx %i : Nky %i"%(Nkx,Nky)
+    print "Broadening eta: %f"%(eta)
+    print
+
+    fn=glob.glob('*.TSHS.nc')
+    if len(fn)!=1:
+        print "Error: too many or too few TSHS files."
+        print ".TSHS.nc files :",fn
+        kuk
+
+    outfn=fn[0][0:-7]+'SDOS'
+    outfile=open(outfn,'write')
+
+    sHS=pyTBT.surfaceGF(fn[0],1,1)
+
+    XVfile=glob.glob('*.XV')
+    if len(fn)!=1:
+        print "Error: too many or too few XV files."
+        print "XV files :",XVfile
+        kuk
+
+    # Read basis
+    basis=SIO.BuildBasis(XVfile[0],1,sHS.HS.nua)
+
+    Elist = N.array(range(int((maxE-minE)/dE+1)),N.float)*dE+minE
+    DOS=N.zeros((len(Elist),max(basis.L)+1),N.float)
+
+
+    print "Otput written to :",outfn 
+    print 
+    print "Energy (without eta) : Total DOS"
+    outfile.write('# Total SDOS\n')
+
+    kpt=N.zeros((2),N.float)
+    for iee, ee in enumerate(Elist):
+        # Calculate surface Greens function average over k 
+        g0=N.zeros((sHS.HS.nuo,sHS.HS.nuo),N.complex)
+        for ikx in range(Nkx):
+            for iky in range(Nky):
+                kpt[0], kpt[1] = float(ikx)/Nkx, float(iky)/Nky 
+                g0+=sHS.getg0(ee+eta*1.0j,kpt,left=True)
+        # DOS
+        g0= -g0.imag/(Nkx*Nky*2*N.pi)
+        # Decompose into L-shells
+        for ii in range(sHS.HS.nuo):
+            L = basis.L[ii]
+            DOS[iee,L]+=g0[ii,ii]
+        
+        print ee," ",N.sum(DOS[iee,:])
+        outfile.write('%f %f\n'%(ee,N.sum(DOS[iee,:])))
+
+    # Output results
+    for iL in range(max(basis.L)+1):
+        if N.sum(DOS[:,iL])>1e-5:
+            outfile.write('\n# SDOS L=%i\n'%iL)
+            for iee,ee in enumerate(Elist):
+                outfile.write('%f %f\n'%(ee,DOS[iee,iL]))
+
+    outfile.write('\n')
+    outfile.close()
+            
+                
+            
+
+    
+
+        
+                
+
+profile.run('main()')

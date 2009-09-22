@@ -1,0 +1,63 @@
+Imported F90helpers
+SiestaIO.ReadTSHSNCFile: Reading ELEC-1x1//Au3D_BCA.TSHS.nc
+Found 3 atoms, (1350, 27) orbitals in super-, unit-cell
+SiestaIO.ReadTSHSNCFile: Reading ELEC-3x3//Au3D_BCA.TSHS.nc
+Found 27 atoms, (1944, 243) orbitals in super-, unit-cell
+ Checking energy: -2.789214+0.635855i k-point: 0.351971,0.500264
+Left, Bulk : max(abs(Sig1-Sig3))  0.00037704566261
+Right, Bulk : max(abs(Sig1-Sig3))  0.000370209926717
+Left, no-Bulk : max(abs(Sig1-Sig3))  0.000209869555385
+Right, no-Bulk : max(abs(Sig1-Sig3))  0.000197739316774
+ Checking energy: -3.717199+0.757756i k-point: 0.590960,0.596533
+Left, Bulk : max(abs(Sig1-Sig3))  0.00037704566261
+Right, Bulk : max(abs(Sig1-Sig3))  0.000362845908043
+Left, no-Bulk : max(abs(Sig1-Sig3))  0.000251031096497
+Right, no-Bulk : max(abs(Sig1-Sig3))  0.000222802886099
+ Checking energy: 2.845057+2.603114i k-point: 0.743561,0.376256
+Left, Bulk : max(abs(Sig1-Sig3))  0.00037704566261
+Right, Bulk : max(abs(Sig1-Sig3))  0.000370644212731
+Left, no-Bulk : max(abs(Sig1-Sig3))  7.93079126884e-05
+Right, no-Bulk : max(abs(Sig1-Sig3))  9.04359379387e-05
+ Checking energy: -2.553183+2.988033i k-point: 0.382435,0.337940
+Left, Bulk : max(abs(Sig1-Sig3))  0.00037704566261
+Right, Bulk : max(abs(Sig1-Sig3))  0.000367220402209
+Left, no-Bulk : max(abs(Sig1-Sig3))  8.89295256642e-05
+Right, no-Bulk : max(abs(Sig1-Sig3))  0.000108349080301
+ Checking energy: -3.229957+0.166960i k-point: 0.656090,0.819732
+Left, Bulk : max(abs(Sig1-Sig3))  0.00039337918495
+Right, Bulk : max(abs(Sig1-Sig3))  0.000382951957625
+Left, no-Bulk : max(abs(Sig1-Sig3))  0.000380716913998
+Right, no-Bulk : max(abs(Sig1-Sig3))  0.00026441298712
+ Checking energy: 2.576257+4.815165i k-point: 0.417327,0.221868
+Left, Bulk : max(abs(Sig1-Sig3))  0.000377045662611
+Right, Bulk : max(abs(Sig1-Sig3))  0.000370554314439
+Left, no-Bulk : max(abs(Sig1-Sig3))  8.03810430538e-05
+Right, no-Bulk : max(abs(Sig1-Sig3))  9.0838205182e-05
+ Checking energy: -4.069733+2.983689i k-point: 0.679452,0.578640
+Left, Bulk : max(abs(Sig1-Sig3))  0.000377045662609
+Right, Bulk : max(abs(Sig1-Sig3))  0.00037100218654
+Left, no-Bulk : max(abs(Sig1-Sig3))  9.27446502271e-05
+Right, no-Bulk : max(abs(Sig1-Sig3))  0.000107969470159
+ Checking energy: 0.317538+4.539308i k-point: 0.720872,0.753883
+Left, Bulk : max(abs(Sig1-Sig3))  0.00037704566261
+Right, Bulk : max(abs(Sig1-Sig3))  0.00037014974433
+Left, no-Bulk : max(abs(Sig1-Sig3))  8.3479858895e-05
+Right, no-Bulk : max(abs(Sig1-Sig3))  9.33677509033e-05
+ Checking energy: 2.795758+2.207580i k-point: 0.393004,0.780843
+Left, Bulk : max(abs(Sig1-Sig3))  0.000377045662611
+Right, Bulk : max(abs(Sig1-Sig3))  0.000370306955124
+Left, no-Bulk : max(abs(Sig1-Sig3))  7.91622692439e-05
+Right, no-Bulk : max(abs(Sig1-Sig3))  9.04926015394e-05
+ Checking energy: 0.480809+0.708583i k-point: 0.463097,0.084518
+Left, Bulk : max(abs(Sig1-Sig3))  0.00037704566261
+Right, Bulk : max(abs(Sig1-Sig3))  0.000380207440727
+Left, no-Bulk : max(abs(Sig1-Sig3))  8.06625475604e-05
+Right, no-Bulk : max(abs(Sig1-Sig3))  9.13188139036e-05
+
+#########################################
+#########################################
+Maximum error :  0.00039337918495
+Test passed!
+#########################################
+#########################################
+

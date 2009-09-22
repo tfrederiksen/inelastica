@@ -1,0 +1,32 @@
+#!/bin/tcsh -f
+#PBS -joe
+#PBS -koe
+#PBS -q parallel
+#PBS -r n
+#PBS -o .
+#PBS -l walltime=100:00:00
+#PBS -l cput=100:00:00
+#PBS -l mem=4gb
+#PBS -N JOBNAME
+#PBS -l nodes=1:ppn=4:bigmem
+#PBS -l ncpus=4
+
+cd $PBS_O_WORKDIR
+
+setenv OMP_NUM_THREADS 4
+
+setenv NPROCS `wc -l < $PBS_NODEFILE`
+setenv NODEFILE /tmp/`basename $PBS_NODEFILE`
+setenv SERVER `head -1 $PBS_NODEFILE`
+
+echo $SERVER > mpd.hosts
+echo $PBS_O_WORKDIR > orig.workdir
+
+# Execute jobs
+source /software/scripts/intel-9.1
+setenv LD_LIBRARY_PATH /scratch/thf/lib:/usr/lib:/software/netcdf-3.6.2-gnu/lib:/software/openmpi-1.2.6-intel/lib:$LD_LIBRARY_PATH
+setenv LD_LIBRARY_PATH /software/intel-9.1/cmkl-9.1/lib/64:$LD_LIBRARY_PATH
+setenv LD_LIBRARY_PATH /software/gcc-4.2.0/lib:/software/kits/gmp-4.2.1/.libs:$LD_LIBRARY_PATH
+
+/scratch/thf/bin/python /scratch/thf/Phonons2/pyTBT.py > pyTBT.out 
+

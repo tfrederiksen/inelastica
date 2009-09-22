@@ -1,0 +1,48 @@
+# -----------------------------------------------------------------------------
+# FDF for fcc111 bulk gold, Stacking: B,C,A
+#
+#
+# -----------------------------------------------------------------------------
+####################################
+# NOTE:
+NeglNonOverlapInt   True
+####################################
+
+
+SystemName       3D electrode Au LDA     # Descriptive name of the system
+SystemLabel           Au3D_BCA           # Short name for naming files
+
+# Output options
+
+PAO.BasisType split
+
+%block 	PAO.BasisSizes
+	Au_pbr  	        SZP
+%endblock PAO.BasisSizes
+
+WriteCoorStep
+WriteMullikenPop       1    
+
+# Species and atoms
+
+%block ChemicalSpeciesLabel
+  1  79  Au_pbr
+%endblock ChemicalSpeciesLabel
+
+
+%block kgrid_Monkhorst_Pack
+ 3    0    0    0.0
+ 0    3    0    0.0
+ 0    0    100   0.0	# ! continous in z direction
+%endblock kgrid_Monkhorst_Pack
+
+
+# Atomic coordinates
+AtomicCoordinatesFormat     Ang   
+ 
+SolutionMethod        diagon        # OrderN or Diagon
+#ElectronicTemperature  25 meV       # Temp. for Fermi smearing
+
+%include ./STRUCT.fdf
+%include ./Default.fdf
+

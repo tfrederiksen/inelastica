@@ -1,0 +1,36 @@
+#!/bin/tcsh -f
+#PBS -joe
+#PBS -koe
+#PBS -q parallel
+#PBS -r n
+#PBS -o .
+#PBS -l walltime=10:00:00
+#PBS -l cput=10:00:00
+#PBS -l mem=4gb
+#PBS -N JOBNAME
+#PBS -l nodes=1:ppn=1:bigmem
+#PBS -l ncpus=1
+
+cd $PBS_O_WORKDIR
+
+setenv NPROCS `wc -l < $PBS_NODEFILE`
+setenv NODEFILE /tmp/`basename $PBS_NODEFILE`
+setenv SERVER `head -1 $PBS_NODEFILE`
+
+echo $SERVER > mpd.hosts
+echo $PBS_O_WORKDIR > orig.workdir
+
+# Execute jobs
+source /software/scripts/intel-10.0
+setenv LD_LIBRARY_PATH /software/intel-9.1/cmkl-9.1/lib/64:/software/openmpi-1.2.6-intel/lib
+setenv MPIRUN /software/intel-10.0/mpi-3.0/bin/mpirun
+setenv SIESTA /scratch/thf/bin/transiesta2.5-barca-v090619
+
+# SIESTA/TranSIESTA
+$MPIRUN -n $NPROCS $SIESTA < ./RUN_1.fdf > ./RUN_1.out 
+$MPIRUN -n $NPROCS $SIESTA < ./RUN_2.fdf > ./RUN_2.out 
+$MPIRUN -n $NPROCS $SIESTA < ./RUN_3.fdf > ./RUN_3.out 
+$MPIRUN -n $NPROCS $SIESTA < ./RUN_4.fdf > ./RUN_4.out 
+$MPIRUN -n $NPROCS $SIESTA < ./RUN_5.fdf > ./RUN_5.out 
+$MPIRUN -n $NPROCS $SIESTA < ./RUN_6.fdf > ./RUN_6.out 
+

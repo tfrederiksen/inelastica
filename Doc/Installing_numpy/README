@@ -1,0 +1,14 @@
+Download:
+	http://numpy.scipy.org/
+
+atlas:
+ 	python setup.py install
+
+mkl:
+        copy site.cfg_ifort_mkl_9-11 to site.cfg
+	edit to get correct path to mkl
+	python setup.py install
+ 
+acml:
+	TODO!
+

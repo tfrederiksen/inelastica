@@ -1,0 +1,7 @@
+include README
+recursive-include Doc *
+recursive-include Examples *
+recursive-include TestCalculations * 
+recursive-include Templates *
+recursive-include package/F90 *
+

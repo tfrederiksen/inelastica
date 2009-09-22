@@ -1,0 +1,5 @@
+#! /usr/bin/env python
+
+import Inelastica.Eigenchannels as IE
+IE.main()
+

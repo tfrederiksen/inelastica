@@ -1,0 +1,33 @@
+Overall: 
+	 k-point sampling!
+	 Install script using the distribute package from python?
+	 cleanup? Anyone has energy for this?
+	 Rather ugly stepwise complications going from Inelastica ->
+	   Eigenchannels -> pyTBT
+
+SetupRuns.py:
+	All the bits conserning Inelastica need to be rewritten
+
+EigenChannels:
+	Better organization of outfiles ... into directories?
+	DOS: How to calculate and outfiles?
+	logfile containing parameters!
+
+Inelastica:
+	Better organization of outfiles ... into directories?
+	logfile containing parameters!
+	Rates saved to file for faster calculation?
+	Units for the extDamp parameter?
+
+pyTBT:
+	?
+
+Phonons:
+	?
+
+SCBA routines:
+	Migrate to numpy?
+	pyMPI?
+
+SDOS.py:
+	Usefull or remove?

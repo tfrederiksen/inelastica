@@ -1,0 +1,46 @@
+Imported F90helpers
+SiestaIO.ReadTSHSNCFile: Reading ../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS.nc
+Found 3 atoms, (1350, 27) orbitals in super-, unit-cell
+SiestaIO.ReadTSHSNCFile: Reading ../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS.nc
+Found 3 atoms, (1350, 27) orbitals in super-, unit-cell
+Maximum difference between Xij : 4.4408920985e-16
+SiestaIO.ReadTSHSNCFile: Reading ../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS.nc
+Found 3 atoms, (1350, 27) orbitals in super-, unit-cell
+ Checking k-point: 0.993914,0.702745,0.602236
+Max difference kpointhelper:  8.881784197e-16
+Max difference for self-energy:  2.14840825103e-14
+ Checking k-point: 0.782259,0.036668,0.859686
+Max difference kpointhelper:  8.881784197e-16
+Max difference for self-energy:  1.98960244499e-14
+ Checking k-point: 0.774700,0.187652,0.494496
+Max difference kpointhelper:  4.4408920985e-16
+Max difference for self-energy:  1.89082516195e-14
+ Checking k-point: 0.903193,0.290621,0.927524
+Max difference kpointhelper:  8.881784197e-16
+Max difference for self-energy:  6.85661808986e-14
+ Checking k-point: 0.924150,0.680588,0.206283
+Max difference kpointhelper:  1.7763568394e-15
+Max difference for self-energy:  2.40407591531e-14
+ Checking k-point: 0.688662,0.103633,0.724983
+Max difference kpointhelper:  8.89077556411e-16
+Max difference for self-energy:  1.7348278338e-14
+ Checking k-point: 0.460125,0.307311,0.628324
+Max difference kpointhelper:  8.881784197e-16
+Max difference for self-energy:  3.13151566929e-14
+ Checking k-point: 0.567221,0.409028,0.731708
+Max difference kpointhelper:  4.47545209131e-16
+Max difference for self-energy:  2.5360282692e-14
+ Checking k-point: 0.562706,0.235705,0.972572
+Max difference kpointhelper:  4.4408920985e-16
+Max difference for self-energy:  2.05184864413e-14
+ Checking k-point: 0.357449,0.343638,0.273597
+Max difference kpointhelper:  8.881784197e-16
+Max difference for self-energy:  2.00637490294e-14
+Maximum error :  6.85661808986e-14
+
+###############################################################
+###############################################################
+Test passed for remove Xij, distributeg0 and setkpoint!
+###############################################################
+###############################################################
+
