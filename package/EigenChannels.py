@@ -8,6 +8,7 @@ fudgeEnergy = 5e-5         # Fudge energy in eV used to see if Ef is close to th
 
 import pyTBT
 import SiestaIO as SIO
+import MakeGeom as MG
 import EigenChannels as EC
 import WriteXMGR as XMGR
 import numpy as N
@@ -716,8 +717,12 @@ For help use --help!
         except:
             parser.error("ERROR: --kPoint='[0.0,0.0]' not --kPoint=%s"%general.kPoint)
 
-    general.from_atom = SIO.GetFDFlineWithDefault(
-        general.fdfFile,'TS.TBT.PDOSFrom', int, None, 'Eigenchannels')
+    try:
+        general.from_atom = SIO.GetFDFlineWithDefault(
+            general.fdfFile,'TS.TBT.PDOSFrom', int, None, 'Eigenchannels')
+    except:
+        parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
+        
     general.to_atom = SIO.GetFDFlineWithDefault(
         general.fdfFile,'TS.TBT.PDOSTo', int, None, 'Eigenchannels')
 
