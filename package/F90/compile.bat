@@ -1,2 +1,2 @@
-f2py -c -m F90helpers  distributegs.f90 setkpointhelper.f90 removeUnitCellXij.f90 readNewTSHS.f90
+f2py -c -m F90helpers distributegs.F setkpointhelper.F removeUnitCellXij.F readNewTSHS.F90 --fcompiler=intelem
 cp F90helpers.so ..

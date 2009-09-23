@@ -34,7 +34,7 @@ from optparse import OptionParser, OptionGroup
 
 ################### Help functions ############################
 try:
-    import Inelastica.F90helpers as F90
+    import F90helpers as F90
     print "Imported F90helpers"
     F90imported = True
 except:

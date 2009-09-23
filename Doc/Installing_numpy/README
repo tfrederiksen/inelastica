@@ -1,14 +1,37 @@
 Download:
 	http://numpy.scipy.org/
 
+General:
+See below for details on LAPACK/BLAS. 
+
+	python setup.py build --help-fcompiler
+
+will tell you what fortran compilers were found.
+
+	rm -fr build
+	python setup.py build --fcompiler=...   (e.g., intelem for ifort-64)
+	python setup.py install
+	
+Note, a bug in numpy prevents --fcompiler=... to be used with "install".
+Build first then install.
+
+####################################
+# BLAS / LAPACK
+#
+
 atlas:
  	python setup.py install
 
-mkl:
-        copy site.cfg_ifort_mkl_9-11 to site.cfg
+mkl / ifort:
+        copy site.cfg_mkl_9-11 to site.cfg
 	edit to get correct path to mkl
 	python setup.py install
  
 acml:
 	TODO!
+
+
+####################################
+# Comon problems
+#
 

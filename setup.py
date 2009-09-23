@@ -41,7 +41,7 @@ def test_prereq():
     except:
         print "#### ERROR ####"
         print "Inelastica requires the f2py extension of numpy."
-        print "Please read 'Doc/Installing_netCDF/README'."
+        print "Please read 'Doc/Installing_numpy/README'."
         sys.exit([1])
 
     # Check from ScientificPython including netCDF.
@@ -51,7 +51,7 @@ def test_prereq():
     except:
         print "#### ERROR ####"
         print "Inelastica requires ScientificPython with NetCDF extensions."
-        print "Please read 'Doc/Installing_netCDF/README'."
+        print "Please read 'Doc/Installing_ScientificPython/README'."
         sys.exit([1])
     print "# Testing passed!"
 
@@ -61,7 +61,7 @@ from numpy.distutils.core import setup
 import numpy.distutils.extension as Next
 
 # Fortran helper files
-F90ext = Next.Extension('F90helpers',\
+F90ext = Next.Extension('Inelastica.F90helpers',\
                             ['package/F90/distributegs.F',
                              'package/F90/readNewTSHS.F90',
                              'package/F90/removeUnitCellXij.F',

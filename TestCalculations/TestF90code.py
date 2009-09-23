@@ -1,8 +1,8 @@
 import sys, profile
 sys.path+=['..']
 
-import pyTBT
-import SiestaIO as SIO
+import Inelastica.pyTBT as pyTBT
+import Inelastica.SiestaIO as SIO
 import numpy as N
 import numpy.random as RA
 

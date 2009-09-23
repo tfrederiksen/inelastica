@@ -12,6 +12,19 @@ b)   set PYTHONPATH to /home/yourUser/local/python-packages/lib/python2.6/site-p
 
 4: Good luck and remember that documentation is mainly at the wiki.
 
+###################
+# Common problems
 
+1: Complaints about fortran:
 
-   
+    python setup.py build --help-fcompiler
+
+tells you what fortran compilers are avalable. My recomendation is ifort:
+
+    rm -fr build
+    python setup.py build --fcompiler=intelem [or intel for 32bit]
+    python setup.py install
+
+Unfortunately numpy has a bug preventing 
+    "python setup.py install --fcompiler=..."
+Build first with "--fcompiler=..." then install. 
