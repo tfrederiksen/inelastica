@@ -64,7 +64,7 @@ AtomicMass = {1:1.007947,    # H
 
 def Analyze(dirname,wildcard,
             onlySdir='../onlyS',
-            newPhononCalc='PhononCalc',
+            newPHrun='PhononCalc',
             DeviceFirst=1,DeviceLast=1e3,
             FCfirst=1,FClast=1e3,
             BulkAtomsLeft=-1,BulkAtomsRight=-1,
@@ -98,7 +98,7 @@ def Analyze(dirname,wildcard,
     #                 I.e., use to substitute deuterium (anr 1001) for hydrogens
 
     ### Make directory for output files etc.
-    phononDirectory = dirname+'/'+newPhononCalc
+    phononDirectory = dirname+'/'+newPHrun
     if not os.path.isdir(phononDirectory):
         os.mkdir(phononDirectory)
 

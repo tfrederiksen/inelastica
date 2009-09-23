@@ -525,11 +525,8 @@ def SetupPHrun(newPHrun,wildcard,onlySdir='../OSrun',
     head, tail = os.path.split(newPHrun)
     # find device?
     print 'SetupRuns.SetupPHrun: Writing',newPHrun+'/AnalyzeThis.py'
-    if append2existingJobs:
-        file = open(newPHrun+'/AnalyzeThis.py','a')
-    else:
-        file = open(newPHrun+'/AnalyzeThis.py','w')
-        file.write('from Phonons import *\n\n')
+    file = open(newPHrun+'/AnalyzeThis.py','w')
+    file.write('from Inelastica.Phonons import *\n\n')
     
     file.write('\nAnalyze(\'..\',\'%s\',\n' %(wildcard))
     file.write('        onlySdir=\'%s\',\n' %onlySdir)
@@ -548,19 +545,6 @@ def SetupPHrun(newPHrun,wildcard,onlySdir='../OSrun',
                %(PerBoundCorrFirst,PerBoundCorrLast))
     file.write('        PrintSOrbitals=%s)' %PrintSOrbitals)
     file.close()
-
-    # Copy Phonons.py and SiestaIO.py
-    print 'SetupRuns.SetupPHrun: Copying ./Phonons.py  --> ',newPHrun
-    shutil.copy('./Phonons.py',newPHrun)
-    print 'SetupRuns.SetupPHrun: Copying ./F90helpers.so  --> ',newPHrun
-    try:
-        shutil.copy('./F90helpers.so',newPHrun)
-    except:
-        print 'SetupRuns.SetupPHrun: ./F90helpers.so not found '        
-    print 'SetupRuns.SetupPHrun: Copying ./SiestaIO.py  --> ',newPHrun
-    shutil.copy('./SiestaIO.py',newPHrun)
-    print 'SetupRuns.SetupPHrun: Copying ./MakeGeom.py  --> ',newPHrun
-    shutil.copy('./MakeGeom.py',newPHrun)
     
     # write WritePythonPBS(...)
     # PBS files
