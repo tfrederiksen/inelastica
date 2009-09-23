@@ -40,11 +40,11 @@ def readxv():
     fns=glob.glob('*.XV')
 
     if len(fns)>1:
-        print "Eigenchannels: More than one .XV file ... which geometry to choose???"
-        kuk
+        print "ERROR: Eigenchannels: More than one .XV file ... which geometry to choose???"
+        sys.exit(1)
     elif len(fns)<1:
-        print "Eigenchannels: Error ... No .XV file found!"
-        kuk
+        print "ERROR: Eigenchannels: Error ... No .XV file found!"
+        sys.exit(1)
 
     print('Reading geometry from "%s" file' % fns[0])
     geom = MG.Geom(fns[0])
@@ -68,8 +68,8 @@ def readHS():
         NNPH = len(N.array(NCfile.variables['S0'][:,:]))
         NCfile.close()
         if NNPH!=NNTS:
-            print "Eigenchannels : ERROR the device regions of pyTBT and PhononNetCDF do not match!!!"
-            kuk
+            print "ERROR: Eigenchannels : ERROR the device regions of pyTBT and PhononNetCDF do not match!!!"
+            sys.exit(1)
 
 ########################################################
 def calcT(calledFromInelastica=False,InelasticaEf=0.0):

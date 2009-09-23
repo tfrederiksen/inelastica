@@ -2,7 +2,7 @@
 
 import SiestaIO as SIO
 import numpy as N
-import string, copy, math
+import string, copy, math, sys
 import Scientific.IO.NetCDF as NC
 
 # From Kittel: Introd. Solid State Physics, 7th ed. (1996)
@@ -112,8 +112,8 @@ class Geom:
     def rmAtom(self,rmnr):
         "Remove the offending atom"
         if rmnr<0 or rmnr>self.natoms-1:
-            print "You tried to remove an atom that isn't there"
-            kuken
+            print "ERROR: You tried to remove an atom that isn't there"
+            sys.exit(1)
         self.xyz=self.xyz[0:rmnr]+self.xyz[rmnr+1:self.natoms]
         self.snr=self.snr[0:rmnr]+self.snr[rmnr+1:self.natoms]
         self.anr=self.anr[0:rmnr]+self.anr[rmnr+1:self.natoms]

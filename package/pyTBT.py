@@ -29,7 +29,7 @@
 import SiestaIO as SIO
 import numpy as N
 import numpy.linalg as LA
-import profile, sys,string
+import profile, sys, string
 from optparse import OptionParser, OptionGroup
 
 ################### Help functions ############################
@@ -474,7 +474,7 @@ class GF:
             if max(Soverlap,Hoverlap) > 1e-10 :
                 print "ERROR! Too much overlap directly from left-top right"
                 print "Make Device Region larger!"
-                kuk
+                sys.exit(1)
             
             # Find orbitals in device region coupling to left and right.
             tau  = abs(self.S0[0:devSt-1,0:devEnd])
