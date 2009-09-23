@@ -2,9 +2,9 @@ Inelastica:
 	Python package for the SIESTA / TranSIESTA DFT code.
 By:
 	Magnus Paulsson (magnus.paulsson@hik.se)
-	Thomas Frederiksen (TODO!)
+	Thomas Frederiksen (thomas_frederiksen@ehu.es)
 
-Install:
+Install: (also see Doc/INSTALL!)
 	python setup.py install
 
 Prereq:

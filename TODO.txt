@@ -1,6 +1,5 @@
 Overall: 
 	 k-point sampling!
-	 Install script using the distribute package from python?
 	 cleanup? Anyone has energy for this?
 	 Rather ugly stepwise complications going from Inelastica ->
 	   Eigenchannels -> pyTBT

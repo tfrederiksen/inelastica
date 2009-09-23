@@ -5,6 +5,27 @@ import sys, time
 # TODO: Testcalculations
 
 def test_prereq():
+    # Check for numpy.distutils.
+    print "# Testing : numpy f2py."
+    try:
+        import numpy.distutils
+        import numpy.distutils.extension
+    except:
+        print "#### ERROR ####"
+        print "Inelastica requires the f2py extension of numpy."
+        print "Please read 'Doc/Installing_numpy/README'."
+        sys.exit([1])
+
+    # Check for ScientificPython including netCDF.
+    print "# Testing : ScientificPython."
+    try:
+        import Scientific.IO.NetCDF as nc
+    except:
+        print "#### ERROR ####"
+        print "Inelastica requires ScientificPython with NetCDF extensions."
+        print "Please read 'Doc/Installing_ScientificPython/README'."
+        sys.exit([1])
+
     print "# Testing : numpy speed."
     try:
         import numpy as N
@@ -33,26 +54,6 @@ def test_prereq():
         print "Please read 'Doc/Installing_numpy/README'."
         tmp = raw_input("Press [enter] to continue.")
  
-    # Check from ScientificPython including netCDF.
-    print "# Testing : numpy f2py."
-    try:
-        import numpy.distutils
-        import numpy.distutils.extension
-    except:
-        print "#### ERROR ####"
-        print "Inelastica requires the f2py extension of numpy."
-        print "Please read 'Doc/Installing_numpy/README'."
-        sys.exit([1])
-
-    # Check from ScientificPython including netCDF.
-    print "# Testing : ScientificPython."
-    try:
-        import Scientific.IO.NetCDF as nc
-    except:
-        print "#### ERROR ####"
-        print "Inelastica requires ScientificPython with NetCDF extensions."
-        print "Please read 'Doc/Installing_ScientificPython/README'."
-        sys.exit([1])
     print "# Testing passed!"
 
 test_prereq()
