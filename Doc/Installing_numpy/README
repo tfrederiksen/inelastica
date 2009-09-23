@@ -35,3 +35,6 @@ acml:
 # Comon problems
 #
 
+Sometimes gfortran is not found using --help-fcompilers even if present. 
+Solution: 'rm -fr build', build using --fcompiler=gfortran. 
+

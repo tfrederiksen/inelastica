@@ -10,7 +10,9 @@ b)   set PYTHONPATH to /home/yourUser/local/python-packages/lib/python2.6/site-p
 
 3: Inelastica requires a few additional packages that may not be installed on your machine. The install will tell you if that is the case.
 
-4: Good luck and remember that documentation is mainly at the wiki.
+4: Optional tests: see TestCalculations/README
+
+5: Good luck and remember that documentation is mainly at the wiki.
 
 ###################
 # Common problems
@@ -28,3 +30,8 @@ tells you what fortran compilers are avalable. My recomendation is ifort:
 Unfortunately numpy has a bug preventing 
     "python setup.py install --fcompiler=..."
 Build first with "--fcompiler=..." then install. 
+
+
+2: Sometimes gfortran is not found using --help-fcompilers even if present. 
+Solution: 'rm -fr build', build using --fcompiler=gfortran. 
+
