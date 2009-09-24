@@ -12,7 +12,6 @@ import Scientific.IO.NetCDF as nc
 # For speed some routines can be linked as F90 code
 try:
     import F90helpers as F90
-    print "Imported F90helpers"
     F90imported = True
 except:
     F90imported = False

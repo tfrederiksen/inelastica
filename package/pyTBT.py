@@ -35,7 +35,6 @@ from optparse import OptionParser, OptionGroup
 ################### Help functions ############################
 try:
     import F90helpers as F90
-    print "Imported F90helpers"
     F90imported = True
 except:
     F90imported = False
