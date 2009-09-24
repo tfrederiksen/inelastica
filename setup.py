@@ -8,12 +8,21 @@ def test_prereq():
     # Check for numpy.distutils.
     print "# Testing : numpy f2py."
     try:
+        import numpy as N
+        import numpy.linalg as LA
+    except:
+        print "#### ERROR ####"
+        print "Inelastica needs the package 'numpy' to run."
+        print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
+        sys.exit([1])
+
+    try:
         import numpy.distutils
         import numpy.distutils.extension
     except:
         print "#### ERROR ####"
         print "Inelastica requires the f2py extension of numpy."
-        print "Please read 'Doc/Installing_numpy/README'."
+        print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
         sys.exit([1])
 
     # Check for ScientificPython including netCDF.
@@ -23,19 +32,10 @@ def test_prereq():
     except:
         print "#### ERROR ####"
         print "Inelastica requires ScientificPython with NetCDF extensions."
-        print "Please read 'Doc/Installing_ScientificPython/README'."
+        print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
         sys.exit([1])
 
     print "# Testing : numpy speed."
-    try:
-        import numpy as N
-        import numpy.linalg as LA
-    except:
-        print "#### ERROR ####"
-        print "Inelastica needs the package 'numpy' to run."
-        print "Please see 'Doc/Installing_numpy/README'"
-        sys.exit([1])
-
     # Make sure that numpy is compiled with optimized LAPACK/BLAS
     st=time.time()
 
@@ -51,7 +51,7 @@ def test_prereq():
         print "numpy was compiled with a slow versions of BLAS/LAPACK."
         print "A minimal test showed that your system takes %3.2f s"%(en-st)
         print "  (normal C2D@~2.5GHz/mkl10 takes ~ 1 s)"
-        print "Please read 'Doc/Installing_numpy/README'."
+        print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
         tmp = raw_input("Press [enter] to continue.")
  
     print "# Testing passed!"
