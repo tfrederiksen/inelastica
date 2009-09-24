@@ -1,0 +1,27 @@
+#!/bin/tcsh
+#PBS -N $DEFJOBNAME$
+#PBS -V
+#PBS -l walltime=1:00:00
+#PBS -l nodes=1:ppn=1
+
+# Template PBS script for OS (only overlap) TranSIESTA calculations
+# This is usually very cheap and does not need to run in parallel
+# Inelastica will change:
+#   $DEFJOBNAME$ to a default jobname based on the directory name.
+
+setenv TRANSIESTA transiesta # Change to your transiesta executable
+
+
+limit stacksize unlimited # very important with ifort!
+setenv NUMNODES `cat $PBS_NODEFILE | wc -l`   # Calculate total number of cores
+cd $PBS_O_WORKDIR                          # Change to directory where submitted
+mpirun -np ${NUMNODES} ${TRANSIESTA} < RUN_1.fdf > RUN_1.out 
+mpirun -np ${NUMNODES} ${TRANSIESTA} < RUN_2.fdf > RUN_2.out 
+mpirun -np ${NUMNODES} ${TRANSIESTA} < RUN_3.fdf > RUN_3.out 
+mpirun -np ${NUMNODES} ${TRANSIESTA} < RUN_4.fdf > RUN_4.out 
+mpirun -np ${NUMNODES} ${TRANSIESTA} < RUN_5.fdf > RUN_5.out 
+mpirun -np ${NUMNODES} ${TRANSIESTA} < RUN_6.fdf > RUN_6.out 
+
+wait
+rm -f fort.*
+#end

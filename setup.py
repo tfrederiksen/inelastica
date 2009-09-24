@@ -88,5 +88,8 @@ Provides:
       scripts 	= ['scripts/Inelastica', 'scripts/EigenChannels', \
         'scripts/pyTBT', 'scripts/geom2geom', 'scripts/SDOS'], 
       packages=['Inelastica'],
-      ext_modules=[F90ext])
+      ext_modules=[F90ext],
+      data_files=[('Inelastica/PBS', ['PBS/RUN.OS.pbs','PBS/RUN.py.pbs', \
+                           'PBS/RUN.TS.pbs'],)]
+      )
 

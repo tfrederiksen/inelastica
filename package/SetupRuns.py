@@ -106,10 +106,7 @@ def SetupCGrun(templateCGrun,newCGrun,NewContactSeparation,AtomsPerLayer,
     geom.writeXYZ(newCGrun+'/STRUCT.xyz')
     geom.writeXYZ(newCGrun+'/STRUCT2.xyz',rep=[2,2,2])
     # PBS files
-    if PBStemplate:
-        WritePBS(PBStemplate,newCGrun+'/RUN.TS.pbs',PBSsubs)
-    if submitJob:
-        SubmitPBS(newCGrun,'RUN.TS.pbs')
+    MakePBS(PBStemplate, newCGrun+'/RUN.pbs', PBSsubs, submitJob, type = 'TS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -179,10 +176,7 @@ def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.04*Bohr2Ang,
             for line in lines: f.write(line)
             f.close()
     # PBS files
-    if PBStemplate:
-        WritePBS(PBStemplate,newFCrun+'/RUN.TS.pbs',PBSsubs)
-    if submitJob:
-        SubmitPBS(newFCrun,'RUN.TS.pbs')
+    MakePBS(PBStemplate, newFCrun+'/RUN.pbs', PBSsubs, submitJob, type = 'TS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -261,10 +255,7 @@ def SetupOSrun(CGrun,newOSrun,displacement=0.04*Bohr2Ang,
             else: f.write(line)
         f.close()
     # PBS files
-    if PBStemplate:
-        WritePBS(PBStemplate,newOSrun+'/RUN.OS.pbs',PBSsubs)
-    if submitJob:
-        SubmitPBS(newOSrun,'RUN.OS.pbs')
+    MakePBS(PBStemplate, newOSrun+'/RUN.pbs', PBSsubs, submitJob, type = 'OS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -412,10 +403,7 @@ def SetupTSrun(CGrun,templateTSrun,newTSrun,
             for line in lines: f.write(line)
             f.close()
     # PBS files
-    if PBStemplate:
-        WritePBS(PBStemplate,newTSrun+'/RUN.TS.pbs',PBSsubs)
-    if submitJob:
-        SubmitPBS(newTSrun,'RUN.TS.pbs')
+    MakePBS(PBStemplate, newTSrun+'/RUN.pbs', PBSsubs, submitJob, type = 'TS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -475,10 +463,7 @@ def RunTBT(TSrun,Emin,Emax,NPoints,NumKxy_A1=1,NumKxy_A2=1,
     for line in lines: f.write(line)
     f.close()
     # PBS files
-    if PBStemplate:
-        WritePBS(PBStemplate,newTSrun+'/RUN.PY.pbs',PBSsubs)
-    if submitJob:
-        SubmitPBS(newTSrun,'RUN.PY.pbs')
+    MakePBS(PBStemplate, newTSrun+'/RUN.pyTBT.pbs', PBSsubs, submitJob, type = 'PY')
                             
 
 # -----------------------------------------------------------------------------------------------------
@@ -521,11 +506,15 @@ def SetupPHrun(newPHrun,wildcard,onlySdir='../OSrun',
     if not os.path.isdir(newPHrun):
         print 'SetupRuns.SetupPHrun: Creating',newPHrun
         os.mkdir(newPHrun)
-
+    else:
+        if not overwrite:
+            print "Error: directory already exist ",newPHrun
+            sys.exit(1)
+        
     head, tail = os.path.split(newPHrun)
     # find device?
-    print 'SetupRuns.SetupPHrun: Writing',newPHrun+'/AnalyzeThis.py'
-    file = open(newPHrun+'/AnalyzeThis.py','w')
+    print 'SetupRuns.SetupPHrun: Writing',newPHrun+'/PHrun.py'
+    file = open(newPHrun+'/PHrun.py','w')
     file.write('from Inelastica.Phonons import *\n\n')
     
     file.write('\nAnalyze(\'..\',\'%s\',\n' %(wildcard))
@@ -548,10 +537,10 @@ def SetupPHrun(newPHrun,wildcard,onlySdir='../OSrun',
     
     # write WritePythonPBS(...)
     # PBS files
-    if PBStemplate:
-        WritePBS(PBStemplate,newPHrun+'/RUN.PY.pbs',PBSsubs)
-    if submitJob:
-        SubmitPBS(newPHrun,'RUN.PY.pbs')
+    if PBSsubs == None:
+        PBSsubs=[]
+    PBSsubs = [['$PYTHONSCRIPT$','PHrun.py']] + PBSsubs
+    MakePBS(PBStemplate, newPHrun+'/RUN.pbs', PBSsubs, submitJob, type = 'PY')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -611,10 +600,7 @@ def SetupInelastica(templateInelastica,newInelastica,TSrun,
         file.close()
         cmmd.append('inelastica.py '+inputfile+' -R')
     # PBS files
-    if PBStemplate:
-        WritePBS(PBStemplate,newInelastica+'/RUN.PY.pbs',PBSsubs)
-    if submitJob:
-        SubmitPBS(newInelastica,'RUN.PY.pbs')
+    MakePBS(PBStemplate, newInelastica+'/RUN.pbs', PBSsubs, submitJob, type = 'PY')
                             
 
 # -----------------------------------------------------------------------------------------------------
@@ -804,9 +790,33 @@ def FindElectrodeSep(dir,AtomsPerLayer):
         DeviceFirst,DeviceLast = g.deviceList[0],g.deviceList[-1]
     return g.ContactSeparation,DeviceFirst,DeviceLast
 
+### PBS code
+
+def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, type = 'TS'):
+    if PBStemplate==None:
+        types = {'TS':'RUN.TS.pbs','OS':'RUN.OS.pbs','PY':'RUN.py.pbs'}
+        PBStemplate = types[type]
+        if os.path.exists('~/.Inelastica/'+PBStemplate):
+            PBStemplate = os.path.abspath('~/.Inelastica/'+PBStemplate)
+        else:
+            InelasticaDir, crap = os.path.split(__file__)
+            PBStemplate = os.path.abspath(InelasticaDir+'/PBS/'+PBStemplate)
+
+    if os.path.exists(PBStemplate):
+        WritePBS(PBStemplate,PBSout,PBSsubs)
+        if submitJob:
+            print PBStemplate
+            workingFolder, PBSfile = os.path.split(os.path.abspath(PBSout))
+            SubmitPBS(workingFolder,PBSfile)
+
 def WritePBS(PBStemplate,PBSout,PBSsubs):
     print 'SiestaIO.WritePBS: Reading',PBStemplate
     print 'SiestaIO.WritePBS: Writing',PBSout
+
+    # Make default job name
+    fullPath, crap = os.path.split(os.path.abspath(PBSout))
+    last2dir = string.split(fullPath,'/')[-2:]
+    PBSsubs += [['$DEFJOBNAME$',last2dir[0]+'-'+last2dir[1]]] 
     infile = open(PBStemplate)
     outfile = open(PBSout,'w')
     if not PBSsubs: PBSsubs = []

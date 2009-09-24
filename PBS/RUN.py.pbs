@@ -1,0 +1,24 @@
+#!/bin/tcsh
+#PBS -N $DEFJOBNAME$
+#PBS -V
+#PBS -l walltime=96:00:00
+#PBS -l nodes=$NODES$
+
+# Template PBS script for python calculations
+# Inelastica will change:
+#   $DEFJOBNAME$ to a default jobname based on the directory name.
+#   $PYTHONSCRIPT$ to whatever python program is to be run.
+# You need to define
+#   $NODES$
+
+setenv PYTHON python  # Change to your path ...
+
+setenv NUMNODES `cat $PBS_NODEFILE | wc -l`   # Calculate total number of cores
+cd $PBS_O_WORKDIR                          # Change to directory where submitted
+# mkl parallelization over cores on same machine relatively 
+# good for pyTBT, Eigenchannels and Inelastica calculations
+setenv OMP_NUM_PROC ${NUMNODES}  
+
+${PYTHON} $PYTHONSCRIPT$
+
+#end
