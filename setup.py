@@ -50,7 +50,7 @@ def test_prereq():
         print "#### Warning ####"
         print "numpy was compiled with a slow versions of BLAS/LAPACK."
         print "A minimal test showed that your system takes %3.2f s"%(en-st)
-        print "  (normal C2D@~2.5GHz/mkl10 takes ~ 1 s)"
+        print "  (normal Xeon5430/ifort/mkl10 takes ~ 1 s)"
         print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
         tmp = raw_input("Press [enter] to continue.")
  
