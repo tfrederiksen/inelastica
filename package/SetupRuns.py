@@ -372,6 +372,7 @@ def SetupTSrun(CGrun,templateTSrun,newTSrun,
         geom.pbc[2][2]+=len(AddLeftList)/AtomsPerLayer*dz
     # Add electrode atoms to the right
     if len(AddRightList)>0:
+        dz=AddRightList[AtomsPerLayer,2]-AddRightList[0,2]
         tmp=N.array(geom.xyz)
         maxz=max(tmp[:,2])
         minz=min(AddRightList[:,2])

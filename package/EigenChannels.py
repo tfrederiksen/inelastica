@@ -14,7 +14,7 @@ import WriteXMGR as XMGR
 import numpy as N
 import numpy.linalg as LA
 import Scientific.IO.NetCDF as NC
-import sys, string, struct, glob, profile
+import sys, string, struct, glob, profile, os
 from optparse import OptionParser, OptionGroup
 
 # Dummy classes for global variables
@@ -643,7 +643,7 @@ def setupParameters(calledFromInelastica=False):
     # Note: can be called from Inelastica as well!
     global general
     
-    usage = "usage: %prog [options]"
+    usage = "usage: %prog [options] DestinationDirectory"
     if calledFromInelastica:
         description = """
 Inelastica script that calculates the IETS signal using the lowest order expansion, 
@@ -736,31 +736,52 @@ For help use --help!
         except:
             parser.error("ERROR: Inelastica failed to parse bias voltage!")
 
-    print '##################################################################################'
-    print '## Eigenchannel options'
-    print 'fdfFile          : ',general.fdfFile
-    print 'Ef [eV]          : ',general.energy
-    print 'NumChan          : ',general.numchan
-    print 'Res [Ang]        : ',general.res
-    print 'PhononNetCDF     : ',general.PhononNetCDF
-    print 'iSpin            : ',general.iSpin+1
-    print 'kPoint           : ',general.kPoint
-    print 'BothSides        : ',general.bothsides
-    print 'Device [from,to] : ',[general.from_atom, general.to_atom]
-    print '##################################################################################'
+    print args
+    if len(args)!=1:
+        parser.error('ERROR: You need to specify destination directory')
+    general.DestDir = args[0]
+    if not os.path.isdir(general.DestDir):
+        print '\nEigenchannels : Creating folder %s' %general.DestDir
+        os.mkdir(general.DestDir)
+    else:
+        parser.error('ERROR: destination directory %s already exist!'%general.DestDir)
+
+    def myprint(arg,file):
+        print arg
+        file.write(arg+'\n')
+
+    sys.stdout = open(general.DestDir+'/RUN.out','w',0)
+    file = open(general.DestDir+'/Parameters','w')    
+    argv=""
+    for ii in sys.argv: argv+=" "+ii
+    myprint(argv,file)
+    myprint('##################################################################################',file)
+    myprint('## Eigenchannel options',file)
+    myprint('fdfFile          : %s'%general.fdfFile,file)
+    myprint('Ef [eV]          : %f'%general.energy,file)
+    myprint('NumChan          : %i'%general.numchan,file)
+    myprint('Res [Ang]        : %f'%general.res,file)
+    myprint('PhononNetCDF     : %s'%general.PhononNetCDF,file)
+    myprint('iSpin            : %i'%(general.iSpin+1),file)
+    myprint('kPoint           : [%f,%f]'%(general.kPoint[0],general.kPoint[1]),file)
+    myprint('BothSides        : %s'%general.bothsides,file)
+    myprint('Device [from,to] : [%i,%i]'%(general.from_atom, general.to_atom),file)
+    myprint('DestDir          : %s'%general.DestDir,file)
+    myprint('##################################################################################',file)
     if calledFromInelastica:
-        print '## Inelastica options'
-        print 'PhononNetCDF     : ',general.PhononNetCDF
-        print 'Ef [eV]          : ',general.energy
-        print 'Vrms [V]         : ',general.Vrms
-        print 'PhHeating        : ',general.PhHeating
-        print 'External damp [?]: ',general.PhExtDamp
-        print 'mode cutoff [eV] : ',general.modeCutoff
-        print 'Temperature [K]  : ',general.Temp
-        print 'Bias points      : ',general.biasPoints
-        print 'Min bias [V]     : ',general.minBias
-        print 'Max bias [V]     : ',general.maxBias
-        print '##################################################################################'
+        myprint('## Inelastica options',file)
+        myprint('PhononNetCDF     : %s'%general.PhononNetCDF,file)
+        myprint('Ef [eV]          : %f'%general.energy,file)
+        myprint('Vrms [V]         : %f'%general.Vrms,file)
+        myprint('PhHeating        : %s'%general.PhHeating,file)
+        myprint('External damp [?]: %f'%general.PhExtDamp,file)
+        myprint('mode cutoff [eV] : %f'%general.modeCutoff,file)
+        myprint('Temperature [K]  : %f'%general.Temp,file)
+        myprint('Bias points      : %i'%general.biasPoints,file)
+        myprint('Min bias [V]     : %f'%general.minBias,file)
+        myprint('Max bias [V]     : %f'%general.maxBias,file)
+        myprint('##################################################################################',file)
+    file.close()
 
 ################# File names ##################################
 def fileName():
@@ -775,7 +796,7 @@ def fileName():
                               ['','UP','DOWN'][general.iSpin+HS.GF.HS.nspin-1])
     if general.energy!=0.0:
         fn=fn+'Ef=%2.3f'%general.energy
-    return fn
+    return general.DestDir+'/'+fn
 
 ################# Math helpers ################################
 def mm(* args):
