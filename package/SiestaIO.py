@@ -1213,6 +1213,30 @@ def BuildBasis(XVfile,FirstAtom,LastAtom):
     print '... Basis dimension = %i'%len(basis.L)
     return basis
 
+#--------------------------------------------------------------------------------
+# Interface with VASP
+
+def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL'):
+    "Write POSCAR file"
+    print 'SiestaIO.WritePOSCAR: Writing',filename
+    file = open(filename,'w')
+    file.write(label+'\n')
+    file.write('  %.12f \n'%1.0)
+    for ii in range(3):
+        for jj in range(3):
+            file.write(string.rjust('%.9f'%vectors[ii][jj],16)+' ')
+        file.write('\n')
+    for ii in range(len(speciesnumbers)):
+        file.write('  %i'%speciesnumbers[ii])
+    file.write('\n')
+    file.write('Selective dynamics\nCartesian\n')
+    for ii in range(len(xyz)):
+        line=string.rjust('%.9f'%xyz[ii][0],16)+' '
+        line+=string.rjust('%.9f'%xyz[ii][1],16)+' '
+        line+=string.rjust('%.9f'%xyz[ii][2],16)+' '
+        line+='  F  F  F\n'
+        file.write(line)
+
 
 
 #--------------------------------------------------------------------------------

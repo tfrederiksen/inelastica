@@ -618,11 +618,29 @@ class Geom:
             geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
         SIO.WriteMKLFile(fn,geom.anr,geom.xyz,[],[],0,0)
 
+#--------------------------------------------------------------------------------
+# Interface with VASP
 
-
-    
-
-            
+    def writePOSCAR(self,fn):
+        "Write POSCAR coordinate file for VASP"
+        geom = copy.deepcopy(self)
+        tmp = []
+        anrlist = []
+        anrnum = N.zeros(max(geom.anr)+1,N.int)
+        for i in range(len(geom.xyz)):
+            if geom.anr[i]>0:
+                tmp += [[geom.anr[i],i]]
+                anrnum[geom.anr[i]] +=  1
+        tmp.sort()
+        xyz = []
+        for i in range(len(tmp)):
+            j = tmp[i][1]
+            xyz += [geom.xyz[j]]
+        members = []
+        for i in range(len(anrnum)):
+            if anrnum[i]!=0: members += [anrnum[i]]
+        SIO.WritePOSCAR(fn,geom.pbc,members,xyz)
+          
 
 #--------------------------------------------------------------------------------
 # Conversion functions:
@@ -647,6 +665,9 @@ def convert(infile,outfile,rep=[1,1,1],MoveInsideUnitCell=False,RoundOff=False):
         geom.writeXV(outfile,rep)
     elif outfile[-4:] == '.mkl':
         geom.writeMKL(outfile,rep)
+    elif outfile[-6:] == 'POSCAR':
+        print 'Repetition not implemented with the POSCAR conversion'
+        geom.writePOSCAR(outfile)
     else:
         print 'Error - did not recognize output format in %s' %outfile
 

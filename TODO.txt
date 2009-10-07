@@ -5,7 +5,7 @@ Overall:
 	   Eigenchannels -> pyTBT
 
 SetupRuns.py:
-	All the bits conserning Inelastica need to be rewritten
+	All the bits concerning Inelastica need to be rewritten
 
 EigenChannels:
 	Better organization of outfiles ... into directories?
