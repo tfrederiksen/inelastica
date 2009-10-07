@@ -82,8 +82,8 @@ Provides:
 6:	Scripts to set up the above type of calculations.""",
       author='Magnus Paulsson and Thomas Frederiksen', 
       author_email='magnus.paulsson@hik.se',  
-      url='http://www.heja.kuk', 
-      license='Free for all: if used extensively, cite: Frederiksen et al, PRB, 75, 205413 (2007)', 
+      url='https://sourceforge.net/apps/mediawiki/inelastica', 
+      license='GPL. Please cite: Frederiksen et al., PRB 75, 205413 (2007)', 
       package_dir={'Inelastica': 'package'},
       scripts 	= ['scripts/Inelastica', 'scripts/EigenChannels', \
         'scripts/pyTBT', 'scripts/geom2geom', 'scripts/SDOS'], 
