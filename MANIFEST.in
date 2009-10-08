@@ -1,4 +1,6 @@
 include README
+include LICENCE
+include TODO.txt
 recursive-include Doc *
 recursive-include Examples *
 recursive-include TestCalculations * 
