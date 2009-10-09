@@ -375,7 +375,7 @@ def writeTrans(T,H,E):
 
     # Set axes and write XMGR plot to file
     KP = general.kPoint
-    fn = general.SiestaOutFile \
+    fn = general.DestDir+'/'+general.SiestaOutFile \
          + ('.KP_%.3f_%.3f_%.3f'%(KP[0],KP[1],KP[2]) ) \
          + '.TRANS'
     g.SetXaxis(label='E-E\sF\N (eV)',autoscale=True)
@@ -747,10 +747,20 @@ For help use --help!
         parser.error('ERROR: destination directory %s already exist!'%general.DestDir)
 
     def myprint(arg,file):
+        # Save in parameter file
         print arg
         file.write(arg+'\n')
 
-    sys.stdout = open(general.DestDir+'/RUN.out','w',0)
+    class myopen():
+        # Double stdout to RUN.out and stdout
+        def write(self,x):
+            self.stdout.write(x)
+            self.file.write(x)
+
+    fo = myopen()
+    fo.stdout, fo.file = sys.stdout, open(general.DestDir+'/RUN.out','w',0)
+    sys.stdout = fo
+
     file = open(general.DestDir+'/Parameters','w')    
     argv=""
     for ii in sys.argv: argv+=" "+ii
