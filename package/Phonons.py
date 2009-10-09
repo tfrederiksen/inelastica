@@ -1,6 +1,7 @@
-# TF/050602 rev 050609, 050620, 050624, 050704, 050705, 050712, 050811
-# ... 050919, 050923, 051014, 051017, 051018, 051214, 060313, 061120
-# MP rewrite to handle spin-polarization and change to numpy 2009 May-July
+"""
+Routines to calculate vibrational frequencies and e-ph coupling.
+
+"""
 
 import os, os.path, glob, string, time, sys
 import Scientific.IO.NetCDF as nc
@@ -75,28 +76,30 @@ def Analyze(dirname,wildcard,
             PerBoundCorrFirst=-1,PerBoundCorrLast=-1,
             PrintSOrbitals=True,
             AuxNCfile=None,Isotopes=[]):
-    # Calculate electron phonon coupling from siesta calculations
-    # Needs two types of siesta calculations :
-    # -  FC calculation, may be in several subdirectories ...
-    # -  onlyS calculation in subdirectory onlyS (to get derivative of
-    #     overlap...)
-    # Input:
-    # -  dirname    : main directory
-    # -  wildcard   : e.g. 'Au_*', gives all subdirs for FC calculations
-    # -  Ef         : Fermi energy used in correcting the Heph in the "old way"
-    # -  DeviceFirst: Restrict Heph etc to the basis orbitals of these
-    # -  DeviceLast :   atoms
-    # -  FCfirst    : restrict FC matrix to these atoms
-    # -  FClast     : (may be different from the siesta FC calculation)
-    # -  Which_eph  : 0 (new corrected), 1 (old corrected, needs Ef),
-    #                 2 (uncorrected)
-    # -  PerBoundCorrFirst : Prevent interactions through periodic
-    #                        boundary conditions defaults to DeviceFirst
-    # -  PerBoundCorrLast  : Defaults to DeviceLast
-    # -  AuxNCfile  : An optional auxillary netcdf-file used for read/writing dH matrix arrays
-    # -  Isotopes   : [[snr1, anr1], ...] substitute atom type to anr for siesta numbering atom snr
-    #                 I.e., use to substitute deuterium (anr 1001) for hydrogens
-
+    """
+    Calculate electron phonon coupling from siesta calculations
+    Needs two types of siesta calculations :
+    -  FC calculation, may be in several subdirectories ...
+    -  onlyS calculation in subdirectory onlyS (to get derivative of
+        overlap...)
+    Input:
+    -  dirname    : main directory
+    -  wildcard   : e.g. 'Au_*', gives all subdirs for FC calculations
+    -  Ef         : Fermi energy used in correcting the Heph in the "old way"
+    -  DeviceFirst: Restrict Heph etc to the basis orbitals of these
+    -  DeviceLast :   atoms
+    -  FCfirst    : restrict FC matrix to these atoms
+    -  FClast     : (may be different from the siesta FC calculation)
+    -  Which_eph  : 0 (new corrected), 1 (old corrected, needs Ef),
+                    2 (uncorrected)
+    -  PerBoundCorrFirst : Prevent interactions through periodic
+                           boundary conditions defaults to DeviceFirst
+    -  PerBoundCorrLast  : Defaults to DeviceLast
+    -  AuxNCfile  : An optional auxillary netcdf-file used for read/writing dH matrix arrays
+    -  Isotopes   : [[snr1, anr1], ...] substitute atom type to anr for siesta numbering atom snr
+                    I.e., use to substitute deuterium (anr 1001) for hydrogens
+    """
+    
     ### Make directory for output files etc.
     phononDirectory = dirname+'/'+newPHrun
     if not os.path.isdir(phononDirectory):

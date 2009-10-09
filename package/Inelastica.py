@@ -1,10 +1,9 @@
-# MPN 060613: Major rewrite for new version of Transiesta
-#             numpy instead of Numeric
-#             pyTBT and Eigenchannels used instead of HSSigma.nc
-#             SCBA not avalable ... TODO
-# MPN 050913: improved numerical expressions for power and current
-# MPN 051004: Changed all the netCDF variables for LOE
-
+"""
+Inelastica:
+Calculates the Inelastic electron tunneling spectra IETS from e-ph coupling
+and elastic transport properties (TranSIESTA). The calculations are performed
+in the LOE approximation, Paulsson et al., PRB 72, 201101R (2005).
+"""
 import pyTBT
 import SiestaIO as SIO
 import EigenChannels as EC

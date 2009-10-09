@@ -8,6 +8,8 @@ Provides:
 4:	Eigenchannels analyzis, try: Eigenchannels --help
 5:	IETS calculations, try: Inelastica --help
 6:	Scripts to set up the above type of calculations.
+7:      Generate / read Hamiltonian, Overlap, Green's functions etc
+
 """
 
 

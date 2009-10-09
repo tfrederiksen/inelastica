@@ -1,5 +1,6 @@
-# MPN 050526, rev TF/050630, 050811, 050821, 050909, 050922, 051114, 051116
-
+"""
+Routines to read, write and manipulate geometries.
+"""
 import SiestaIO as SIO
 import numpy as N
 import string, copy, math, sys

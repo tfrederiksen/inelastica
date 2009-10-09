@@ -1,7 +1,11 @@
-# TF/050524 rev 050606, 050620, 050704,
-# MP rev 060914
-# Major change to read TSHS files (used by onlyS, FC and TS!)
-
+"""
+Routines for IO in different formats:
+1: Geometries in xyz, XV, ANI, POSCAR, fdf, mkl etc formats
+2: Read Hamiltonian and Overlap from .TSHS file.
+3: fdf manipulations
+4: Real space Gaussian cube files
+5: Obtain information of basis orbitals for calculation (.ion.nc)
+"""
 import numpy as N
 import numpy.linalg as LA
 import string, struct, os.path, sys
@@ -464,35 +468,6 @@ def WriteFortranBin(file,type,data):
     bin += struct.pack(fortranuLong,struct.calcsize(fmt))
     file.write(bin)
 
-def WriteTSHSFile(filename,data):
-    "Write tuple to TSHS-file"
-    print 'SiestaIO.WriteTSHSFile: Writing %s ...'%filename,
-    # Open binary Fortran file
-    file = open(filename,'wb')
-    # Write nua,nuotot,nspin,notot,maxnhtot variables
-    WriteFortranBin(file,fortranLong,(data[0],data[1],data[2],data[3],data[4],))
-    # Write isa,lasto,xa,indxuo variable
-    WriteFortranBin(file,fortranLong,data[5])
-    WriteFortranBin(file,fortranLong,data[6])
-    WriteFortranBin(file,'d',data[7])
-    WriteFortranBin(file,fortranLong,data[8])
-    # Write numhg,listh variables
-    for i in range(9,11):
-        for j in range(len(data[i])):
-            WriteFortranBin(file,fortranLong,data[i][j])
-    # Write Hsparse,Ssparse variables
-    for i in range(11,13):
-        for j in range(len(data[i])):
-            WriteFortranBin(file,'d',data[i][j])
-    # Write qtot,temp variables
-    WriteFortranBin(file,'d',(data[13],data[14],))
-    # Write efs,cell variables
-    WriteFortranBin(file,'d',data[15])
-    WriteFortranBin(file,'d',data[16])
-    # Write gamma logical variable is binary, i.e. not unpacked
-    file.write(data[17])
-    file.close()
-    print 'done!'
 
 #--------------------------------------------------------------------------------
 # "Low-level" FDF format functionality

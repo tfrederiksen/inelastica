@@ -1,29 +1,30 @@
-#################################################################
-#
-# python TBTrans 
-# Magnus Paulsson magnus.paulsson@hik.se
-#
-# Requires: numpy (compile it linked with mkl, acml or atlas!)
-#           ScientificPython (vers. >= 2.8)
-#           For speed compile the fortran subroutines in F90 
-#           (cd F90;source compile.bat)
-#
-# Contains:
-#  class HS moved to SiestaIO.py
-#  ( class HS : Reads .TSHS.nc file and folds spcific k-point into 
-#              normal matrix from sparse format. )
-#   class surfaceGF : Reads electrode TSHS.nc and returns surface
-#                     Green's function of supercell surface 
-#   class GF : Calculates Green's function etc 
-#
-#  UNITS! Always eV and Angstrom!
-#         k-values always given in range [0,1.0] (or [-0.5,0.5])
-#         They are not in reciprocal space. Instead they corresponds
-#         to the mathematical orthogonal space that is fourier 
-#         transformed.
-#
-#################################################################
+"""
+################################################################
 
+ python TBTrans 
+ Magnus Paulsson magnus.paulsson@hik.se
+
+ Requires: numpy (compile it linked with mkl, acml or atlas!)
+           ScientificPython (vers. >= 2.8)
+           For speed compile the fortran subroutines in F90 
+           (cd F90;source compile.bat)
+
+ Contains:
+  class HS moved to SiestaIO.py
+  ( class HS : Reads .TSHS.nc file and folds spcific k-point into 
+              normal matrix from sparse format. )
+   class surfaceGF : Reads electrode TSHS.nc and returns surface
+                     Green's function of supercell surface 
+   class GF : Calculates Green's function etc 
+
+  UNITS! Always eV and Angstrom!
+         k-values always given in range [0,1.0] (or [-0.5,0.5])
+         They are not in reciprocal space. Instead they corresponds
+         to the mathematical orthogonal space that is fourier 
+         transformed.
+
+################################################################
+"""
 
 
 import SiestaIO as SIO
