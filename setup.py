@@ -46,7 +46,7 @@ def test_prereq():
         b=N.dot(a,a)
     c,d = LA.eigh(b)
     en=time.time()
-    if en-st>2.0:
+    if en-st>4.0:
         print "#### Warning ####"
         print "numpy was compiled with a slow versions of BLAS/LAPACK."
         print "A minimal test showed that your system takes %3.2f s"%(en-st)
@@ -70,7 +70,7 @@ F90ext = Next.Extension('Inelastica.F90helpers',\
 
 # Main setup of python modules
 setup(name='Inelastica',
-      version='1.0beta',
+      version='1.0',
       description='Python tools for SIESTA/TranSIESTA', 
       long_description="""
 Provides:
