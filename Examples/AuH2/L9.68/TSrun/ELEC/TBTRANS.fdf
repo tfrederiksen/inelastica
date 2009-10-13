@@ -1,0 +1,13 @@
+TS.TBT.PDOSFrom   5
+TS.TBT.PDOSTo     20
+TS.TBT.Emin       -10.000  eV
+TS.TBT.Emax       10.00000  eV
+TS.TBT.NPoints    101
+TS.NumKyx_A1      1
+TS.NumKyx_A2      1
+
+TS.RegionDataOrtho F
+TS.TBT.NEigen              10
+TS.TBT.AtomPDOS            F
+TS.TBT.DoCOOP              F
+

@@ -1,0 +1,50 @@
+#!/bin/tcsh -f
+#PBS -joe
+#PBS -koe
+#PBS -q parallel
+#PBS -r n
+#PBS -o .
+#PBS -l walltime=100:00:00
+#PBS -l mem=4gb
+#PBS -N TS
+#PBS -l nodes=1:ppn=4:bigmem
+#PBS -l ncpus=4
+
+cd $PBS_O_WORKDIR
+
+setenv NPROCS `wc -l < $PBS_NODEFILE`
+setenv NODEFILE /tmp/`basename $PBS_NODEFILE`
+setenv SERVER `head -1 $PBS_NODEFILE`
+
+echo $SERVER > mpd.hosts
+echo $PBS_O_WORKDIR > orig.workdir
+
+# Copy to lscratch
+mkdir /lscratch/$USER
+setenv TMPDIR /lscratch/$USER/`date +%y%m%d.%H%M.%N`
+mkdir $TMPDIR
+cp -r $PBS_O_WORKDIR/* $TMPDIR
+
+# Generate monitoring scripts
+echo ssh $SERVER ls -ltrh $TMPDIR > lscratch.ls
+echo ssh $SERVER cat $TMPDIR/RUN.out > lscratch.cat
+echo ssh $SERVER tail $TMPDIR/RUN.out > lscratch.tail
+echo ssh $SERVER \'mv $TMPDIR/\* $PBS_O_WORKDIR \&\& rmdir $TMPDIR\' > lscratch.get
+
+# Execute jobs
+source /software/scripts/intel-10.0
+setenv LD_LIBRARY_PATH /software/intel-9.1/cmkl-9.1/lib/64:/software/openmpi-1.2.6-intel/lib
+setenv MPIRUN /software/intel-10.0/mpi-3.0/bin/mpirun
+setenv SIESTA /scratch/thf/bin/transiesta-barca-v090831
+limit stacksize unlimited # Might be important for ifort (only works in tcsh)
+
+cd $TMPDIR
+
+# SIESTA/TranSIESTA
+$MPIRUN -n $NPROCS $SIESTA < ./RUN.fdf > ./RUN.out 
+
+# Cleanup, sleep, then copy back to original folder
+rm *GF
+sleep 10
+mv $TMPDIR/* $PBS_O_WORKDIR
+rmdir $TMPDIR

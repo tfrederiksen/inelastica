@@ -1,0 +1,39 @@
+Systemtitle Chain
+SystemLabel Chain
+
+SolutionMethod      diagon
+MD.TypeOfRun        CG
+MD.NumCGsteps       100
+MD.MaxCGDispl       0.05 Ang
+MD.MaxForceTol      0.02 eV/Ang
+DM.NumberPulay      10
+DM.MixingWeight     0.05
+DM.Tolerance        1.d-4
+MaxSCFIterations    200
+MeshCutoff          200. Ry 
+
+%block GeometryConstraints
+position from 1 to 9
+position from 14 to 22
+%endblock GeometryConstraints
+
+%block kgrid_Monkhorst_Pack
+ 1    0    0    0.0
+ 0    1    0    0.0
+ 0    0    5    0.0
+%endblock kgrid_Monkhorst_Pack
+
+%block ChemicalSpeciesLabel
+    1   79 Au_pbr                  # Species index, atomic number, species label
+    2   1  H.mpn                   # Species index, atomic number, species label
+%endblock ChemicalSpeciesLabel
+
+PAO.BasisSize     DZP
+PAO.BasisType	split
+
+xc.functional         GGA           # Exchange-correlation functional
+xc.authors            PBE           # Exchange-correlation version
+
+DM.UseSaveDM          true          # to use continuation files
+
+%include STRUCT.fdf

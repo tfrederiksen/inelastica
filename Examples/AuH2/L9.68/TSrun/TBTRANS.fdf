@@ -1,0 +1,17 @@
+### Lines appended Fri Oct  9 20:06:49 2009 
+TS.TBT.PDOSFrom   11
+TS.TBT.PDOSTo     14
+
+TS.TBT.PDOSFrom   9
+TS.TBT.PDOSTo     14
+TS.TBT.Emin      -5.000  eV
+TS.TBT.Emax       5.000  eV
+TS.TBT.NPoints    51
+TS.NumKyx_A1      1
+TS.NumKyx_A2      1
+
+TS.RegionDataOrtho F
+TS.TBT.NEigen              10
+TS.TBT.AtomPDOS            F
+TS.TBT.DoCOOP              F
+
