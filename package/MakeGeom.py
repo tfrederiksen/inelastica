@@ -295,34 +295,6 @@ class Geom:
 
     # PURPOSE SPECIFIC FUNCTIONS
     
-    def findContacts(self,LCf,LCl,RCf,RCl):
-        # TF: Outdated???
-        '''
-            Could be automagic but is not yet!!
-            [LC/RC][f/l] Left/right first/last atom
-              negative values of RCf means that there 
-              is no right contact
-            The numbers should refer to the python index,
-            i.e. counting from zero.
-        '''
-        if RCf<0:
-            rng=range(LCf,LCl+1)
-        else:
-            rng=range(LCf,LCl+1)+range(RCf,RCl+1)
-        self.contactList=rng
-        if RCf<0:
-            dz=max(N.array(self.pbc)[:,2])-self.xyz[LCl][2]
-        else:
-            dz=self.xyz[RCf][2]-self.xyz[LCl][2]
-        if dz<0:
-            dz=dz+max(N.array(self.pbc)[:,2])
-        self.zlength=dz
-        self.z0=self.xyz[LCl][2]
-        self.z1=self.z0+dz
-        self.LCf,self.LCl=LCf,LCl
-        self.RCf,self.RCl=RCf,RCl
-
-
     def findContactsAndDevice(self,AtomsPerLayer,tol=1e-4):
         '''
         If there exists AtomsPerLayer of atoms with the same z-coordinate
@@ -336,23 +308,38 @@ class Geom:
         - rightContactList
         - deviceList
         - zLeftContact
-        - ContactSeparation
-        
+        - ContactSeparation        
         '''
         
         self.leftContactList = []
         self.rightContactList = []
         self.deviceList = []
-        for i in range(self.natoms):
-            tmp = []
-            for j in range(self.natoms):
-                if abs(self.xyz[i][2]-self.xyz[j][2]) < tol: tmp.append(j)
-            if len(tmp)==AtomsPerLayer and len(self.deviceList)==0:
-                self.leftContactList.append(i+1)  # Siesta numbering starts from 1
-            elif len(tmp)==AtomsPerLayer and len(self.deviceList)>0:
-                self.rightContactList.append(i+1) # Siesta numbering starts from 1
-            else:
-                self.deviceList.append(i+1) # Siesta numbering starts from 1
+        if AtomsPerLayer>1:
+            for i in range(self.natoms):
+                tmp = []
+                for j in range(self.natoms):
+                    if abs(self.xyz[i][2]-self.xyz[j][2]) < tol: tmp.append(j)
+                if len(tmp)==AtomsPerLayer and len(self.deviceList)==0:
+                    self.leftContactList.append(i+1)  # Siesta numbering starts from 1
+                elif len(tmp)==AtomsPerLayer and len(self.deviceList)>0:
+                    self.rightContactList.append(i+1) # Siesta numbering starts from 1
+                else:
+                    self.deviceList.append(i+1) # Siesta numbering starts from 1
+        else: # AtomsPerLayer == 1
+            lsep = self.xyz[1][2]-self.xyz[0][2]
+            # First atom belongs per definition to the left contact:
+            self.leftContactList.append(1) # Siesta numbering starts from 1
+            for i in range(1,self.natoms-1):
+                distL = self.xyz[i][2]-self.xyz[i-1][2]
+                distR = self.xyz[i+1][2]-self.xyz[i][2]
+                if abs(distL-lsep) < tol and len(self.rightContactList)==0:
+                    self.leftContactList.append(i+1)
+                elif abs(distR-lsep) < tol:
+                    self.rightContactList.append(i+1)
+                else:
+                    self.deviceList.append(i+1)
+            # Last atom belongs per definition to the right contact:
+            self.rightContactList.append(self.natoms) # Siesta numbering starts from 1
         if len(self.leftContactList)>0 and len(self.rightContactList)>0:
             self.zLeftContact = self.xyz[self.leftContactList[-1]-1][2]
             self.ContactSeparation =  self.xyz[self.rightContactList[0]-1][2] \
@@ -369,31 +356,13 @@ class Geom:
             self.ContactSeparation = max([self.pbc[ii][2] for ii in range(3)])
         print 'MakeGeom.findContactsAndDevice: Electrode separation detected was L = %f' \
               %self.ContactSeparation
-        print '   ... Atoms (Left/Device/Right):  %i / %i / %i  =  %i' \
-              %(len(self.leftContactList),len(self.deviceList),len(self.rightContactList),
-                len(self.xyz))
+        counts = len(self.leftContactList), len(self.deviceList), \
+                 len(self.rightContactList), len(self.xyz)
+        if counts[0]+counts[1]+counts[2] != counts[3]:
+            kuk
+        print '   ... Atoms (Left/Device/Right):  %i / %i / %i  =  %i'%counts
         print '   ... DeviceFirst, DeviceLast = %i, %i  (Siesta numbering)'\
               %(self.deviceList[0],self.deviceList[-1])
-
-        
-    def stretch(self,newlength):
-        # TF: Outdated ???
-        "Stretch system to newlength"
-        rng=range(self.natoms)
-        # Remove contact atoms
-        for elim in self.contactList: rng.remove(elim)
-        for ii in rng:
-            self.xyz[ii][2]=(self.xyz[ii][2]-self.z0)*\
-                (newlength/self.zlength)+self.z0
-        if self.RCf>=0 and self.xyz[self.RCf][2]>self.xyz[self.LCf][2]:
-            for ii in range(self.RCf,self.RCl+1):
-                self.xyz[ii][2]=self.xyz[ii][2]+newlength-self.z0
-        NN, zmax=0, 0
-        for ii in range(3):
-            if self.pbc[ii][2]>zmax:
-                NN, zmax=ii, self.pbc[ii][2]
-        self.pbc[NN][2]=zmax+newlength-self.zlength
-
         
     def stretch2NewContactSeparation(self,NewContactSeparation,AtomsPerLayer,
                                      ListL=None,ListR=None):
@@ -406,6 +375,7 @@ class Geom:
         else: ListL = self.leftContactList
         if ListR: print '   ... ListR = [%i:%i] (Siesta numbering)'%(ListR[0],ListR[-1])
         else: ListR = self.rightContactList
+
         # Scale device coordinates
         for ii in self.deviceList:
             if (ii not in ListL) and (ii not in ListR):
