@@ -821,6 +821,9 @@ def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, type = 'TS'):
             print PBStemplate
             workingFolder, PBSfile = os.path.split(os.path.abspath(PBSout))
             SubmitPBS(workingFolder,PBSfile)
+    else:
+        print "ERROR: Could not find PBS template file", PBStemplate
+        kuk
 
 def WritePBS(PBStemplate,PBSout,PBSsubs):
     print 'SiestaIO.WritePBS: Reading',PBStemplate

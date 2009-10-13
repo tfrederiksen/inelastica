@@ -17,16 +17,23 @@ import numpy as N
 submitJob = True           # Automatically submit?
 
 # Substitution rules for generating PBS scripts
-TSPBSsubs = [['$NODES$',4],['$MEM$','4gb'],['$WALLTIME$','100:00:00']]
-PYPBSsubs = [['$NODES$',1],['$MEM$','1gb'],['$WALLTIME$',  '5:00:00']]
-OSPBSsubs = [['$NODES$',1],['$MEM$','1gb'],['$WALLTIME$',  '1:00:00']]
+TSPBSsubs = [['$NODES$','1:ppn=4'],['$MEM$','4gb'],['$WALLTIME$','100:00:00']]
+PYPBSsubs = [['$NODES$','1:ppn=1'],['$MEM$','1gb'],['$WALLTIME$',  '5:00:00']]
+OSPBSsubs = [['$NODES$','1:ppn=1'],['$MEM$','1gb'],['$WALLTIME$',  '1:00:00']]
 
-CG = True
-FC = False
-OS = False
-TS = False
-PH = False
-IN = False
+# Choose which type of runs. For the example:
+# 1: Run CG, wait for geometry to relax.
+# 2: Start FC, OS, TS
+# 3: Start PH when FC and OS are finnished
+# 4: Try Inelastica and Eigenchannels when TS has finnished
+
+T, F = True, False
+
+CG = T
+FC = F
+OS = F
+TS = F
+PH = F
 
 
 if CG:
@@ -68,10 +75,11 @@ if PH:
                outlabel=('Dev_%.2i-%.2i'%(DF,DL)),
                overwrite=False,submitJob=submitJob,PBSsubs=PYPBSsubs)
 
-if IN:
-    SetupInelastica(geom+'./Inelastica/',geom+'/Inelastica_Dev+1',
-                    geom+'/TSrun',geom+'/TemplateInelasticaInput.py',
-                    tail+'2_Dev+1.py',
-                    geom+'./PhononCalcDev+1/%sDev+1.nc'%tail,
-                    clustername='e4200',
-                    submitJob=submitJob,nodes='1:ppn=1')
+#if IN:
+#    # This does not work at the moment! Use the command line "Inelastica"
+#    # instead.
+#    SetupInelastica(geom+'./Inelastica/',geom+'/Inelastica_Dev+1',
+#                    geom+'/TSrun',geom+'/TemplateInelasticaInput.py',
+#                    tail+'2_Dev+1.py',
+#                    geom+'./PhononCalcDev+1/%sDev+1.nc'%tail,
+#                    submitJob=submitJob)
