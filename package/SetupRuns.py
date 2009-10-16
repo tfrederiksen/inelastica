@@ -84,9 +84,14 @@ def SetupCGrun(templateCGrun,newCGrun,NewContactSeparation,AtomsPerLayer,
     XVfiles = glob.glob(templateCGrun+'/*.XV*')
     if len(XVfiles)==1:
         geom = MG.Geom(XVfiles[0])
+    elif len(XVfiles)>1:
+        print 'More than one XV file was found in folder %s:'%templateCGrun
+        for i in range(len(XVfiles)):
+            print '   No. %i :'%i,XVfiles[i]
+        select = raw_input('   ... select file:')
+        geom = MG.Geom(XVfiles[int(select)])
     else:
-        print 'Not one and only one XV file was found in folder %s:'%templateCGrun
-        print XVfiles
+        print 'No XV file was found in folder %s:'%templateCGrun
         raw_input('   ... Continue reading geometry from RUN.fdf?')
         geom = MG.Geom(templateCGrun+'/RUN.fdf')
     # Rotate via indexshift?
@@ -161,9 +166,14 @@ def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.04*Bohr2Ang,
     XVfiles = glob.glob(CGrun+'/*.XV*')
     if len(XVfiles)==1:
         geom = MG.Geom(XVfiles[0])
+    elif len(XVfiles)>1:
+        print 'More than one XV file was found in folder %s:'%CGrun
+        for i in range(len(XVfiles)):
+            print '   No. %.2i :'%i,XVfiles[i]
+        select = raw_input('   ... select file:')
+        geom = MG.Geom(XVfiles[int(select)])
     else:
-        print 'Not one and only one XV file was found in folder %s:'%CGrun
-        print XVfiles
+        print 'No XV file was found in folder %s:'%CGrun
         raw_input('   ... Continue reading geometry from RUN.fdf?')
         geom = MG.Geom(CGrun+'/RUN.fdf')
     geom.writeFDF(newFCrun+'/STRUCT.fdf')
@@ -233,9 +243,14 @@ def SetupOSrun(CGrun,newOSrun,displacement=0.04*Bohr2Ang,
     XVfiles = glob.glob(CGrun+'/*.XV*')
     if len(XVfiles)==1:
         infile = XVfiles[0]
+    elif len(XVfiles)>1:
+        print 'More than one XV file was found in folder %s:'%CGrun
+        for i in range(len(XVfiles)):
+            print '   No. %.2i :'%i,XVfiles[i]
+        select = raw_input('   ... select file:')
+        infile = XVfiles[int(select)]
     else:
-        print 'Not one and only one XV file was found in folder %s:'%CGrun
-        print XVfiles
+        print 'No XV file was found in folder %s:'%CGrun
         raw_input('   ... Continue reading geometry from RUN.fdf?')
         infile = CGrun+'/RUN.fdf'
     # Multiply structure
@@ -342,9 +357,14 @@ def SetupTSrun(CGrun,templateTSrun,newTSrun,
     XVfiles = glob.glob(CGrun+'/*.XV*')
     if len(XVfiles)==1:
         geom = MG.Geom(XVfiles[0])
+    elif len(XVfiles)>1:
+        print 'More than one XV file was found in folder %s:'%CGrun
+        for i in range(len(XVfiles)):
+            print '   No. %.2i :'%i,XVfiles[i]
+        select = raw_input('   ... select file:')
+        geom = MG.Geom(XVfiles[int(select)])
     else:
-        print 'Not one and only one XV file was found in folder %s:'%CGrun
-        print XVfiles
+        print 'No XV file was found in folder %s:'%CGrun
         raw_input('   ... Continue reading geometry from RUN.fdf?')
         geom = MG.Geom(CGrun+'/RUN.fdf')
     # Rotate via indexshift?
