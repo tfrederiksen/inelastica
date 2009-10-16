@@ -81,7 +81,7 @@ def SetupCGrun(templateCGrun,newCGrun,NewContactSeparation,AtomsPerLayer,
     # Copy template files
     CopyInputFiles(templateCGrun,newCGrun,['.fdf','.vps','.psf'])
     # Read relaxed geometry
-    XVfiles = glob.glob(templateCGrun+'/*.XV')
+    XVfiles = glob.glob(templateCGrun+'/*.XV*')
     if len(XVfiles)==1:
         geom = MG.Geom(XVfiles[0])
     else:
@@ -158,7 +158,7 @@ def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.04*Bohr2Ang,
     # Copy template files
     CopyInputFiles(CGrun,newFCrun,['.fdf','.vps','.psf','.DM','.XV'])
     # Read relaxed geometry and overwrite STRUCT files
-    XVfiles = glob.glob(CGrun+'/*.XV')
+    XVfiles = glob.glob(CGrun+'/*.XV*')
     if len(XVfiles)==1:
         geom = MG.Geom(XVfiles[0])
     else:
@@ -230,7 +230,7 @@ def SetupOSrun(CGrun,newOSrun,displacement=0.04*Bohr2Ang,
     lines = f.readlines()
     f.close()
     # Read relaxed geometry
-    XVfiles = glob.glob(CGrun+'/*.XV')
+    XVfiles = glob.glob(CGrun+'/*.XV*')
     if len(XVfiles)==1:
         infile = XVfiles[0]
     else:
@@ -339,7 +339,7 @@ def SetupTSrun(CGrun,templateTSrun,newTSrun,
     # Copy template files
     CopyInputFiles(templateTSrun,newTSrun,['.fdf','.vps','.psf'])
     # Read relaxed geometry
-    XVfiles = glob.glob(CGrun+'/*.XV')
+    XVfiles = glob.glob(CGrun+'/*.XV*')
     if len(XVfiles)==1:
         geom = MG.Geom(XVfiles[0])
     else:
@@ -796,7 +796,7 @@ def CheckIfFinished(outfile):
         return False
 
 def FindElectrodeSep(dir,AtomsPerLayer):
-    for XVfile in glob.glob(dir+'/*.XV'):
+    for XVfile in glob.glob(dir+'/*.XV*'):
         print XVfile
         g = MG.Geom(XVfile)
         g.findContactsAndDevice(AtomsPerLayer)
