@@ -829,8 +829,8 @@ def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, type = 'TS'):
     if PBStemplate==None:
         types = {'TS':'RUN.TS.pbs','OS':'RUN.OS.pbs','PY':'RUN.py.pbs'}
         PBStemplate = types[type]
-        if os.path.exists('~/.Inelastica/'+PBStemplate):
-            PBStemplate = os.path.abspath('~/.Inelastica/'+PBStemplate)
+        if os.path.exists( os.path.expanduser('~/.Inelastica/'+PBStemplate)):
+            PBStemplate = os.path.expanduser('~/.Inelastica/'+PBStemplate)
         else:
             InelasticaDir, crap = os.path.split(__file__)
             PBStemplate = os.path.abspath(InelasticaDir+'/PBS/'+PBStemplate)
@@ -852,12 +852,12 @@ def WritePBS(PBStemplate,PBSout,PBSsubs):
     # Make default job name
     fullPath, crap = os.path.split(os.path.abspath(PBSout))
     last2dir = string.split(fullPath,'/')[-2:]
-    PBSsubs += [['$DEFJOBNAME$',last2dir[0]+'-'+last2dir[1]]] 
+    if not PBSsubs: PBSsubs = []
+    newPBSsub = PBSsubs+[['$DEFJOBNAME$',last2dir[0]+'-'+last2dir[1]]] 
     infile = open(PBStemplate)
     outfile = open(PBSout,'w')
-    if not PBSsubs: PBSsubs = []
     for line in infile:
-        for sub in PBSsubs:
+        for sub in newPBSsub:
             line = line.replace(str(sub[0]),str(sub[1]))
         outfile.write(line)
     infile.close()
