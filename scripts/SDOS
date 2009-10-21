@@ -10,99 +10,158 @@ NOTE! The outfile contains the DOS divided into s,p,d,f shells.
 import sys, profile, glob
 #sys.path+=['../..']
 
-import Inelastica.pyTBT
+import Inelastica.pyTBT as pyTBT
 import numpy as N
 import Inelastica.SiestaIO as SIO
+from optparse import OptionParser
 
-def main():
-    # Read arguments minE maxE dE Nkx Nky eta with default values 
-    args = sys.argv[1:]
+#####################################################
+# Mathematical help functions
+def mm(* args):
+    # Matrix multiplication with arbitrary number of arguments
+    tmp=N.dot(args[0],args[1])
+    for ii in range(len(args)-2):
+        tmp=N.dot(tmp,args[ii+2])
+    return tmp
 
-    try:
-        minE=float(args[0])
-    except:
-        minE=-1.0
+def dag(x):
+    return N.transpose(N.conjugate(x))
 
-    try:
-        maxE=float(args[1])
-    except:
-        maxE=1.0
 
-    try:
-        dE=float(args[2])
-    except:
-        dE=0.1
 
-    try:
-        Nkx=int(args[3])
-    except:
-        Nkx=1
+#####################################################
+# Read options
+def readOptions():
+    usage = "usage: %prog [options]"
+    description = """
+Calculate SDOS of whole or part of system divided into s-, p-, d-, f- shells.
+The DOS is summed over the "device" atoms for each angular momenta L.
 
-    try:
-        Nky=int(args[4])
-    except:
-        Nky=1
+For help use --help!
+"""
+    parser = OptionParser(usage,description=description)
+    # k-points
+    parser.add_option("-x", "--Nkx", dest="Nkx",
+                      help="Number of k-points in a1 direction [%default]", 
+                      type='int', default=1)
+    parser.add_option("-y", "--Nky", dest="Nky",
+                      help="Number of k-points in a2 direction [%default]", 
+                      type='int', default=1)
 
-    try:
-        eta=float(args[5])
-    except:
-        eta=1e-5
+    # Spin channel
+    parser.add_option("-s", "--iSpin", dest="iSpin",
+                      help="Spin type (1-up, 2-down) [%default]", 
+                      type='int', default=1)
 
-    print "Surface DOS calculation for left electrode"
-    print "Usage SDOS: min energy, max energy, dE, Nkx, Nky"
-    print "DOS decomposed into different L-orbitals"
-    print "Warning: 4 p and 5 p (or 5s polarized) are all summed into p-shell"
+    # Device region
+    parser.add_option("-f", "--devSt", dest="devSt",
+                      help="Device start [first device atom]", 
+                      type='int', default=0)
+    parser.add_option("-l", "--devEnd", dest="devEnd",
+                      help="Device end [last device atom]", 
+                      type='int', default=0)
+
+    # Left / Right?
+    parser.add_option("-r", "--Right", dest='LR', default=False,
+                      action='store_true',
+                      help="Left (false) or Right (true) SDOS [%default]")
+
+    (general, args) = parser.parse_args()
+    print description
+    return general, parser
+
+#####################################################
+# Main program
+def main():    
+    # Read arguments
+    general, parser = readOptions()
+
+    # Setup pyTBT part
+    elecL, elecR, myGF, pyTBTdevSt, pyTBTdevEnd, general.Elist, \
+           general.eta, general.outFile = pyTBT.main(pyTBT=False, fn='RUN.fdf')
+
+    # Make default values for device region shifted
+    if general.devSt == 0:
+        general.devSt = pyTBTdevSt
+    if general.devEnd == 0:
+        general.devEnd = pyTBTdevEnd
     
+    print "##############################################################"
+    print "# Options:"
+    if general.LR:
+        print "Calculation of DOS from RIGHT electrode"
+    else:
+        print "Calculation of DOS from LEFT electrode"
+    print "Num k-points   : Nka1 %i : Nka2 %i"%(general.Nkx,general.Nky)
+    print "Broadening eta : %f"%(general.eta)
+    print "Device region  : [%i,%i]"%(general.devSt,
+                                    general.devEnd)
+    print "Spin channel   : %i"%(general.iSpin)
+    print "##############################################################"
     print
-    print "Energy: %f:%f:%f"%(minE,dE,maxE)
-    print "K-points: Nkx %i : Nky %i"%(Nkx,Nky)
-    print "Broadening eta: %f"%(eta)
-    print
-
-    fn=glob.glob('*.TSHS.nc')
-    if len(fn)!=1:
-        print "Error: too many or too few TSHS files."
-        print ".TSHS.nc files :",fn
-        kuk
-
-    outfn=fn[0][0:-7]+'SDOS'
-    outfile=open(outfn,'write')
-
-    sHS=pyTBT.surfaceGF(fn[0],1,1)
-
-    XVfile=glob.glob('*.XV')
-    if len(fn)!=1:
-        print "Error: too many or too few XV files."
-        print "XV files :",XVfile
-        kuk
-
+    
     # Read basis
-    basis=SIO.BuildBasis(XVfile[0],1,sHS.HS.nua)
+    basis=SIO.BuildBasis(general.outFile+'.XV',1,myGF.HS.nua)
+    print
 
-    Elist = N.array(range(int((maxE-minE)/dE+1)),N.float)*dE+minE
-    DOS=N.zeros((len(Elist),max(basis.L)+1),N.float)
+    """
+    nou = number of orbitals in unitcell.
+    nouL/R = number of orbitals where self-energies live
+    Full space   : myGF.nou0, myGF.nouL0, nouR0  [orbital number]
+    pyTBT folded : myGF.nou, myGF.nouL, nouR     [orbital number]
+                 : pyTBTdevSt, pyTBTdevEnd       [atom number]
+    SDOS devide  : general.devSt, general.devEnd [atom number]
+    
+    Connection from atom number to orbital number in full device space is
+    given by myGF.HS.lasto (which uses Siesta numbering [1,nou])
 
+    basis is defined on the full space.
+    """
 
-    print "Otput written to :",outfn 
+    # First, last orbital in full space and pyTBT folded space.
+    devOrbSt = myGF.HS.lasto[general.devSt-1]
+    pyTBTdevOrbSt = devOrbSt-myGF.HS.lasto[pyTBTdevSt-1]
+    devOrbEnd = myGF.HS.lasto[general.devEnd]-1
+    pyTBTdevOrbEnd = devOrbEnd-myGF.HS.lasto[pyTBTdevSt-1]
+    
+    DOS=N.zeros((len(general.Elist),max(basis.L)+1),N.float)
+
+    outfn = general.outFile+'.SDOS'
+    outfile = open(outfn,'w')
+    print "Output written to :",outfn 
     print 
     print "Energy (without eta) : Total DOS"
     outfile.write('# Total SDOS\n')
 
     kpt=N.zeros((2),N.float)
-    for iee, ee in enumerate(Elist):
-        # Calculate surface Greens function average over k 
-        g0=N.zeros((sHS.HS.nuo,sHS.HS.nuo),N.complex)
-        for ikx in range(Nkx):
-            for iky in range(Nky):
-                kpt[0], kpt[1] = float(ikx)/Nkx, float(iky)/Nky 
-                g0+=sHS.getg0(ee+eta*1.0j,kpt,left=True)
+    for iee, ee in enumerate(general.Elist):
+        # Calculate spectral function A1/A2 average over k 
+        Aav = N.zeros((myGF.nuo,myGF.nuo),N.complex)
+        for ikx in range(general.Nkx):
+            for iky in range(general.Nky):
+                kpt[0], kpt[1] = float(ikx)/general.Nkx, float(iky)/general.Nky
+                myGF.calcGF(ee+general.eta*1.0j, kpoint=kpt,
+                            ispin=general.iSpin-1)
+                GamL, GamR, Gr = myGF.GamL, myGF.GamR, myGF.Gr
+                nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
+
+                if general.LR:
+                    # Right : A2
+                    A = mm(Gr[:,nuo-nuoR:nuo],GamR,dag(Gr)[nuo-nuoR:nuo,:])
+                else:
+                    # Left : A1
+                    A = mm(Gr[:,0:nuoL],GamL,dag(Gr)[0:nuoL,:])
+                
+                Aav += A
+
         # DOS
-        g0= -g0.imag/(Nkx*Nky*2*N.pi)
+        Aav = Aav.real/(general.Nkx*general.Nky*2*N.pi)
         # Decompose into L-shells
-        for ii in range(sHS.HS.nuo):
-            L = basis.L[ii]
-            DOS[iee,L]+=g0[ii,ii]
-        
+        for ii in range(pyTBTdevOrbSt,pyTBTdevOrbEnd+1):
+            L = basis.L[ii+myGF.HS.lasto[pyTBTdevSt-1]]
+            DOS[iee,L] += Aav[ii,ii]
+
+        print DOS[iee,:]
         print ee," ",N.sum(DOS[iee,:])
         outfile.write('%f %f\n'%(ee,N.sum(DOS[iee,:])))
 
@@ -110,7 +169,7 @@ def main():
     for iL in range(max(basis.L)+1):
         if N.sum(DOS[:,iL])>1e-5:
             outfile.write('\n# SDOS L=%i\n'%iL)
-            for iee,ee in enumerate(Elist):
+            for iee,ee in enumerate(general.Elist):
                 outfile.write('%f %f\n'%(ee,DOS[iee,iL]))
 
     outfile.write('\n')
@@ -120,8 +179,7 @@ def main():
             
 
     
-
-        
-                
-
-profile.run('main()')
+#####################################################
+# Start it
+main()
+#profile.run('main()')

@@ -419,7 +419,7 @@ class surfaceGF:
 #############################################################################            
             
 class GF:
-    def __init__(self,TSHSfile, elecL, elecR, Bulk=False, DeviceAtoms=[0,0]):
+    def __init__(self, TSHSfile, elecL, elecR, Bulk=False, DeviceAtoms=[0,0]):
         """
         Calculate Green's functions etc for TSHSfile connected to left/right 
         electrode (class surfaceGF). 
