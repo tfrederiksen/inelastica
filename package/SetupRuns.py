@@ -406,7 +406,7 @@ def SetupTSrun(CGrun,templateTSrun,newTSrun,
     if len(AddRightList)>0:
         dz=AddRightList[AtomsPerLayer,2]-AddRightList[0,2]
         tmp=N.array(geom.xyz)
-        maxz=max(tmp[:,2])
+        maxz=tmp[0,2]-dz+geom.pbc[2][2]
         minz=min(AddRightList[:,2])
         for ii in range(len(AddRightList)):
             geom.addAtom(list(AddRightList[ii,:]+
