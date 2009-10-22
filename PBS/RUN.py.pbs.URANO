@@ -4,7 +4,8 @@
 #PBS -q parallel
 #PBS -r n
 #PBS -o .
-#PBS -l walltime=$WALLTIME$
+#PBS -l walltime=$TIME$
+#PBS -l cput=$TIME$
 #PBS -l mem=$MEM$
 #PBS -N PY
 #PBS -l nodes=1:ppn=$NODES$:bigmem

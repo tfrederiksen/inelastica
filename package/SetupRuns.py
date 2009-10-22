@@ -169,7 +169,7 @@ def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.04*Bohr2Ang,
     elif len(XVfiles)>1:
         print 'More than one XV file was found in folder %s:'%CGrun
         for i in range(len(XVfiles)):
-            print '   No. %.2i :'%i,XVfiles[i]
+            print '   No. %i :'%i,XVfiles[i]
         select = raw_input('   ... select file:')
         geom = MG.Geom(XVfiles[int(select)])
     else:
@@ -246,7 +246,7 @@ def SetupOSrun(CGrun,newOSrun,displacement=0.04*Bohr2Ang,
     elif len(XVfiles)>1:
         print 'More than one XV file was found in folder %s:'%CGrun
         for i in range(len(XVfiles)):
-            print '   No. %.2i :'%i,XVfiles[i]
+            print '   No. %i :'%i,XVfiles[i]
         select = raw_input('   ... select file:')
         infile = XVfiles[int(select)]
     else:
@@ -360,7 +360,7 @@ def SetupTSrun(CGrun,templateTSrun,newTSrun,
     elif len(XVfiles)>1:
         print 'More than one XV file was found in folder %s:'%CGrun
         for i in range(len(XVfiles)):
-            print '   No. %.2i :'%i,XVfiles[i]
+            print '   No. %i :'%i,XVfiles[i]
         select = raw_input('   ... select file:')
         geom = MG.Geom(XVfiles[int(select)])
     else:

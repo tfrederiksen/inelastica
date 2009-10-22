@@ -11,9 +11,9 @@
 
  Contains:
   class HS moved to SiestaIO.py
-  ( class HS : Reads .TSHS.nc file and folds spcific k-point into 
+  ( class HS : Reads .TSHS file and folds spcific k-point into 
               normal matrix from sparse format. )
-   class surfaceGF : Reads electrode TSHS.nc and returns surface
+   class surfaceGF : Reads electrode TSHS and returns surface
                      Green's function of supercell surface 
    class GF : Calculates Green's function etc 
 

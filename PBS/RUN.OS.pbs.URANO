@@ -4,9 +4,10 @@
 #PBS -q parallel
 #PBS -r n
 #PBS -o .
-#PBS -l walltime=$WALLTIME$
+#PBS -l walltime=$TIME$
+#PBS -l cput=$TIME$
 #PBS -l mem=$MEM$
-#PBS -N TS
+#PBS -N OS
 #PBS -l nodes=1:ppn=$NODES$:bigmem
 #PBS -l ncpus=$NODES$
 
@@ -35,7 +36,7 @@ echo ssh $SERVER \'mv $TMPDIR/\* $PBS_O_WORKDIR \&\& rmdir $TMPDIR\' > lscratch.
 source /software/scripts/intel-10.0
 setenv LD_LIBRARY_PATH /software/intel-9.1/cmkl-9.1/lib/64:/software/openmpi-1.2.6-intel/lib
 setenv MPIRUN /software/intel-10.0/mpi-3.0/bin/mpirun
-setenv SIESTA /scratch/thf/bin/transiesta-barca-v090831
+setenv SIESTA /scratch/thf/bin/transiesta-3.0b-v091014
 limit stacksize unlimited # Might be important for ifort (only works in tcsh)
 
 cd $TMPDIR
