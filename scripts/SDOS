@@ -12,6 +12,7 @@ import sys, profile, glob
 
 import Inelastica.pyTBT as pyTBT
 import numpy as N
+import numpy.linalg as LA
 import Inelastica.SiestaIO as SIO
 from optparse import OptionParser
 
@@ -126,7 +127,11 @@ def main():
     
     DOS=N.zeros((len(general.Elist),max(basis.L)+1),N.float)
 
-    outfn = general.outFile+'.SDOS'
+    if general.iSpin == 1:
+        outfn = general.outFile+'.SDOS'
+    else:
+        outfn = general.outFile+'.down.SDOS'
+        
     outfile = open(outfn,'w')
     print "Output written to :",outfn 
     print 
@@ -152,7 +157,7 @@ def main():
                     # Left : A1
                     A = mm(Gr[:,0:nuoL],GamL,dag(Gr)[0:nuoL,:])
                 
-                Aav += A
+                Aav += mm(myGF.S,A)
 
         # DOS
         Aav = Aav.real/(general.Nkx*general.Nky*2*N.pi)

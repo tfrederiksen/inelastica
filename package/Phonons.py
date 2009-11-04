@@ -233,7 +233,7 @@ def Analyze(dirname,wildcard,
     if CalcCoupl and AuxNCfile:
         # Heph couplings utilizing netcdf-file
         if not os.path.isfile(AuxNCfile):
-            GenerateAuxNETCDF(tree,FCfirst,FClast,atomnumber,onlySdir,PerBoundCorrFirst,PerBoundCorrLast,
+            GenerateAuxNETCDF(tree,FCfirst,FClast,atomnumberNotSubstituted,onlySdir,PerBoundCorrFirst,PerBoundCorrLast,
                               AuxNCfile,displacement,CorrPotentialShift=CorrPotentialShift)
         else:
             print 'Phonons.Analyze: Reading from AuxNCfile =', AuxNCfile
