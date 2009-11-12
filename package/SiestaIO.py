@@ -807,7 +807,7 @@ def ReadBlock(file,lines,type='float'):
             pass
     return data
 
-def ReadBandsFile(filename,oldformat=False):
+def ReadBandsFile(filename,origformat=True):
     print 'SiestaIO.ReadBandsFile: Reading',filename
     # Reads SIESTA *.bands files
     f = SIO_open(filename,'r')
@@ -819,11 +819,11 @@ def ReadBandsFile(filename,oldformat=False):
     # lines 4:
     eval,spins,kpts = ReadBlock(f,1,type='int')
     
-    if oldformat:
-        linesPerKpt = (spins*eval)/10 # Old SIESTA
+    if origformat:
+        linesPerKpt = (spins*eval)/10 # SIESTA
         if (spins*eval)%10 != 0: linesPerKpt += 1
     else:
-        linesPerKpt = 1 # Siesta-2.5
+        linesPerKpt = 1 # Siesta-2.5?
     # Read k-points
     EvsK = []
     for i in range(kpts):
