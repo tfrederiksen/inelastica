@@ -1462,7 +1462,7 @@ class HS:
         print "Found %i atoms, (%i, %i) orbitals in super-, unit-cell"%(self.nua, self.no, self.nuo)
 
         self.makeDerivedQuant()
-        if not self.gamma:
+        if not self.gamma and not self.onlyS:
             self.removeUnitCellXij(UseF90helpers)       # Remove phase change in unitcell
         self.kpoint = N.array([1e10,1e10,1e10],N.float) # Save time by not repeating
 

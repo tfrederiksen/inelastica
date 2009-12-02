@@ -132,7 +132,7 @@ def main():
     else:
         outfn = general.outFile+'.down.SDOS'
         
-    outfile = open(outfn,'w')
+    outfile = open(outfn,'w',0)
     print "Output written to :",outfn 
     print 
     print "Energy (without eta) : Total DOS"
