@@ -208,8 +208,8 @@ SpinPolarization                : %i
                         T = myGF.calcT()
                         Tavg = Tavg + T/Nk1/Nk2
                         Tkpt[ie,ik1,ik2] = T
-                print ee," ",Tavg
-                fo.write('%f %f \n'%(ee,Tavg))
+                print ee, Tavg
+                fo.write('%.12f %.6e \n'%(ee,Tavg))
             fo.close()
         
             # Write k-point transmission
@@ -221,7 +221,7 @@ SpinPolarization                : %i
                 for ik2 in range(Nk2):
                     fo.write('\n# k = %f, %f \n'%(ik1/float(Nk1),ik2/float(Nk2)))
                     for ie, ee in enumerate(Elist):
-                        fo.write('%f %f \n'%(ee,Tkpt[ie,ik1,ik2]))
+                        fo.write('%.12f %.6e \n'%(ee,Tkpt[ie,ik1,ik2]))
             fo.close()
 
 

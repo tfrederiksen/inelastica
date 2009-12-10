@@ -262,8 +262,9 @@ class Geom:
         f = first-1 # Python numbering
 
         # 1st - Cartesian coordinates
-        self.zmati[f] = [0,0,0]
-        self.zmatf[f] = self.xyz[f]
+        if last-first>=0:
+            self.zmati[f] = [0,0,0]
+            self.zmatf[f] = self.xyz[f]
 
         # 2nd - Spherical coordinates 
         origo = N.array([0.,0.,0.])
@@ -272,18 +273,19 @@ class Geom:
         theta = GetAngle([0.,0.,1.],origo,v01)
         v01[2] = 0.0 # project into xy-plane
         phi = GetAngle([1.,0.,0.],origo,v01)
-        self.zmati[f+1] = [1,0,0]
-        self.zmatf[f+1] = N.array([d,theta,phi])
+        if last-first>=1:
+            self.zmati[f+1] = [1,0,0]
+            self.zmatf[f+1] = N.array([d,theta,phi])
 
         # 3rd - Dihedral angle with pseudoatom coordinate r0
         r0 = N.array(self.xyz[f])+N.array([0.,0.,10.])
-        if last-first>2:
+        if last-first>=2:
             self.zmati[f+2] = [2,1,0]
             self.zmatf[f+2] = N.array([GetDist(self.xyz[f+1],self.xyz[f+2]),\
                                       GetAngle(self.xyz[f],self.xyz[f+1],self.xyz[f+2]),\
                                       GetDihedral(r0,self.xyz[f],self.xyz[f+1],self.xyz[f+2])])
         # Remaining atoms
-        if last-first>3:
+        if last-first>=3:
             for i in range(f+3,last):
                 self.zmati[i] = [i-f,i-f-1,i-f-2]
                 self.zmatf[i] = N.array([GetDist(self.xyz[i-1],self.xyz[i]),\
