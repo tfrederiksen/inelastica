@@ -486,15 +486,19 @@ def ReadFDFLines(infile,head='', printAlot=True):
     while tmp != '':
         if len(tmp)>3:
             tmp = string.split(tmp)
-            if tmp[0] == '%include':
-                subfile = head+'/'+tmp[1]
-                tmp2 = ReadFDFLines(subfile,head=head, printAlot=printAlot)
-                lines += tmp2
-            else:
-                lines.append(tmp)
-                tmp = file.readline()
-        else:
-            tmp = file.readline()
+            for ii,s in enumerate(tmp):  # Remove comments
+                if s[0]=="#":
+                    break
+            if s[0]=='#':
+                tmp = tmp[0:ii]
+            if len(tmp)>0:
+                if tmp[0] == '%include':
+                    subfile = head+'/'+tmp[1]
+                    tmp2 = ReadFDFLines(subfile,head=head, printAlot=printAlot)
+                    lines += tmp2
+                else:
+                    lines.append(tmp)
+        tmp = file.readline()
     return lines
 
 
