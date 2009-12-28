@@ -717,15 +717,16 @@ For help use --help!
         except:
             parser.error("ERROR: --kPoint='[0.0,0.0]' not --kPoint=%s"%general.kPoint)
 
+    if not os.path.exists(general.fdfFile):
+        parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
+
     try:
         general.from_atom = SIO.GetFDFlineWithDefault(
             general.fdfFile,'TS.TBT.PDOSFrom', int, None, 'Eigenchannels')
+        general.to_atom = SIO.GetFDFlineWithDefault(
+            general.fdfFile,'TS.TBT.PDOSTo', int, None, 'Eigenchannels')
     except:
-        parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
-        
-    general.to_atom = SIO.GetFDFlineWithDefault(
-        general.fdfFile,'TS.TBT.PDOSTo', int, None, 'Eigenchannels')
-
+        parser.error("Specify device region with TS.TBT.PDOS[To/From] keyword.")
     if calledFromInelastica:
         if general.PhononNetCDF==None:
             parser.error("ERROR: Inelastica needs a PhononNetCDF file!")
@@ -909,5 +910,4 @@ def sphericalHarmonic(ii):
 
 if __name__ == '__main__':
     main()
-    #profile.run('main()')
 

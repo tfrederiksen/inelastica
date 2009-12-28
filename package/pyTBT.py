@@ -30,7 +30,7 @@
 import SiestaIO as SIO
 import numpy as N
 import numpy.linalg as LA
-import profile, sys, string
+import sys, string
 from optparse import OptionParser, OptionGroup
 
 ################### Help functions ############################
@@ -623,4 +623,3 @@ class GF:
 
 if __name__ == '__main__':
     main()
-    #profile.run('main()')

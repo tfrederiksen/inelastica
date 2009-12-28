@@ -11,7 +11,7 @@ import EigenChannels as EC
 import numpy as N
 import Scientific.IO.NetCDF as NC
 import numpy.fft as FFT
-import profile,  time
+import time
 
 class parameter: pass
 
@@ -500,7 +500,6 @@ def Hilbert(f,ker=None):
 
 if __name__ == '__main__':
     main()
-    #profile.run('main()')
 
 
 
