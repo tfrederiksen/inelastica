@@ -578,6 +578,35 @@ def writenetcdf(Y):
 
     file.close()
     
+################# Write cube file ######################
+def writecube(fn,YY,nx,ny,nz,origo,dstep):
+    """
+    Write wavefunction to cube file.
+    fn : output filename (will add .Re.cube etc)
+    """
+    global geom
+
+    xyz=N.array(geom.xyz)
+    anr=geom.anr
+
+    foR=file(fn,'w')
+    foR.write('Eigenechannel wavefunction\n%s\n'%fn)
+    foR.write('%i %f %f %f\n'% (len(xyz),origo[0]/SIO.Bohr2Ang,origo[1]/SIO.Bohr2Ang,origo[2]/SIO.Bohr2Ang))
+    foR.write('%i %f %f %f\n'% (nx,dstep/SIO.Bohr2Ang,0.0,0.0))
+    foR.write('%i %f %f %f\n'% (ny,0.0,dstep/SIO.Bohr2Ang,0.0))
+    foR.write('%i %f %f %f\n'% (nz,0.0,0.0,dstep/SIO.Bohr2Ang))
+    for ii in range(len(xyz)):
+        foR.write('%i %f '% (anr[ii],0.0))
+        tmp=xyz[ii,:]/SIO.Bohr2Ang
+        foR.write('%f %f %f\n'% (tmp[0],tmp[1],tmp[2]))
+
+    for ix in range(nx):
+        for iy in range(ny):
+            for iz in range(nz):
+                foR.write('%1.3e\n' % YY[ix,iy,iz].real)
+
+    foR.close()
+
 ################# Write cube file in macu format ######################
 def writemacubin(fn,YY,nx,ny,nz,origo,dstep):
     """
@@ -632,11 +661,18 @@ def writemacu(Y,writeImag):
 
     YY, dstep, origo, nx, ny, nz = calcWF(Y)
     
-    writemacubin(fn+'.Re.macu',YY.real,nx,ny,nz,
+    if general.cube=='macu':
+        writemacubin(fn+'.Re.macu',YY.real,nx,ny,nz,
                  origo,dstep)
-    if writeImag:
-        writemacubin(fn+'.Im.macu',YY.imag,nx,ny,nz,
-                     origo,dstep)
+        if writeImag:
+            writemacubin(fn+'.Im.macu',YY.imag,nx,ny,nz,
+                         origo,dstep)
+    if general.cube=='cube':
+        writecube(fn+'.Re.cube',YY.real,nx,ny,nz,
+                 origo,dstep)
+        if writeImag:
+            writecube(fn+'.Im.cube',YY.imag,nx,ny,nz,
+                         origo,dstep)
 
 ###########################################################
 def setupParameters(calledFromInelastica=False):
@@ -669,6 +705,8 @@ For help use --help!
                   help="Calculate eigenchannels from both sides [No]")
     EC.add_option("-r", "--Res", dest='res', default=0.4,type='float',
                   help="Resolution [%default Ang]")
+    EC.add_option("-g", "--cube", dest='cube', default='macu',type='string',
+                  help="Real space file format 'macu' or 'cube'")
     EC.add_option("-N", "--NumPhCurr", dest='NumPhCurr', default=10,type='int',
                   help="Max number of changes in bond currents from inelastic scattering  [%default]")
     parser.add_option_group(EC)
