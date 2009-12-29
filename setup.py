@@ -70,7 +70,7 @@ F90ext = Next.Extension('Inelastica.F90helpers',\
 
 # Main setup of python modules
 setup(name='Inelastica',
-      version='1.0',
+      version='1.1',
       description='Python tools for SIESTA/TranSIESTA', 
       long_description="""
 Provides:
