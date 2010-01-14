@@ -2,6 +2,7 @@
 Routines to read, write and manipulate geometries.
 """
 import SiestaIO as SIO
+import VaspIO as VIO
 import numpy as N
 import string, copy, math, sys
 import Scientific.IO.NetCDF as NC
@@ -612,7 +613,7 @@ class Geom:
         members = []
         for i in range(len(anrnum)):
             if anrnum[i]!=0: members += [anrnum[i]]
-        SIO.WritePOSCAR(fn,geom.pbc,members,xyz)
+        VIO.WritePOSCAR(fn,geom.pbc,members,xyz)
           
 
 #--------------------------------------------------------------------------------

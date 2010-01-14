@@ -86,7 +86,7 @@ Provides:
       license='GPL. Please cite: Frederiksen et al., PRB 75, 205413 (2007)', 
       package_dir={'Inelastica': 'package'},
       scripts 	= ['scripts/Inelastica', 'scripts/EigenChannels', \
-        'scripts/pyTBT', 'scripts/geom2geom', 'scripts/SDOS'], 
+        'scripts/pyTBT', 'scripts/geom2geom', 'scripts/geom2zmat','scripts/SDOS'], 
       packages=['Inelastica'],
       ext_modules=[F90ext],
       data_files=[('Inelastica/PBS', ['PBS/RUN.OS.pbs','PBS/RUN.py.pbs', \
