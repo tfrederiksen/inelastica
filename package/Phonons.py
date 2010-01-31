@@ -201,6 +201,7 @@ def Analyze(dirname,wildcard,
     SiestaIO.WriteXYZFile(phononDirectory+'/%s.xyz'%outlabel,atomnumber,xyz)
     WriteFreqFile(phononDirectory+'/%s.freq'%outlabel,hw)
     WriteVibDOSFile(phononDirectory+'/%s.fdos'%outlabel,hw)
+    WriteAXSFFiles(phononDirectory+'/%s.axsf'%outlabel,xyz,atomnumber,hw,U,FCfirst, FClast)
     
     ### Write data to NC-file
     print '\nPhonons.Analyze: Writing results to netCDF-file'
@@ -904,6 +905,25 @@ def WriteVibDOSFile(filename,hw,gam=0.001,type='Gaussian'):
     for i in range(len(erange)):
         f.write('%.5e   %.5e\n'%(1000*erange[i],spectrum[i]))
     f.close()                                                                
+
+def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
+    f = open(filename,'w')
+    f.write('ANIMSTEPS %i\n'%len(hw))    
+    for i in range(len(hw)):
+        f.write('ATOMS %i\n'%(i+1))
+        for j in range(len(xyz)):
+            ln = ' %i'%anr[j]
+            for k in range(3):
+                ln += ' %.6f'%xyz[j][k]
+            if j < FCfirst-1 or j > FClast-1:
+                ln += ' %.6f %.6f %.6f'%(0,0,0)
+            else:
+                for k in range(3):
+                    ln += ' %.6f'%U[i][3*(j+1-FCfirst)+k]
+            ln += '\n'
+            f.write(ln)
+    f.close()
+
 
 def GenerateAuxNETCDF(tree,FCfirst,FClast,atomnumber,onlySdir,PBCFirst,PBCLast,AuxNCfile,
                       displacement,CorrPotentialShift=True):
