@@ -1,0 +1,123 @@
+#! /usr/bin/env python
+
+import os, sys, time, os.path
+from stat import *
+
+# These types of files will be removed if the -fr flag is given
+rmfileshead = [
+    "KB.",
+    "ORB.",
+    "VNA.",
+    "CHLOCAL.",
+    "RED_VLOCAL.",
+    "CHCORE.",
+    "WALLTIME",
+    "INPUT_TMP",
+    "FDF_STDIN",
+    "FORCE_STRESS",
+    "SPLIT_SCAN",
+    "BASIS_ENTHALPY",
+    "BASIS_HARRIS_ENTHALPY",
+    "OCCS",
+    "NON_TRIMMED_KP_LIST",
+    "CLOCK",
+    "fort."]
+rmfilestail=[
+    ".ion",
+    ".ion.xml",
+    ".alloc",
+    ".POT.CONF",
+    ".GF",
+    ".IEIG",
+    ".confpot",
+    ".psdump",
+    "~",
+    ".pyc"]
+
+# Compressed files end in this
+zipfiles=[".bz",".bz2",".zip",".gz",".tgz"]
+
+def unzippedname(fn):
+    zipped=False
+    for ii in zipfiles:
+        if fn[-len(ii):]==ii:
+            zipped=True
+            fn=fn[:-len(ii)]
+    return fn, zipped
+
+def rmfileQ(fn):
+    head, tail = os.path.split(fn)
+    rm=False
+    for ii in rmfileshead:
+        if tail[:len(ii)]==ii:
+            rm=True
+    for ii in rmfilestail:
+        if tail[-len(ii):]==ii:
+            rm=True
+
+    return rm
+        
+def walktree(top, atime, rmTheFiles):
+    '''recursively descend the directory tree rooted at top,
+       calling the callback function for each regular file'''
+    bigfile=[]
+
+    for f in os.listdir(top):
+        pathname = os.path.join(top, f)
+        lstat = os.lstat(pathname)
+        mode = lstat[ST_MODE]
+        if S_ISDIR(mode):
+            # It's a directory, recurse into it
+            bigfile+=walktree(pathname, atime, rmTheFiles)
+        elif S_ISREG(mode):
+            if lstat[ST_MTIME]<atime:
+                fn, zipped = unzippedname(pathname)
+                rm = rmfileQ(fn)
+                if rm and rmTheFiles:
+                    print 'Removing %s'%pathname
+                    os.remove(pathname)
+                else:
+                    if not zipped:
+                        print 'Gzipping %s'%pathname
+                        tmp=os.popen("gzip -9 '%s' "%pathname)
+                        list=tmp.readlines()
+                        tmp.close()
+            if lstat[ST_SIZE]>50*1e6:
+                bigfile.append([pathname,lstat[ST_SIZE]])
+    return bigfile
+                
+def visitfile(file):
+    print 'visiting', file
+
+if __name__ == '__main__':
+    days = 30 # default value
+    for i in range(len(sys.argv)):
+        if '-d' in sys.argv[i]:
+            days = int(sys.argv[i+1])
+            sys.argv[i+1] = 'dummy01234'
+    if '-d' in sys.argv:
+        sys.argv.remove('dummy01234')
+        sys.argv.remove('-d')
+
+    now=time.time()-days*24*60*60
+
+    if len(sys.argv)<2:
+        print "\nUsage: python siesta_cleanup.py <path> [-d <days> (30 is default)]\n"
+        print "   Goes through directories and gzips files more than <days> days old"
+        print "   and removes files older than <days> that begin with:"
+        print rmfileshead
+        print "   and end with:"
+        print rmfilestail
+        print "   (NB. it will also remove zipped, gziped etc files with those names)"
+    else:
+        for thispath in sys.argv[1:]:
+	    print "###################################################################"
+            print "Running siesta_cleanup.py on %s"%thispath
+            print "... Deleting files older than %i days that begin with"%days
+            print rmfileshead
+            print "and end with:"
+            print rmfilestail
+            print "###################################################################"
+	    bigfiles = walktree(thispath, now, rmTheFiles=True)
+            print "Big files (larger than 50 MB) found:" 
+            print bigfiles
