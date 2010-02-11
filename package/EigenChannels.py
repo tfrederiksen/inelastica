@@ -255,7 +255,7 @@ def calcIETS(T,G,Gd,G1,G2,A1,A2,Us,Usi,iiE,calledFromInelastica=False):
 ########################################################
 def checkImPart(x):
     if abs(x.imag)>0.0000001:
-        print "LOE : Too big imaginary part"
+        print "LOE : Imaginary part %.3e too big"%x.imag
         kuk
     return x.real   
 
