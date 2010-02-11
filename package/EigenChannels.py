@@ -14,7 +14,7 @@ import WriteXMGR as XMGR
 import numpy as N
 import numpy.linalg as LA
 import Scientific.IO.NetCDF as NC
-import sys, string, struct, glob, profile, os
+import sys, string, struct, glob,  os
 from optparse import OptionParser, OptionGroup
 import PhysicalConstants as PC
 
@@ -632,6 +632,87 @@ def writemacubin(fn,YY,nx,ny,nz,origo,dstep):
 
     fo.close()
 
+################ Write Cube file in XSF format ##################################
+def writeXSF(fn,YY,nx,ny,nz,origo,dstep,writeImag):
+    """
+    Write XSF datagrid for XCrysden
+    """
+    
+    fo=file(fn,'w')
+#    
+    Bohr2Ang = 0.529177
+    Ang2Bohr = 1/Bohr2Ang
+    convFactor=1
+    vectors=geom.pbc
+    speciesnumber=geom.snr
+    atomnumber=geom.anr
+    xyz=geom.xyz
+    #dstep=dstep*Bohr2Ang
+    #origo=origo*Bohr2Ang
+    xmin,xmax = origo[0], origo[0]+dstep*(nx-1)
+    ymin,ymax = origo[1], origo[1]+dstep*(ny-1)
+    zmin,zmax = origo[2], origo[2]+dstep*(nz-1)
+    
+    fo.write(' ATOMS\n')
+
+    numberOfAtoms = len(speciesnumber)
+
+    # Write out the position for the atoms
+    for i in range(numberOfAtoms):
+
+        line = '   %i  ' %atomnumber[i]
+        for j in range(3):
+            line += string.rjust('%.9f'%(xyz[i][j]*convFactor),16)
+        fo.write(line+'\n')
+
+	#Write the datagrid
+    fo.write('BEGIN_BLOCK_DATAGRID_3D\n')
+    fo.write(' DATA_from:Inelastica\n')
+    fo.write(' BEGIN_DATAGRID_3D_REAL\n')
+    fo.write('    %3.0i    %3.0i    %3.0i\n'%
+        (nx,ny,nz))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (origo[0],origo[1],origo[2]))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin,0.0000,0.0000))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,ymax-ymin,0.0000))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,0.0000,zmax-zmin))
+    data=[]
+    ll=0
+    for ii in range(nz):
+        
+        for kk in range(ny):
+            for jj in range(nx):
+    		data.append(YY.real[jj,kk,ii])
+    for iii in range((nx*ny*nz)) :
+	if ((iii+1)%6==0) :	
+		fo.write('  %1.5E\n'% (data[iii]))
+	else :
+		fo.write('  %1.5E'% (data[iii]))
+    fo.write('\n END_DATAGRID_3D\n')
+    if writeImag :
+    	fo.write(' BEGIN_DATAGRID_3D_IMAG\n')
+    	fo.write('    %3.0i    %3.0i    %3.0i\n'%
+        	(nx,ny,nz))
+    	fo.write('  %1.7E  %1.7E  %1.7E\n'% (origo[0],origo[1],origo[2]))
+    	fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin,0.0000,0.0000))
+    	fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,ymax-ymin,0.0000))
+    	fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,0.0000,zmax-zmin))
+    	data=[]
+    	ll=0
+    	for ii in range(nz):
+        
+       	 for kk in range(ny):
+            for jj in range(nx):
+    		data.append(YY.imag[jj,kk,ii])
+    	for iii in range((nx*ny*nz)) :
+			if ((iii+1)%6==0) :	
+				fo.write('  %1.5E\n'% (data[iii]))
+			else :
+				fo.write('  %1.5E'% (data[iii]))
+    	fo.write('\n END_DATAGRID_3D\n')
+    fo.write('END_BLOCK_DATAGRID_3D')
+    fo.close()
+
+
 ########################################################
 def writemacu(Y,writeImag):
     """
@@ -674,6 +755,12 @@ def writemacu(Y,writeImag):
         if writeImag:
             writecube(fn+'.Im.cube',YY.imag,nx,ny,nz,
                          origo,dstep)
+    if general.cube=='XSF':
+        writeXSF(fn+'.XSF',YY.real,nx,ny,nz,
+                 origo,dstep,writeImag)
+        #if writeImag:
+         #   writecube(fn+'.Im.cube',YY.imag,nx,ny,nz,
+          #               origo,dstep)
 
 ###########################################################
 def setupParameters(calledFromInelastica=False):
@@ -707,7 +794,7 @@ For help use --help!
     EC.add_option("-r", "--Res", dest='res', default=0.4,type='float',
                   help="Resolution [%default Ang]")
     EC.add_option("-g", "--cube", dest='cube', default='macu',type='string',
-                  help="Real space file format 'macu' or 'cube'")
+                  help="Real space file format 'macu','cube' or 'XSF'")
     EC.add_option("-N", "--NumPhCurr", dest='NumPhCurr', default=10,type='int',
                   help="Max number of changes in bond currents from inelastic scattering  [%default]")
     parser.add_option_group(EC)
