@@ -962,7 +962,7 @@ def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llis
 	    f.write('%.6f %.9f\n'%(ev[i]-eF,pdos[i]))
         f.close()
     else:
-        sys.exit('Not yet implemented for spin polarized data')
+        sys.exit('Not yet implemented for spin polarized data.\n')
 
 
 # Functions specific to syslabel.PROJBANDS files
@@ -1072,7 +1072,7 @@ def ExtractPROJBANDS(filename,outfile,index=[],atom_index=[],species=[],nlist=[]
                     points += 1
         f.close()
     else:
-        sys.exit('Not yet implemented for spin polarized data')
+        sys.exit('Not yet implemented for spin polarized data.\n')
     # Write DX datafile
     f = open(outfile+'.dx.general','w')
     f.write('file = %s.dx.dat\n'%outfile)
@@ -1275,90 +1275,16 @@ def ReadOnlyS(filename):
     
     return onlyS.S
 
-def ReadHSFile(filename):
+def ReadTSHSFile(filename):
     """
     Returns tuple (eF,H,S,ia1,istep) (in eV) from an HS-file
     for spin polarized calc, H = [Hs0, Hs1]
     """
-    print 'SiestaIO.ReadHSFile: Reading',filename
+    print 'SiestaIO.ReadTSHSFile: Reading',filename
     # Open binary Fortran file
     TSHS = HS(filename)
     TSHS.setkpoint(N.array([0,0,0],N.float))
     return TSHS.ef,TSHS.H.real,TSHS.S.real,TSHS.ia1,TSHS.istep
-                                                                  
-def ReadNewTSHSFile(filename):
-    """
-    Read new version of TSHS file.
-    For return see code:
-      Note that onlyS -> does not return xij or Hsparse
-                gamma -> sets indxuo by hand to 1:nou, -1 for nou+1:nos! and sets xij=0.0
-    xa[atomnr,xyz] : Atom positions
-    ucell[nr,xyz]  : Unitcell
-    xij[nr,xyz]
-    """
-    print 'SiestaIO.ReadNewHSFile: Reading',filename
-    # Open binary Fortran file
-    file = SIO_open(filename,'rb')
-    nau,nou,nos,nspin,maxnh = ReadFortranBin(file,fortranLong,5)
-    xa = N.reshape(N.array(ReadFortranBin(file,'d',3*nau)),(nau,3))*PC.Bohr2Ang
-    isa = N.array(ReadFortranBin(file,fortranLong,nau))
-    ucell = N.transpose(N.reshape(N.array(ReadFortranBin(file,'d',9)),(3,3)))*PC.Bohr2Ang
-    gamma = ReadFortranBin(file,'L',1)[0]!=0        # Read boolean (works with ifort)
-    onlyS = ReadFortranBin(file,'L',1)[0]!=0        # Read boolean (works with ifort)
-    ts_gamma_scf = ReadFortranBin(file,'L',1)[0]!=0 # Read boolean (works with ifort)
-    ts_kscell = N.reshape(N.array(ReadFortranBin(file,fortranLong,9)),(3,3))
-    ts_kdispl = N.array(ReadFortranBin(file,'d',3))
-    istep, ia1 = ReadFortranBin(file,fortranLong,2)
-    lasto = N.array(ReadFortranBin(file,fortranLong,nau+1))
-    if not gamma:
-        indxuo = N.array(ReadFortranBin(file,fortranLong,nos))
-    else:
-        # For gamma point make indxuo such that indexes not pointing to unitcell give error, i.e., -1. 
-        tmp1 = N.array(range(1,nou+1),N.int)
-        tmp2 = -N.ones((nos-nou),N.int)
-        indxuo = N.concatenate((tmp1,tmp2))
-    numhg = N.array(ReadFortranBin(file,fortranLong,nou))
-    qtot, temp = ReadFortranBin(file,'d',2)
-    ef = ReadFortranBin(file,'d',1)[0]*PC.Rydberg2eV
-    listh = []
-    for ii in range(nou):
-        listh=N.concatenate((listh,N.array(ReadFortranBin(file,fortranLong,numhg[ii]))))
- 
-    Ssparse, cnt = N.zeros(maxnh,N.float), 0
-    for ii in range(nou):
-        Ssparse[cnt:cnt+numhg[ii]]=ReadFortranBin(file,'d',numhg[ii])
-        cnt=cnt+numhg[ii]
-    if not onlyS:
-        Hsparse = N.zeros((nspin,maxnh),N.float)
-        for iSpin in range(nspin):
-            cnt=0
-            for ii in range(nou):
-                Hsparse[iSpin,cnt:cnt+numhg[ii]]=ReadFortranBin(file,'d',numhg[ii])
-                cnt=cnt+numhg[ii]
-        Hsparse=Hsparse*PC.Rydberg2eV         
-
-    if not gamma:
-        # Read xij
-        xij = N.zeros((maxnh,3),N.float)
-        cnt=0
-        for ii in range(nou):
-            tmp=ReadFortranBin(file,'d',numhg[ii]*3)
-            tmp=N.reshape(tmp,(3,numhg[ii]))
-            xij[cnt:cnt+numhg[ii],:]=N.transpose(tmp)
-            cnt=cnt+numhg[ii]
-        xij=xij*PC.Bohr2Ang
-    else:
-        xij=N.zeros((maxnh,3),N.float)
-    file.close()
-    
-    general = [nau,nou,nos,nspin,maxnh,gamma,onlyS,istep,ia1,qtot,temp,ef]
-    sparse = [lasto, numhg, listh, indxuo]
-    if not onlyS:
-        matrices = [xa, isa, ucell, Ssparse, Hsparse, xij]
-    else:
-        matrices = [xa, isa, ucell, Ssparse]
-
-    return general, sparse, matrices
 
 
 class HS:
@@ -1402,6 +1328,8 @@ class HS:
         gamma: xij is set to 0 and indxuo set manually to 1:nou and -1 for nou+1:no to catch errors!
     """
     def __init__(self,fn,UseF90helpers=True):
+        if UseF90helpers and fn.endswith('.gz'):
+            sys.exit('SiestaIO.HS.__init__: F90helpers do not support reading of gzipped TSHS-files. Please unzip and try again.\n')
         
         if UseF90helpers and F90imported:
             self.gamma, self.onlyS, self.nuo, self.no, self.nspin, self.maxnh, self.qtot, \
@@ -1420,7 +1348,7 @@ class HS:
             self.xij, self.Hsparse = N.transpose(self.xij)*PC.Bohr2Ang, N.transpose(self.Hsparse)*PC.Rydberg2eV
             self.ef = self.ef*PC.Rydberg2eV
         else:
-            general, sparse, matrices = ReadNewTSHSFile(fn)
+            general, sparse, matrices = self.__ReadTSHSFile(fn)
             self.nua, self.nuo, self.no , self.nspin, self.maxnh, \
                 self.gamma, self.onlyS, self.istep, self.ia1, \
                 self.qtot, self.temp, self.ef = general
@@ -1437,6 +1365,81 @@ class HS:
         if not self.gamma and not self.onlyS:
             self.removeUnitCellXij(UseF90helpers)       # Remove phase change in unitcell
         self.kpoint = N.array([1e10,1e10,1e10],N.float) # Save time by not repeating
+
+    def __ReadTSHSFile(self,filename):
+        """
+        Python version for reading TSHS files.
+        For return see code:
+        Note that onlyS -> does not return xij or Hsparse
+                  gamma -> sets indxuo by hand to 1:nou, -1 for nou+1:nos! and sets xij=0.0
+        xa[atomnr,xyz] : Atom positions
+        ucell[nr,xyz]  : Unitcell
+        xij[nr,xyz]
+        """
+        print 'SiestaIO.__ReadTSHSFile: Reading',filename
+        # Open binary Fortran file
+        file = SIO_open(filename,'rb')
+        nau,nou,nos,nspin,maxnh = ReadFortranBin(file,fortranLong,5)
+        xa = N.reshape(N.array(ReadFortranBin(file,'d',3*nau)),(nau,3))*PC.Bohr2Ang
+        isa = N.array(ReadFortranBin(file,fortranLong,nau))
+        ucell = N.transpose(N.reshape(N.array(ReadFortranBin(file,'d',9)),(3,3)))*PC.Bohr2Ang
+        gamma = ReadFortranBin(file,'L',1)[0]!=0        # Read boolean (works with ifort)
+        onlyS = ReadFortranBin(file,'L',1)[0]!=0        # Read boolean (works with ifort)
+        ts_gamma_scf = ReadFortranBin(file,'L',1)[0]!=0 # Read boolean (works with ifort)
+        ts_kscell = N.reshape(N.array(ReadFortranBin(file,fortranLong,9)),(3,3))
+        ts_kdispl = N.array(ReadFortranBin(file,'d',3))
+        istep, ia1 = ReadFortranBin(file,fortranLong,2)
+        lasto = N.array(ReadFortranBin(file,fortranLong,nau+1))
+        if not gamma:
+            indxuo = N.array(ReadFortranBin(file,fortranLong,nos))
+        else:
+            # For gamma point make indxuo such that indexes not pointing to unitcell give error, i.e., -1. 
+            tmp1 = N.array(range(1,nou+1),N.int)
+            tmp2 = -N.ones((nos-nou),N.int)
+            indxuo = N.concatenate((tmp1,tmp2))
+        numhg = N.array(ReadFortranBin(file,fortranLong,nou))
+        qtot, temp = ReadFortranBin(file,'d',2)
+        ef = ReadFortranBin(file,'d',1)[0]*PC.Rydberg2eV
+        listh = []
+        for ii in range(nou):
+            listh=N.concatenate((listh,N.array(ReadFortranBin(file,fortranLong,numhg[ii]))))
+ 
+        Ssparse, cnt = N.zeros(maxnh,N.float), 0
+        for ii in range(nou):
+            Ssparse[cnt:cnt+numhg[ii]]=ReadFortranBin(file,'d',numhg[ii])
+            cnt=cnt+numhg[ii]
+        if not onlyS:
+            Hsparse = N.zeros((nspin,maxnh),N.float)
+            for iSpin in range(nspin):
+                cnt=0
+                for ii in range(nou):
+                    Hsparse[iSpin,cnt:cnt+numhg[ii]]=ReadFortranBin(file,'d',numhg[ii])
+                    cnt=cnt+numhg[ii]
+            Hsparse=Hsparse*PC.Rydberg2eV         
+
+        if not gamma:
+            # Read xij
+            xij = N.zeros((maxnh,3),N.float)
+            cnt=0
+            for ii in range(nou):
+                tmp=ReadFortranBin(file,'d',numhg[ii]*3)
+                tmp=N.reshape(tmp,(3,numhg[ii]))
+                xij[cnt:cnt+numhg[ii],:]=N.transpose(tmp)
+                cnt=cnt+numhg[ii]
+            xij=xij*PC.Bohr2Ang
+        else:
+            xij=N.zeros((maxnh,3),N.float)
+        file.close()
+        
+        general = [nau,nou,nos,nspin,maxnh,gamma,onlyS,istep,ia1,qtot,temp,ef]
+        sparse = [lasto, numhg, listh, indxuo]
+        if not onlyS:
+            matrices = [xa, isa, ucell, Ssparse, Hsparse, xij]
+        else:
+            matrices = [xa, isa, ucell, Ssparse]
+
+        return general, sparse, matrices
+
 
     def makeDerivedQuant(self):
         """

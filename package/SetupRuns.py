@@ -840,8 +840,8 @@ def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, type = 'TS'):
         kuk
 
 def WritePBS(PBStemplate,PBSout,PBSsubs):
-    print 'SiestaIO.WritePBS: Reading',PBStemplate
-    print 'SiestaIO.WritePBS: Writing',PBSout
+    print 'SetupRuns.WritePBS: Reading',PBStemplate
+    print 'SetupRuns.WritePBS: Writing',PBSout
 
     # Make default job name
     fullPath, crap = os.path.split(os.path.abspath(PBSout))

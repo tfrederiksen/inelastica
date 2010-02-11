@@ -7,7 +7,7 @@ import os, os.path, glob, string, time, sys
 import Scientific.IO.NetCDF as nc
 import numpy as N
 import numpy.linalg as LA
-import SiestaIO
+import SiestaIO as SIO
 import gzip
 import copy
 import PhysicalConstants as PC
@@ -82,8 +82,8 @@ def Analyze(dirname,wildcard,
 
     ### Read geometry
     print '\nPhonons.Analyze: Reading geometry:'
-    vectors,speciesnumber,atomnumber,xyz = SiestaIO.ReadXVFile(corrXVfiles[0],
-                                                               InUnits='Bohr',OutUnits='Ang')
+    vectors,speciesnumber,atomnumber,xyz = SIO.ReadXVFile(corrXVfiles[0],
+                                                          InUnits='Bohr',OutUnits='Ang')
     # Make isotope substitutions 
     atomnumberNotSubstituted=copy.copy(atomnumber)
     for snr,anr in Isotopes:
@@ -146,9 +146,9 @@ def Analyze(dirname,wildcard,
 
     ### Write MKL- and xyz-files
     print '\nPhonons.Analyze: Writing geometry and phonons to files.'
-    SiestaIO.WriteMKLFile(phononDirectory+'/%s_FC%i-%i.mkl'%(outlabel,FCfirst,FClast),
-                          atomnumber,xyz,hw,U,FCfirst,FClast)
-    SiestaIO.WriteXYZFile(phononDirectory+'/%s.xyz'%outlabel,atomnumber,xyz)
+    SIO.WriteMKLFile(phononDirectory+'/%s_FC%i-%i.mkl'%(outlabel,FCfirst,FClast),
+                     atomnumber,xyz,hw,U,FCfirst,FClast)
+    SIO.WriteXYZFile(phononDirectory+'/%s.xyz'%outlabel,atomnumber,xyz)
     WriteFreqFile(phononDirectory+'/%s.freq'%outlabel,hw)
     WriteVibDOSFile(phononDirectory+'/%s.fdos'%outlabel,hw)
     WriteAXSFFiles(phononDirectory+'/%s.axsf'%outlabel,xyz,atomnumber,hw,U,FCfirst, FClast)
@@ -301,9 +301,13 @@ def ShowInSOrbitalSubspace(tree,atomnumber,FCfirst,FClast,DeviceFirst,DeviceLast
 
 def GetOrbitalIndices(dirname,atomnumber):
     # Build dictionary
-    ionNCfiles = glob.glob(dirname+'/*.ion.nc')
+    ionNCfiles = glob.glob(dirname+'/*.ion.nc*')
     atomnumber2nao = {}
     for ionfile in ionNCfiles:
+        if ionfile.endswith('.gz'):
+            print 'Phonons.GetOrbitalIndices: Unzipping',ionfile
+            os.system('gunzip '+ionfile)
+            ionfile = ionfile[:-3]
         file = nc.NetCDFFile(ionfile,'r')
         atomnumber2nao[int(file.Atomic_number[0])] = int(file.Number_of_orbitals[0])
         file.close()
@@ -361,7 +365,7 @@ def CalcHeph(dH,hw,U,atomnumber,FCfirst):
     Heph = 0.0*dH
     for i in range(len(hw)):
         # Loop over modes
-        SiestaIO.printDone(i, len(hw),'Calculating Heph')
+        SIO.printDone(i, len(hw),'Calculating Heph')
         if hw[i]>0:
             for j in range(len(hw)):
                 # Loop over atomic coordinates
@@ -385,7 +389,7 @@ def CorrectdH(tree,onlySdir,atomnumber,eF,H0,S0,dH,FCfirst,displacement):
     onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,atomnumber,displacement)
     invS0 = LA.inv(S0)
     for i in range(len(dH)):
-        SiestaIO.printDone(i, len(dH),'Correcting dH')
+        SIO.printDone(i, len(dH),'Correcting dH')
         # Explicit correction
         dSdij = N.zeros((nao,nao),N.float)
         first,last = orbitalIndices[FCfirst-1+i/3]
@@ -414,7 +418,7 @@ def GetOnlyS(onlySdir,atomnumber,displacement):
     else:
         # New duplication version
         for file in onlySfiles:
-            S = SiestaIO.ReadOnlyS(file)
+            S = SIO.ReadOnlyS(file)
             nao = len(S)/2
             if nao!=orbitals:
                 sys.exit('Phonons.GetOnlyS: Error assigning orbitals to atoms (new version)!')    
@@ -434,7 +438,7 @@ def GetOnlyS(onlySdir,atomnumber,displacement):
                 dzp=dmat
         thisd = 1e10
         for i in range(1,7):
-            xyz = N.array(SiestaIO.Getxyz(onlySdir+'/RUN_%i.fdf'%i))
+            xyz = N.array(SIO.Getxyz(onlySdir+'/RUN_%i.fdf'%i))
             for j in range(1,len(xyz)):
                 thisd = min(thisd,(N.dot(xyz[0]-xyz[j],xyz[0]-xyz[j]))**.5)
     # Check that onlyS-directory also corresponds to the same displacement
@@ -458,15 +462,15 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement,CorrPotentialShift=True):
             sys.exit('Phonons.GetH0S0dH: Wrong number of *.TSHS files in %s\n'+\
                      'PROGRAM STOPPED!!!'%dir)
         # The first file is the one corresponding to no displacement
-        eF,H0,S0,ia1,istep = SiestaIO.ReadHSFile(HSfiles[0])
+        eF,H0,S0,ia1,istep = SIO.ReadTSHSFile(HSfiles[0])
         if istep!=0:
             print "Phonons::GetH0S0dH Assumption on file order not right ",HSfiles[0]
             kuk
         for j in range(len(HSfiles)/2):
             if ia1+j/3 >= FCfirst and ia1+j/3 <= FClast:
                 # Read TSHS file since it is within (FCfirst,FClast)
-                eFm,tmpHm,tmpSm,ia1,istep = SiestaIO.ReadHSFile(HSfiles[2*j+1])
-                eFp,tmpHp,tmpSp,ia1,istep = SiestaIO.ReadHSFile(HSfiles[2*j+2])
+                eFm,tmpHm,tmpSm,ia1,istep = SIO.ReadTSHSFile(HSfiles[2*j+1])
+                eFp,tmpHp,tmpSp,ia1,istep = SIO.ReadTSHSFile(HSfiles[2*j+2])
                 if CorrPotentialShift:
                     for iSpin in range(len(H0)):
                         tmpHm[iSpin,:,:] -= (eFm-eF)*S0 # NB eF-shift multiplies to SO...
@@ -660,7 +664,7 @@ def GetFCMatrices(tree,FCfirst,FClast,NumberOfAtoms):
     # Positive/Negative displacement FC matrices
     for i in range(len(tree)): # Go through separate FC runs
         localFCfirst,localFClast = tree[i][0],tree[i][1]
-        FC = N.array(SiestaIO.ReadFCFile(tree[i][3]))
+        FC = N.array(SIO.ReadFCFile(tree[i][3]))
         LocalMoves = 3*(localFClast-localFCfirst+1)
         for j in range(LocalMoves):
             thisAtom = localFCfirst+j/3
@@ -722,7 +726,7 @@ def GetFileLists(dirname,wildcard):
         if len(FCglob)!=1:
             print 'Phonons.GetFileLists: Not exactly one *.FC file in directory',dir
         # Determine FCfirst and FClast without TSHS files
-        runfdf = SiestaIO.SIO_open(dir+'/RUN.fdf','r')
+        runfdf = SIO.SIO_open(dir+'/RUN.fdf','r')
         lines = runfdf.readlines()
         for line in lines:
             if line.find('MD.FCfirst')>-1:
@@ -733,12 +737,17 @@ def GetFileLists(dirname,wildcard):
         FCfirst = min(FCfirst,localFCfirst)
         FClast = max(FClast,localFClast)
         # Find TSHSfiles in wildcard directories
-        HSglob = glob.glob(dir+'/*.TSHS')
+        HSglob = glob.glob(dir+'/*.TSHS*')
         HSglob.sort()
         for elm in HSglob:
-            # We are reading unzipped *.TSHS files
-            firstatom = string.atoi(elm[-13:-9])
-            step = string.atoi(elm[-9:-5])
+            if elm.endswith('.TSHS.gz'):
+                # We are reading gzipped *.TSHS.gz files
+                firstatom = string.atoi(elm[-16:-12])
+                step = string.atoi(elm[-12:-8])
+            elif elm.endswith('.TSHS'):
+                # We are reading unzipped *.TSHS files
+                firstatom = string.atoi(elm[-13:-9])
+                step = string.atoi(elm[-9:-5])
             FCfirst = min(FCfirst,firstatom)
             FClast = max(FClast,firstatom+step/6-1)
             localFCfirst = min(localFCfirst,firstatom)
@@ -766,7 +775,7 @@ def CorrectXVfile(XVfile):
     dir,file = os.path.split(XVfile)
     FCfirst, FClast = 1e10,-1e10
     # Determine FCfirst and FClast without TSHS files
-    runfdf = SiestaIO.SIO_open(dir+'/RUN.fdf','r')
+    runfdf = SIO.SIO_open(dir+'/RUN.fdf','r')
     lines = runfdf.readlines()
     for line in lines:
         if line.find('MD.FCfirst')>-1:
@@ -783,10 +792,10 @@ def CorrectXVfile(XVfile):
     #        step = string.atoi(elm[-6:-3])
     #        FCfirst = min(FCfirst,firstatom)
     #        FClast = max(FClast,firstatom+step/6-1)
-    vectors,speciesnumber,atomnumber,xyz = SiestaIO.ReadXVFile(XVfile,InUnits='Bohr',OutUnits='Ang')
+    vectors,speciesnumber,atomnumber,xyz = SIO.ReadXVFile(XVfile,InUnits='Bohr',OutUnits='Ang')
     # Determine the displacement
     try:
-        list = SiestaIO.GetFDFline(dir+'/RUN.fdf','MD.FCDispl')
+        list = SIO.GetFDFline(dir+'/RUN.fdf','MD.FCDispl')
         d, unit = list[0], list[1]
         if unit=='Bohr' or unit=='bohr':
             displacement = float(d)*PC.Bohr2Ang
@@ -800,7 +809,7 @@ def CorrectXVfile(XVfile):
           %(FClast,displacement,XVfile)
     xyz[FClast-1][2] -= displacement # Python counts from 0
     NewXVfile = XVfile.replace('.XV','.XV2')
-    SiestaIO.WriteXVFile(NewXVfile,vectors,speciesnumber,atomnumber,xyz,InUnits='Ang',OutUnits='Bohr')
+    SIO.WriteXVFile(NewXVfile,vectors,speciesnumber,atomnumber,xyz,InUnits='Ang',OutUnits='Bohr')
     return NewXVfile,displacement
 
 
@@ -808,8 +817,8 @@ def CheckForIdenticalXVfiles(XVfileList):
     err = 'Phonons.CheckForIdenticalXVfiles: Error encounted in'
     count = 0
     for i in range(len(XVfileList)-1):
-        vectors1,speciesnumber1,atomnumber1,xyz1 = SiestaIO.ReadXVFile(XVfileList[i])
-        vectors2,speciesnumber2,atomnumber2,xyz2 = SiestaIO.ReadXVFile(XVfileList[i+1])
+        vectors1,speciesnumber1,atomnumber1,xyz1 = SIO.ReadXVFile(XVfileList[i])
+        vectors2,speciesnumber2,atomnumber2,xyz2 = SIO.ReadXVFile(XVfileList[i+1])
         if vectors1!=vectors2:
             count += 1
             print err, XVfileList[i],XVfileList[i+1], '(vectors)'
@@ -887,13 +896,13 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,atomnumber,onlySdir,PBCFirst,PBCLast,A
             sys.exit('Phonons.GenerateAuxNETCDF: Wrong number of *.TSHS files in %s\n'%dir+\
                      ' PROGRAM STOPPED!!!')
         # The first TSHSfile in a folder is the one corresponding to no displacement
-        eF,H0,S0,ia1,istep = SiestaIO.ReadHSFile(HSfiles[0])
+        eF,H0,S0,ia1,istep = SIO.ReadTSHSFile(HSfiles[0])
         # Read the rest of TSHSfiles
         for j in range(len(HSfiles)/2):
             if ia1+j/3 >= FCfirst and ia1+j/3 <= FClast:
                 # Read TSHS file since it is within (FCfirst,FClast)
-                eFm,tmpHm,tmpSm,ia1,istep = SiestaIO.ReadHSFile(HSfiles[2*j+1])
-                eFp,tmpHp,tmpSp,ia1,istep = SiestaIO.ReadHSFile(HSfiles[2*j+2])
+                eFm,tmpHm,tmpSm,ia1,istep = SIO.ReadTSHSFile(HSfiles[2*j+1])
+                eFp,tmpHp,tmpSp,ia1,istep = SIO.ReadTSHSFile(HSfiles[2*j+2])
                 if CorrPotentialShift:
                     tmpHm -= (eFm-eF)*S0 # NB eF-shift multiplies to SO...
                     tmpHp -= (eFp-eF)*S0
@@ -930,7 +939,7 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,atomnumber,onlySdir,PBCFirst,PBCLast,A
     onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,atomnumber,displacement)
     invS0 = LA.inv(S0)
     for i in range(index):
-        SiestaIO.printDone(i,index,'Correcting dH')
+        SIO.printDone(i,index,'Correcting dH')
         dSdij = N.zeros((nao,nao),N.float)
         first,last = orbitalIndices[FCfirst-1+i/3]
         if i%3==0:   dSdij[:,first:last+1] = dSx[:,first:last+1]  # x-move
@@ -997,7 +1006,7 @@ def CalcHephNETCDF(tree,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
 
     for i in range(len(hw)):
         # Loop over modes
-        SiestaIO.printDone(i, len(hw),'Calculating Heph')
+        SIO.printDone(i, len(hw),'Calculating Heph')
         for j in range(len(hw)):
             # Loop over atomic coordinates
             if hw[i]>0:
