@@ -10,57 +10,7 @@ import numpy.linalg as LA
 import SiestaIO
 import gzip
 import copy
-
-# From Kittel: Introd. Solid State Physics, 7th ed. (1996)
-Rydberg2eV = 13.6058
-Bohr2Ang = 0.529177 
-Ang2Bohr = 1/Bohr2Ang
-amu2kg = 1.66053e-27
-eV2Joule = 1.60219e-19
-hbar2SI = 1.05459e-34
-
-# From http://physics.nist.gov/constants
-invm2eV =  1.239841875e-6
-invcm2eV = 1.239841875e-4
-
-# from http://physics.nist.gov/PhysRefData/Elements/
-AtomicMass = {1:1.007947,    # H
-              1001:2.016,    # Deuterium
-              2:4.002602,    # He
-              3:6.9412,      # Li
-              4:9.012182,    # Be
-              5:10.8117,     # B
-              6:12.01078,    # C
-              7:14.00672,    # N
-              8:15.99943,    # O
-              9:18.9984032,  # F
-              11:22.989770,  # Na
-              12:24.30506,   # Mg
-              13:26.9815382, # Al
-              14:28.0855,    # Si
-              15:30.973761,  # P
-              16:32.0655,    # S
-              17:35.453,     # Cl
-              19:39.0983,    # K
-              20:40.0784,    # Ca
-              22:47.867,     # Ti
-              23:50.9415,    # V
-              24:51.99616,   # Cr
-              25:54.9380499, # Mn
-              26:55.8452,    # Fe
-              27:58.933200,  # Co
-              28:58.69342,   # Ni
-              29:63.5463,    # Cu
-              30:65.4094,    # Zn
-              31:69.7231,    # Ga
-              33:74.92160,   # As
-              45:102.90550,  # Rh
-              46:106.42,     # Pd
-              47:107.8682,   # Ag
-              74:183.84,     # W
-              77:192.217,    # Ir
-              78:195.0782,   # Pt
-              79:196.966552} # Au
+import PhysicalConstants as PC
 
 
 def Analyze(dirname,wildcard,
@@ -406,7 +356,7 @@ def Downfold2Device(tree,atomnumber,H0,S0,dH,DeviceFirst,DeviceLast,FCfirst,FCla
 
 def CalcHeph(dH,hw,U,atomnumber,FCfirst):
     print 'Phonons.CalcHeph: Calculating...\n',
-    const = hbar2SI*(1e20/(eV2Joule*amu2kg))**0.5
+    const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
     mm = N.dot
     Heph = 0.0*dH
     for i in range(len(hw)):
@@ -415,7 +365,7 @@ def CalcHeph(dH,hw,U,atomnumber,FCfirst):
         if hw[i]>0:
             for j in range(len(hw)):
                 # Loop over atomic coordinates
-                Heph[i] += const*dH[j]*U[i,j]/(2*AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
+                Heph[i] += const*dH[j]*U[i,j]/(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
         else:
             print 'Phonons.CalcHeph: Nonpositive frequency --> Zero-valued coupling matrix' 
             Heph[i] = 0.0*dH[0]
@@ -555,13 +505,13 @@ def CalcPhonons(FC,atomnumber,FCfirst,FClast):
         for j in range(DynamicAtoms):
             for k in range(3):
                 FCtilde[i,3*j+k] = FC[i,j,k]/ \
-                  ( AtomicMass[atomnumber[FCfirst-1+i/3]] * AtomicMass[atomnumber[FCfirst-1+j]] )**0.5
+                  ( PC.AtomicMass[atomnumber[FCfirst-1+i/3]] * PC.AtomicMass[atomnumber[FCfirst-1+j]] )**0.5
     # Solve eigenvalue problem with symmetric FCtilde
     eval,evec = LA.eigh(FCtilde)
     evec=N.transpose(evec)
     eval=N.array(eval,N.complex)
     # Calculate frequencies
-    const = hbar2SI*(1e20/(eV2Joule*amu2kg))**0.5
+    const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
     hw = const*eval**0.5 # Units in eV
     for i in range(DynamicAtoms*3):
         # Real eigenvalues are defined as positive, imaginary eigenvalues as negative
@@ -586,7 +536,7 @@ def CalcPhonons(FC,atomnumber,FCfirst,FClast):
     print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
     for i in range(DynamicAtoms*3):
         hw[i],U[i] = tmp[i]
-        print string.rjust('%.3f'%(hw[i]/invcm2eV),9),
+        print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
         if (i-5)%6==0: print
     if (i-5)%6!=0: print
 
@@ -597,7 +547,7 @@ def CalcPhononDOS(FC,U,atomnumber,FCfirst,FClast,BulkAtomsLeft,BulkAtomsRight,ou
     import RecursiveMethods as RM
     mm = N.dot
     NumberOfAtoms = len(atomnumber)
-    const = hbar2SI*(1e20/(eV2Joule*amu2kg))**0.5
+    const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
     
     # Change FC to normal coordinates and include constants to make
     # the frequencies come out in eV.
@@ -606,7 +556,7 @@ def CalcPhononDOS(FC,U,atomnumber,FCfirst,FClast,BulkAtomsLeft,BulkAtomsRight,ou
         for j in range(NumberOfAtoms):
             for k in range(3):
                 FCtilde[i,3*j+k] = (const**2)*FC[i,j,k]/ \
-                  ( AtomicMass[atomnumber[i/3]] * AtomicMass[atomnumber[j]] )**0.5
+                  ( PC.AtomicMass[atomnumber[i/3]] * PC.AtomicMass[atomnumber[j]] )**0.5
 
     # Output the dense 3D-periodic FCtilde
     OutputFC(FCtilde)
@@ -839,13 +789,13 @@ def CorrectXVfile(XVfile):
         list = SiestaIO.GetFDFline(dir+'/RUN.fdf','MD.FCDispl')
         d, unit = list[0], list[1]
         if unit=='Bohr' or unit=='bohr':
-            displacement = float(d)*Bohr2Ang
+            displacement = float(d)*PC.Bohr2Ang
         elif unit=='Ang' or unit=='ang':
             displacement = float(d)
         print 'Phonons.CorrectXVfile: displacement %s %s found from RUN.fdf'%(d,unit)
     except:
-        print 'Phonons.CorrectXVfile: displacement set to 0.04*Bohr2Ang (default)'
-        displacement = 0.04*Bohr2Ang
+        print 'Phonons.CorrectXVfile: displacement set to 0.04*PC.Bohr2Ang (default)'
+        displacement = 0.04*PC.Bohr2Ang
     print 'Phonons.CorrectXVfile: Correcting z-coord for atom %i (by %f Ang) \n  ... in %s' \
           %(FClast,displacement,XVfile)
     xyz[FClast-1][2] -= displacement # Python counts from 0
@@ -1039,7 +989,7 @@ def CalcHephNETCDF(tree,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
         
     # CalcHeph
     print 'Phonons.CalcHephNETCDF: Calculating...\n',
-    const = hbar2SI*(1e20/(eV2Joule*amu2kg))**0.5
+    const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
     Heph  = NCfile.createVariable('He_ph','d',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
     for i in range(len(hw)):
         Heph[i,:] = 0.0*H0
@@ -1052,7 +1002,8 @@ def CalcHephNETCDF(tree,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
             # Loop over atomic coordinates
             if hw[i]>0:
                 for iSpin in range(len(H0)):
-                    Heph[i,iSpin,:] += const*N.array(dH[j,iSpin])[first:last+1,first:last+1]*U[i,j]/(2*AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
+                    Heph[i,iSpin,:] += const*N.array(dH[j,iSpin])[first:last+1,first:last+1]*U[i,j] \
+                                       /(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
             else:
                 print 'Phonons.CalcHephNETCDF: Nonpositive frequency --> Zero-valued coupling matrix' 
                 #Heph[i,:] = 0.0*N.array(dH[0])[first:last+1,first:last+1]

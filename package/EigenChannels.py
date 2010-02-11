@@ -9,13 +9,14 @@ fudgeEnergy = 5e-5         # Fudge energy in eV used to see if Ef is close to th
 import pyTBT
 import SiestaIO as SIO
 import MakeGeom as MG
-import EigenChannels as EC
+#import EigenChannels as EC
 import WriteXMGR as XMGR
 import numpy as N
 import numpy.linalg as LA
 import Scientific.IO.NetCDF as NC
 import sys, string, struct, glob, profile, os
 from optparse import OptionParser, OptionGroup
+import PhysicalConstants as PC
 
 # Dummy classes for global variables
 class HS:       pass
@@ -591,13 +592,13 @@ def writecube(fn,YY,nx,ny,nz,origo,dstep):
 
     foR=file(fn,'w')
     foR.write('Eigenechannel wavefunction\n%s\n'%fn)
-    foR.write('%i %f %f %f\n'% (len(xyz),origo[0]/SIO.Bohr2Ang,origo[1]/SIO.Bohr2Ang,origo[2]/SIO.Bohr2Ang))
-    foR.write('%i %f %f %f\n'% (nx,dstep/SIO.Bohr2Ang,0.0,0.0))
-    foR.write('%i %f %f %f\n'% (ny,0.0,dstep/SIO.Bohr2Ang,0.0))
-    foR.write('%i %f %f %f\n'% (nz,0.0,0.0,dstep/SIO.Bohr2Ang))
+    foR.write('%i %f %f %f\n'% (len(xyz),origo[0]/PC.Bohr2Ang,origo[1]/PC.Bohr2Ang,origo[2]/PC.Bohr2Ang))
+    foR.write('%i %f %f %f\n'% (nx,dstep/PC.Bohr2Ang,0.0,0.0))
+    foR.write('%i %f %f %f\n'% (ny,0.0,dstep/PC.Bohr2Ang,0.0))
+    foR.write('%i %f %f %f\n'% (nz,0.0,0.0,dstep/PC.Bohr2Ang))
     for ii in range(len(xyz)):
         foR.write('%i %f '% (anr[ii],0.0))
-        tmp=xyz[ii,:]/SIO.Bohr2Ang
+        tmp=xyz[ii,:]/PC.Bohr2Ang
         foR.write('%f %f %f\n'% (tmp[0],tmp[1],tmp[2]))
 
     for ix in range(nx):

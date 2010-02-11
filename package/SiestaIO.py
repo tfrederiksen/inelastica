@@ -12,6 +12,7 @@ import string, struct, os.path, sys
 import MakeGeom as MG
 import gzip
 import Scientific.IO.NetCDF as nc
+import PhysicalConstants as PC
 
 # For speed some routines can be linked as F90 code
 try:
@@ -35,13 +36,6 @@ else:
     fortranuLong='I'
     fortranLong='i'    
 
-Rydberg2eV = 13.6058
-Bohr2Ang = 0.529177
-Ang2Bohr = 1/Bohr2Ang
-
-# Map atomnumbers into elemental labels
-PeriodicTable = {'H':1,1:'H','D':1001,1001:'D','He':2,2:'He','Li':3,3:'Li','Be':4,4:'Be','B':5,5:'B','C':6,6:'C','N':7,7:'N','O':8,8:'O','F':9,9:'F','Ne':10,10:'Ne','Na':11,11:'Na','Mg':12,12:'Mg','Al':13,13:'Al','Si':14,14:'Si','P':15,15:'P','S':16,16:'S','Cl':17,17:'Cl','Ar':18,18:'Ar','K':19,19:'K','Ca':20,20:'Ca','Sc':21,21:'Sc','Ti':22,22:'Ti','V':23,23:'V','Cr':24,24:'Cr','Mn':25,25:'Mn','Fe':26,26:'Fe','Co':27,27:'Co','Ni':28,28:'Ni','Cu':29,29:'Cu','Zn':30,30:'Zn','Ga':31,31:'Ga','Ge':32,32:'Ge','As':33,33:'As','Se':34,34:'Se','Br':35,35:'Br','Kr':36,36:'Kr','Rb':37,37:'Rb','Sr':38,38:'Sr','Y':39,39:'Y','Zr':40,40:'Zr','Nb':41,41:'Nb','Mo':42,42:'Mo','Tc':43,43:'Tc','Ru':44,44:'Ru','Rh':45,45:'Rh','Pd':46,46:'Pd','Ag':47,47:'Ag','Cd':48,48:'Cd','In':49,49:'In','Sn':50,50:'Sn','Sb':51,51:'Sb','Te':52,52:'Te','I':53,53:'I','Xe':54,54:'Xe','Cs':55,55:'Cs','Ba':56,56:'Ba','La':57,57:'La','Ce':58,58:'Ce','Pr':59,59:'Pr','Nd':60,60:'Nd','Pm':61,61:'Pm','Sm':62,62:'Sm','Eu':63,63:'Eu','Gd':64,64:'Gd','Tb':65,65:'Tb','Dy':66,66:'Dy','Ho':67,67:'Ho','Er':68,68:'Er','Tm':69,69:'Tm','Yb':70,70:'Yb','Lu':71,71:'Lu','Hf':72,72:'Hf','Ta':73,73:'Ta','W':74,74:'W','Re':75,75:'Re','Os':76,76:'Os','Ir':77,77:'Ir','Pt':78,78:'Pt','Au':79,79:'Au','Hg':80,80:'Hg','Tl':81,81:'Tl','Pb':82,82:'Pb','Bi':83,83:'Bi','Po':84,84:'Po','At':85,85:'At','Rn':86,86:'Rn','Fr':87,87:'Fr','Ra':88,88:'Ra','Ac':89,89:'Ac','Th':90,90:'Th','Pa':91,91:'Pa','U':92,92:'U','Np':93,93:'Np','Pu':94,94:'Pu','Am':95,95:'Am','Cm':96,96:'Cm','Bk':97,97:'Bk','Cf':98,98:'Cf','Es':99,99:'Es','Fm':100,100:'Fm','Md':101,101:'Md','No':102,102:'No'}
-
 
 def SIO_open(filename,mode='r'):
     "A SiestaIO redefinition of the function open() to handle gzip format"
@@ -63,8 +57,8 @@ def SIO_open(filename,mode='r'):
 def ReadXVFile(filename,InUnits='Bohr',OutUnits='Ang',ReadVelocity=False):
     "Returns tuple (vectors,speciesnumber,atomnumber,xyz,[v,]) from an XV-file"
     print 'SiestaIO.ReadXVFile: Reading',filename
-    if (InUnits=='Bohr') and (OutUnits=='Ang'): convFactor = Bohr2Ang
-    elif (InUnits=='Ang') and (OutUnits=='Bohr'): convFactor = Ang2Bohr
+    if (InUnits=='Bohr') and (OutUnits=='Ang'): convFactor = PC.Bohr2Ang
+    elif (InUnits=='Ang') and (OutUnits=='Bohr'): convFactor = PC.Ang2Bohr
     elif (((InUnits=='Ang') and (OutUnits=='Ang')) \
        or ((InUnits=='Bohr') and (OutUnits=='Bohr'))): convFactor = 1
     else: print 'SiestaIO.ReadXVFile: Unit conversion error!'
@@ -97,8 +91,8 @@ def WriteXVFile(filename,vectors,speciesnumber,atomnumber,xyz,\
                 InUnits='Ang',OutUnits='Bohr',Velocity=[]):
     "Writes (vectors,speciesnumber,atomnumber,xyz,[V],) to the XV-file format"
     print 'SiestaIO.WriteXVFile: Writing',filename
-    if (InUnits=='Bohr') and (OutUnits=='Ang'): convFactor = Bohr2Ang
-    elif (InUnits=='Ang') and (OutUnits=='Bohr'): convFactor = Ang2Bohr
+    if (InUnits=='Bohr') and (OutUnits=='Ang'): convFactor = PC.Bohr2Ang
+    elif (InUnits=='Ang') and (OutUnits=='Bohr'): convFactor = PC.Ang2Bohr
     elif (((InUnits=='Ang') and (OutUnits=='Ang')) \
        or ((InUnits=='Bohr') and (OutUnits=='Bohr'))): convFactor = 1
     else: print 'SiestaIO.WriteXVFile: Unit conversion error!'
@@ -156,8 +150,8 @@ def ReadAXVFile(filename,MDstep,tmpXVfile="tmp.XV",ReadVelocity=False):
 def WriteANIFile(filename,Geom,Energy,InUnits='Ang',OutUnits='Ang'):
     " Write .ANI file from list of geometries with Energy=[E1,E2..]"
     print 'SiestaIO.WriteANIFile: Writing',filename
-    if (InUnits=='Bohr') and (OutUnits=='Ang'): convFactor = Bohr2Ang
-    elif (InUnits=='Ang') and (OutUnits=='Bohr'): convFactor = Ang2Bohr
+    if (InUnits=='Bohr') and (OutUnits=='Ang'): convFactor = PC.Bohr2Ang
+    elif (InUnits=='Ang') and (OutUnits=='Bohr'): convFactor = PC.Ang2Bohr
     elif (((InUnits=='Ang') and (OutUnits=='Ang')) \
        or ((InUnits=='Bohr') and (OutUnits=='Bohr'))): convFactor = 1
     else: print 'SiestaIO.WriteANIFile: Unit conversion error!'
@@ -167,7 +161,7 @@ def WriteANIFile(filename,Geom,Energy,InUnits='Ang',OutUnits='Ang'):
         file.write('%f \n'%Energy[ii])
         for iixyz in range(iGeom.natoms):
             file.write('%s %2.6f %2.6f %2.6f\n'%\
-                       (PeriodicTable[iGeom.anr[iixyz]],\
+                       (PC.PeriodicTable[iGeom.anr[iixyz]],\
                         convFactor*iGeom.xyz[iixyz][0],\
                         convFactor*iGeom.xyz[iixyz][1],\
                         convFactor*iGeom.xyz[iixyz][2]))
@@ -176,8 +170,8 @@ def WriteANIFile(filename,Geom,Energy,InUnits='Ang',OutUnits='Ang'):
 def ReadANIFile(filename,InUnits='Ang',OutUnits='Ang'):
     "Returns tuple (Geometry,Energy[Ry?],) from an ANI-file"
     print 'SiestaIO.ReadANIFile: Reading',filename
-    if (InUnits=='Bohr') and (OutUnits=='Ang'): convFactor = Bohr2Ang
-    elif (InUnits=='Ang') and (OutUnits=='Bohr'): convFactor = Ang2Bohr
+    if (InUnits=='Bohr') and (OutUnits=='Ang'): convFactor = PC.Bohr2Ang
+    elif (InUnits=='Ang') and (OutUnits=='Bohr'): convFactor = PC.Ang2Bohr
     elif (((InUnits=='Ang') and (OutUnits=='Ang')) \
        or ((InUnits=='Bohr') and (OutUnits=='Bohr'))): convFactor = 1
     else: print 'SiestaIO.ReadANIFile: Unit conversion error!'
@@ -197,7 +191,7 @@ def ReadANIFile(filename,InUnits='Ang',OutUnits='Ang'):
             xyz=[convFactor*string.atof(line[1]),
                  convFactor*string.atof(line[2]),\
                  convFactor*string.atof(line[3])]
-            newG.addAtom(xyz,1,PeriodicTable[line[0]])
+            newG.addAtom(xyz,1,PC.PeriodicTable[line[0]])
         Geom.append(newG)
         newNN=file.readline()
     file.close()
@@ -342,7 +336,7 @@ def ReadXYZFile(filename):
         if len(line)>5: # Ignore blank lines
             data = string.split(line)
             label.append(data[0])
-            atomnumber.append(PeriodicTable[data[0]])
+            atomnumber.append(PC.PeriodicTable[data[0]])
             xyz.append([string.atof(data[1+j]) for j in range(3)])
     file.close()
     if len(xyz)!=numberOfAtoms:
@@ -358,7 +352,7 @@ def WriteXYZFile(filename,atomnumber,xyz):
     file.write(str(len(xyz)))
     file.write('\n\n')
     for i in range(len(xyz)):
-        line = string.ljust(PeriodicTable[abs(atomnumber[i])],5)
+        line = string.ljust(PC.PeriodicTable[abs(atomnumber[i])],5)
         for j in range(3):
             line += string.rjust('%.9f'%xyz[i][j],16)
         line +='\n'
@@ -1007,7 +1001,7 @@ def GetPROJBANDSenergies(dom):
         data = N.reshape(data,(nbands,nspin))
         energies.append(data)
     # NB: This conversion is weird and linked to the initial output of the modified SIESTA!!!
-    return Rydberg2eV**2*N.array(energies)
+    return PC.Rydberg2eV**2*N.array(energies)
 
 def GetPROJBANDSfromOrbitals(dom,index=[],atom_index=[],species=[],nlist=[],llist=[]):
     """
@@ -1114,15 +1108,15 @@ def ReadIonNCFile(filename,printnorm=False):
     ion.N = N.array(file.variables['orbnl_n'],N.int)
     ion.Z = N.array(file.variables['orbnl_z'],N.int)
     ion.ispol = N.array(file.variables['orbnl_ispol'],N.int)
-    ion.delta = Bohr2Ang*N.array(file.variables['delta'],N.float)
+    ion.delta = PC.Bohr2Ang*N.array(file.variables['delta'],N.float)
     ion.orb = N.array(file.variables['orb'],N.float)
     ion.cutoff = N.array(file.variables['cutoff'],N.float)
 
     print '   Element: %s   Atom number: %i,  L-orbs '% (ion.element,ion.atomnum), ion.L
     for i in range(len(ion.L)):
         rr = ion.delta[i] * N.array(range(len(ion.orb[i])),N.float)
-        ion.orb[i] = ion.orb[i]*(rr**ion.L[i])/(Bohr2Ang**(3./2.))
-        rr = rr*Bohr2Ang
+        ion.orb[i] = ion.orb[i]*(rr**ion.L[i])/(PC.Bohr2Ang**(3./2.))
+        rr = rr*PC.Bohr2Ang
         # check normalization:
         if printnorm:
             print '   orb %i (L=%i),    Norm = %.6f'%(i,ion.L[i],N.sum(rr*rr*(ion.orb[i]**2))* ion.delta[i])
@@ -1205,21 +1199,21 @@ def ReadCubeFile(filename):
     # Read number of atoms and coordinate origin (line 3)
     data = string.split(file.readline())
     numberOfAtoms = string.atoi(data[0])
-    origin = [string.atof(data[j+1])*Bohr2Ang for j in range(3)]
+    origin = [string.atof(data[j+1])*PC.Bohr2Ang for j in range(3)]
         
     # Read cell vectors (lines 4-6)
     vox,vectors = [],[]
     for i in range(3):
         data = string.split(file.readline())
         vox.append(string.atoi(data[0]))
-        vectors.append([string.atoi(data[0])*string.atof(data[j+1])*Bohr2Ang for j in range(3)])
+        vectors.append([string.atoi(data[0])*string.atof(data[j+1])*PC.Bohr2Ang for j in range(3)])
 
     # Read geometry (lines 7-7+N)
     atomnumber,xyz = [],[]
     for i in range(numberOfAtoms):
         data = string.split(file.readline())
         atomnumber.append(string.atoi(data[0]))
-        xyz.append([string.atof(data[j+2])*Bohr2Ang for j in range(3)])
+        xyz.append([string.atof(data[j+2])*PC.Bohr2Ang for j in range(3)])
 
     file.close()
     return vectors,atomnumber,xyz
@@ -1306,9 +1300,9 @@ def ReadNewTSHSFile(filename):
     # Open binary Fortran file
     file = SIO_open(filename,'rb')
     nau,nou,nos,nspin,maxnh = ReadFortranBin(file,fortranLong,5)
-    xa = N.reshape(N.array(ReadFortranBin(file,'d',3*nau)),(nau,3))*Bohr2Ang
+    xa = N.reshape(N.array(ReadFortranBin(file,'d',3*nau)),(nau,3))*PC.Bohr2Ang
     isa = N.array(ReadFortranBin(file,fortranLong,nau))
-    ucell = N.transpose(N.reshape(N.array(ReadFortranBin(file,'d',9)),(3,3)))*Bohr2Ang
+    ucell = N.transpose(N.reshape(N.array(ReadFortranBin(file,'d',9)),(3,3)))*PC.Bohr2Ang
     gamma = ReadFortranBin(file,'L',1)[0]!=0        # Read boolean (works with ifort)
     onlyS = ReadFortranBin(file,'L',1)[0]!=0        # Read boolean (works with ifort)
     ts_gamma_scf = ReadFortranBin(file,'L',1)[0]!=0 # Read boolean (works with ifort)
@@ -1325,7 +1319,7 @@ def ReadNewTSHSFile(filename):
         indxuo = N.concatenate((tmp1,tmp2))
     numhg = N.array(ReadFortranBin(file,fortranLong,nou))
     qtot, temp = ReadFortranBin(file,'d',2)
-    ef = ReadFortranBin(file,'d',1)[0]*Rydberg2eV
+    ef = ReadFortranBin(file,'d',1)[0]*PC.Rydberg2eV
     listh = []
     for ii in range(nou):
         listh=N.concatenate((listh,N.array(ReadFortranBin(file,fortranLong,numhg[ii]))))
@@ -1341,7 +1335,7 @@ def ReadNewTSHSFile(filename):
             for ii in range(nou):
                 Hsparse[iSpin,cnt:cnt+numhg[ii]]=ReadFortranBin(file,'d',numhg[ii])
                 cnt=cnt+numhg[ii]
-        Hsparse=Hsparse*Rydberg2eV         
+        Hsparse=Hsparse*PC.Rydberg2eV         
 
     if not gamma:
         # Read xij
@@ -1352,7 +1346,7 @@ def ReadNewTSHSFile(filename):
             tmp=N.reshape(tmp,(3,numhg[ii]))
             xij[cnt:cnt+numhg[ii],:]=N.transpose(tmp)
             cnt=cnt+numhg[ii]
-        xij=xij*Bohr2Ang
+        xij=xij*PC.Bohr2Ang
     else:
         xij=N.zeros((maxnh,3),N.float)
     file.close()
@@ -1422,9 +1416,9 @@ class HS:
             self.xa, self.isa, self.Ssparse, self.Hsparse, self.xij = \
                 arr.xa.copy(), arr.isa.copy(), arr.s.copy(), arr.h.copy(), arr.xij.copy()
             # Fix units and indices
-            self.cell, self.xa = self.cell*Bohr2Ang, N.transpose(self.xa*Bohr2Ang)
-            self.xij, self.Hsparse = N.transpose(self.xij)*Bohr2Ang, N.transpose(self.Hsparse)*Rydberg2eV
-            self.ef = self.ef*Rydberg2eV
+            self.cell, self.xa = self.cell*PC.Bohr2Ang, N.transpose(self.xa*PC.Bohr2Ang)
+            self.xij, self.Hsparse = N.transpose(self.xij)*PC.Bohr2Ang, N.transpose(self.Hsparse)*PC.Rydberg2eV
+            self.ef = self.ef*PC.Rydberg2eV
         else:
             general, sparse, matrices = ReadNewTSHSFile(fn)
             self.nua, self.nuo, self.no , self.nspin, self.maxnh, \

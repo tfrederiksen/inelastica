@@ -16,14 +16,8 @@ import numpy as N
 import numpy.linalg as LA
 import MakeGeom as MG
 import SiestaIO as SIO
+import PhysicalConstants as PC
 
-# From Kittel: Introd. Solid State Physics, 7th ed. (1996)
-Rydberg2eV = 13.6058
-Bohr2Ang = 0.529177
-Ang2Bohr = 1/Bohr2Ang
-amu2kg = 1.66053e-27
-eV2Joule = 1.60219e-19
-hbar2SI = 1.05459e-34
 
 # -----------------------------------------------------------------------------------------------------
 #                                          SetupCGrun
@@ -130,7 +124,7 @@ def SetupCGrun(templateCGrun,newCGrun,NewContactSeparation,AtomsPerLayer,
 #                                          SetupFCrun
 # -----------------------------------------------------------------------------------------------------
 
-def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.04*Bohr2Ang,
+def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.04*PC.Bohr2Ang,
                overwrite=False,PBStemplate=None,PBSsubs=None,submitJob=False):
     """
     CGrun                : Path+foldername to a relaxed structure CGrun folder on
@@ -205,7 +199,7 @@ def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.04*Bohr2Ang,
 #                                          SetupOSrun
 # -----------------------------------------------------------------------------------------------------
 
-def SetupOSrun(CGrun,newOSrun,displacement=0.04*Bohr2Ang,
+def SetupOSrun(CGrun,newOSrun,displacement=0.04*PC.Bohr2Ang,
                overwrite=False,PBStemplate=None,PBSsubs=None,submitJob=False):
     """
     CGrun                : Path+foldername to a relaxed structure CGrun folder on
@@ -699,7 +693,7 @@ def CopyInputFiles(infolder,outfolder,suffixes):
                 shutil.copy(elm,outfolder)
 
 
-def BuildOSstruct(infile,outfile,axes=[0,1,2],direction=[-1,1],displacement=0.04*Bohr2Ang):
+def BuildOSstruct(infile,outfile,axes=[0,1,2],direction=[-1,1],displacement=0.04*PC.Bohr2Ang):
     print 'BuildOSstruct: displacement = %.6f Ang'%displacement
     geom = MG.Geom(infile)
     for i in axes:
@@ -735,12 +729,12 @@ def UnitConvertTBOutput(TBncfile,newTBncfile):
 
     # Read TBncfile (infile)
     infile = nc.NetCDFFile(TBncfile,'r')
-    En = Rydberg2eV*N.array(infile.variables['En'][:,0]) \
-         + 1j*Rydberg2eV*N.array(infile.variables['En'][:,1])
-    H = Rydberg2eV*N.array(infile.variables['H'])
+    En = PC.Rydberg2eV*N.array(infile.variables['En'][:,0]) \
+         + 1j*PC.Rydberg2eV*N.array(infile.variables['En'][:,1])
+    H = PC.Rydberg2eV*N.array(infile.variables['H'])
     S = N.array(infile.variables['S'])
     try:
-        ImH = Rydberg2eV*N.array(infile.variables['ImH'])
+        ImH = PC.Rydberg2eV*N.array(infile.variables['ImH'])
         ImS = N.array(infile.variables['ImS'])
         ImHSexist = True
     except:
@@ -775,22 +769,22 @@ def UnitConvertTBOutput(TBncfile,newTBncfile):
     tmp2 = outfile.createVariable('ImEn',N.float,('x',))
     tmp2[:] = En.imag
     tmp2.units = 'eV'
-    ReSigmaL = Rydberg2eV*N.array(infile.variables['ReSigmaL'][:])
+    ReSigmaL = PC.Rydberg2eV*N.array(infile.variables['ReSigmaL'][:])
     ReSigmaL2 = outfile.createVariable('ReSigmaL',N.float,('x','dim','dim'))
     ReSigmaL2[:,:,:] = ReSigmaL[:,:,:]
     ReSigmaL2.units = 'eV'
     ReSigmaL=[]
-    ImSigmaL = Rydberg2eV*N.array(infile.variables['ImSigmaL'][:])
+    ImSigmaL = PC.Rydberg2eV*N.array(infile.variables['ImSigmaL'][:])
     ImSigmaL2 = outfile.createVariable('ImSigmaL',N.float,('x','dim','dim'))
     ImSigmaL2[:,:,:] = ImSigmaL[:,:,:]
     ImSigmaL2.units = 'eV'
     ImSigmaL=[]
-    ReSigmaR = Rydberg2eV*N.array(infile.variables['ReSigmaR'][:])
+    ReSigmaR = PC.Rydberg2eV*N.array(infile.variables['ReSigmaR'][:])
     ReSigmaR2 = outfile.createVariable('ReSigmaR',N.float,('x','dim','dim'))
     ReSigmaR2[:,:,:] = ReSigmaR[:,:,:]
     ReSigmaR2.units = 'eV'
     ReSigmaR=[]
-    ImSigmaR = Rydberg2eV*N.array(infile.variables['ImSigmaR'][:])
+    ImSigmaR = PC.Rydberg2eV*N.array(infile.variables['ImSigmaR'][:])
     ImSigmaR2 = outfile.createVariable('ImSigmaR',N.float,('x','dim','dim'))
     ImSigmaR2[:,:,:] = ImSigmaR[:,:,:]
     ImSigmaR2.units = 'eV'

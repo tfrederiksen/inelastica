@@ -6,14 +6,8 @@ import VaspIO as VIO
 import numpy as N
 import string, copy, math, sys
 import Scientific.IO.NetCDF as NC
+import PhysicalConstants as PC
 
-# From Kittel: Introd. Solid State Physics, 7th ed. (1996)
-Rydberg2eV = 13.6058
-Bohr2Ang = 0.529177
-Ang2Bohr = 1/Bohr2Ang
-amu2kg = 1.66053e-27
-eV2Joule = 1.60219e-19
-hbar2SI = 1.05459e-34
 
 def interpolateGeom(g0,g1,newlength):
     '''
@@ -451,7 +445,7 @@ class Geom:
         
         print '   ... Final number of atoms        = %i' %len(self.xyz)
 
-    def BuildOnlyS(self,displacement=0.04*Bohr2Ang):
+    def BuildOnlyS(self,displacement=0.04*PC.Bohr2Ang):
         "Returns a new geometry object with 7 times as many atoms"
         geom=copy.deepcopy(self)
         for dim in range(3):
@@ -506,7 +500,7 @@ class Geom:
             geom.pbc[2][2]+=len(AddRightList)/AtomsPerLayer*dz
 
 
-    def StretchAlongEigenvector(self,ncfile,modeindex,displacement=0.04*Bohr2Ang):
+    def StretchAlongEigenvector(self,ncfile,modeindex,displacement=0.04*PC.Bohr2Ang):
         'Displace a geometry along a calculated eigenmode'
         # TF/080527 
         file = NC.NetCDFFile(ncfile,'r')
