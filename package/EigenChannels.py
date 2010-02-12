@@ -143,11 +143,10 @@ def calcT(calledFromInelastica=False,InelasticaEf=0.0):
         # Save to file
         if abs(EE-general.energy)<fudgeEnergy and not calledFromInelastica:
             ECleft=EigC
-
+            # Write wave functions
             for jj in range(general.numchan):
                 general.iSide, general.iChan = 0, jj+1
-                writemacu(ECleft[jj],True)
-                writenetcdf(ECleft[jj])
+                writeWavefunction(ECleft[jj])
                 Curr=calcCurrent(ECleft[jj])
                 writeCurrent(Curr)
                     
@@ -157,11 +156,10 @@ def calcT(calledFromInelastica=False,InelasticaEf=0.0):
                 ECright, EigT = calcEigChan(A2,G1,Us)
             
             if general.bothsides and not calledFromInelastica:
-                # Write cube files
+                # Write wave functions
                 for jj in range(general.numchan):
                     general.iSide, general.iChan = 1, jj+1
-                    writemacu(ECright[jj],True)
-                    writenetcdf(ECright[jj])
+                    writeWavefunction(ECright[jj])
                     Curr=calcCurrent(ECright[jj])
                     writeCurrent(Curr)
             
@@ -255,10 +253,9 @@ def calcIETS(T,G,Gd,G1,G2,A1,A2,Us,Usi,iiE,calledFromInelastica=False):
 ########################################################
 def checkImPart(x):
     if abs(x.imag)>0.0000001:
-        print "LOE : Imaginary part %.3e too big"%x.imag
+        print "LOE : Imaginary part (%.3e) too big"%x.imag
         kuk
     return x.real   
-
 
 ########################################################
 def writeFGRrates():
@@ -513,24 +510,12 @@ def writeCurrent(Curr):
     foC.close()
 
 ########################################################
-def writenetcdf(Y):
+def writenetcdf(fn,YY,nx,ny,nz,origo,dstep):
     """
     THF: Write eigenchannels to netcdf format
     """
     import time
-
-    # Rotate in complex space
-    max_amp=-1.0
-    phase=1.0+0.0j
-    for kk in range(len(Y)):
-        if abs(Y[kk])>max_amp:
-            max_amp=abs(Y[kk])
-            phase=Y[kk]/max_amp
-            Y=Y/phase
-            
-    YY, dstep, origo, nx, ny, nz = calcWF(Y)
-
-    file = NC.NetCDFFile(fileName()+'.nc','w','Created '+time.ctime(time.time()))
+    file = NC.NetCDFFile(fn,'w','Created '+time.ctime(time.time()))
     file.createDimension('nx',nx)
     file.createDimension('ny',ny)
     file.createDimension('nz',nz)
@@ -583,7 +568,6 @@ def writenetcdf(Y):
 def writecube(fn,YY,nx,ny,nz,origo,dstep):
     """
     Write wavefunction to cube file.
-    fn : output filename (will add .Re.cube etc)
     """
     global geom
 
@@ -591,24 +575,24 @@ def writecube(fn,YY,nx,ny,nz,origo,dstep):
     anr=geom.anr
 
     foR=file(fn,'w')
-    foR.write('Eigenechannel wavefunction\n%s\n'%fn)
+    foR.write('Eigenchannel wavefunction\n%s\n'%fn)
     foR.write('%i %f %f %f\n'% (len(xyz),origo[0]/PC.Bohr2Ang,origo[1]/PC.Bohr2Ang,origo[2]/PC.Bohr2Ang))
     foR.write('%i %f %f %f\n'% (nx,dstep/PC.Bohr2Ang,0.0,0.0))
     foR.write('%i %f %f %f\n'% (ny,0.0,dstep/PC.Bohr2Ang,0.0))
     foR.write('%i %f %f %f\n'% (nz,0.0,0.0,dstep/PC.Bohr2Ang))
+    # Write atom coordinates
     for ii in range(len(xyz)):
         foR.write('%i %f '% (anr[ii],0.0))
         tmp=xyz[ii,:]/PC.Bohr2Ang
         foR.write('%f %f %f\n'% (tmp[0],tmp[1],tmp[2]))
-
+    # Write wavefunction
     for ix in range(nx):
         for iy in range(ny):
             for iz in range(nz):
                 foR.write('%1.3e\n' % YY[ix,iy,iz].real)
-
     foR.close()
 
-################# Write cube file in macu format ######################
+################# Write wave function in macu format ######################
 def writemacubin(fn,YY,nx,ny,nz,origo,dstep):
     """
     Write molekel binary format
@@ -632,45 +616,36 @@ def writemacubin(fn,YY,nx,ny,nz,origo,dstep):
 
     fo.close()
 
-################ Write Cube file in XSF format ##################################
-def writeXSF(fn,YY,nx,ny,nz,origo,dstep,writeImag):
+################ Write wave function in XSF format ##################################
+def writeXSF(fn,YY,nx,ny,nz,origo,dstep):
     """
     Write XSF datagrid for XCrysden
     """
-    
     fo=file(fn,'w')
-#    
-    Bohr2Ang = 0.529177
-    Ang2Bohr = 1/Bohr2Ang
-    convFactor=1
     vectors=geom.pbc
     speciesnumber=geom.snr
     atomnumber=geom.anr
     xyz=geom.xyz
-    #dstep=dstep*Bohr2Ang
-    #origo=origo*Bohr2Ang
     xmin,xmax = origo[0], origo[0]+dstep*(nx-1)
     ymin,ymax = origo[1], origo[1]+dstep*(ny-1)
     zmin,zmax = origo[2], origo[2]+dstep*(nz-1)
     
     fo.write(' ATOMS\n')
-
     numberOfAtoms = len(speciesnumber)
 
     # Write out the position for the atoms
     for i in range(numberOfAtoms):
-
         line = '   %i  ' %atomnumber[i]
         for j in range(3):
-            line += string.rjust('%.9f'%(xyz[i][j]*convFactor),16)
+            line += string.rjust('%.9f'%xyz[i][j],16)
         fo.write(line+'\n')
 
-	#Write the datagrid
+    #Write the datagrid
     fo.write('BEGIN_BLOCK_DATAGRID_3D\n')
     fo.write(' DATA_from:Inelastica\n')
+    # Real part
     fo.write(' BEGIN_DATAGRID_3D_REAL\n')
-    fo.write('    %3.0i    %3.0i    %3.0i\n'%
-        (nx,ny,nz))
+    fo.write('    %3.0i    %3.0i    %3.0i\n'%(nx,ny,nz))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (origo[0],origo[1],origo[2]))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin,0.0000,0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,ymax-ymin,0.0000))
@@ -678,49 +653,44 @@ def writeXSF(fn,YY,nx,ny,nz,origo,dstep,writeImag):
     data=[]
     ll=0
     for ii in range(nz):
-        
         for kk in range(ny):
             for jj in range(nx):
     		data.append(YY.real[jj,kk,ii])
     for iii in range((nx*ny*nz)) :
 	if ((iii+1)%6==0) :	
-		fo.write('  %1.5E\n'% (data[iii]))
+            fo.write('  %1.5E\n'% (data[iii]))
 	else :
-		fo.write('  %1.5E'% (data[iii]))
+            fo.write('  %1.5E'% (data[iii]))
     fo.write('\n END_DATAGRID_3D\n')
-    if writeImag :
-    	fo.write(' BEGIN_DATAGRID_3D_IMAG\n')
-    	fo.write('    %3.0i    %3.0i    %3.0i\n'%
-        	(nx,ny,nz))
-    	fo.write('  %1.7E  %1.7E  %1.7E\n'% (origo[0],origo[1],origo[2]))
-    	fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin,0.0000,0.0000))
-    	fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,ymax-ymin,0.0000))
-    	fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,0.0000,zmax-zmin))
-    	data=[]
-    	ll=0
-    	for ii in range(nz):
-        
-       	 for kk in range(ny):
+    # Imaginary part
+    fo.write(' BEGIN_DATAGRID_3D_IMAG\n')
+    fo.write('    %3.0i    %3.0i    %3.0i\n'%(nx,ny,nz))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (origo[0],origo[1],origo[2]))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin,0.0000,0.0000))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,ymax-ymin,0.0000))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,0.0000,zmax-zmin))
+    data=[]
+    ll=0
+    for ii in range(nz):
+        for kk in range(ny):
             for jj in range(nx):
-    		data.append(YY.imag[jj,kk,ii])
-    	for iii in range((nx*ny*nz)) :
-			if ((iii+1)%6==0) :	
-				fo.write('  %1.5E\n'% (data[iii]))
-			else :
-				fo.write('  %1.5E'% (data[iii]))
-    	fo.write('\n END_DATAGRID_3D\n')
+                data.append(YY.imag[jj,kk,ii])
+    for iii in range((nx*ny*nz)) :
+        if ((iii+1)%6==0) :	
+            fo.write('  %1.5E\n'% (data[iii]))
+        else :
+            fo.write('  %1.5E'% (data[iii]))
+    fo.write('\n END_DATAGRID_3D\n')
     fo.write('END_BLOCK_DATAGRID_3D')
     fo.close()
 
 
 ########################################################
-def writemacu(Y,writeImag):
+def writeWavefunction(Y):
     """
-    Write wavefunction to macu file.
-    fn : output filename (will add .Re.cube etc)
-    Y  : vector for wavefunction
-    writeImag : False writes only real part
-                True writes real, imag and |Y|^2 to file 
+    Writes wave function to the specified output type
+    Y: vector for wavefunction
+                
     """
     fn = fileName()
 
@@ -737,30 +707,27 @@ def writemacu(Y,writeImag):
     foT=file(fn+'.abs.txt','w')
     foT.write('Atom nr M L abs(Y)\n')
     for ii in range(len(Y)):
-        foT.write('%3.0i %3.0i %3.1i %3.1i %1.3f \n'%
+        foT.write('%3.0i %3.0i %3.1i %3.1i %1.8f \n'%
         (basis.ii[ii],basis.atomnum[ii],basis.M[ii],basis.L[ii],abs(Y[ii])))
     foT.close()
 
     YY, dstep, origo, nx, ny, nz = calcWF(Y)
-    
-    if general.cube=='macu':
-        writemacubin(fn+'.Re.macu',YY.real,nx,ny,nz,
-                 origo,dstep)
-        if writeImag:
-            writemacubin(fn+'.Im.macu',YY.imag,nx,ny,nz,
-                         origo,dstep)
-    if general.cube=='cube':
-        writecube(fn+'.Re.cube',YY.real,nx,ny,nz,
-                 origo,dstep)
-        if writeImag:
-            writecube(fn+'.Im.cube',YY.imag,nx,ny,nz,
-                         origo,dstep)
-    if general.cube=='XSF':
-        writeXSF(fn+'.XSF',YY.real,nx,ny,nz,
-                 origo,dstep,writeImag)
-        #if writeImag:
-         #   writecube(fn+'.Im.cube',YY.imag,nx,ny,nz,
-          #               origo,dstep)
+
+    # Write wave function in specified file format
+    if general.format == 'macu':
+        writemacubin(fn+'.Re.macu',YY.real,nx,ny,nz,origo,dstep)
+        writemacubin(fn+'.Im.macu',YY.imag,nx,ny,nz,origo,dstep)
+
+    if general.format == 'cube':
+        writecube(fn+'.Re.cube',YY.real,nx,ny,nz,origo,dstep)
+        writecube(fn+'.Im.cube',YY.imag,nx,ny,nz,origo,dstep)
+        
+    if general.format == 'XSF':
+        writeXSF(fn+'.XSF',YY,nx,ny,nz,origo,dstep)
+
+    if general.format == 'nc':
+        writenetcdf(fn+'.nc',YY,nx,ny,nz,origo,dstep)
+
 
 ###########################################################
 def setupParameters(calledFromInelastica=False):
@@ -790,11 +757,11 @@ For help use --help!
     EC.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]", 
                   type='int', default=4)
     EC.add_option("-B", "--BothSides", dest='bothsides', default=False,action='store_true',
-                  help="Calculate eigenchannels from both sides [No]")
+                  help="Calculate eigenchannels from both sides [%default]")
     EC.add_option("-r", "--Res", dest='res', default=0.4,type='float',
                   help="Resolution [%default Ang]")
-    EC.add_option("-g", "--cube", dest='cube', default='macu',type='string',
-                  help="Real space file format 'macu','cube' or 'XSF'")
+    EC.add_option("-w", "--format", dest='format', default='macu',type='string',
+                  help="Wavefunction format (macu, cube, XSF, or nc) [%default]")
     EC.add_option("-N", "--NumPhCurr", dest='NumPhCurr', default=10,type='int',
                   help="Max number of changes in bond currents from inelastic scattering  [%default]")
     parser.add_option_group(EC)
