@@ -46,7 +46,7 @@ def Analyze(dirname,wildcard,
                            boundary conditions defaults to DeviceFirst
     -  PerBoundCorrLast  : Defaults to DeviceLast
     -  AuxNCfile  : An optional auxillary netcdf-file used for read/writing dH matrix arrays
-    -  Isotopes   : [[snr1, anr1], ...] substitute atom type to anr for siesta numbering atom snr
+    -  Isotopes   : [[ii1, anr1], ...] substitute to atom type anr for siesta numbering atom ii
                     I.e., use to substitute deuterium (anr 1001) for hydrogens
     """
     
@@ -82,13 +82,15 @@ def Analyze(dirname,wildcard,
 
     ### Read geometry
     print '\nPhonons.Analyze: Reading geometry:'
-    vectors,speciesnumber,atomnumber,xyz = SIO.ReadXVFile(corrXVfiles[0],
-                                                          InUnits='Bohr',OutUnits='Ang')
+    vectors,speciesnumber,atomnumber,xyz = SIO.ReadXVFile(corrXVfiles[0])
+
+    # Determine correspondence between speciesnumber and orbital-indices
+    orbitalIndices,nao = GetOrbitalIndices(tree[0][2],speciesnumber)
+
     # Make isotope substitutions 
-    atomnumberNotSubstituted=copy.copy(atomnumber)
-    for snr,anr in Isotopes:
-        atomnumber[snr-1]=anr
-        print "Phonons.Analyse: Isotope substitution for atom %i to %i"%(snr,anr)
+    for ii,anr in Isotopes:
+        atomnumber[ii-1]=anr
+        print "Phonons.Analyse: Isotope substitution for atom index %i to atom type %i"%(ii,anr)
         
     DeviceLast = min(DeviceLast,len(xyz))
     print 'Phonons.Analyze: This run uses'
@@ -155,8 +157,6 @@ def Analyze(dirname,wildcard,
     
     ### Write data to NC-file
     print '\nPhonons.Analyze: Writing results to netCDF-file'
-    orbitalIndices,nao = GetOrbitalIndices(tree[0][2],atomnumberNotSubstituted)
-    orbitalIndices = N.array(orbitalIndices)
     tmp1, tmp2 = [], []
     for ii in range(DeviceFirst-1,DeviceLast):
         tmp1.append(orbitalIndices[ii,0]-orbitalIndices[DeviceFirst-1,0])
@@ -184,21 +184,21 @@ def Analyze(dirname,wildcard,
     if CalcCoupl and AuxNCfile:
         # Heph couplings utilizing netcdf-file
         if not os.path.isfile(AuxNCfile):
-            GenerateAuxNETCDF(tree,FCfirst,FClast,atomnumberNotSubstituted,onlySdir,PerBoundCorrFirst,PerBoundCorrLast,
+            GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PerBoundCorrFirst,PerBoundCorrLast,
                               AuxNCfile,displacement,CorrPotentialShift=CorrPotentialShift)
         else:
             print 'Phonons.Analyze: Reading from AuxNCfile =', AuxNCfile
-        H0,S0,Heph = CalcHephNETCDF(tree,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
-                                  hw,U,NCfile,AuxNCfile,atomnumberNotSubstituted)
+        H0,S0,Heph = CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
+                                  hw,U,NCfile,AuxNCfile)
     elif CalcCoupl:
         # Old way to calculate Heph (reading everything into the memory)
         print '\nPhonons.Analyze: Reading (H0,S0,dH) from .TSHS and .onlyS files:'
         # Read electronic structure from files
         eF,H0,S0,dH = GetH0S0dH(tree,FCfirst,FClast,displacement,CorrPotentialShift=CorrPotentialShift)
         # Correct dH for change in basis states with displacement
-        dH = CorrectdH(tree,onlySdir,atomnumberNotSubstituted,eF,H0,S0,dH,FCfirst,displacement)
+        dH = CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement)
         # Downfold matrices to the subspace of the device atoms
-        H0,S0,dH = Downfold2Device(tree,atomnumberNotSubstituted,H0,S0,dH,DeviceFirst,DeviceLast,
+        H0,S0,dH = Downfold2Device(orbitalIndices,H0,S0,dH,DeviceFirst,DeviceLast,
                                    FCfirst,FClast,PerBoundCorrFirst,PerBoundCorrLast)
         # Calculate e-ph couplings
         print '\nPhonons.Analyze: Calculating electron-phonon couplings:'
@@ -213,13 +213,13 @@ def Analyze(dirname,wildcard,
         # Print e-ph coupling matrices in s-orbital subspace
         for iSpin in range(len(H0)):
             print '\nPhonons.Analyze: Hamiltonian H0 (in s-orbital subspace) Spin=',iSpin
-            ShowInSOrbitalSubspace(tree,atomnumberNotSubstituted,FCfirst,FClast,DeviceFirst,DeviceLast,H0[iSpin,:,:])
+            ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,H0[iSpin,:,:])
         print '\nPhonons.Analyze: Overlap matrix S0 (in s-orbital subspace)'
-        ShowInSOrbitalSubspace(tree,atomnumberNotSubstituted,FCfirst,FClast,DeviceFirst,DeviceLast,S0)
+        ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,S0)
         for iSpin in range(len(H0)):
             for i in range(len(hw)):
                 print '\nPhonons.Analyze: Coupling matrix Heph[%i] (in s-orbital subspace) Spin=%i'%(i,iSpin)
-                ShowInSOrbitalSubspace(tree,atomnumberNotSubstituted,FCfirst,FClast,
+                ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
                                        DeviceFirst,DeviceLast,Heph[i,iSpin,:,:])
     NCfile.close()
 
@@ -282,9 +282,8 @@ def FindMirrorSymmetry(First,Last,xyz):
     return pairs
 
 
-def ShowInSOrbitalSubspace(tree,atomnumber,FCfirst,FClast,DeviceFirst,DeviceLast,A):
+def ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,A):
     # Print matrix A defined on the electronic subspace [FCfirst,FClast]
-    orbitalIndices,nao = GetOrbitalIndices(tree[0][2],atomnumber)
     # FirstOrbital refers to the element A[0,0]
     FirstOrbital = orbitalIndices[DeviceFirst-1][0]
     sIndices = []
@@ -299,31 +298,36 @@ def ShowInSOrbitalSubspace(tree,atomnumber,FCfirst,FClast,DeviceFirst,DeviceLast
         else: print
 
 
-def GetOrbitalIndices(dirname,atomnumber):
-    # Build dictionary
+def GetOrbitalIndices(dirname,speciesnumber):
+    # Determine snr (siesta number) for each label
+    csl = SIO.GetFDFblock(dirname+'/RUN.fdf', KeyWord = 'ChemicalSpeciesLabel')
+    csl2snr = {}
+    for set in csl:
+        csl2snr[set[2]] = set[0]
+    # Determine nao (number of orbitals) for each snr
     ionNCfiles = glob.glob(dirname+'/*.ion.nc*')
-    atomnumber2nao = {}
+    snr2nao = {}
     for ionfile in ionNCfiles:
         if ionfile.endswith('.gz'):
             print 'Phonons.GetOrbitalIndices: Unzipping',ionfile
             os.system('gunzip '+ionfile)
             ionfile = ionfile[:-3]
         file = nc.NetCDFFile(ionfile,'r')
-        atomnumber2nao[int(file.Atomic_number[0])] = int(file.Number_of_orbitals[0])
+        thissnr = csl2snr[file.Label]
+        snr2nao[int(thissnr)] = int(file.Number_of_orbitals[0])
         file.close()
+    print 'snr2nao =',snr2nao
     # Determine which orbital indices that belongs to a certain atom
     orbitalIndices = []
     tmpOrb = 0
-    for num in atomnumber:
-        nao = atomnumber2nao[num]
+    for num in speciesnumber:
+        nao = snr2nao[num]
         orbitalIndices.append([tmpOrb,tmpOrb+int(nao)-1])
         tmpOrb+=nao
-    return orbitalIndices,tmpOrb
+    return N.array(orbitalIndices),tmpOrb
 
          
-def Downfold2Device(tree,atomnumber,H0,S0,dH,DeviceFirst,DeviceLast,FCfirst,FClast,PBCFirst,PBCLast):
-    orbitalIndices,nao = GetOrbitalIndices(tree[0][2],atomnumber)
-
+def Downfold2Device(orbitalIndices,H0,S0,dH,DeviceFirst,DeviceLast,FCfirst,FClast,PBCFirst,PBCLast):
     # Remove Periodic Boundary terms
     PBCorbFirst=orbitalIndices[PBCFirst-1][0]
     PBCorbLast=orbitalIndices[PBCLast-1][1]
@@ -381,12 +385,11 @@ def CalcHeph(dH,hw,U,atomnumber,FCfirst):
     return N.array(Heph)
 
 
-def CorrectdH(tree,onlySdir,atomnumber,eF,H0,S0,dH,FCfirst,displacement):
+def CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement):
     print 'Phonons.CorrectdH: Applying correction to dH...'
     dHnew = dH.copy()
-    orbitalIndices,nao = GetOrbitalIndices(tree[0][2],atomnumber)
     mm = N.dot
-    onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,atomnumber,displacement)
+    onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,nao,displacement)
     invS0 = LA.inv(S0)
     for i in range(len(dH)):
         SIO.printDone(i, len(dH),'Correcting dH')
@@ -402,26 +405,26 @@ def CorrectdH(tree,onlySdir,atomnumber,eF,H0,S0,dH,FCfirst,displacement):
     return dHnew
 
 
-def GetOnlyS(onlySdir,atomnumber,displacement):
+def GetOnlyS(onlySdir,nao,displacement):
     print 'Phonons.GetOnlyS: Reading from', onlySdir
     onlySfiles = glob.glob(onlySdir+'/*.onlyS*')
+    onlySfiles.sort()
     if len(onlySfiles)<1:
         sys.exit('Phonons.GetOnlyS: No .onlyS file found!')
-    # Find indices for original structure
-    orbitalIndices,orbitals = GetOrbitalIndices(onlySdir,atomnumber)
-    S0 = N.zeros((orbitals,orbitals),N.float)
-    dxm,dxp = N.zeros((orbitals,orbitals),N.float),N.zeros((orbitals,orbitals),N.float)
-    dym,dyp = N.zeros((orbitals,orbitals),N.float),N.zeros((orbitals,orbitals),N.float)
-    dzm,dzp = N.zeros((orbitals,orbitals),N.float),N.zeros((orbitals,orbitals),N.float) 
+    # nao is number of orbitals in the original (not-doubled) structure
+    S0 = N.zeros((nao,nao),N.float)
+    dxm,dxp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float)
+    dym,dyp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float)
+    dzm,dzp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float) 
     if len(onlySfiles)!=6:
         sys.exit('Phonons.GetOnlyS: Wrong number of onlyS files found!')
     else:
-        # New duplication version
         for file in onlySfiles:
             S = SIO.ReadOnlyS(file)
-            nao = len(S)/2
-            if nao!=orbitals:
-                sys.exit('Phonons.GetOnlyS: Error assigning orbitals to atoms (new version)!')    
+            orbitals = len(S)/2
+            if orbitals!=nao:
+                print 'nao=%i,  orbitals=%i'%(nao,orbitals)
+                sys.exit('Phonons.GetOnlyS: Error assigning orbitals to atoms!')    
             S0=S[0:nao,0:nao].copy()
             dmat=S[0:nao,nao:nao*2].copy()
             if file.endswith('_1.onlyS'):
@@ -444,7 +447,7 @@ def GetOnlyS(onlySdir,atomnumber,displacement):
     # Check that onlyS-directory also corresponds to the same displacement
     print 'Phonons.GetOnlyS: OnlyS-displacement (min) = %.5f Ang'%thisd
     print 'Phonons.GetOnlyS: FC-displacement          = %.5f Ang'%displacement    
-    if abs(thisd-displacement)/displacement > 0.40:  # Tolerate 40 percent off...
+    if abs(thisd-displacement)/displacement > 0.05:  # Tolerate 5 percent off...
         sys.exit('Phonons.GetOnlyS: OnlyS-displacement different from FC-displacement!')    
     dSx = (dxp-dxm)/(2.*displacement)
     dSy = (dyp-dym)/(2.*displacement)
@@ -884,7 +887,7 @@ def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
     f.close()
 
 
-def GenerateAuxNETCDF(tree,FCfirst,FClast,atomnumber,onlySdir,PBCFirst,PBCLast,AuxNCfile,
+def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,AuxNCfile,
                       displacement,CorrPotentialShift=True):
     index = 0
     # Read TSHSfiles
@@ -934,9 +937,8 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,atomnumber,onlySdir,PBCFirst,PBCLast,A
     print 'Phonons.GenerateAuxNETCDF: len(dH) =',index
     
     # Correct dH
-    orbitalIndices,nao = GetOrbitalIndices(tree[0][2],atomnumber)
     mm = N.dot
-    onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,atomnumber,displacement)
+    onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,nao,displacement)
     invS0 = LA.inv(S0)
     for i in range(index):
         SIO.printDone(i,index,'Correcting dH')
@@ -976,10 +978,9 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,atomnumber,onlySdir,PBCFirst,PBCLast,A
     print 'Phonons.GenerateAuxNETCDF: File %s written.'%AuxNCfile
 
 
-def CalcHephNETCDF(tree,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
-                   hw,U,NCfile,AuxNCfile,atomnumberNotSubstituted):
+def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
+                   hw,U,NCfile,AuxNCfile):
     # Read AuxNCfile and downfold to device
-    orbitalIndices,nao = GetOrbitalIndices(tree[0][2],atomnumberNotSubstituted)
     first,last = orbitalIndices[DeviceFirst-1][0],orbitalIndices[DeviceLast-1][1]
     NCfile2 = nc.NetCDFFile(AuxNCfile,'r')
     H0 = N.array(NCfile2.variables['H0'])[:,first:last+1,first:last+1]
