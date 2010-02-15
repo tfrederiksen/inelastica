@@ -395,11 +395,17 @@ def WriteFDFFile(filename,vectors,speciesnumber,atomnumber,xyz):
         file.write(line)
     file.write('%endblock AtomicCoordinatesAndAtomicSpecies\n')
 
-def WriteFDFFileZmat(filename,vectors,speciesnumber,atomnumber,xyz,zmati,zmatf):
-    "Write STRUCT.fdf file using the z-matrix format"
-    "   xyz     : all cartesian coordinates"
-    "   zmati   : integer part of z-matrix (indices)"
-    "   zmatf   : fractional part of z-matrix (angles)"
+def WriteFDFFileZmat(filename,vectors,speciesnumber,atomnumber,xyz,first=0,last=0,zmat=None):
+    """Write STRUCT.fdf file using the z-matrix format
+       xyz        : all cartesian coordinates
+       first/last : first,last atoms in molecule block
+       zmat[:,:3] : integer part of z-matrix (indices)
+       zmat[:,3:] : fractional part of z-matrix (angles)"""
+    # Sanity check
+    if first >= last or first > len(xyz) or first <=0 or last > len(xyz) or last <= 0:
+        print 'SiestaIO.WriteFDFFileZmat: Meaningless first (%i) / last (%i) inputs. '%(first,last)
+        first, last = 0,0
+    # Writing zmatrix
     print 'SiestaIO.WriteFDFFileZmat: Writing',filename
     file = open(filename,'w')
     file.write('NumberOfAtoms '+str(len(xyz))+'\n')
@@ -412,21 +418,19 @@ def WriteFDFFileZmat(filename,vectors,speciesnumber,atomnumber,xyz,zmati,zmatf):
     file.write('%endblock LatticeVectors\nAtomicCoordinatesFormat Ang'+
                '\n\nZM.UnitsLength Ang\nZM.UnitsAngle deg\n'+
                '\n%block Zmatrix\n')
-    molblock = True
+    if first != 1:
+        file.write('cartesian\n')
     for ii in range(len(xyz)):
-        if zmati[ii][0]==0:
+        if ii+1 == first:
             file.write('molecule\n')
-            molblock = True
-        if zmati[ii][0]<0 and molblock:
-            file.write('cartesian\n')
-            molblock = False
-        if molblock:
+        if ii+1 >= first and ii+1 <= last:
+            # We are within the molecular block
             line =string.rjust('%i'%speciesnumber[ii],2)
-            a,b,c = zmati[ii]
+            a,b,c,d,e,f = zmat[ii+1-first]
             line+=' %i %i %i '%(a,b,c)
-            line+=string.rjust('%.9f'%zmatf[ii][0],16)
-            line+=string.rjust('%.9f'%zmatf[ii][1],16)
-            line+=string.rjust('%.9f'%zmatf[ii][2],16)
+            line+=string.rjust('%.9f'%d,16)
+            line+=string.rjust('%.9f'%e,16)
+            line+=string.rjust('%.9f'%f,16)
             line+='   0 0 0\n'
             file.write(line)
         else:
@@ -436,6 +440,8 @@ def WriteFDFFileZmat(filename,vectors,speciesnumber,atomnumber,xyz,zmati,zmatf):
             line+=string.rjust('%.9f'%xyz[ii][2],16)
             line+='   0 0 0\n'
             file.write(line)
+        if ii+1 == last:
+            file.write('cartesian\n')
     file.write('constants\n')
     file.write('variables\n')
     file.write('constraints\n')

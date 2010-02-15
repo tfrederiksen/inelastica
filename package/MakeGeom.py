@@ -241,54 +241,49 @@ class Geom:
     def MoveInsideUnitCell(self):
         # Assuming xyz-basis vectors
         #self.move2origo()
+        print 'MakeGeom.MoveInsideUnitCell: Moving atoms.'
         for i in range(self.natoms):
             self.xyz[i][0] = self.xyz[i][0]%self.pbc[0][0]
             self.xyz[i][1] = self.xyz[i][1]%self.pbc[1][1]
             self.xyz[i][2] = self.xyz[i][2]%self.pbc[2][2]
 
-    def SetZmatrix(self,first,last):
+    def CalcZmatrix(self,first,last):
         'Calculates the Zmatrix for a molecule (SIESTA numbering)'
-        try:
-            self.zmati
-        except:
-            self.zmati = -1*N.ones((self.natoms,3),N.int)
-            self.zmatf = N.zeros((self.natoms,3),N.float)
-        print 'MakeGeom.SetZmatrix: Calculating Zmatrix (from atom %i to %i, SIESTA numbering)...'%(first,last),
+        zmat = N.zeros((last-first+1,6),N.float)
+        print 'MakeGeom.CalcZmatrix: Calculating Zmatrix (from atom %i to %i, SIESTA numbering)...'%(first,last),
         f = first-1 # Python numbering
-
         # 1st - Cartesian coordinates
         if last-first>=0:
-            self.zmati[f] = [0,0,0]
-            self.zmatf[f] = self.xyz[f]
+            zmat[0,:3] = N.array([0,0,0])
+            zmat[0,3:] = self.xyz[f]
 
-        # 2nd - Spherical coordinates 
-        origo = N.array([0.,0.,0.])
-        d = GetDist(self.xyz[f],self.xyz[f+1])
-        v01 = N.array(self.xyz[f+1])-N.array(self.xyz[f])
-        theta = GetAngle([0.,0.,1.],origo,v01)
-        v01[2] = 0.0 # project into xy-plane
-        phi = GetAngle([1.,0.,0.],origo,v01)
+        # 2nd - Spherical coordinates
         if last-first>=1:
-            self.zmati[f+1] = [1,0,0]
-            self.zmatf[f+1] = N.array([d,theta,phi])
+            origo = N.array([0.,0.,0.])
+            d = GetDist(self.xyz[f],self.xyz[f+1])
+            v01 = N.array(self.xyz[f+1])-N.array(self.xyz[f])
+            theta = GetAngle([0.,0.,1.],origo,v01)
+            v01[2] = 0.0 # project into xy-plane
+            phi = GetAngle([1.,0.,0.],origo,v01)
+            zmat[1,:3] = N.array([1,0,0])
+            zmat[1,3:] = N.array([d,theta,phi])
 
         # 3rd - Dihedral angle with pseudoatom coordinate r0
-        r0 = N.array(self.xyz[f])+N.array([0.,0.,10.])
         if last-first>=2:
-            self.zmati[f+2] = [2,1,0]
-            self.zmatf[f+2] = N.array([GetDist(self.xyz[f+1],self.xyz[f+2]),\
-                                      GetAngle(self.xyz[f],self.xyz[f+1],self.xyz[f+2]),\
-                                      GetDihedral(r0,self.xyz[f],self.xyz[f+1],self.xyz[f+2])])
+            r0 = N.array(self.xyz[f])+N.array([0.,0.,10.])
+            zmat[2,:3] = N.array([2,1,0])
+            zmat[2,3:] = N.array([GetDist(self.xyz[f+1],self.xyz[f+2]),\
+                                    GetAngle(self.xyz[f],self.xyz[f+1],self.xyz[f+2]),\
+                                    GetDihedral(r0,self.xyz[f],self.xyz[f+1],self.xyz[f+2])])
         # Remaining atoms
         if last-first>=3:
             for i in range(f+3,last):
-                self.zmati[i] = [i-f,i-f-1,i-f-2]
-                self.zmatf[i] = N.array([GetDist(self.xyz[i-1],self.xyz[i]),\
-                                        GetAngle(self.xyz[i-2],self.xyz[i-1],self.xyz[i]),\
-                                        GetDihedral(self.xyz[i-3],self.xyz[i-2],self.xyz[i-1],self.xyz[i])])
+                zmat[i-f,:3] = N.array([i-f,i-f-1,i-f-2])
+                zmat[i-f,3:] = N.array([GetDist(self.xyz[i-1],self.xyz[i]),\
+                                      GetAngle(self.xyz[i-2],self.xyz[i-1],self.xyz[i]),\
+                                      GetDihedral(self.xyz[i-3],self.xyz[i-2],self.xyz[i-1],self.xyz[i])])
         print 'Done!'
-
-
+        return zmat
 
     # PURPOSE SPECIFIC FUNCTIONS
     
@@ -565,15 +560,17 @@ class Geom:
             geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
         SIO.WriteFDFFile(fn,geom.pbc,geom.snr,geom.anr,geom.xyz)
 
-    def writeFDFZmat(self,fn,mollist,rep=[1,1,1]):
+    def writeFDFZmat(self,fn,first=0,last=0,rep=[1,1,1]):
         "Write STRUCT.fdf file"
         geom = copy.deepcopy(self)
         for i in range(3):
             geom.repeteGeom(self.pbc[i],rep=rep[i])
             geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
-        for first,last in mollist:
-            geom.SetZmatrix(first,last)
-        SIO.WriteFDFFileZmat(fn,geom.pbc,geom.snr,geom.anr,geom.xyz,geom.zmati,geom.zmatf)
+        if first > 0 and last >= first:
+            zmat = geom.CalcZmatrix(first,last)
+        else:
+            zmat = None
+        SIO.WriteFDFFileZmat(fn,geom.pbc,geom.snr,geom.anr,geom.xyz,first,last,zmat)
 
     def readMKL(self,fn):
         "not implemented yet"

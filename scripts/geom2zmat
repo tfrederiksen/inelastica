@@ -11,8 +11,8 @@ Repeat unitcell from XV and fdf.
 (fdf support limited to Ang, cartesian coord)
 """
 parser = OptionParser(usage,description=description)
-parser.add_option("-f", "--first", help="First atom in Z-matrix range", type='int', default=1)
-parser.add_option("-l", "--last", help="Last atom in Z-matrix range", type='int', default=1000)
+parser.add_option("-f", "--first", help="First atom in Z-matrix range", type='int', default=0)
+parser.add_option("-l", "--last", help="Last atom in Z-matrix range", type='int', default=0)
 (general, args) = parser.parse_args()
 
 if len(args)<2:
@@ -20,6 +20,5 @@ if len(args)<2:
     parser.error('You need to supply two filenames.')
 else:
     g = MG.Geom(args[0])
-    g.move2origo()
-    g.writeFDFZmat(args[1],[[general.first,general.last]])
+    g.writeFDFZmat(args[1],general.first,general.last)
 

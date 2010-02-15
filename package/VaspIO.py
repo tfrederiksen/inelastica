@@ -65,3 +65,17 @@ def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.
         file.write(line+'\n')
 
 
+def GetEnergies(OUTCAR):
+    file = open(OUTCAR,'r')
+    #
+    freeE, Etot, EtotSigma0 = 1e100, 1e100, 1e100
+    for line in file:
+        if 'TOTEN' in line:
+            l = line.split()
+            freeE = float(l[4])      # Pick last appearance
+        if 'energy  without entropy=' in line:
+            l = line.split()
+            Etot = float(l[3])       # Pick last appearance
+            EtotSigma0 = float(l[6]) # Pick last appearance
+    file.close()
+    return freeE, Etot, EtotSigma0
