@@ -402,7 +402,7 @@ def WriteFDFFileZmat(filename,vectors,speciesnumber,atomnumber,xyz,first=0,last=
        zmat[:,:3] : integer part of z-matrix (indices)
        zmat[:,3:] : fractional part of z-matrix (angles)"""
     # Sanity check
-    if first >= last or first > len(xyz) or first <=0 or last > len(xyz) or last <= 0:
+    if first > last or first > len(xyz) or first < 0 or last > len(xyz) or last < 0:
         print 'SiestaIO.WriteFDFFileZmat: Meaningless first (%i) / last (%i) inputs. '%(first,last)
         first, last = 0,0
     # Writing zmatrix
