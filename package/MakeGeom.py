@@ -97,7 +97,7 @@ class Geom:
                 self.readXV(fn)
             elif fn.endswith('.xyz') or fn.endswith('.xyz.gz'):
                 self.readXYZ(fn)
-            elif fn.endswith('.fdf'):
+            elif fn.endswith('.fdf') or fn.endswith('.fdf.gz'):
                 self.readFDF(fn)
             #elif fn.endswith('.mkl'):
             #    self.readMKL(fn)

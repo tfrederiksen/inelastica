@@ -696,9 +696,9 @@ def ReadMullikenPop(infile,outfile,writeallblocks=False):
             print 'SiestaIO.ReadMullikenPop: Writing',thisfile
             f2 = open(thisfile,'w')
             f2.write('# Sum of Mulliken charges: %.6f\n'%popsum)
-            f2.write('# Atomnr  Pop.  dPop\n')
+            f2.write('# Atomnr  Pop.  dPop   Cum.sum.\n')
             for i in range(len(mpop)):
-                f2.write('  %.i  %.6f  %.6f \n'%mpop[i])
+                f2.write('  %.i  %.6f  %.6f  %.6f\n'%mpop[i])
             f2.close()
             block += 1
             mpop = []
@@ -710,7 +710,7 @@ def ReadMullikenPop(infile,outfile,writeallblocks=False):
                 nr,pop = int(s[0]),float(s[1])
                 dpop = pop-round(pop,0)
                 popsum += pop
-                mpop.append((nr,pop,dpop))
+                mpop.append((nr,pop,dpop,1.0*popsum))
             except:
                 pass
     f.close()
@@ -960,10 +960,12 @@ def ReadPDOSFile(filename,index=[],atom_index=[],species=[],nlist=[],llist=[]):
     return nspin,norb,ev,pdos,usedOrbitals,usedAtoms
 
 def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llist=[]):
-    eF = GetFermiEnergy('RUN.out')
+    head,tail =  os.path.split(filename)
+    eF = GetFermiEnergy(head+'/RUN.out')
     nspin,norb,ev,pdos,usedOrbitals,usedAtoms = ReadPDOSFile(filename,index,atom_index,species,nlist,llist)
     if nspin == 1: # No spin
-        f = open(outfile+'.pdos.dat','w')
+        print 'SIO.ExtractPDOS: Writing', outfile
+        f = open(outfile,'w')
         for i in range(len(ev)):
 	    f.write('%.6f %.9f\n'%(ev[i]-eF,pdos[i]))
         f.close()
