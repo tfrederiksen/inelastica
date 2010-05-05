@@ -39,11 +39,11 @@ def ReadCONTCAR(filename):
         xyz[ii][:3] = xyz[ii,0]*vectors[0]+xyz[ii,1]*vectors[1]+xyz[ii,2]*vectors[2]
     return label,scalefactor,vectors,speciesnumbers,xyz
 
-def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.0):
+def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.0,freeatoms=[]):
     "Write POSCAR file"
     print 'VaspIO.WritePOSCAR: Writing',filename
     file = open(filename,'w')
-    file.write(label)
+    file.write(label+'\n')
     file.write('  %.12f \n'%scalefactor)
     for ii in range(3):
         for jj in range(3):
@@ -57,12 +57,11 @@ def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.
         line  = string.rjust('%.9f'%xyz[ii][0],16)+' '
         line += string.rjust('%.9f'%xyz[ii][1],16)+' '
         line += string.rjust('%.9f'%xyz[ii][2],16)+' '
-        for jj in range(3):
-            if xyz[ii,3+jj] == 1.0:
-                line += '  T'
-            else:
-                line += '  F'
-        file.write(line+'\n')
+        if ii in freeatoms:
+            line += ' T T T\n'
+        else:
+            line += ' F F F\n'
+        file.write(line)
 
 
 def GetEnergies(OUTCAR):
