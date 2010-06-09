@@ -817,24 +817,24 @@ def CorrectXVfile(XVfile):
 
 
 def CheckForIdenticalXVfiles(XVfileList):
-    err = 'Phonons.CheckForIdenticalXVfiles: Error encounted in'
+    err = 'Phonons.CheckForIdenticalXVfiles: Error encounted in\n'
     count = 0
     for i in range(len(XVfileList)-1):
         vectors1,speciesnumber1,atomnumber1,xyz1 = SIO.ReadXVFile(XVfileList[i])
         vectors2,speciesnumber2,atomnumber2,xyz2 = SIO.ReadXVFile(XVfileList[i+1])
         if vectors1!=vectors2:
             count += 1
-            print err, XVfileList[i],XVfileList[i+1], '(vectors)'
+            print err, XVfileList[i],XVfileList[i+1], '(vectors) WARNING'
         if speciesnumber1!=speciesnumber2:
             count += 1
-            print err, XVfileList[i],XVfileList[i+1], '(speciesnumber)'
+            print err, XVfileList[i],XVfileList[i+1], '(speciesnumber) WARNING'
         if atomnumber1!=atomnumber2:
             count += 1
-            print err, XVfileList[i],XVfileList[i+1], '(atomnumber)'
+            print err, XVfileList[i],XVfileList[i+1], '(atomnumber) WARNING'
         if not N.allclose(xyz1,xyz2,1e-7):
             count += 1
-            print err, XVfileList[i],XVfileList[i+1], '(xyz)'
-            print '... max(abs(N.array(xyz1)-N.array(xyz2))) =',max(abs(N.array(xyz1)-N.array(xyz2)))
+            print err, XVfileList[i],XVfileList[i+1], '(xyz) WARNING'
+            print '... max(abs(N.array(xyz1)-N.array(xyz2))) =',N.max(N.absolute(N.array(xyz1)-N.array(xyz2)))
     if count == 0:
         print 'Phonons.CheckForIdenticalXVfiles: XV-files in list are identical'
 
