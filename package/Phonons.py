@@ -758,7 +758,7 @@ def GetFileLists(dirname,wildcard):
             HSfiles.append(elm)
             localHSs.append(elm)
         if (localFClast-localFCfirst+1)*6+1 != len(HSglob):
-            sys.exit('Phonons.GetFileLists: Inconsistent number of *.TSHS files in directory %s'%dir)
+            print 'Phonons.GetFileLists: WARNING - Inconsistent number of *.TSHS files in directory %s\n'%dir
         # Find XVfiles in wildcard directories
         for elm in glob.glob(dir+'/*.XV*'):
             if elm.endswith('.XV') or elm.endswith('.XV.gz'):
