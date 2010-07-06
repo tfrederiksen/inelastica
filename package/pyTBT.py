@@ -167,7 +167,7 @@ SystemLabel[.UP/.DOWN].AVTRANS   Averaged over k-points.
     # Define electrodes and device
 
     elecL=surfaceGF(fnL,NA1L,NA2L)
-    elecR=surfaceGF(fnR,NA2R,NA2R)
+    elecR=surfaceGF(fnR,NA1R,NA2R)
     myGF = GF(outFile+'.TSHS',elecL,elecR,Bulk=UseBulk,DeviceAtoms=[devSt, devEnd])
     nspin = myGF.HS.nspin
     if devSt==0:

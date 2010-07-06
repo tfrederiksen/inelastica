@@ -456,7 +456,10 @@ class Graph:
         if autoscale!='':
             xmin,ymin,xmax,ymax = self.GetWorldOfDatasets()
             rng = xmax-xmin
-            unit = 0.2*10**math.floor(math.log(rng,10))
+            if rng>1e-20:
+                unit = 0.2*10**math.floor(math.log(rng,10))
+            else:
+                unit = 1 
             self.SetXaxis(min=xmin,max=xmax,majorUnit=unit,minorUnit=unit/2.)
         if scale =='Logarithmic':
             self.string += '@ xaxes scale %s \n'%scale
@@ -521,7 +524,10 @@ class Graph:
         if autoscale!='':
             xmin,ymin,xmax,ymax = self.GetWorldOfDatasets()
             rng = ymax-ymin
-            unit = 0.2*10**math.floor(math.log(rng,10))
+            if rng>1e-20:
+                unit = 0.2*10**math.floor(math.log(rng,10))
+            else:
+                unit = 1
             self.SetYaxis(min=ymin,max=ymax,majorUnit=unit,minorUnit=unit/2.)
         if scale =='Logarithmic':
             self.string += '@ yaxes scale %s \n'%scale
