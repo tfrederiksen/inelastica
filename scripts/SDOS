@@ -102,7 +102,7 @@ def main():
     print
     
     # Read basis
-    basis=SIO.BuildBasis(general.outFile+'.XV',1,myGF.HS.nua)
+    basis=SIO.BuildBasis(general.outFile+'.XV',1,myGF.HS.nua,myGF.HS.lasto)
     print
 
     """

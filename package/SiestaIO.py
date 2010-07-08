@@ -1139,11 +1139,17 @@ def ReadIonNCFiles(wildcard='*ion.nc'):
     ions = {}
     for ionnc in glob.glob(wildcard):
         ion = ReadIonNCFile(ionnc)
-        ions[ion.atomnum] = ion
+        if ion.atomnum in ions:
+            ions[ion.atomnum][ion.numorb] = ion
+        else:
+            ions[ion.atomnum] = {}
+            if ion.numorb in ions[ion.atomnum]:
+                print "WARNING: Basis set for atom %i is not unique"%ion.atomnum
+            ions[ion.atomnum][ion.numorb] = ion
     return ions
 
 
-def BuildBasis(XVfile,FirstAtom,LastAtom):
+def BuildBasis(XVfile,FirstAtom,LastAtom,lasto):
     """
     Builds the information for each basis orbital in the Hamiltonian
     """
@@ -1159,7 +1165,13 @@ def BuildBasis(XVfile,FirstAtom,LastAtom):
     nn = 0
     for i in range(FirstAtom-1,LastAtom): # Python counts from zero
         an = atomnumber[i]
-        nn += ions[an].numorb
+        nn += ions[an][lasto[i+1]-lasto[i]].numorb
+
+    if nn!=lasto[LastAtom]-lasto[FirstAtom-1]:
+        print "Length of basis set build: %i"%nn
+        print "Size of Hamiltonian: %i"%lasto[LastAtom]-lasto[FirstAtom-1]
+        print "Error: Could not build basis set. Check if all ion.nc files are there!"
+        kuk
 
     # Initiate basis variables
     basis.ii = N.zeros((nn,),N.int)
@@ -1175,7 +1187,7 @@ def BuildBasis(XVfile,FirstAtom,LastAtom):
     iorb = 0
     for ii in range(FirstAtom-1,LastAtom):
         an = atomnumber[ii]
-        ion = ions[an]
+        ion = ions[an][lasto[ii+1]-lasto[ii]]
         for jj in range(len(ion.L)):
             for kk in range(-ion.L[jj],ion.L[jj]+1):
                 basis.ii[iorb]=ii+1
