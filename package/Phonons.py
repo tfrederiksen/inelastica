@@ -132,12 +132,16 @@ def Analyze(dirname,wildcard,
     
     ### Calculate phonon frequencies and modes
     print '\nPhonons.Analyze: Calculating phonons from FCmean, FCm, FCp:'
-    hw,U = [],[]    
-    for FC in [FCmean,FCm,FCp]:
-        FC2 = ReduceAndSymmetrizeFC(FC,FCfirstMIN,FClastMAX,FCfirst,FClast)
-        a,b = CalcPhonons(FC2,atomnumber,FCfirst,FClast)
-        hw.append(a),U.append(b)
-    hw,U = hw[0],U[0] # Keep only those from FCmean
+    # Mean
+    FC2 = ReduceAndSymmetrizeFC(FCmean,FCfirstMIN,FClastMAX,FCfirst,FClast)
+    OutputFC(FC2,filename=phononDirectory+'/%s.reduced.MSFC'%outlabel)
+    hw,U = CalcPhonons(FC2,atomnumber,FCfirst,FClast)
+    # FCm
+    FC2 = ReduceAndSymmetrizeFC(FCm,FCfirstMIN,FClastMAX,FCfirst,FClast)
+    CalcPhonons(FC2,atomnumber,FCfirst,FClast)
+    # FCp
+    FC2 = ReduceAndSymmetrizeFC(FCp,FCfirstMIN,FClastMAX,FCfirst,FClast)
+    CalcPhonons(FC2,atomnumber,FCfirst,FClast)
 
     ### Calculate phonon spectrum
     a,b,c = N.shape(FCmean)
@@ -235,10 +239,10 @@ def OutputFC(FC,filename='FC.matrix'):
     for i in range(s[0]):
         for j in range(s[1]):
             if len(s)==2:
-                f.write(string.rjust('%.2e'%FC[i,j],10))
+                f.write(string.rjust('%.4e'%FC[i,j],12))
             elif len(s)==3:
                 for k in range(s[2]):
-                    f.write(string.rjust('%.2e'%FC[i,j,k],10))
+                    f.write(string.rjust('%.4e'%FC[i,j,k],12))
         f.write('\n')
     f.close()
 
