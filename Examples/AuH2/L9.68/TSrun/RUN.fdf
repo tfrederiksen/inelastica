@@ -11,11 +11,6 @@ DM.Tolerance        1.d-4
 MaxSCFIterations    200
 MeshCutoff          200. Ry 
 
-####################################
-# NOTE:
-NeglNonOverlapInt   True
-####################################
-
 %block kgrid_Monkhorst_Pack
  1    0    0    0.0
  0    1    0    0.0
