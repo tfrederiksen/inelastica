@@ -1,0 +1,28 @@
+MD.TypeOfRun  FC
+MD.FCfirst   259
+MD.FClast    259
+#TS.FCwriteHS True # Not needed unless e-ph coupling is to be calculated
+#TS.SaveHS    True #
+MD.FCDispl   0.0212 Ang
+
+SystemName          NaCl
+SystemLabel         NaCl
+
+SpinPolarized       F
+
+%block kgrid_Monkhorst_Pack
+  1 0 0   0
+  0 1 0   0
+  0 0 1   0
+%endblock kgrid_Monkhorst_Pack
+
+%block ChemicalSpeciesLabel
+ 1 11   Na
+ 2 17   Cl
+%endblock ChemicalSpeciesLabel
+
+WriteCoorStep              T     # Default value
+WriteCoorInitial           T     # Default value
+
+%include STRUCT.fdf
+%include Default.fdf

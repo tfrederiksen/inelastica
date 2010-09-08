@@ -1,0 +1,31 @@
+MD.TypeOfRun  FC
+MD.FCfirst   260
+MD.FClast    260
+TS.FCwriteHS True
+TS.SaveHS    True
+MD.FCDispl   0.0212 Ang
+
+SystemName          NaCl
+SystemLabel         NaCl
+
+SpinPolarized       F
+
+%block kgrid_Monkhorst_Pack
+  1 0 0   0
+  0 1 0   0
+  0 0 1   0
+%endblock kgrid_Monkhorst_Pack
+
+Reparametrize.Pseudos  T       # Options for more accuracy
+Restricted.Radial.Grid F
+
+%block ChemicalSpeciesLabel
+ 1 11   Na
+ 2 17   Cl
+%endblock ChemicalSpeciesLabel
+
+WriteCoorStep              T     # Default value
+WriteCoorInitial           T     # Default value
+
+%include STRUCT.fdf
+%include Default.fdf

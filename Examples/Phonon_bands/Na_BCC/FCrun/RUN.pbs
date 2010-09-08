@@ -1,0 +1,17 @@
+#!/bin/tcsh
+#PBS -l walltime=200:00:00
+#PBS -V
+#PBS -N 'NaFCrun'
+#PBS -l nodes=1:ppn=4
+
+
+setenv NODES `cat $PBS_NODEFILE | wc -l`   # Calculate total number of cores
+
+cd $PBS_O_WORKDIR                          # Change to directory where submitted
+
+
+mpirun -np ${NODES} transiesta-3.0.1-patch < ./RUN.fdf > ./RUN.out 
+
+wait
+rm -f fort.*
+#end

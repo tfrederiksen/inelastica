@@ -1,0 +1,27 @@
+MD.TypeOfRun  FC
+MD.FCfirst   130
+MD.FClast    130
+#TS.FCwriteHS True
+#TS.SaveHS    True
+MD.FCDispl   0.0212 Ang
+
+SystemName          AuFCC
+SystemLabel         AuFCC
+
+SpinPolarized       F
+
+%block kgrid_Monkhorst_Pack
+  1 0 0   0
+  0 1 0   0
+  0 0 1   0
+%endblock kgrid_Monkhorst_Pack
+
+%block ChemicalSpeciesLabel
+ 1   79   Au_pbr
+%endblock ChemicalSpeciesLabel
+
+WriteCoorStep              T     # Default value
+WriteCoorInitial           T     # Default value
+
+%include STRUCT.fdf
+%include Default.fdf

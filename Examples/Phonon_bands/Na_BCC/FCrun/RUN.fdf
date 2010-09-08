@@ -1,0 +1,30 @@
+MD.TypeOfRun  FC
+MD.FCfirst   171
+MD.FClast    171
+TS.FCwriteHS True
+TS.SaveHS    True
+MD.FCDispl   0.0212 Ang
+
+SystemName          NaBCC
+SystemLabel         NaBCC
+
+SpinPolarized       F
+
+%block kgrid_Monkhorst_Pack
+  1 0 0   0
+  0 1 0   0
+  0 0 1   0
+%endblock kgrid_Monkhorst_Pack
+
+Reparametrize.Pseudos  T       # Options for more accuracy
+Restricted.Radial.Grid F
+
+%block ChemicalSpeciesLabel
+ 1 11   Na
+%endblock ChemicalSpeciesLabel
+
+WriteCoorStep              T     # Default value
+WriteCoorInitial           T     # Default value
+
+%include STRUCT.fdf
+%include Default.fdf
