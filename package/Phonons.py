@@ -7,11 +7,12 @@ import os, os.path, glob, string, time, sys
 import Scientific.IO.NetCDF as nc
 import numpy as N
 import numpy.linalg as LA
-import SiestaIO as SIO
+import Inelastica.SiestaIO as SIO
 import gzip
 import copy
-import PhysicalConstants as PC
-
+import Inelastica.PhysicalConstants as PC
+import Inelastica.WriteXMGR as WX
+import Inelastica.Symmetry
 
 def Analyze(dirname,wildcard,
             onlySdir='../onlyS',
@@ -25,7 +26,8 @@ def Analyze(dirname,wildcard,
             CalcCoupl=True,
             PerBoundCorrFirst=-1,PerBoundCorrLast=-1,
             PrintSOrbitals=True,
-            AuxNCfile=None,Isotopes=[]):
+            AuxNCfile=None,Isotopes=[],
+            PhBandStruct="None"):
     """
     Calculate electron phonon coupling from siesta calculations
     Needs two types of siesta calculations :
@@ -48,6 +50,7 @@ def Analyze(dirname,wildcard,
     -  AuxNCfile  : An optional auxillary netcdf-file used for read/writing dH matrix arrays
     -  Isotopes   : [[ii1, anr1], ...] substitute to atom type anr for siesta numbering atom ii
                     I.e., use to substitute deuterium (anr 1001) for hydrogens
+    - PhBandStruct: = "BCC"/"FCC" Calculate Phonon Bandstructure 
     """
     
     ### Make directory for output files etc.
@@ -129,6 +132,11 @@ def Analyze(dirname,wildcard,
 
     ### Write mass-scaled FC-matrix to file
     OutputFC(FCmean,filename=phononDirectory+'/%s.MSFC'%outlabel)
+    
+    ### Calculate phonon bandstructure
+    if PhBandStruct!="None":
+        CalcBandStruct(vectors,speciesnumber,xyz,FCmean,\
+                           FCfirst,FClast,PhBandStruct,atomnumber)
     
     ### Calculate phonon frequencies and modes
     print '\nPhonons.Analyze: Calculating phonons from FCmean, FCm, FCp:'
@@ -1029,4 +1037,101 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
     print '  ... Done!'
     NCfile2.close()
     return H0,S0,Heph
+
+
+########### Phonon bandstructure ##########################################
+def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,LatticeType,atomnumber):
+    print """
+    PhBandStruct:
+    """    
+    Sym = Symmetry.Symmetry()
+    Sym.setupGeom(vectors, speciesnumber, atomnumber, xyz)
+    
+    FCsym = Sym.symmetrizeFC(FCmean,FCfirst,FClast)
+    FCsym = CorrectFCMatrix(FCsym,FCfirst,FClast,Sym.NN)
+
+    if Sym.basis.NN!=FClast-FCfirst+1:
+        print "Phonons: ERROR: FCfirst/last do not fit with the number of atoms in the basis (%i)."%Sym.basis.NN
+        kuk
+    
+    # a_i : real space lattice vectors
+    # b_j : reciprocal space lattice vectors
+    # a_i * b_j = \delta_ij
+    # lattice : [i1, i2, i3] closest integer lattice vector
+    # radi : 1/2 closest distance between supercells
+    a1,a2,a3,b1,b2,b3 = Sym.a1,Sym.a2,Sym.a3,Sym.b1,Sym.b2,Sym.b3
+    numBasis, lattice =  Sym.basis.NN, Sym.lattice
+    Sym.latticeType = LatticeType
+    what = Sym.what()
+
+    # Mass scaled dynamical matrix
+    MSFC = FCsym.copy()
+    for ii in range(len(MSFC[:,0])):
+        for jj in range(len(MSFC[0,:])):
+            MSFC[ii,jj,:]=MSFC[ii,jj,:]/N.sqrt(\
+                PC.AtomicMass[atomnumber[FCfirst-1+ii/3]]*\
+                    PC.AtomicMass[atomnumber[jj]])
+    bands = []
+    XMGR = []
+    for elem in what:
+        # Calculate bands
+        bands+=[ calcPhBands(MSFC, a1, a2, a3, lattice,\
+                                 elem[1], elem[2], elem[3], numBasis)]
+        f=open(elem[0]+'.dat','w')
+        for ii,data in enumerate(bands[-1]):
+            f.write("%i %e %e %e\n"%(ii,data[0].real,data[1].real,data[2].real))
+        f.close()
+        xx = N.array(range(elem[3]),N.float)/(elem[3]+1.0)
+        #XMGR += [[WX.XYDYset(xx,bands[-1][:,ii].real,bands[-1][:,ii].imag/2,Lcolor=ii+1) for ii in range(len(bands[-1][0,:]))]]
+        XMGR += [[WX.XYset(xx,bands[-1][:,ii].real,Lcolor=ii+1) for ii in range(len(bands[-1][0,:]))]]
+
+    tmp = [N.max(ii.real) for ii in bands]
+    maxEnergy = N.max(tmp)
+    maxEnergy = int(maxEnergy/10.0)*10+10
+
+    gg=[]
+    for jj, ii in enumerate(XMGR):
+        g =WX.Graph()
+        for data in ii:
+            g.AddDatasets(data)
+        g.SetSubtitle(what[jj][0])
+
+        g.SetXaxis(label='',majorUnit=0.5,minorUnit=0.1,max=1,min=0)     
+        if jj==0:
+            g.SetYaxis(label='meV',majorUnit=10,minorUnit=2,max=maxEnergy,min=0)
+        else:
+            g.SetYaxis(label='',majorUnit=1e10,minorUnit=2,max=maxEnergy,min=0)
+        gg+=[g]
+
+    p = WX.Plot('PhononBands.agr',gg[0])
+
+    for ii in range(1,len(gg)):
+        p.AddGraphs(gg[ii])
+    p.ArrangeGraphs(nx=len(gg),ny=1,hspace=0.0,vspace=0.0)
+
+    # Finally, write the plot file
+    p.ShowTimestamp()
+    p.WriteFile()
+    p.Print2File('PhononBands.eps')
+
+
+def calcPhBands(FCmean, a1, a2, a3, lattice, kdir, korig, Nk, Nbasis):
+    NN = 3*Nbasis
+    Band = N.zeros((Nk, NN),N.complex)
+    units = PC.eV2Joule*1e20/PC.amu2kg*(PC.hbar2SI/PC.eV2Joule)**2*1e6
+    for ik in range(Nk):
+        kvec = kdir*ik/float(Nk-1)+korig
+        k1, k2, k3 = N.dot(a1,kvec), N.dot(a2,kvec), N.dot(a3,kvec)
+        FCk = N.zeros((NN,NN),N.complex)
+        for ii in range(len(lattice)):
+            tmp=FCmean[0:NN,ii,:]*N.exp(2.0j*N.pi*(k1*lattice[ii,0]+\
+                                                   k2*lattice[ii,1]+\
+                                                   k3*lattice[ii,2]))
+            FCk[:,(ii%Nbasis)*3:(ii%Nbasis+1)*3]+=tmp
+        a,b = LA.eig(FCk*units)
+        Band[ik,:] = N.sort(N.sqrt(a))
+    return Band
+            
+def dist(x):
+    return N.sqrt(N.dot(x,x))
 
