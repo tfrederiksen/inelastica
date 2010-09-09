@@ -18,7 +18,11 @@ pyTBT:
 	?
 
 Phonons:
-	?
+	Phonon bandstruct: With symmetry operations it is difficult to 
+	move the compare the start vector with the vector after the symmetry
+	operation since we might have to move it with a periodic unit ...
+	Now this is solved by reducing the range/radie to 0.8 of the possible
+	radie making the program inefficient.
 
 SCBA routines:
 	Migrate to numpy?

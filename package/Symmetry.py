@@ -116,7 +116,7 @@ class Symmetry:
 
         # Find radie and center for biggest sphere fitting into pbc
         xyz = self.xyz.copy()
-        radi = findRadi(self.pbc[0],self.pbc[1],self.pbc[2])*0.99
+        radi = findRadi(self.pbc[0],self.pbc[1],self.pbc[2])*0.8
         print "Symmetry: Longest range of forces %f Ang."%radi
 
         # Symmetry operation on FC composed of:
