@@ -1,0 +1,5 @@
+#! /usr/bin/env python
+
+import Inelastica.BandStruct as BS
+BS.main()
+
