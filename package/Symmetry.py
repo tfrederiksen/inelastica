@@ -1,4 +1,4 @@
-import Inelastica.SiestaIO as SIO
+import SiestaIO as SIO
 import numpy as N
 import scipy.sparse
 

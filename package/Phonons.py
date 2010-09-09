@@ -7,12 +7,12 @@ import os, os.path, glob, string, time, sys
 import Scientific.IO.NetCDF as nc
 import numpy as N
 import numpy.linalg as LA
-import Inelastica.SiestaIO as SIO
+import SiestaIO as SIO
 import gzip
 import copy
-import Inelastica.PhysicalConstants as PC
-import Inelastica.WriteXMGR as WX
-import Inelastica.Symmetry
+import PhysicalConstants as PC
+import WriteXMGR as WX
+import Symmetry
 
 def Analyze(dirname,wildcard,
             onlySdir='../onlyS',
