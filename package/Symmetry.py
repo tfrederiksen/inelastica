@@ -1,6 +1,7 @@
 import SiestaIO as SIO
 import numpy as N
 
+
 class Symmetry:
     """
     Classify symmetry of lattice and basis.
@@ -333,6 +334,7 @@ class Symmetry:
         samexyz=moveIntoCell(samexyz,self.pbc[0,:],self.pbc[1,:],self.pbc[2,:])
         possible = samexyz.reshape((1,-1,3))-samexyz.reshape((-1,1,3))
         possible = possible.reshape((-1,3))
+        possible = N.concatenate((possible,self.pbc )) # Add pbc for unitcell = supercell
         possible = myUnique(possible) # remove duplicates etc
 
         # Go through combinations and check if possible
@@ -377,6 +379,7 @@ class Symmetry:
             print "Symmerty: WARNING Could not find smaller unitcell"
             print "  ...   : Continuing with Siesta periodic cell"
             a1, a2, a3 = self.pbc[0,:], self.pbc[1,:], self.pbc[2,:]
+            self.NNbasis = self.NN
 
         a1, a2, a3 = self.makeHumanReadable(a1,a2,a3)
 
@@ -443,10 +446,11 @@ class Symmetry:
 
         # Sort on length
         ipiv = N.argsort(distance(N.array([a1,a2,a3])))
-        a1 = [a1,a2,a3][ipiv[0]]
-        a2 = [a1,a2,a3][ipiv[1]]
-        a3 = [a1,a2,a3][ipiv[2]]
-
+        na1 = [a1,a2,a3][ipiv[0]]
+        na2 = [a1,a2,a3][ipiv[1]]
+        na3 = [a1,a2,a3][ipiv[2]]
+        a1,  a2,  a3 = na1,  na2,  na3
+        
         # Make possible n a1 + m a2 + l a3 
         poss = []
         for i1 in range(-2,3):
@@ -649,6 +653,7 @@ def myUnique(set):
 
     # Remove duplicates
     newset=set[N.where(N.sum(N.abs(set[1:, :]-set[:-1, :]),axis=1)>1e-5)]
+    newset = N.concatenate((newset, [set[-1, :]]))
     set = newset
     
     # Sort by length

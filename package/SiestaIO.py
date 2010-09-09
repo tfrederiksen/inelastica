@@ -1380,7 +1380,7 @@ class HS:
                 self.xa, self.isa, self.cell, self.Ssparse = matrices
 
         print "Found %i atoms, (%i, %i) orbitals in super-, unit-cell"%(self.nua, self.no, self.nuo)
-
+        self.N = self.nuo
         self.makeDerivedQuant()
         if not self.gamma and not self.onlyS:
             self.removeUnitCellXij(UseF90helpers)       # Remove phase change in unitcell
