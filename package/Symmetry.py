@@ -1,6 +1,5 @@
 import SiestaIO as SIO
 import numpy as N
-import scipy.sparse
 
 class Symmetry:
     """
