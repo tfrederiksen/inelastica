@@ -26,14 +26,14 @@ class Symmetry:
     All arrays are numpy type.
 
     Use:
-       sym = Symmetry.Symmetry(fn='kuk.XV',accuracy=1e-5)
+       sym = Symmetry.Symmetry(fn='kuk.XV',accuracy=1e-4)
        Where accuracy is the fudge  factor in Ang.
 
     """
-    def __init__(self,fn=None,accuracy=1e-5):
+    def __init__(self,fn=None,accuracy=1e-4):
+        self.accuracy=accuracy
         if fn!=None:
             self.readXV(fn)
-        self.accuracy=1e-5
         pass
     
     ###########################################################
@@ -95,11 +95,11 @@ class Symmetry:
         
         # Rearange basis to fit FCfirst...FClast order in Siesta FC file
         basisxyz = moveIntoCell(self.xyz[FCfirst-1:FClast]-self.xyz[0,:],\
-                                self.a1,self.a2,self.a3)
+                                self.a1,self.a2,self.a3,self.accuracy)
         ipiv = []
         for elem in basisxyz[0:self.basis.NN]:
             for jj, cmp in enumerate(self.basis.xyz):
-                if N.allclose(elem,cmp,atol=1e-5):
+                if N.allclose(elem,cmp,atol=self.accuracy):
                     ipiv+=[jj]
                     break
         if len(N.unique(ipiv))!=self.basis.NN:
@@ -116,7 +116,7 @@ class Symmetry:
 
         # Find radie and center for biggest sphere fitting into pbc
         xyz = self.xyz.copy()
-        radi = findRadi(self.pbc[0],self.pbc[1],self.pbc[2])*0.8
+        radi = findRadi(self.pbc[0],self.pbc[1],self.pbc[2])*0.99
         print "Symmetry: Longest range of forces %f Ang."%radi
 
         # Symmetry operation on FC composed of:
@@ -145,7 +145,7 @@ class Symmetry:
 
                 # Find the target atom
                 diff = N.sum(N.abs(nxyz[indx].reshape((1,-1,3))-\
-                         xyz[indx].reshape((-1,1,3))),axis=2)<1e-5
+                         xyz[indx].reshape((-1,1,3))),axis=2)<self.accuracy
                 tindx = N.where(diff)
                 ipiv = N.argsort(tindx[0])
                 tindx = tindx[1][ipiv]
@@ -202,13 +202,13 @@ class Symmetry:
         for ii in range(len(keep)):
             for jj in range(len(keep)):
                 tmp = mm(keep[ii],keep[jj])
-                indx=N.where(N.sum(N.sum(N.abs(keep-tmp), axis=2), axis=1)<1e-7)
+                indx=N.where(N.sum(N.sum(N.abs(keep-tmp), axis=2), axis=1)<self.accuracy)
                 ChT[ii,jj]=indx[0][0]
 
         rotn = []
         for ii in keep:
             a, M = ii, 1
-            while not N.allclose(N.eye(3),a,atol=1e-8):
+            while not N.allclose(N.eye(3),a,self.accuracy):
                 a, M =mm(a,ii), M+1
             rotn+=[M]
         fullRank = rotn[:]
@@ -216,7 +216,7 @@ class Symmetry:
         def pick(x, y):
             tmp=[]
             for ii in y:
-                tmp=N.concatenate((tmp, x[ii, N.array(y+1e-5, N.int)]))
+                tmp=N.concatenate((tmp, x[ii, N.array(y+self.accuracy, N.int)]))
             return N.array(tmp).reshape((-1, ))
 
         def grow(x):
@@ -241,7 +241,7 @@ class Symmetry:
         rotn = []
         for ii in keep:
             a, M = ii, 1
-            while not N.allclose(N.eye(3),a,atol=1e-8):
+            while not N.allclose(N.eye(3),a,atol=self.accuracy):
                 a, M =mm(a,ii), M+1
             rotn+=[M]
         
@@ -262,15 +262,15 @@ class Symmetry:
                 xyz = self.basis.xyz[N.argwhere(self.basis.snr==atomtype)]
                 xyz = xyz.reshape((-1, 3))-self.basis.xyz[0].reshape(1,3)
                 # Check operations
-                xyz =moveIntoCell(xyz,self.a1,self.a2,self.a3)
-                ipiv = N.lexsort(N.round(N.transpose(xyz)*1e4))
+                xyz =moveIntoCell(xyz,self.a1,self.a2,self.a3,self.accuracy)
+                ipiv = N.lexsort(N.round(N.transpose(xyz)/self.accuracy))
                 xyz = xyz[ipiv,:]
         
                 res = N.transpose(mm(N.transpose(U), N.transpose(xyz)))
-                res =moveIntoCell(res,self.a1,self.a2,self.a3)
-                ipiv = N.lexsort(N.round(N.transpose(res)*1e4))
+                res =moveIntoCell(res,self.a1,self.a2,self.a3,self.accuracy)
+                ipiv = N.lexsort(N.round(N.transpose(res)/self.accuracy))
                 res = res[ipiv,:]
-                if not N.allclose(xyz,res,atol=1e-4):
+                if not N.allclose(xyz,res,atol=self.accuracy):
                     passed = False 
                     break
             if passed: Ulist += [U]
@@ -300,7 +300,7 @@ class Symmetry:
         targets = [[], [], []]
         # Choose all possible target points for a1...a3 with same length
         for ii in range(3):
-            targets[ii]=points[N.where(abs(dist-distance(a[ii]))<1e-5)]
+            targets[ii]=points[N.where(abs(dist-distance(a[ii]))<self.accuracy)]
 
         possible = myPermute(targets)
         
@@ -310,7 +310,7 @@ class Symmetry:
             U = ii[0].reshape(3,1)*b1.reshape(1,3)+\
                 ii[1].reshape(3,1)*b2.reshape(1,3)+\
                 ii[2].reshape(3,1)*b3.reshape(1,3)
-            if N.allclose(mm(U,N.transpose(U)),N.eye(3), atol=1e-6):
+            if N.allclose(mm(U,N.transpose(U)),N.eye(3), self.accuracy):
                 Ulist+=[U]
 
         self.pointU33 = Ulist
@@ -331,11 +331,11 @@ class Symmetry:
         sameatoms = N.argwhere(self.snr==self.snr[0])
         samexyz = self.xyz[sameatoms]
         samexyz = samexyz.reshape((-1, 3))
-        samexyz=moveIntoCell(samexyz,self.pbc[0,:],self.pbc[1,:],self.pbc[2,:])
+        samexyz=moveIntoCell(samexyz,self.pbc[0,:],self.pbc[1,:],self.pbc[2,:],self.accuracy)
         possible = samexyz.reshape((1,-1,3))-samexyz.reshape((-1,1,3))
         possible = possible.reshape((-1,3))
         possible = N.concatenate((possible,self.pbc )) # Add pbc for unitcell = supercell
-        possible = myUnique(possible) # remove duplicates etc
+        possible = myUnique(possible,self.accuracy) # remove duplicates etc
 
         # Go through combinations and check if possible
         i1, i2, i3, done, NP = 0, 1, 2, False, len(possible)
@@ -365,7 +365,7 @@ class Symmetry:
         # Step through possibilities
         while i1<NP-3 and not done:
             a1, a2 = possible[i1], possible[i2]
-            if distance(N.cross(a1,a2))>1e-5: # Non-parallell
+            if distance(N.cross(a1,a2))>self.accuracy: # Non-parallell
                 a3 = possible[i3]
                 incindx = self.checkLattice(a1,a2,a3,samexyz)
                 if incindx!=-1:
@@ -398,13 +398,13 @@ class Symmetry:
         print "a3 = (%f,%f,%f), N3=%i"%(a3[0],a3[1],a3[2],N3)
 
         # Find basis
-        xyz = moveIntoCell(self.xyz-self.xyz[0,:], a1, a2, a3)
+        xyz = moveIntoCell(self.xyz-self.xyz[0,:], a1, a2, a3,self.accuracy)
         class basis:
             pass
         basis.xyz, basis.snr, basis.anr = [], [], []
         for ii in range(len(xyz)):
             for jj in range(len(basis.xyz)):
-                if N.allclose(xyz[ii], basis.xyz[jj], atol=1e-5):
+                if N.allclose(xyz[ii], basis.xyz[jj], atol=self.accuracy):
                     break
             else:
                 basis.xyz+=[xyz[ii]]
@@ -425,8 +425,8 @@ class Symmetry:
         angles = [min(ii,180-ii) for ii in angles] 
         length = N.array([distance(ii) for ii in [a1,a2,a3]])
         type = 'UNKNOWN'
-        if N.allclose(length[0],length[1],atol=1e-5) and\
-                N.allclose(length[1],length[2],atol=1e-5):
+        if N.allclose(length[0],length[1],atol=self.accuracy) and\
+                N.allclose(length[1],length[2],atol=self.accuracy):
             # All lengths same
             if N.sum(N.abs(N.array(angles)-90))<2:
                 type = 'CUBIC'
@@ -434,6 +434,9 @@ class Symmetry:
                 type = 'FCC'
             if N.sum(N.abs(N.array(angles)-70.5))<4:
                 type = 'BCC'
+        if N.allclose(length[1],length[2],atol=self.accuracy):
+            if N.sum(N.abs(N.array(angles)-90))<2:
+                type = 'POLYMER'
 
         print "Symmetry: Lattice type = %s"%type
         self.latticeType = type
@@ -460,9 +463,9 @@ class Symmetry:
         poss = N.array(poss)
 
         # possiblities for a1, a2, a3 based on length
-        poss1 = poss[N.where(N.abs(distance(poss)-distance(a1))<1e-5)]
-        poss2 = poss[N.where(N.abs(distance(poss)-distance(a2))<1e-5)]
-        poss3 = poss[N.where(N.abs(distance(poss)-distance(a3))<1e-5)]
+        poss1 = poss[N.where(N.abs(distance(poss)-distance(a1))<self.accuracy)]
+        poss2 = poss[N.where(N.abs(distance(poss)-distance(a2))<self.accuracy)]
+        poss3 = poss[N.where(N.abs(distance(poss)-distance(a3))<self.accuracy)]
         poss = N.concatenate((poss1,poss2,poss3)) # Keep duplicates
         
         # Choose the one fitting the PBC best 
@@ -472,7 +475,7 @@ class Symmetry:
         
         # Remove linear dependent
         poss=poss[N.where(N.abs(N.abs(mm(poss,a1))-\
-                                    N.abs(distance(poss)*distance(a1)))>1e-5)]
+                                    N.abs(distance(poss)*distance(a1)))>self.accuracy)]
 
         # Choose the one fitting the PBC best 
         vec = self.pbc[1,:]
@@ -481,14 +484,14 @@ class Symmetry:
 
         # Remove linear dependent
         poss=poss[N.where(N.abs(N.abs(mm(poss,a2))-\
-                                    N.abs(distance(poss)*distance(a2)))>1e-5)]
+                                    N.abs(distance(poss)*distance(a2)))>self.accuracy)]
 
         # Choose the one fitting the PBC best 
         vec = self.pbc[2,:]
         scal = mm(vec,N.transpose(poss))
         a3=poss[N.where(N.sort(scal)[-1]==scal)[0][0]] 
 
-        if N.linalg.det([a1,a2,a3])<-1e-5:
+        if N.linalg.det([a1,a2,a3])<-self.accuracy:
             a3=-a3
 
         return a1,a2,a3
@@ -500,8 +503,8 @@ class Symmetry:
 
         # Test of PBC
         b1, b2, b3 = N.cross(a2,a3), N.cross(a1,a3), N.cross(a1,a2)
-        if distance(b1)<1e-5 or distance(b2)<1e-5 or\
-                abs(mm(a1,N.cross(a2,a3)))<1e-5:
+        if distance(b1)<self.accuracy or distance(b2)<self.accuracy or\
+                abs(mm(a1,N.cross(a2,a3)))<self.accuracy:
             return 2
         b1, b2, b3 = b1/mm(a1,b1), b2/mm(a2,b2), b3/mm(a3,b3)
 
@@ -514,7 +517,7 @@ class Symmetry:
         # Should be integers
         # PBC comensurate with a1...3
         Ints=mm(N.array([b1,b2,b3]),N.transpose(self.pbc))
-        if N.max(N.abs(N.round(Ints)-Ints))>1e-5:
+        if N.max(N.abs(N.round(Ints)-Ints))>self.accuracy:
             return 2 
 
         # Do volume check
@@ -524,8 +527,8 @@ class Symmetry:
         basisatoms = self.NN/numcells
         
         # numcells and basisatoms should be integers!
-        if abs(N.round(numcells)-numcells)>1e-5 or\
-                abs(N.round(basisatoms)-basisatoms)>1e-5:
+        if abs(N.round(numcells)-numcells)>self.accuracy or\
+                abs(N.round(basisatoms)-basisatoms)>self.accuracy:
             return 2
         
         self.NNbasis = N.round(basisatoms)
@@ -550,10 +553,10 @@ class Symmetry:
         
         for ii in range(1,6):
             ndiff = diff-a*ii # One atom should have ndiff = m_i pbc_i
-            indx = N.floor(1e-3+mm(ndiff,N.transpose(N.array([bp1, bp2, bp3]))))
+            indx = N.floor(self.accuracy+mm(ndiff,N.transpose(N.array([bp1, bp2, bp3]))))
             ndiff -= mm(indx,pbc)
             dist = N.sum(ndiff*ndiff, axis=1)
-            if min(dist)>1e-5:
+            if min(dist)>self.accuracy:
                 return False
 
         return True
@@ -570,16 +573,16 @@ class Symmetry:
             shifted = samexyz+a.reshape((1,3))
             
             # Move inside PBC
-            samexyz = moveIntoCell(samexyz,self.pbc[0,:],self.pbc[1,:],self.pbc[2,:])
-            shifted = moveIntoCell(shifted,self.pbc[0,:],self.pbc[1,:],self.pbc[2,:])
+            samexyz = moveIntoCell(samexyz,self.pbc[0,:],self.pbc[1,:],self.pbc[2,:],self.accuracy)
+            shifted = moveIntoCell(shifted,self.pbc[0,:],self.pbc[1,:],self.pbc[2,:],self.accuracy)
 
             # Should be the same if sorted!
-            ipiv = N.lexsort(N.round(N.transpose(samexyz)*1e4))
+            ipiv = N.lexsort(N.round(N.transpose(samexyz)/self.accuracy))
             samexyz = samexyz[ipiv,:]
-            ipiv = N.lexsort(N.round(N.transpose(shifted)*1e4))
+            ipiv = N.lexsort(N.round(N.transpose(shifted)/self.accuracy))
             shifted = shifted[ipiv,:]
             
-            if not N.allclose(samexyz,shifted,atol=1e-5):
+            if not N.allclose(samexyz,shifted,atol=self.accuracy):
                 passed = False
             
         return passed
@@ -591,7 +594,7 @@ class Symmetry:
         xyz = self.xyz.copy()
         orig = (self.pbc[0] + self.pbc[1] + self.pbc[2])/2
         tmp = xyz[FCfirst-1,:]
-        xyz = moveIntoCell(xyz-tmp+orig, self.pbc[0], self.pbc[1], self.pbc[2])
+        xyz = moveIntoCell(xyz-tmp+orig, self.pbc[0], self.pbc[1], self.pbc[2],self.accuracy)
         xyz = moveIntoClosest(xyz-orig, self.pbc[0], self.pbc[1], self.pbc[2])+orig
                 
         indx = mm(xyz,N.transpose(N.array([self.b1,self.b2,self.b3])))
@@ -621,6 +624,18 @@ class Symmetry:
             what = [['000-100',H,0*H,101],
                     ['111-000',-P,P,101],
                     ['000-110',.5*NN,0*NN,51]]
+        elif self.latticeType == 'CUBIC':
+            X = b1
+            L = b1+b2+b3
+            K = b1+b2
+            what = [['000-100',X,0*X,101],
+                    ['100-110',K-X,X,101],
+                    ['110-000',-K,K,101],
+                    ['000-111',L,0*L,101],
+                    ]
+        elif self.latticeType == 'POLYMER':
+            X = b1
+            what = [['000-100',X,0*X,101]]
         else:
             print "Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType
             kuk
@@ -634,25 +649,25 @@ class Symmetry:
 ###########################################################
 # Mathematical helpers
 
-def myUnique(set):
+def myUnique(set,accuracy):
     # Union, sort, remove duplicates
     
     # Change sign to get possitive x-coordinate or if zero y>0
-    changex = set[:,0]<-1e-5
-    zerox = N.abs(set[:,0])<=1e-5
-    changey = zerox*set[:,1]<-1e-5
-    zeroy = N.abs(set[:,1])<=1e-5
-    changez = zerox*zeroy*set[:,2]<-1e-5
+    changex = set[:,0]<-accuracy
+    zerox = N.abs(set[:,0])<=accuracy
+    changey = zerox*set[:,1]<-accuracy
+    zeroy = N.abs(set[:,1])<=accuracy
+    changez = zerox*zeroy*set[:,2]<-accuracy
     change = -2*((changex+changey+changez)>0)+1
 
     set = (N.transpose(N.array([[1],[1],[1]])*change))*set
 
     # Sort on z,y,x
-    ipiv = N.lexsort(N.round(N.transpose(set)*1e4))
+    ipiv = N.lexsort(N.round(N.transpose(set)/accuracy))
     set = set[ipiv,:]
 
     # Remove duplicates
-    newset=set[N.where(N.sum(N.abs(set[1:, :]-set[:-1, :]),axis=1)>1e-5)]
+    newset=set[N.where(N.sum(N.abs(set[1:, :]-set[:-1, :]),axis=1)>accuracy)]
     newset = N.concatenate((newset, [set[-1, :]]))
     set = newset
     
@@ -662,7 +677,7 @@ def myUnique(set):
     set = set[ipiv, :]
 
     # remove zero length
-    if abs(distance(set[0]))<1e-5:
+    if abs(distance(set[0]))<accuracy:
         set=set[1:]
 
     return set
@@ -678,11 +693,11 @@ def distance(x):
     return N.sqrt(N.sum(x*x, axis=-1))
 
 
-def moveIntoCell(xyz,a1,a2,a3):
+def moveIntoCell(xyz,a1,a2,a3,accuracy):
     b1, b2, b3 = N.cross(a2,a3), N.cross(a1,a3), N.cross(a1,a2)
     b1, b2, b3 = b1/mm(a1,b1), b2/mm(a2,b2), b3/mm(a3,b3)
     copy = xyz.copy()
-    indx = N.floor(1e-5+mm(copy,N.transpose(N.array([b1, b2, b3]))))
+    indx = N.floor(accuracy+mm(copy,N.transpose(N.array([b1, b2, b3]))))
     copy -= mm(indx,N.array([a1, a2, a3]))
     return copy
 
@@ -728,6 +743,7 @@ def  findRadi(a1, a2, a3):
         
     b1,  b2,  b3 = nc(a2, a3),  nc(a1, a3),  nc(a1, a2)
     return min(abs(mm(a1, b1)),  abs(mm(a2, b2)),  abs(mm(a3, b3)))/2.0
+
 if __name__ == '__main__':
     b=Symmetry('/home/mpn/symmetry/test/test.XV')
     a=Symmetry('/home/mpn/symmetry/NaCl/NaCl.XV')
