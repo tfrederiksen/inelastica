@@ -635,7 +635,7 @@ class Symmetry:
                     ]
         elif self.latticeType == 'POLYMER':
             X = b1
-            what = [['000-100',X,0*X,101]]
+            what = [['000-100',X*0.5,0*X,101]]
         else:
             print "Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType
             kuk

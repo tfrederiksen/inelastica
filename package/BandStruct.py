@@ -46,6 +46,9 @@ def readxv():
     print('Reading geometry from "%s" file' % fns[0])
     geom = MG.Geom(fns[0])
     geom.sym = SYM.Symmetry(fns[0])
+    if geom.sym.NNbasis != geom.natoms:
+        print "ERROR: Siesta cell does not contain one unit cell"
+        kuk
 
 ########################################################
 def readbasis():
@@ -78,8 +81,9 @@ def calcFS(ispin):
                 # "unitless" k-vect
                 kpnt = N.array([ix,iy,iz],N.float)/float(NNk-1)
                 HS.setkpoint(kpnt)
-                eval,evec = LA.eigh(mm(LA.inv(HS.S),HS.H[ispin, :, :]))
-                bands[ix,iy,iz,:] = eval
+                eval,evec = LA.eig(mm(LA.inv(HS.S),HS.H[ispin, :, :]))
+                ipiv = N.argsort(eval)
+                bands[ix,iy,iz,:] = eval[ipiv]
         SIO.printDone(ix,NNk,'Fermi Surface: ')
     writeFS(ispin,NNk,bands)
 
@@ -146,8 +150,9 @@ def calcBands(ispin):
             kpnt2 = mm(N.array([geom.sym.a1,geom.sym.a2,geom.sym.a3]), kpnt)
 
             HS.setkpoint(kpnt2)
-            eval,evec = LA.eigh(mm(LA.inv(HS.S),HS.H[ispin, :, :]))
-            ev[ii,:] = eval
+            eval,evec = LA.eig(mm(LA.inv(HS.S),HS.H[ispin, :, :]))
+            ipiv = N.argsort(eval)
+            ev[ii,:] = eval[ipiv]
         bands += [ev]
     
     writeBands(ispin,what,bands)
@@ -164,7 +169,7 @@ def writeBands(ispin,what,bands):
     Graphs = []
     for jj,  elem in enumerate(what):
         f=open(general.DestDir+'/'+elem[0]+sspin+'.dat','w')
-        xx = N.array(range(elem[3]),N.float)/(elem[3]+1.0)
+        xx = N.array(range(elem[3]),N.float)/(elem[3]-1.0)
         iColor, XMGR = 1, []
         for ii in range(len(bands[jj][0,:])):
             # Choose bands within +-5 eV from Ef
