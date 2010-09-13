@@ -218,7 +218,7 @@ For help use --help!
 """
     parser = OptionParser(usage,description=description)
     EC = OptionGroup(parser, "Options for Fermi surface")
-    EC.add_option("-N", "--NumPoints", dest='NNk', default=20,type='float',
+    EC.add_option("-N", "--NumPoints", dest='NNk', default=20,type='int',
                   help="Number of k-points for Fermi-surface calculation [%default]")
     EC.add_option("-f", "--fdf", dest='fdfFile', default='./RUN.fdf',type='string',
                   help="fdf file used for transiesta calculation [%default]")
