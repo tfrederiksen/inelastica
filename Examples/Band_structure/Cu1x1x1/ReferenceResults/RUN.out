@@ -1,0 +1,54 @@
+ /home/mpn/local/bin/BandStruct test
+##################################################################################
+## Band structure 
+fdfFile            : ./RUN.fdf
+Number of k-points : 20.000000
+##################################################################################
+Reading geometry from "LiBCC.XV" file
+SiestaIO.ReadXVFile: Reading LiBCC.XV
+SiestaIO.ReadXVFile: Reading LiBCC.XV
+Symmerty: WARNING Could not find smaller unitcell
+  ...   : Continuing with Siesta periodic cell
+Symmetry: Lattice structure
+1 atoms in the basis
+a1 = (0.000000,1.805000,1.805000), N1=1
+a2 = (1.805000,0.000000,1.805000), N2=1
+a3 = (1.805000,1.805000,0.000000), N3=1
+Symmetry: Lattice type = FCC
+Symmetry: 48 point symmetry operations found for lattice
+Symmetry: 48 point symmetry operations found for lattice+basis.
+Found 1 atoms, (10935, 15) orbitals in super-, unit-cell
+SiestaIO.ReadXVFile: Reading /home/mpn/Cu1x1x1/LiBCC.XV
+Reading Basis from /home/mpn/Cu1x1x1/Cu.ion.nc
+   Element: Cu   Atom number: 29,  L-orbs  [0 0 2 2 1]
+SiestaIO.BuildBasis: Generated basis
+... First atom      = 1 (Siesta numbering)
+... Last atom       = 1 (Siesta numbering)
+... Basis dimension = 15
+Symmetry: calculate along k-directions
+000-100
+From  [ 0.  0.  0.]  to  [ 0.     0.     0.277]
+100-110
+From  [ 0.     0.     0.277]  to  [ 0.     0.277  0.277]
+110-000
+From  [ 0.     0.277  0.277]  to  [ 0.  0.  0.]
+000-111
+From  [-0.  0.  0.]  to  [-0.1385  0.1385  0.1385]
+Graph 0 appended to plot "test/BandStruct.agr"
+Graph 1 appended to plot "test/BandStruct.agr"
+Graph 2 appended to plot "test/BandStruct.agr"
+Graph 3 appended to plot "test/BandStruct.agr"
+Arranging graphs in format 4x1 using type 0 ordering
+...0: Filling left to right, starting from upper left (default)
+...1: Filling left to right, starting from upper left (default)
+...2: Filling left to right, starting from upper left (default)
+...3: Filling left to right, starting from upper left (default)
+Writing plot to file "test/BandStruct.agr"
+Printing plot to file "test/BandStruct.eps"
+Fermi Surface:   :  0 %  done.
+Fermi Surface:   : 20 %  done.
+Fermi Surface:   : 30 %  done.
+Fermi Surface:   : 50 %  done.
+Fermi Surface:   : 60 %  done.
+Fermi Surface:   : 80 %  done.
+Fermi Surface:   : 90 %  done.

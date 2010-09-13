@@ -1,0 +1,31 @@
+# Default values
+XC.functional   GGA
+XC.authors      PBE
+MeshCutoff      400. Ry        # Mesh cutoff. real space mesh
+#MD.MaxForceTol  0.02 eV/Ang    # Geometry optimization, max force
+DM.Tolerance    0.000100       # Default value from SIESTA
+PAO.EnergyShift 0.01 Ry        # Size of basis
+PAO.BasisSize   DZP
+PAO.BasisType   split
+MD.FCDispl	0.04 Bohr      # Force constant displacement
+#SolutionMethod  diagon
+
+# Convergence choices
+#ElectronicTemperature         1.5200000000E-02 Ry 
+DM.NumberPulay 10
+DM.MixingWeight 0.1
+DM.NumberKick  100             # Only use for hard to converge systems
+DM.KickMixingWeight 0.1
+MaxSCFIterations 400
+MD.NumCGsteps   0
+
+# Restat calculations?
+UseSaveData     T
+MD.UseSaveXV    T
+MD.UseSaveCG    T
+
+# Output options
+LongOutput      T
+WriteCoorStep   T
+WriteMDXmol     T
+

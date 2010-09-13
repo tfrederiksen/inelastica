@@ -1,0 +1,24 @@
+MD.TypeOfRun  CG
+TS.FCwriteHS True
+TS.SaveHS    True
+
+SystemName          CuFCC
+SystemLabel         CuFCC
+
+SpinPolarized       F
+
+%block kgrid_Monkhorst_Pack
+  11 0 0   0
+  0 11 0   0
+  0 0 11   0
+%endblock kgrid_Monkhorst_Pack
+
+%block ChemicalSpeciesLabel
+ 1   29   Cu
+%endblock ChemicalSpeciesLabel
+
+WriteCoorStep              T     # Default value
+WriteCoorInitial           T     # Default value
+
+%include STRUCT.fdf
+%include Default.fdf
