@@ -437,7 +437,9 @@ class Symmetry:
         if N.allclose(length[1],length[2],atol=self.accuracy):
             if N.sum(N.abs(N.array(angles)-90))<2:
                 type = 'POLYMER'
-
+        if N.allclose(length[0],length[1],atol=self.accuracy):
+            if N.abs(angles[0]-60)<2:
+                type="GRAPHENE"
         print "Symmetry: Lattice type = %s"%type
         self.latticeType = type
         
@@ -636,6 +638,12 @@ class Symmetry:
         elif self.latticeType == 'POLYMER':
             X = b1
             what = [['000-100',X*0.5,0*X,101]]
+        elif self.latticeType == 'GRAPHENE':
+            M = (b1+b2)/2
+            K = M+(b1-b2)/6
+            what = [['K-000',-K,K,101],
+                    ['000-M',M,0*M,101],
+                    ['M-K',K-M,M,57]]
         else:
             print "Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType
             kuk

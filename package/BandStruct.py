@@ -189,9 +189,11 @@ def writeBands(ispin,what,bands):
 
         g.SetXaxis(label='',majorUnit=0.5,minorUnit=0.1,max=1,min=0)     
         if jj==0:
-            g.SetYaxis(label='eV',majorUnit=1,minorUnit=0.2,max=5,min=-5)
+            g.SetYaxis(label='eV',majorUnit=1,minorUnit=0.2,\
+                           max=general.eMax,min=general.eMin)
         else:
-            g.SetYaxis(label='',majorUnit=1e10,minorUnit=0.2,max=5,min=-5)
+            g.SetYaxis(label='',majorUnit=1e10,minorUnit=0.2,\
+                           max=general.eMax,min=general.eMin)
         Graphs+=[g]
 
     p = WX.Plot(general.DestDir+'/BandStruct.agr',Graphs[0])
