@@ -27,7 +27,8 @@ def Analyze(dirname,wildcard,
             PerBoundCorrFirst=-1,PerBoundCorrLast=-1,
             PrintSOrbitals=True,
             AuxNCfile=None,Isotopes=[],
-            PhBandStruct="None"):
+            PhBandStruct="None",
+            PhBandRadie=0.0):
     """
     Calculate electron phonon coupling from siesta calculations
     Needs two types of siesta calculations :
@@ -50,7 +51,10 @@ def Analyze(dirname,wildcard,
     -  AuxNCfile  : An optional auxillary netcdf-file used for read/writing dH matrix arrays
     -  Isotopes   : [[ii1, anr1], ...] substitute to atom type anr for siesta numbering atom ii
                     I.e., use to substitute deuterium (anr 1001) for hydrogens
-    - PhBandStruct: = "BCC"/"FCC" Calculate Phonon Bandstructure 
+    - PhBandStruct: = != None -> Calculate bandstructure. 
+                      String "AUTO", "BCC", "FCC", "CUBIC", "GRAPHENE", 
+                      "POLYMER" etc
+    - PhBandRadie : Optional max distance for forces. 0.0 -> Automatically choosen
     """
     
     ### Make directory for output files etc.
@@ -136,7 +140,8 @@ def Analyze(dirname,wildcard,
     ### Calculate phonon bandstructure
     if PhBandStruct!="None":
         CalcBandStruct(vectors,speciesnumber,xyz,FCmean,\
-                           FCfirst,FClast,PhBandStruct,atomnumber)
+                           FCfirst,FClast,PhBandStruct,atomnumber,\
+                           PhBandRadie)
     
     ### Calculate phonon frequencies and modes
     print '\nPhonons.Analyze: Calculating phonons from FCmean, FCm, FCp:'
@@ -1040,14 +1045,15 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
 
 
 ########### Phonon bandstructure ##########################################
-def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,LatticeType,atomnumber):
+def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,\
+                       LatticeType,atomnumber,PhBandRadie):
     print """
     PhBandStruct:
     """    
+    # Symmetrize forces
     Sym = Symmetry.Symmetry()
     Sym.setupGeom(vectors, speciesnumber, atomnumber, xyz)
-    
-    FCsym = Sym.symmetrizeFC(FCmean,FCfirst,FClast)
+    FCsym = Sym.symmetrizeFC(FCmean,FCfirst,FClast,radi=PhBandRadie)
     FCsym = CorrectFCMatrix(FCsym,FCfirst,FClast,Sym.NN)
 
     if Sym.basis.NN!=FClast-FCfirst+1:
@@ -1055,14 +1061,25 @@ def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,LatticeType,a
         kuk
     
     # a_i : real space lattice vectors
-    # b_j : reciprocal space lattice vectors
-    # a_i * b_j = \delta_ij
-    # lattice : [i1, i2, i3] closest integer lattice vector
-    # radi : 1/2 closest distance between supercells
-    a1,a2,a3,b1,b2,b3 = Sym.a1,Sym.a2,Sym.a3,Sym.b1,Sym.b2,Sym.b3
-    numBasis, lattice =  Sym.basis.NN, Sym.lattice
-    Sym.latticeType = LatticeType
-    what = Sym.what()
+    a1,a2,a3 = Sym.a1,Sym.a2,Sym.a3
+    numBasis =  Sym.basis.NN
+    
+    # Use automatically determined lattice type or override
+    if LatticeType != "AUTO":
+        Sym.latticeType = LatticeType
+        print "Symmetry: Using lattice \"%s\" for phonon bands."%LatticeType
+
+    # Calculate lattice vectors for phase factors
+    # The closest cell might be different depending on which atom is moved
+    sxyz = Sym.xyz.copy()
+    xyz = N.zeros((FClast-FCfirst+1,Sym.NN,3),N.float)
+    for i0 in range(FClast-FCfirst+1):
+        ii = FCfirst-1+i0
+        micxyz = Symmetry.moveIntoClosest(\
+                sxyz-sxyz[ii,:],Sym.pbc[0],Sym.pbc[1],Sym.pbc[2])
+        for jj in range(Sym.NN):
+            xyz[i0,jj,:] = micxyz[jj,:]+sxyz[ii,:]-\
+                sxyz[FCfirst-1+Sym.basisatom[jj],:]
 
     # Mass scaled dynamical matrix
     MSFC = FCsym.copy()
@@ -1071,12 +1088,16 @@ def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,LatticeType,a
             MSFC[ii,jj,:]=MSFC[ii,jj,:]/N.sqrt(\
                 PC.AtomicMass[atomnumber[FCfirst-1+ii/3]]*\
                     PC.AtomicMass[atomnumber[jj]])
-    bands = []
-    XMGR = []
+
+    # Get bandlines
+    what = Sym.what()
+
+    bands, XMGR = [], []
     for elem in what:
         # Calculate bands
-        bands+=[ calcPhBands(MSFC, a1, a2, a3, lattice,\
-                                 elem[1], elem[2], elem[3], numBasis)]
+        bands+=[ calcPhBands(MSFC, a1, a2, a3, xyz,\
+                                 elem[1], elem[2], elem[3], numBasis,\
+                                 Sym.basisatom)]
         f=open(elem[0]+'.dat','w')
         for ii,data in enumerate(bands[-1]):
             f.write("%i %e %e %e\n"%(ii,data[0].real,data[1].real,data[2].real))
@@ -1115,19 +1136,22 @@ def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,LatticeType,a
     p.Print2File('PhononBands.eps')
 
 
-def calcPhBands(FCmean, a1, a2, a3, lattice, kdir, korig, Nk, Nbasis):
+def calcPhBands(FCmean, a1, a2, a3, xyz, kdir, korig, Nk, Nbasis, basisatom):
     NN = 3*Nbasis
     Band = N.zeros((Nk, NN),N.complex)
     units = PC.eV2Joule*1e20/PC.amu2kg*(PC.hbar2SI/PC.eV2Joule)**2*1e6
     for ik in range(Nk):
         kvec = kdir*ik/float(Nk-1)+korig
-        k1, k2, k3 = N.dot(a1,kvec), N.dot(a2,kvec), N.dot(a3,kvec)
+        #k1, k2, k3 = N.dot(a1,kvec), N.dot(a2,kvec), N.dot(a3,kvec)
         FCk = N.zeros((NN,NN),N.complex)
-        for ii in range(len(lattice)):
-            tmp=FCmean[0:NN,ii,:]*N.exp(2.0j*N.pi*(k1*lattice[ii,0]+\
-                                                   k2*lattice[ii,1]+\
-                                                   k3*lattice[ii,2]))
-            FCk[:,(ii%Nbasis)*3:(ii%Nbasis+1)*3]+=tmp
+        for ii in range(Nbasis):
+            for jj in range(len(xyz[0,:])):
+                tmp=FCmean[ii*3:(ii+1)*3,jj,:]*N.exp(2.0j*N.pi*\
+                       (N.dot(kvec,xyz[ii,jj,:])))
+                FCk[ii*3:(ii+1)*3,(basisatom[jj])*3:(basisatom[jj]+1)*3]+=N.transpose(tmp)
+        
+        #print N.max(N.abs((FCk-N.conjugate(N.transpose(FCk)))))/N.max(N.abs(FCk))
+        FCk = (FCk+N.conjugate(N.transpose(FCk)))/2
         a,b = LA.eig(FCk*units)
         Band[ik,:] = N.sort(N.sqrt(a))
     return Band

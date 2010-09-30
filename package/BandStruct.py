@@ -1,5 +1,5 @@
 """
-Fermi surface calculator
+Bandstructure and Fermi surface calculator
 """
 
 import Symmetry as SYM
@@ -45,7 +45,7 @@ def readxv():
 
     print('Reading geometry from "%s" file' % fns[0])
     geom = MG.Geom(fns[0])
-    geom.sym = SYM.Symmetry(fns[0])
+    geom.sym = SYM.Symmetry(fns[0],onlyLatticeSym=True)
     if geom.sym.NNbasis != geom.natoms:
         print "ERROR: Siesta cell does not contain one unit cell"
         kuk

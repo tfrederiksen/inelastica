@@ -1,7 +1,6 @@
 import SiestaIO as SIO
 import numpy as N
 
-
 class Symmetry:
     """
     Classify symmetry of lattice and basis.
@@ -14,47 +13,58 @@ class Symmetry:
     pbc : periodic boundary conditions [3,3] (first index is basis vector, 
                                               second is x/y/z)
     # Derived quantities
+    a1..3    : Lattice vectors of unitcell
+    b1..3    : Reciprocal lattice vectors
+    bp1..bp3 : Reciprocal lattice vectors to PBC.
+    latticeType : string FCC / BCC / CUBE / HEX / GRAPHENE / POLYMER
+    basis.xyz : xyz of basis inside a1..a3
+    basis.snr, .anr, .NN : Siesta/atomic number and number of atoms
+
     pointU33 : List of lattice point symmetries [?,3,3], i.e., the 
              rotation/mirror symmetry operators in space
-    U33      : List of symmetry operations for lattice + basis, i.e.,
-             subset of point U [?,3,3]
-    UL/UR    : Symmetry operations for the dynamical matrix (D), i.e., 
-             UL.D.UR should be D
+    
+    # Full set of point operations around rotation center
+    fullU33      : List of symmetry operations for lattice + basis, i.e.,
+               subset of pointU33 [?,3,3]
+    fullOrigo    : List of rotation origin for the operations in fullU33
 
-    latticeType : string FCC / BCC / CUBE / HEX
+    # Irreducible symmetry operations for lattice + basis:         
+    U33      : List of symmetry operations for lattice + basis, i.e.,
+               subset of pointU33 [?,3,3]
+    origo    : List of rotation origin for the operations in U33
+    rankU33  : Rank, i.e., N; U^N=I
 
     All arrays are numpy type.
 
     Use:
-       sym = Symmetry.Symmetry(fn='kuk.XV',accuracy=1e-4)
-       Where accuracy is the fudge  factor in Ang.
-
+       sym = Symmetry.Symmetry(fn='filename.XV',accuracy=1e-4)
+       Where accuracy is the fudge factor in Ang.
     """
-    def __init__(self,fn=None,accuracy=1e-4):
+    def __init__(self,fn=None,accuracy=1e-4,onlyLatticeSym=False):
         self.accuracy=accuracy
         if fn!=None:
-            self.readXV(fn)
+            self.readXV(fn,onlyLatticeSym)
         pass
     
     ###########################################################
     # Init
 
-    def readXV(self,fn):
+    def readXV(self,fn,onlyLatticeSym=False):
         # Get geometry
         self.pbc, self.snr, self.anr, self.xyz = SIO.ReadXVFile(fn)
         self.pbc, self.snr, self.anr, self.xyz = N.array(self.pbc), N.array(self.snr), N.array(self.anr), N.array(self.xyz)
         self.NN = len(self.anr)
-        self.findSymmetry()
+        self.findSymmetry(onlyLatticeSym)
 
-    def setupGeom(self,pbc, snr, anr, xyz):
+    def setupGeom(self,pbc, snr, anr, xyz,onlyLatticeSym=False):
         self.pbc, self.snr, self.anr, self.xyz = N.array(pbc), N.array(snr), N.array(anr), N.array(xyz)
         self.NN = len(self.anr)
-        self.findSymmetry()
+        self.findSymmetry(onlyLatticeSym)
         
     ###########################################################
     # Main symmetry finding
 
-    def findSymmetry(self):
+    def findSymmetry(self,onlyLatticeSym=False):
         # Reciprocal lattice for PBC
         pbc = self.pbc
         bp1, bp2, bp3 = N.cross(pbc[1],pbc[2]), N.cross(pbc[0],pbc[2]),\
@@ -69,35 +79,36 @@ class Symmetry:
         # Calculate point group symmetry operators for lattice system 
         self.latticeGroup()
         
-        # Point group including basis (lower than for lattice system)
-        self.pointGroup()
+        if not onlyLatticeSym:
+            # Point group including basis (lower than for lattice system)
+            self.pointGroup()
 
-        # Print stuff
-        self.printIrreducible()
+            # Reduce to smallest possible subgroup which generate the full group
+            self.findIrreducible()
 
         return
 
     ###########################################################
     # Make the dynamical matrix symmetric 
 
-    def symmetrizeFC(self,FC,FCfirst,FClast):
+    def symmetrizeFC(self,FC,FCfirst,FClast,radi=0.0):
         NN, NU, NFC = self.NN, len(self.U33), FClast-FCfirst+1
         if self.basis.NN>NFC:
             print "Phonons: ERROR: FCfirst/last do contain all atoms in the basis (%i)."%Sym.basis.NN
             kuk
 
-        # Rearrange to atom_to, axis, atom_from, axis format
-        FCn = N.zeros((self.NN, 3, NFC, 3))
+        # Rearrange to FC_ia,jb, force from atom j, axis b to atom i, axis a
+        FCn = N.zeros((NFC, 3, self.NN, 3))
         for ii in range(NFC):
             for jj in range(3):
-                FCn[:, :, ii, jj] = FC[ii*3+jj, :, :]
+                FCn[ii, jj, :, :] = FC[ii*3+jj, :, :]
         FC = FCn
         
         # Rearange basis to fit FCfirst...FClast order in Siesta FC file
         basisxyz = moveIntoCell(self.xyz[FCfirst-1:FClast]-self.xyz[0,:],\
                                 self.a1,self.a2,self.a3,self.accuracy)
         ipiv = []
-        for elem in basisxyz[0:self.basis.NN]:
+        for elem in basisxyz[0:FClast-FCfirst+1]:
             for jj, cmp in enumerate(self.basis.xyz):
                 if N.allclose(elem,cmp,atol=self.accuracy):
                     ipiv+=[jj]
@@ -108,71 +119,101 @@ class Symmetry:
         self.basis.xyz = self.basis.xyz[ipiv,:]
         self.basis.snr, self.basis.anr = N.array(self.basis.snr)[ipiv], N.array(self.basis.anr)[ipiv]
 
-        # Calculate lattice positions of the atoms, used by Phonons
-        self.calcLattice(FCfirst)
+        # Find out which basis atom corresponds to each atom
+        xyz = moveIntoCell(self.xyz,self.a1,self.a2,self.a3,self.accuracy)
+        self.basisatom = N.zeros((self.NN))
+        for ii in range(self.basis.NN):
+            indx = N.where(N.sum(N.abs(xyz-self.basis.xyz[ii,:]), axis=1)<self.accuracy)
+            self.basisatom[indx[0]]=ii
 
         # Symmetry operations are complicated by the periodic structure 
         # in the Siesta calculation. So ... limit range of interaction.
 
         # Find radie and center for biggest sphere fitting into pbc
-        xyz = self.xyz.copy()
-        radi = findRadi(self.pbc[0],self.pbc[1],self.pbc[2])*0.99
+        if radi==0.0:
+            radi = findRadi(self.pbc[0],self.pbc[1],self.pbc[2])*\
+                (1-5*self.accuracy)
         print "Symmetry: Longest range of forces %f Ang."%radi
 
-        # Symmetry operation on FC composed of:
-        #     FC_ia,jb = UL_aa' P^j_ii' FC_i'a',jb' UR_b'b
+        # Symmetry operation on FC is composed of:
+        #     FC_ia,jb = U^t_aa' PL^j_ii' FC_i'a',j'b' PR_j'j UR_b'b
         # (where 'ed are summed). I.e., normal matrix mult for the L/R 
-        # unitary matrices and the permutation P depends also depend on 
-        # "from" atom j. 
-        # Left and right symmetry matrices 
+        # unitary matrices. The permutation matrices are complicated.
+        # PR : U may change which atom in the basis is moved.
+        # PL : Should point to the atom closest to the atom moved and 
+        #      thus may depend also on j, i.e., the atom moved 
 
         UL = [N.transpose(self.U33[ii]) for ii in range(NU)]
         UR = [self.U33[ii] for ii in range(NU)]
-        P  = N.zeros((NU, NFC, NN, NN),N.int)
+        PL  = N.zeros((NU, NFC, NN, NN),N.int)
+        PR  = N.zeros((NU, NFC),N.int)
+        FCcellOrigo = self.xyz[FCfirst-1, :]-moveIntoCell(self.xyz[FCfirst-1, :], self.a1, self.a2, self.a3, self.accuracy)+self.basis.xyz[0, :]
         for iU in range(NU):
-            for ii in range(NFC): # Force from
+            for ii in range(NFC):
+                SIO.printDone(iU*NFC+ii, NU*NFC,'Symmertrizing')
+
                 # Figure out which atoms are connected by symmetry op.
-                tmp = xyz[ii+FCfirst-1].copy()
-                xyz = xyz-tmp
-                xyz = moveIntoClosest(N.array(xyz),\
-                                          self.pbc[0],self.pbc[1],self.pbc[2])
+                xyz = self.xyz.copy()-self.origo[iU]-FCcellOrigo
+                FCxyz = xyz[FCfirst-1+ii, :].copy()
+                xyz = moveIntoClosest(N.array(xyz)-FCxyz,\
+                                    self.pbc[0],self.pbc[1],self.pbc[2])+FCxyz
                 nxyz = N.transpose(mm(self.U33[iU],N.transpose(xyz)))
-                nxyz = moveIntoClosest(N.array(nxyz),\
-                                           self.pbc[0],self.pbc[1],self.pbc[2])
-
+                # Did the moving atom move between unit cells?
+                nFCxyz, iix = nxyz[FCfirst-1+ii, :].copy(),  10
+                for ix in range(-2, 3): 
+                    for iy in range(-2, 3): 
+                        for iz in range(-2, 3):
+                            if N.any(N.sum(N.abs(nFCxyz+ix*self.a1+iy*self.a2+iz*self.a3-xyz[FCfirst-1:FClast]), axis=1)<self.accuracy):
+                                iix, iiy, iiz = ix, iy, iz
+                if iix==10: kuk
+                tFCxyz = nFCxyz+iix*self.a1+iiy*self.a2+iiz*self.a3
+                shift = tFCxyz-nFCxyz # Shift all new coordinates
+                nxyz = moveIntoClosest(N.array(nxyz)+shift-FCxyz,\
+                                    self.pbc[0],self.pbc[1],self.pbc[2])+FCxyz
+    
                 # Which atoms are within radi?
-                indx = N.where(distance(xyz)<radi)[0]
-
+                indx = N.where(distance(xyz-FCxyz)<radi)[0]
+    
                 # Find the target atom
-                diff = N.sum(N.abs(nxyz[indx].reshape((1,-1,3))-\
+                diff = N.sum(N.abs(nxyz.reshape((1,-1,3))-\
                          xyz[indx].reshape((-1,1,3))),axis=2)<self.accuracy
-                tindx = N.where(diff)
-                ipiv = N.argsort(tindx[0])
-                tindx = tindx[1][ipiv]
-
+                tindx = N.where(diff)[1]
+                
                 # Make permutation matrix
-                P[iU,ii,indx[tindx],indx] = 1
-
+                PL[iU,ii, tindx,indx] = 1
+                indx = N.where(distance(xyz-tFCxyz)<self.accuracy)
+                PR[iU, ii] = self.basisatom[indx[0]]
+        
         def applySym(FC):
             FCn = N.tensordot(UL[iU], FC, ((1, 1)))
             FCn = N.swapaxes(FCn, 0, 1)
             FCn = N.tensordot(FCn, UR[iU], ((3, 0)))
+            FCn2=0*FCn
             for ii in range(NFC):   
-                FCn[:, :, ii, :] = N.tensordot(P[iU, ii, :, :], FCn[:, :, ii, :], ((1, 0)))
-            return FCn
+                tmp = N.tensordot(PL[iU,ii, :, :], \
+                                                            FCn[ii, :, :, :], ((1, 1)))
+                tmp = N.swapaxes(tmp, 0, 1)
+                FCn2[PR[iU, ii], :, :, :] = tmp
+            return FCn2
 
         # Symmetrize dynamical matrix 
-        FCs = FC
-        for iU in range(NU):
-            FCn = FCs
-            FCs = 0
-            for jj in range(self.rankU33[iU]):
-                FCn = applySym(FCn)
-                FCs += FCn
-            FCs = FCs/self.rankU33[iU]
+        print "Symmetry: Iterative application of symmetries"
+        iter, change = 0, 10
+        FCo = FC.copy()
+        while iter<10 and change>1e-10:
+            FCs = FCo
+            for iU in range(NU):
+                FCn = FCs
+                FCs = 0
+                for jj in range(self.rankU33[iU]):
+                    FCn = applySym(FCn)
+                    FCs += FCn
+                FCs = FCs/self.rankU33[iU]
 
-        print "Symmetry: max change between old and symmetrized = %e"%N.max(N.abs(FCs-FC))
-        print "Symmetry: relative change = %e"%(N.max(N.abs(FCs-FC))/N.max(abs(FC)))
+            change = N.max(N.abs(FCs-FCo))
+            print "Symmetry: max change between old and symmetrized = %e"%change
+            print "Symmetry: relative change = %e\n"%(N.max(N.abs(FCs-FCo))/N.max(abs(FCo)))
+            FCo = FCs
         if N.max(N.abs(FCs-FC))/N.max(abs(FC))>0.05:
             print "Symmetry: WARNING: large relative difference"
 
@@ -180,23 +221,47 @@ class Symmetry:
         FC = N.zeros((NFC*3, self.NN, 3))
         for ii in range(NFC):
             for jj in range(3):
-                FC[ii*3+jj, :, :] = FCs[:, :, ii, jj] 
+                FC[ii*3+jj, :, :] = FCs[ii, jj, :, :] 
         
         return FC
 
     ###########################################################
     # Find irreducible symmetry operations and print
-    # TODO ... not working, multiplication table needs to be analyzed better ...
-    def printIrreducible(self):
-        sign, rotn,  fullRank = self.reduce(self.pointU33)
-        #myprint(sign, rotn, 'Lattic point group')
-        sign, rotn,  fullRank = self.reduce(self.U33)
-        self.rankU33 = fullRank
-        #myprint(sign, rotn, 'Bravais lattic point group')
+    # 
+    def findIrreducible(self):
+        # Just print for the lattice group
+        ipiv, sign, rotn = self.reduce(self.pointU33)
+
+        # Go through the different rotation centers
+        lasto, nU, nO, nR, nS = 0, [], [], [], []
+        for ii in range(1,len(self.origo)):
+            if not N.allclose(self.origo[ii-1],self.origo[ii],self.accuracy):
+                ipiv, sign, rotn = self.reduce(N.concatenate((self.U33[lasto:ii], [N.eye(3)])))
+                if len(rotn)>1 or rotn[0]!=1: 
+                    for jj, kk in enumerate(lasto+N.array(ipiv)):
+                        nU += [self.U33[kk]]
+                        nO += [self.origo[kk]]
+                        nR += [rotn[jj]]
+                    print "Symmetry: Irreducible point operations around %f %f %f"%(self.origo[ii-1][0],self.origo[ii-1][1],self.origo[ii-1][2])
+                    print "Ranks*determinant : ",rotn*sign
+                lasto = ii
+
+        if len(self.U33)!=0:
+            ipiv, sign, rotn = self.reduce(N.concatenate((self.U33[lasto:], [N.eye(3)])))
+            for jj, kk in enumerate(lasto+N.array(ipiv)):
+                nU += [self.U33[kk]]
+                nO += [self.origo[kk]]
+                nR += [rotn[jj]]
+
+            print "Symmetry: Irreducible point operations around %f %f %f"%(self.origo[ii-1][0],self.origo[ii-1][1],self.origo[ii-1][2])
+            print "Ranks*determinant : ",rotn*sign
+
+        self.fullU33, self.fullOrigo = self.U33, self.origo
+        self.U33, self.origo, self.rankU33 = nU, nO, nR
         return
 
     def reduce(self, Ulist):
-        # Do not know if this is interesting ... try to find a minimal set of U that generate the group. Only fullRank is ever used.
+        # Find least number of symmetry operations that generate the whole group
         keep = [ii for ii in N.array(Ulist).copy()]
         ChT = N.zeros((len(keep),len(keep)),N.int) # Character table
         for ii in range(len(keep)):
@@ -205,10 +270,11 @@ class Symmetry:
                 indx=N.where(N.sum(N.sum(N.abs(keep-tmp), axis=2), axis=1)<self.accuracy)
                 ChT[ii,jj]=indx[0][0]
 
+        # Calculate rank
         rotn = []
         for ii in keep:
             a, M = ii, 1
-            while not N.allclose(N.eye(3),a,self.accuracy):
+            while not N.allclose(N.eye(3),a,atol=self.accuracy):
                 a, M =mm(a,ii), M+1
             rotn+=[M]
         fullRank = rotn[:]
@@ -220,12 +286,14 @@ class Symmetry:
             return N.array(tmp).reshape((-1, ))
 
         def grow(x):
+            # See which points in table that can be reached from the points in x
             NN = -1
             while len(x)!=NN:
                 NN=len(x)
                 x= N.unique(N.concatenate((x,pick(ChT, x))))
             return x
 
+        # Sort and start with largest rank
         order = N.argsort(-abs(N.array(rotn))).reshape((-1, ))
         irr = grow(N.array([order[0]], N.int))
         basis = [order[0]]
@@ -235,9 +303,8 @@ class Symmetry:
                 irr = grow(N.unique(N.concatenate((basis, irr))))
 
         sign = N.array([N.linalg.det(keep[ii]) for ii in basis])
-        ipiv = N.argsort(-sign)
-        keep, sign = N.array([keep[ii] for ii in basis])[ipiv], sign[ipiv]
-        
+        keep = N.array([keep[ii] for ii in basis])
+
         rotn = []
         for ii in keep:
             a, M = ii, 1
@@ -245,37 +312,73 @@ class Symmetry:
                 a, M =mm(a,ii), M+1
             rotn+=[M]
         
-        #print sign*rotn
-        return sign, rotn,  fullRank
+        return basis, sign, rotn
 
     ###########################################################
-    # point group of lattice
+    # point group of lattice+basis
 
     def pointGroup(self):
         # Check which of the point operations that leave the lattice unchanged
+        # Guessing at usefull origins for the rotation
         
-        Ulist = []
-        atomtypes = N.unique(self.basis.snr)
-        for U in self.pointU33:
-            passed=True
-            for atomtype in atomtypes:
-                xyz = self.basis.xyz[N.argwhere(self.basis.snr==atomtype)]
-                xyz = xyz.reshape((-1, 3))-self.basis.xyz[0].reshape(1,3)
-                # Check operations
-                xyz =moveIntoCell(xyz,self.a1,self.a2,self.a3,self.accuracy)
-                ipiv = N.lexsort(N.round(N.transpose(xyz)/self.accuracy))
-                xyz = xyz[ipiv,:]
+        atomtypes, Ulist, origo = N.unique(self.basis.snr), [], []
+
+        # Generate possible rotation centers ...
+        # Hope that midpoint between 2 or 3 atoms will suffice
         
-                res = N.transpose(mm(N.transpose(U), N.transpose(xyz)))
-                res =moveIntoCell(res,self.a1,self.a2,self.a3,self.accuracy)
-                ipiv = N.lexsort(N.round(N.transpose(res)/self.accuracy))
-                res = res[ipiv,:]
-                if not N.allclose(xyz,res,atol=self.accuracy):
-                    passed = False 
-                    break
-            if passed: Ulist += [U]
-        self.U33 = Ulist
-        print "Symmetry: %i point symmetry operations found for lattice+basis."%len(Ulist)
+        basisxyz = self.basis.xyz
+        poss = [basisxyz[ii,:] for ii in range(self.basis.NN)]
+        if self.basis.NN>1:
+            for ii in basisxyz:
+                for jj in basisxyz:
+                    poss += [(ii+jj)/2.0]
+        if self.basis.NN>2:
+            for ii in basisxyz:
+                for jj in basisxyz:
+                    for kk in basisxyz:
+                        poss += [(ii+jj+kk)/3.0]
+
+        # Remove duplicates
+        poss = myUnique2(N.array(poss),self.accuracy)
+        poss = moveIntoCell(poss,  self.a1,  self.a2,  self.a3, 0)
+        poss = myUnique2(N.array(poss),self.accuracy)
+
+        # Loop over possible origins
+        for x0 in [poss[ii,:] for ii in range(len(poss))]:
+            for iU, U in enumerate(self.pointU33):
+                passed=True
+                for atomtype in atomtypes:
+                    xyz = self.basis.xyz[N.argwhere(self.basis.snr==atomtype)]
+                    xyz = xyz.reshape((-1, 3))-x0
+                    # Check operations
+                    xyz =moveIntoCell(xyz,self.a1,self.a2,self.a3,self.accuracy)
+                    ipiv = N.lexsort(N.round(N.transpose(xyz)/self.accuracy))
+                    xyz = xyz[ipiv,:]
+                    
+                    res = N.transpose(mm(N.transpose(U), N.transpose(xyz)))
+                    res =moveIntoCell(res,self.a1,self.a2,self.a3,self.accuracy)
+                    ipiv = N.lexsort(N.round(N.transpose(res)/self.accuracy))
+                    res = res[ipiv,:]
+                    if not N.allclose(xyz,res,atol=self.accuracy):
+                        passed = False 
+                        break
+                if passed and not N.allclose(U, N.eye(3), atol=self.accuracy):
+                    Ulist += [U]
+                    origo  += [x0]
+        self.U33, self.origo = Ulist, origo
+        print "Symmetry: %i point symmetry operations (with rotation centers) found for lattice+basis (some are unnecessary \"duplicates\")."%len(Ulist)
+
+        # Calculate rank of operations
+        self.rankU33, sign = [], []
+        for U in self.U33:
+            tmp, ii = U, 1
+            while ii<7 and not N.allclose(N.eye(3),tmp,self.accuracy):
+                tmp, ii = mm(tmp,U), ii+1
+            if ii > 6: kuk
+            self.rankU33 += [ii]
+            sign += [N.linalg.det(U)]
+        print "Symmetry: rank*det"
+        print N.array(self.rankU33)*sign
         return
 
 
@@ -302,8 +405,10 @@ class Symmetry:
         for ii in range(3):
             targets[ii]=points[N.where(abs(dist-distance(a[ii]))<self.accuracy)]
 
+        # Make all possible combinations of targets for a1..a3
         possible = myPermute(targets)
         
+        # Generate unitary transformation from a1, a2, a3 -> possible
         Ulist = []
         for ii in possible:
             # Generate symmetry operations
@@ -315,6 +420,19 @@ class Symmetry:
 
         self.pointU33 = Ulist
         print "Symmetry: %i point symmetry operations found for lattice"%len(Ulist)
+        sign = N.array([N.linalg.det(ii) for ii in Ulist])
+        
+        rotn = []
+        for ii in Ulist:
+            a, M = ii, 1
+            while not N.allclose(N.eye(3),a,atol=self.accuracy):
+                a, M =mm(a,ii), M+1
+            rotn+=[M]
+        
+        self.pointRank = rotn
+        print "Symmetry: rank * determinant"
+        print sign*self.pointRank
+
         return
         
     ###########################################################
@@ -331,11 +449,17 @@ class Symmetry:
         sameatoms = N.argwhere(self.snr==self.snr[0])
         samexyz = self.xyz[sameatoms]
         samexyz = samexyz.reshape((-1, 3))
-        samexyz=moveIntoCell(samexyz,self.pbc[0,:],self.pbc[1,:],self.pbc[2,:],self.accuracy)
+        samexyz = moveIntoCell(samexyz,self.pbc[0,:],self.pbc[1,:],\
+                                   self.pbc[2,:],self.accuracy)
+        # Make matrix of difference between coordinates
         possible = samexyz.reshape((1,-1,3))-samexyz.reshape((-1,1,3))
+        # Reshape into list of vectors
         possible = possible.reshape((-1,3))
-        possible = N.concatenate((possible,self.pbc )) # Add pbc for unitcell = supercell
-        possible = myUnique(possible,self.accuracy) # remove duplicates etc
+        # Add the periodic boundary conditions in case the unit 
+        # cell is the whole cell.
+        possible = N.concatenate((possible,self.pbc )) 
+        # remove duplicates etc
+        possible = myUnique(possible,self.accuracy) 
 
         # Go through combinations and check if possible
         i1, i2, i3, done, NP = 0, 1, 2, False, len(possible)
@@ -363,7 +487,7 @@ class Symmetry:
             return i1,i2,i3
         
         # Step through possibilities
-        while i1<NP-3 and not done:
+        while i1<NP-2 and not done:
             a1, a2 = possible[i1], possible[i2]
             if distance(N.cross(a1,a2))>self.accuracy: # Non-parallell
                 a3 = possible[i3]
@@ -376,11 +500,14 @@ class Symmetry:
                 i1, i2, i3 = increase(i1,i2,i3,NP,1)
         
         if not done:
+            # Should not be necessary since PBC is added to possible!
             print "Symmerty: WARNING Could not find smaller unitcell"
             print "  ...   : Continuing with Siesta periodic cell"
             a1, a2, a3 = self.pbc[0,:], self.pbc[1,:], self.pbc[2,:]
             self.NNbasis = self.NN
+            kuk
 
+        # Rearange to fit with PBC
         a1, a2, a3 = self.makeHumanReadable(a1,a2,a3)
 
         b1, b2, b3 = N.cross(a2,a3), N.cross(a1,a3), N.cross(a1,a2)
@@ -398,7 +525,7 @@ class Symmetry:
         print "a3 = (%f,%f,%f), N3=%i"%(a3[0],a3[1],a3[2],N3)
 
         # Find basis
-        xyz = moveIntoCell(self.xyz-self.xyz[0,:], a1, a2, a3,self.accuracy)
+        xyz = moveIntoCell(self.xyz-self.xyz[0,:], a1, a2, a3, self.accuracy)
         class basis:
             pass
         basis.xyz, basis.snr, basis.anr = [], [], []
@@ -418,12 +545,20 @@ class Symmetry:
         self.basis = basis
 
         # Determine types of lattices from the angles / lengths
-        angles = []
-        for ii,a in enumerate([a1,a2]):
-            for jj,b in enumerate([a2,a3][ii:]):
-                angles += [N.round(N.arccos(mm(a,b)/distance(a)/distance(b))*180/N.pi)]
-        angles = [min(ii,180-ii) for ii in angles] 
+        # Sort on length
         length = N.array([distance(ii) for ii in [a1,a2,a3]])
+        ipiv = N.argsort(length)
+        length = N.array(length)[ipiv]
+        a123 = N.array([a1,a2,a3])[ipiv]
+
+        # Calculate angels in degrees
+        angles = []
+        for ii,a in enumerate([a123[0],a123[1]]):
+            for jj,b in enumerate([a123[1],a123[2]][ii:]):
+                angles += [N.round(N.arccos(mm(a,b)/distance(a)/distance(b))*\
+                                   180/N.pi)]
+        # Move angels into range [0,90] 
+        angles = [min(ii,180-ii) for ii in angles] 
         type = 'UNKNOWN'
         if N.allclose(length[0],length[1],atol=self.accuracy) and\
                 N.allclose(length[1],length[2],atol=self.accuracy):
@@ -434,10 +569,10 @@ class Symmetry:
                 type = 'FCC'
             if N.sum(N.abs(N.array(angles)-70.5))<4:
                 type = 'BCC'
-        if N.allclose(length[1],length[2],atol=self.accuracy):
+        elif N.allclose(length[1],length[2],atol=self.accuracy):
             if N.sum(N.abs(N.array(angles)-90))<2:
                 type = 'POLYMER'
-        if N.allclose(length[0],length[1],atol=self.accuracy):
+        elif N.allclose(length[0],length[1],atol=self.accuracy):
             if N.abs(angles[0]-60)<2:
                 type="GRAPHENE"
         print "Symmetry: Lattice type = %s"%type
@@ -589,21 +724,6 @@ class Symmetry:
             
         return passed
 
-    def calcLattice(self,FCfirst):
-        # Find in which cell n1 a1+n2 a2+n3 a3 that the atoms are relative 
-        # the center cell (given by FCfirst). The n1..3 is not rounded to integers 
-        # for atoms != first in basis
-        xyz = self.xyz.copy()
-        orig = (self.pbc[0] + self.pbc[1] + self.pbc[2])/2
-        tmp = xyz[FCfirst-1,:]
-        xyz = moveIntoCell(xyz-tmp+orig, self.pbc[0], self.pbc[1], self.pbc[2],self.accuracy)
-        xyz = moveIntoClosest(xyz-orig, self.pbc[0], self.pbc[1], self.pbc[2])+orig
-                
-        indx = mm(xyz,N.transpose(N.array([self.b1,self.b2,self.b3])))
-        tmp = indx[FCfirst-1]
-        self.lattice = indx-tmp
-        return
-
     def what(self):
         # Returns directions to calculate bandstructure
         # [["text",k-direction, k-origin, Num k-points], ...]
@@ -636,7 +756,8 @@ class Symmetry:
                     ['000-111',L,0*L,101],
                     ]
         elif self.latticeType == 'POLYMER':
-            X = b1
+            ipiv = N.argsort(distance(N.array([a1,a2,a3])))
+            X = [b1,b2,b3][int(ipiv[0])]
             what = [['000-100',X*0.5,0*X,101]]
         elif self.latticeType == 'GRAPHENE':
             M = (b1+b2)/2
@@ -658,7 +779,7 @@ class Symmetry:
 # Mathematical helpers
 
 def myUnique(set,accuracy):
-    # Union, sort, remove duplicates
+    # Union, sort, remove duplicates and change signs to get positive x
     
     # Change sign to get possitive x-coordinate or if zero y>0
     changex = set[:,0]<-accuracy
@@ -667,7 +788,6 @@ def myUnique(set,accuracy):
     zeroy = N.abs(set[:,1])<=accuracy
     changez = zerox*zeroy*set[:,2]<-accuracy
     change = -2*((changex+changey+changez)>0)+1
-
     set = (N.transpose(N.array([[1],[1],[1]])*change))*set
 
     # Sort on z,y,x
@@ -687,6 +807,26 @@ def myUnique(set,accuracy):
     # remove zero length
     if abs(distance(set[0]))<accuracy:
         set=set[1:]
+
+    return set
+
+
+def myUnique2(set,accuracy):
+    # Union, sort, remove duplicates
+    
+    # Sort on z,y,x
+    ipiv = N.lexsort(N.round(N.transpose(set)/accuracy))
+    set = set[ipiv,:]
+
+    # Remove duplicates
+    newset=set[N.where(N.sum(N.abs(set[1:, :]-set[:-1, :]),axis=1)>accuracy)]
+    newset = N.concatenate((newset, [set[-1, :]]))
+    set = newset
+    
+    # Sort by length
+    dist = N.sum(set*set,axis=1) # Sort by length
+    ipiv = dist.argsort()
+    set = set[ipiv, :]
 
     return set
 
@@ -745,12 +885,13 @@ def myPermute(list):
 
 def  findRadi(a1, a2, a3):
     # Find sphere that fits in a1..3
-    def nc(a, b):
-        tmp = N.cross(a, b)
-        return tmp/distance(tmp)
-        
-    b1,  b2,  b3 = nc(a2, a3),  nc(a1, a3),  nc(a1, a2)
-    return min(abs(mm(a1, b1)),  abs(mm(a2, b2)),  abs(mm(a3, b3)))/2.0
+    poss = []
+    for i1 in range(-1,2):
+        for i2 in range(-1,2):
+            for i3 in range(-1,2):
+                poss += [a1*i1+a2*i2+a3*i3]
+    dist = N.sort(distance(N.array(poss)))
+    return dist[1]/2.0
 
 if __name__ == '__main__':
     b=Symmetry('/home/mpn/symmetry/test/test.XV')
