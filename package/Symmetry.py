@@ -120,7 +120,7 @@ class Symmetry:
         self.basis.snr, self.basis.anr = N.array(self.basis.snr)[ipiv], N.array(self.basis.anr)[ipiv]
 
         # Find out which basis atom corresponds to each atom
-        xyz = moveIntoCell(self.xyz,self.a1,self.a2,self.a3,self.accuracy)
+        xyz = moveIntoCell(self.xyz-self.xyz[0, :],self.a1,self.a2,self.a3,self.accuracy)
         self.basisatom = N.zeros((self.NN))
         for ii in range(self.basis.NN):
             indx = N.where(N.sum(N.abs(xyz-self.basis.xyz[ii,:]), axis=1)<self.accuracy)
@@ -147,7 +147,7 @@ class Symmetry:
         UR = [self.U33[ii] for ii in range(NU)]
         PL  = N.zeros((NU, NFC, NN, NN),N.int)
         PR  = N.zeros((NU, NFC),N.int)
-        FCcellOrigo = self.xyz[FCfirst-1, :]-moveIntoCell(self.xyz[FCfirst-1, :], self.a1, self.a2, self.a3, self.accuracy)+self.basis.xyz[0, :]
+        FCcellOrigo = self.xyz[FCfirst-1, :]-moveIntoCell(self.xyz[FCfirst-1, :]-self.xyz[0], self.a1, self.a2, self.a3, self.accuracy)
         for iU in range(NU):
             for ii in range(NFC):
                 SIO.printDone(iU*NFC+ii, NU*NFC,'Symmertrizing')
