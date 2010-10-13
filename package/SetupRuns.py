@@ -269,6 +269,7 @@ def SetupOSrun(CGrun,newOSrun,displacement=0.04*PC.Bohr2Ang,
         f.write('TS.onlyS .true.\n\n')
         f.write('SystemName STRUCT_%i\n'%(i+1))
         f.write('SystemLabel STRUCT_%i\n\n'%(i+1))
+        f.write('%include '+'./STRUCT_%i.fdf\n\n'%(i+1))
         f.write('### Lines from RUN.fdf \n')
         for line in lines:
             if line.strip().endswith('STRUCT.fdf'):
