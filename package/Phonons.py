@@ -1100,7 +1100,10 @@ def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,\
                                  Sym.basisatom)]
         f=open(elem[0]+'.dat','w')
         for ii,data in enumerate(bands[-1]):
-            f.write("%i %e %e %e\n"%(ii,data[0].real,data[1].real,data[2].real))
+            f.write("%i "%ii)
+            for jj in data:
+                f.write("%e "%(jj.real))
+            f.write("\n")
         f.close()
         xx = N.array(range(elem[3]),N.float)/(elem[3]-1.0)
         #XMGR += [[WX.XYDYset(xx,bands[-1][:,ii].real,bands[-1][:,ii].imag/2,Lcolor=ii+1) for ii in range(len(bands[-1][0,:]))]]

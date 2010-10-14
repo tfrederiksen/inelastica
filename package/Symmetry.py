@@ -344,8 +344,11 @@ class Symmetry:
         poss = myUnique2(N.array(poss),self.accuracy)
 
         # Loop over possible origins
-        for x0 in [poss[ii,:] for ii in range(len(poss))]:
+        for iposs, x0 in enumerate([poss[ii,:] for ii in range(len(poss))]):
             for iU, U in enumerate(self.pointU33):
+                SIO.printDone(iposs*len(self.pointU33)+iU,\
+                                  len(self.pointU33)*len(poss),\
+                                  'Checking basis symmetries')
                 passed=True
                 for atomtype in atomtypes:
                     xyz = self.basis.xyz[N.argwhere(self.basis.snr==atomtype)]

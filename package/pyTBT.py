@@ -32,6 +32,11 @@ import numpy as N
 import numpy.linalg as LA
 import sys, string
 from optparse import OptionParser, OptionGroup
+try:
+    import scipy.linalg as SLA 
+    hasSciPy = True
+except:
+    hasSciPy = False 
 
 ################### Help functions ############################
 try:
@@ -320,10 +325,59 @@ class surfaceGF:
     def getg0(self,ee,kpoint,left=True,ispin=0):
         # Calculate surface Green's function for small electrode calculation
         self.setupHS(kpoint)
-        return self.calcg0(ee,left=left,ispin=ispin)
-        
+        return self.calcg0_old(ee,left=left,ispin=ispin)
+        #Potentially faster method but seems to have numerical instability
+        #if hasSciPy and :
+        #    return self.calcg0(ee,left=left,ispin=ispin)
+        #else:
+        #    return self.calcg0_old(ee,left=left,ispin=ispin)
+            
     def calcg0(self,ee,ispin=0,left=True):
+        # Calculate surface Green's function
+        # Euro Phys J B 62, 381 (2008)
+        # Inverse of : NOTE, setup for "right" lead.
+        # e-h00 -h01  ...
+        # -h10  e-h00 ...
+        h00,s00,h01,s01 = self.H[ispin,:,:],self.S,self.H01[ispin,:,:],self.S01
+        NN, ee = len(h00), N.real(ee)+N.max([N.imag(ee),1e-8])*1.0j
+        if left:
+            h01, s01 = dag(h01), dag(s01)
+
+        # Solve generalized eigen-problem
+        # ( e I - h00 , -I) (eps)          (h01 , 0) (eps)
+        # ( h10       ,  0) (xi ) = lambda (0   , I) (xi )
+        a, b = N.zeros((2*NN,2*NN),N.complex), N.zeros((2*NN,2*NN),N.complex)
+        a[0:NN,0:NN] = ee*s00-h00
+        a[0:NN,NN:2*NN] = -N.eye(NN)
+        a[NN:2*NN,0:NN] = dag(h01)-ee*dag(s01)
+        b[0:NN,0:NN] = h01-ee*s01
+        b[NN:2*NN,NN:2*NN] = N.eye(NN)
+        ev, evec = SLA.eig(a,b)
+
+        # Select lambda <0 and the eps part of the evec
+        ipiv = N.where(N.abs(ev)<1.0)[0]
+        ev, evec = ev[ipiv], N.transpose(evec[:NN,ipiv])        
+        # Normalize evec
+        norm = N.sqrt(N.diag(mm(evec,dag(evec))))
+        evec = mm(N.diag(1.0/norm),evec)
+
+        # E^+ Lambda_+ (E^+)^-1 --->>> g00
+        EP = N.transpose(evec)
+        FP = mm(EP,N.diag(ev),LA.inv(mm(dag(EP),EP)),dag(EP))
+        g00 = LA.inv(ee*s00-h00-mm(h01-ee*s01,FP))
+
+        # Check!
+        err=N.max(N.abs(g00-LA.inv(ee*s00-h00-\
+                         mm(h01-ee*s01,g00,dag(h01)-ee*dag(s01)))))
+        if err>1.0e-8 and left:
+            print "WARNING: Lopez-scheme not-so-well converged for LEFT electrode at E = %.4f eV:"%ee, err
+        if err>1.0e-8 and not left:
+            print "WARNING: Lopez-scheme not-so-well converged for RIGHT electrode at E = %.4f eV:"%ee, err
+        return g00
+
+    def calcg0_old(self,ee,ispin=0,left=True):
         """
+        Only used if SciPy is not installed!
         For the left surface Green's function  (1 is surface layer, 0 is all the other atoms):
         (E S00-H00  E S01-H01)   (g00 g01)    ( I 0 )
         (E S10-H10  E S11-H11) * (g01 g11)  = ( 0 I ) ->
