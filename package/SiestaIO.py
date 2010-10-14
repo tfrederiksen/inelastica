@@ -910,7 +910,8 @@ def GetPDOSenergyValues(dom):
     return N.array(data)
 
 def GetPDOSfromOrbitals(dom,index=[],atom_index=[],species=[],nlist=[],llist=[]):
-    pdos = 0.0*GetPDOSenergyValues(dom)
+    dim = len(GetPDOSenergyValues(dom))*GetPDOSnspin(dom)
+    pdos = N.zeros(dim,N.float)
     nodes = dom.getElementsByTagName('orbital')
     usedOrbitals = []
     for node in nodes:
@@ -969,9 +970,12 @@ def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llis
         for i in range(len(ev)):
 	    f.write('%.6f %.9f\n'%(ev[i]-eF,pdos[i]))
         f.close()
-    else:
-        sys.exit('Not yet implemented for spin polarized data.\n')
-
+    elif nspin == 2: # Spin polarized
+        print 'SIO.ExtractPDOS: Writing', outfile
+        f = open(outfile,'w')
+        for i in range(len(ev)):
+	    f.write('%.6f %.9f %.9f\n'%(ev[i]-eF,pdos[2*i],-pdos[2*i+1]))
+        f.close()
 
 # Functions specific to syslabel.PROJBANDS files
 # (k-resolved PDOS is available from a modified SIESTA by D. Sanchez-Portal)
