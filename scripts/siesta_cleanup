@@ -21,7 +21,9 @@ rmfileshead = [
     "OCCS",
     "NON_TRIMMED_KP_LIST",
     "CLOCK",
-    "fort."]
+    "fort.",
+    "DMHS.nc",
+    "DM.nc"]
 rmfilestail=[
     ".ion",
     ".ion.xml",
