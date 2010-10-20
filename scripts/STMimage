@@ -1,0 +1,4 @@
+#! /usr/bin/env python
+
+import Inelastica.STM as STM
+STM.main()
