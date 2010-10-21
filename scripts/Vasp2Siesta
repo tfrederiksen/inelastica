@@ -1,0 +1,55 @@
+#!/scratch/thf/bin/python
+
+from Inelastica import VaspIO as VIO
+from Inelastica import SiestaIO as SIO
+from Inelastica import PhysicalConstants as PC
+import sys
+
+# File to read
+fn = sys.argv[1]
+
+label,scalefactor,vectors,vaspspeciesnumbers,xyz = VIO.ReadCONTCAR(fn)
+
+#print label
+#print scalefactor
+#print vectors
+#print speciesnumbers
+#print xyz
+
+atomnumber = []
+siestaspeciesnumbers = []
+sn = 1
+
+for i in range(len(vaspspeciesnumbers)):
+    tmp = raw_input('Please specify element label for group %i (%i atoms): '%(i+1,vaspspeciesnumbers[i]))
+    an = PC.PeriodicTable[tmp]
+    for j in range(vaspspeciesnumbers[i]):
+        atomnumber.append(an)
+        siestaspeciesnumbers.append(sn)
+        sn += 1
+
+print 'atomnumber ='
+print atomnumber
+print 'siesta speciesnumbers'
+print siestaspeciesnumbers
+
+# Move atoms inside unit cell
+dx = raw_input('Shift along x-axis [default=0.0] (Ang)? ')
+dy = raw_input('Shift along y-axis [default=0.0] (Ang)? ')
+dz = raw_input('Shift along z-axis [default=0.0] (Ang)? ')
+if len(dx)>0: dx = float(dx)
+else: dx = 0.0
+if len(dy)>0: dy = float(dy)
+else: dy = 0.0
+if len(dz)>0: dz = float(dz)
+else: dz = 0.0
+for i in range(len(xyz)):
+    xyz[i][0] += dx
+    xyz[i][1] += dy
+    xyz[i][2] += dz
+    for j in range(3):
+        if xyz[i][j]-vectors[j][j]>0: xyz[i][j] -= vectors[j][j]
+        if xyz[i][j]<0: xyz[i][j] += vectors[j][j]
+        
+SIO.WriteXVFile(fn+'.XV',vectors,siestaspeciesnumbers,atomnumber,xyz)
+SIO.WriteXYZFile(fn+'.xyz',atomnumber,xyz)

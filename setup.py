@@ -63,10 +63,10 @@ import numpy.distutils.extension as Next
 
 # Fortran helper files
 F90ext = Next.Extension('Inelastica.F90helpers',\
-                            ['package/F90/distributegs.F',
-                             'package/F90/readNewTSHS.F90',
-                             'package/F90/removeUnitCellXij.F',
-                             'package/F90/setkpointhelper.F'])
+                        ['package/F90/distributegs.F',
+                         'package/F90/readNewTSHS.F90',
+                         'package/F90/removeUnitCellXij.F',
+                         'package/F90/setkpointhelper.F'])
 
 # Main setup of python modules
 setup(name='Inelastica',
@@ -85,10 +85,17 @@ Provides:
       url='https://sourceforge.net/apps/mediawiki/inelastica', 
       license='GPL. Please cite: Frederiksen et al., PRB 75, 205413 (2007)', 
       package_dir={'Inelastica': 'package'},
-      scripts 	= ['scripts/Inelastica', 'scripts/EigenChannels', \
-        'scripts/pyTBT', 'scripts/geom2geom', 'scripts/geom2zmat', \
-        'scripts/SDOS', 'scripts/BandStruct', \
-        'scripts/siesta_cleanup','scripts/STMimage'], 
+      scripts  = ['scripts/Inelastica',
+                  'scripts/EigenChannels',
+                  'scripts/pyTBT',
+                  'scripts/geom2geom',
+                  'scripts/geom2zmat',
+                  'scripts/SDOS',
+                  'scripts/BandStruct',
+                  'scripts/siesta_cleanup',
+                  'scripts/STMimage',
+                  'scripts/Vasp2Siesta'
+                  ], 
       packages=['Inelastica'],
       ext_modules=[F90ext],
       data_files=[('Inelastica/PBS', ['PBS/RUN.OS.pbs','PBS/RUN.py.pbs', \
