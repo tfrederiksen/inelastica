@@ -12,4 +12,5 @@ Analyze('..','FCrun*',
         AuxNCfile=False,
         PerBoundCorrFirst=-1,PerBoundCorrLast=-1,
         PrintSOrbitals=True,
-        PhBandStruct="BCC")
+        PhBandStruct="BCC",
+        PhBandRadie=7.0)
