@@ -953,6 +953,8 @@ def GetPDOSfromOrbitals(dom,index=[],atom_index=[],species=[],nlist=[],llist=[])
 def ReadPDOSFile(filename,index=[],atom_index=[],species=[],nlist=[],llist=[]):
     # Reads SIESTA *.PDOS files summing up contributions from orbitals
     # belonging to a subset specified by the keywords
+    if filename.endswith('.gz'):
+        sys.exit('Please unzip file %s (SiestaIO.ReadPDOSFile does not support zipped PDOS-files)'%filename)
     dom = xml.parse(filename)
     nspin = GetPDOSnspin(dom)
     norb = GetPDOSnorbitals(dom)
