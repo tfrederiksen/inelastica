@@ -94,8 +94,9 @@ Provides:
                   'scripts/BandStruct',
                   'scripts/siesta_cleanup',
                   'scripts/STMimage',
-                  'scripts/Vasp2Siesta'
-                  ], 
+                  'scripts/Vasp2Siesta',
+                  'scripts/bands2xmgr'
+                  ],
       packages=['Inelastica'],
       ext_modules=[F90ext],
       data_files=[('Inelastica/PBS', ['PBS/RUN.OS.pbs','PBS/RUN.py.pbs', \

@@ -1,0 +1,184 @@
+#!/scratch/thf/bin/python
+
+###########################################################################
+#   Function bands2xmgr.py                                                #
+#   Written by Thomas Frederiksen, July 2007.                             #
+#   Copyright (c), All Rights Reserved                                    #
+#                                                                         #
+#   This program is free software; you can redistribute it and/or modify  #
+#   it under the terms of the GNU General Public License as published by  #
+#   the Free Software Foundation; either version 3 of the License, or     #
+#   (at your option) any later version.                                   #
+#                                                                         #
+#   This program is distributed in the hope that it will be useful,       #
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of        #
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
+#   GNU General Public License for more details.                          #
+#                                                                         #
+#   You should have received a copy of the GNU General Public License     #
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>. #
+###########################################################################
+
+"""
+Utility for visualizing SIESTA bands and density-of-states results.
+
+The function bands2xmgr.py reads \"systemlabel.bands\" and
+\"systemlabel.DOS\" of SIESTA and writes \"systemlabel.agr\" for XMGR/GRACE
+as well as a print file \"systemlabel.eps\".
+
+Usage (from the command prompt):
+
+    >>> python bands2xmgr.py systemlabel [flags]
+                                            
+
+where the optional keyword flags are:
+
+    -S               : Sort E(k) for smoother band lines,
+    -O  [output.band]: Output (sorted) band structure to specified file,
+    -R               : Sort in reverse order,
+    -fs [float]      : Set the flip sensitivity factor (0.<fs<=1.) where fs=1
+                       corresponds to  maximum sensitivity (many band flips),
+    -f  [int]        : Set first band index in the sorting,
+    -l  [int]        :  Set last band index in the sorting.
+    
+"""
+
+import sys, os.path, time
+from Inelastica import SiestaIO as SIO
+from Inelastica import WriteXMGR as XMGR
+import numpy as N
+
+    
+def SortOnce(EvsK,factor,firstband='',lastband=''):
+    "Sorts the eigenvalues for smooth band lines (minimizes the change in curvature)."
+    if firstband=='': firstband = 0
+    else: firstband = int(firstband)
+    if lastband=='': lastband = len(EvsK[0])-1
+    else: lastband = int(lastband)
+    f = 0
+    for i in range(2,len(EvsK)):
+        if i%25==0: print ' %i/%i'%(i,len(EvsK))
+        for j in range(firstband,lastband):
+            for k in range(j+1,lastband):
+                d2EvsK = abs(EvsK[i,j]+EvsK[i-2,j]-2*EvsK[i-1,j])+abs(EvsK[i,k]+EvsK[i-2,k]-2*EvsK[i-1,k])
+                d2EvsKfl = abs(EvsK[i,k]+EvsK[i-2,j]-2*EvsK[i-1,j])+abs(EvsK[i,j]+EvsK[i-2,k]-2*EvsK[i-1,k])
+                if factor*d2EvsK>d2EvsKfl: # flip
+                    f += 1
+                    tmp = EvsK[i:,j].copy()
+                    EvsK[i:,j] = EvsK[i:,k]
+                    EvsK[i:,k] = tmp
+                    print "   ...@ k(%i): flip indices %i-%i"%(i,j,k)
+    print "   Total flips = ",f
+    return EvsK,f
+
+def SortOnceReversed(EvsK,factor,firstband='',lastband=''):
+    "Sorts in the reverse direction (from last k-point to the first)."
+    EvsK2 = EvsK.copy()
+    for i in range(len(EvsK)):
+        EvsK2[i] = EvsK[len(EvsK)-1-i]
+    EvsK2,f = SortOnce(EvsK2,factor,firstband,lastband)
+    for i in range(len(EvsK)):
+        EvsK[i] = EvsK2[len(EvsK)-1-i]
+    return EvsK,f
+    
+
+def SortThis(EvsK):
+    "Sorting algoritm for an E(k) array."
+    for i in range(len(sys.argv)):
+        if sys.argv[i]=='-fs':
+            factor = float(sys.argv[i+1])
+            break
+        else: factor = 1.0
+    for i in range(len(sys.argv)):
+        if sys.argv[i]=='-f':
+            firstband=int(sys.argv[i+1])
+            break
+        else: firstband = 0
+    for i in range(len(sys.argv)):
+        if sys.argv[i]=='-l':
+            lastband=int(sys.argv[i+1])
+            break
+        else: lastband = len(EvsK[0])-1
+    print "Starting sorting",time.ctime()
+    round=1
+    flips=100
+    while flips>1:
+        print "SORT SCAN %i (with factor=%.8f)"%(round,factor)
+        if '-R' in sys.argv:
+            EvsK,flips = SortOnceReversed(EvsK,factor,firstband,lastband)
+        else:
+            EvsK,flips = SortOnce(EvsK,factor,firstband,lastband)
+        round += 1
+    print "Finished sorting",time.ctime()
+    return EvsK
+
+def MakeBandstructurePlot(filename,eF,EvsK,labels,DOS,emin=-5.0,emax=5.0):
+    "Transforms E(k) and DOS(E) into a nice plot."
+    # Data for band structure
+    EvsK = N.array(EvsK)
+    for i in range(len(EvsK)):
+        EvsK[i,1:] -= eF  # Energies relative to eF
+    kmin = EvsK[0,0]
+    kmax = EvsK[-1,0]
+    # Build graph 1
+    line0 = XMGR.XYset([kmin,kmax],[0.,0.])
+    Esets = XMGR.Array2XYsets(EvsK)
+    g0 = XMGR.Graph(line0,*Esets)
+    g0.SetSubtitle(os.path.abspath(filename))
+    g0.SetXaxis(autoscale=True,majorGridlines=True)
+    g0.SetXaxisSpecialTicks(labels)
+    g0.SetYaxis(min=emin,max=emax,label='E - E\sF\N [eV]',majorUnit=1.00)
+    # Build graph 2
+    line1 = XMGR.XYset([kmin,max(DOS[:,1])],[0.,0.])
+    DOSset = XMGR.XYset(DOS[:,1],DOS[:,0]-eF,legend='TDOS')
+    g1 = XMGR.Graph(line1,DOSset)
+    g1.SetSubtitle('DOS')
+    g1.SetXaxis(autoscale=True,useticklabels=False,useticks=False)
+    g1.SetYaxis(min=emin,max=emax,useticklabels=False,majorUnit=1.00)
+    g1.ShowLegend()
+    # Build plot
+    p0 = XMGR.Plot(filename,g0,g1)
+    p0.ArrangeGraphs(nx=2,hspace=0.0)
+    g0.Add2View(xmax=0.2)
+    g1.Add2View(xmin=0.2)
+    p0.ShowTimestamp()
+    p0.WriteFile()
+
+
+if __name__ == '__main__':
+
+    eF,EvsK,labels,spins = SIO.ReadBandsFile(sys.argv[1]+'.bands')    
+    DOS = SIO.ReadDOSFile(sys.argv[1]+'.DOS')
+
+    print 'Spins: ',spins
+    
+    if spins==1:
+        if '-S' in sys.argv:
+            EvsK = SortThis(EvsK)
+        for i in range(len(sys.argv)):
+            if sys.argv[i]=='-O':
+                SIO.WriteBandsFile(sys.argv[i+1],eF,EvsK,labels,spins)
+        MakeBandstructurePlot(sys.argv[1]+'.agr',eF,EvsK,labels,DOS)
+    
+    if spins==2:
+        # Splitting eigenvalues and DOS
+        eval = (len(EvsK[0])-1)/2
+        upEvsK = EvsK[:,:eval+1].copy()
+        downEvsK = EvsK[:,eval:].copy()
+        downEvsK[:,0] = EvsK[:,0]
+        upDOS = N.transpose(N.array([DOS[:,0],DOS[:,1]]))
+        downDOS = N.transpose(N.array([DOS[:,0],DOS[:,2]]))
+        # Sorting
+        if '-S' in sys.argv:
+            upEvsK = SortThis(upEvsK)
+            downEvsK = SortThis(downEvsK)
+        for i in range(len(sys.argv)):
+            if sys.argv[i]=='-O':
+                SIO.WriteBandsFile(sys.argv[i+1]+'.up',eF,upEvsK,labels,1)
+                SIO.WriteBandsFile(sys.argv[i+1]+'.down',eF,downEvsK,labels,1)
+        # Making band structure plots
+        MakeBandstructurePlot(sys.argv[1]+'.agr.up',eF,upEvsK,labels,DOS=upDOS)
+        MakeBandstructurePlot(sys.argv[1]+'.agr.down',eF,downEvsK,labels,DOS=downDOS)
+
+
+
