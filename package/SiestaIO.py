@@ -876,6 +876,7 @@ def ConvertBandsFile(filename):
 def ReadDOSFile(filename):
     # Reads SIESTA *.DOS files
     f = SIO_open(filename,'r')
+    print 'SiestaIO.ReadDOSFile: Reading',filename
     DOS = []
     for line in f.readlines():
         data = line.split()
