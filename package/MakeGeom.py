@@ -7,7 +7,7 @@ import numpy as N
 import string, copy, math, sys
 import Scientific.IO.NetCDF as NC
 import PhysicalConstants as PC
-
+import os
 
 def interpolateGeom(g0,g1,newlength):
     '''
@@ -99,8 +99,8 @@ class Geom:
                 self.readXYZ(fn)
             elif fn.endswith('.fdf') or fn.endswith('.fdf.gz'):
                 self.readFDF(fn)
-            #elif fn.endswith('.mkl'):
-            #    self.readMKL(fn)
+            elif 'CONTCAR' in fn:
+                self.readCONTCAR(fn)
 
 
     # BASIC FUNCTIONS
@@ -582,6 +582,23 @@ class Geom:
             geom.repeteGeom(self.pbc[i],rep=rep[i])
             geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
         SIO.WriteMKLFile(fn,geom.anr,geom.xyz,[],[],0,0)
+
+    def readCONTCAR(self,fn):
+        "Read geometry from VASP CONTCAR file"
+        label,scalefactor,vectors,speciesnumbers,xyz = VIO.ReadCONTCAR(fn)
+        self.pbc = list(vectors)
+        self.xyz = list(xyz[:,:3])
+        self.natoms = len(xyz)
+        self.snr = []
+        self.anr = []
+        # try reading atom types from OUTCAR
+        head,tail = os.path.split(fn)
+        atoms = VIO.GetSpecies(head+'/OUTCAR')
+        for i in range(len(speciesnumbers)):
+            self.snr += speciesnumbers[i]*[i+1]
+            print 'MakeGeom.readCONTCAR: Found species %s corresponding to atom number %i.'\
+                %(atoms[i],PC.PeriodicTable[atoms[i]])
+            self.anr += speciesnumbers[i]*[PC.PeriodicTable[atoms[i]]]
 
 #--------------------------------------------------------------------------------
 # Interface with VASP

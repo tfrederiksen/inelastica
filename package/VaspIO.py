@@ -6,13 +6,27 @@ import gzip
 import Scientific.IO.NetCDF as nc
 
 
+def VIO_open(filename,mode='r'):
+    "A VaspIO redefinition of the function open() to handle gzip format"
+    try:
+        if filename[-3:]=='.gz':
+            # filename is explicitly a gzip file
+            file = gzip.open(filename,mode)
+        else:
+            # filename is given as a non-zip file
+            file = open(filename,mode)
+    except:
+        # if filename is not existing upon read, then try append the '.gz' ending
+        file = gzip.open(filename+'.gz',mode)
+    return file
+
 #--------------------------------------------------------------------------------
 # Interface with VASP
 
 def ReadCONTCAR(filename):
     "Read CONTCAR file"
     print 'VaspIO.ReadCONTCAR: Reading', filename
-    file = open(filename,'r')
+    file = VIO_open(filename,'r')
     label = file.readline()
     scalefactor = float(file.readline())
     vectors = N.zeros((3,3),N.float)
@@ -63,9 +77,9 @@ def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.
             line += ' F F F\n'
         file.write(line)
 
-
 def GetEnergies(OUTCAR):
-    file = open(OUTCAR,'r')
+    file = VIO_open(OUTCAR,'r')
+    print 'VaspIO.GetEnergies: Reading', OUTCAR
     #
     freeE, Etot, EtotSigma0 = 1e100, 1e100, 1e100
     for line in file:
@@ -78,3 +92,13 @@ def GetEnergies(OUTCAR):
             EtotSigma0 = float(l[6]) # Pick last appearance
     file.close()
     return freeE, Etot, EtotSigma0
+
+def GetSpecies(OUTCAR):
+    file = VIO_open(OUTCAR,'r')
+    print 'VaspIO.GetSpecies: Reading', OUTCAR
+    atoms = []
+    for line in file:
+        if 'VRHFIN' in line:
+            l = line.split()
+            atoms += [l[1][1:-1]]
+    return atoms
