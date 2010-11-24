@@ -188,7 +188,7 @@ def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.04*PC.Bohr2Ang,
             f.write('MPN.write    True\n')
             f.write('TS.FCwriteHS True\n')
             f.write('TS.SaveHS    True\n')
-            f.write('MD.FCDispl   %.4f Ang\n'%displacement)
+            f.write('MD.FCDispl   %.8f Ang\n'%displacement)
             for line in lines: f.write(line)
             f.close()
     # PBS files
