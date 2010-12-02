@@ -102,3 +102,31 @@ def GetSpecies(OUTCAR):
             l = line.split()
             atoms += [l[1][1:-1]]
     return atoms
+
+def GetVibrations(OUTCAR):
+    file = VIO_open(OUTCAR,'r')
+    print 'VaspIO.GetVibrations: Reading', OUTCAR
+    freq = []
+    modes = []
+    v = []    
+    datablock = False
+    for line in file:
+        if 'Eigenvectors and eigenvalues of the dynamical matrix' in line:
+            datablock = True # beginning of data block
+        if 'Eigenvectors after division by SQRT(mass)' in line \
+               or 'Finite differences POTIM=' in line:
+            datablock = False # end of data block
+        if datablock:
+            l = line.split()
+            if 'meV' in line:
+                # grep frequency
+                print line,
+                freq.append(float(l[-2]))
+                # begin vector array
+            if len(l) == 6 and l[0] != 'X':
+                v.append([float(l[3]),float(l[4]),float(l[5])])
+            if len(l)==0 and len(v)>0:
+                modes.append(N.array(v))
+                v = []
+    return N.array(freq), N.array(modes)
+
