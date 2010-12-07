@@ -14,15 +14,13 @@ import PhysicalConstants as PC
 import WriteXMGR as WX
 import Symmetry
 
-def Analyze(dirname,wildcard,
+def Analyze(wildcard,
             onlySdir='../onlyS',
-            newPHrun='PhononCalc',
+            #newPHrun='PhononCalc',
             DeviceFirst=1,DeviceLast=1e3,
             FCfirst=1,FClast=1e3,
-            BulkAtomsLeft=-1,BulkAtomsRight=-1,
             output2file=False,outlabel='Out',
             CorrPotentialShift=True,
-            TryMirrorSymmetry=False,
             CalcCoupl=True,
             PerBoundCorrFirst=-1,PerBoundCorrLast=-1,
             PrintSOrbitals=True,
@@ -57,24 +55,13 @@ def Analyze(dirname,wildcard,
     - PhBandRadie : Optional max distance for forces. 0.0 -> Automatically choosen
     """
     
-    ### Make directory for output files etc.
-    phononDirectory = dirname+'/'+newPHrun
-    if not os.path.isdir(phononDirectory):
-        os.mkdir(phononDirectory)
-
-    if output2file:
-        # Redirecting outputs
-        outfile = phononDirectory+'/'+outlabel+'.log'
-        sys.stdout = open(outfile,'w')
-        sys.stderr = open(outfile,'w')
-    
     print '=========================================================================='
     print '                         Calculating Phonons'
     print '=========================================================================='
 
     ### Get file lists
     print '\nPhonons.Analyze: Searching file structure.'
-    tree,XVfiles,FCfirstMIN,FClastMAX = GetFileLists(dirname,wildcard)
+    tree,XVfiles,FCfirstMIN,FClastMAX = GetFileLists(wildcard)
     FCfirst = max(FCfirst,FCfirstMIN)
     FClast  = min(FClast,FClastMAX)
 
@@ -117,13 +104,6 @@ def Analyze(dirname,wildcard,
     print '  ... PBC First   = %4i, PBC Last   = %4i, Device atoms  = %4i'\
           %(PerBoundCorrFirst,PerBoundCorrLast,PerBoundCorrLast-PerBoundCorrFirst+1)
 
-    ### Check for mirror symmetries
-    if TryMirrorSymmetry:
-        print '\nPhonons.Analyze: Checking for mirror symmetry in [FCfirstMIN,FCfirstMAX]:'
-        pairs = FindMirrorSymmetry(FCfirstMIN,FClastMAX,xyz)
-    else:
-        pairs = {}
-
     ### Build FC-matrix
     print '\nPhonons.Analyze: Building FC matrix:'
     # First, build FC on the full [FCfirstMIN,FCfirstMAX] space
@@ -131,14 +111,10 @@ def Analyze(dirname,wildcard,
     # Correct for egg-box effect
     FCm = CorrectFCMatrix(FCm,FCfirstMIN,FClastMAX,len(xyz))
     FCp = CorrectFCMatrix(FCp,FCfirstMIN,FClastMAX,len(xyz))
-    if len(pairs)>0:
-        # Apply mirror symmetry correction
-        FCm = MirrorCorrection(FCm,FCfirstMIN,FClastMAX,pairs)
-        FCp = MirrorCorrection(FCp,FCfirstMIN,FClastMAX,pairs)
     FCmean = (FCm+FCp)/2
 
     ### Write mass-scaled FC-matrix to file
-    OutputFC(FCmean,filename=phononDirectory+'/%s.MSFC'%outlabel)
+    OutputFC(FCmean,filename='./%s.MSFC'%outlabel)
     
     ### Calculate phonon bandstructure
     if PhBandStruct!="None":
@@ -150,7 +126,7 @@ def Analyze(dirname,wildcard,
     print '\nPhonons.Analyze: Calculating phonons from FCmean, FCm, FCp:'
     # Mean
     FC2 = ReduceAndSymmetrizeFC(FCmean,FCfirstMIN,FClastMAX,FCfirst,FClast)
-    OutputFC(FC2,filename=phononDirectory+'/%s.reduced.MSFC'%outlabel)
+    OutputFC(FC2,filename='./%s.reduced.MSFC'%outlabel)
     hw,U = CalcPhonons(FC2,atomnumber,FCfirst,FClast)
     # FCm
     FC2 = ReduceAndSymmetrizeFC(FCm,FCfirstMIN,FClastMAX,FCfirst,FClast)
@@ -159,21 +135,14 @@ def Analyze(dirname,wildcard,
     FC2 = ReduceAndSymmetrizeFC(FCp,FCfirstMIN,FClastMAX,FCfirst,FClast)
     CalcPhonons(FC2,atomnumber,FCfirst,FClast)
 
-    ### Calculate phonon spectrum
-    a,b,c = N.shape(FCmean)
-    if a==b*c and BulkAtomsLeft>0 and BulkAtomsRight>0:
-        # Force constants available for whole unit cell
-        print '\nPhonons.Analyze: Calculating phonon spectrum.'
-        CalcPhononDOS(FCmean,U,atomnumber,FCfirst,FClast,BulkAtomsLeft,BulkAtomsRight)
-
     ### Write MKL- and xyz-files
     print '\nPhonons.Analyze: Writing geometry and phonons to files.'
-    SIO.WriteMKLFile(phononDirectory+'/%s_FC%i-%i.mkl'%(outlabel,FCfirst,FClast),
+    SIO.WriteMKLFile('./%s_FC%i-%i.mkl'%(outlabel,FCfirst,FClast),
                      atomnumber,xyz,hw,U,FCfirst,FClast)
-    SIO.WriteXYZFile(phononDirectory+'/%s.xyz'%outlabel,atomnumber,xyz)
-    WriteFreqFile(phononDirectory+'/%s.freq'%outlabel,hw)
-    WriteVibDOSFile(phononDirectory+'/%s.fdos'%outlabel,hw)
-    WriteAXSFFiles(phononDirectory+'/%s.axsf'%outlabel,xyz,atomnumber,hw,U,FCfirst, FClast)
+    SIO.WriteXYZFile('./%s.xyz'%outlabel,atomnumber,xyz)
+    WriteFreqFile('./%s.freq'%outlabel,hw)
+    WriteVibDOSFile('./%s.fdos'%outlabel,hw)
+    WriteAXSFFiles('./%s.axsf'%outlabel,xyz,atomnumber,hw,U,FCfirst, FClast)
     
     ### Write data to NC-file
     print '\nPhonons.Analyze: Writing results to netCDF-file'
@@ -182,7 +151,7 @@ def Analyze(dirname,wildcard,
         tmp1.append(orbitalIndices[ii,0]-orbitalIndices[DeviceFirst-1,0])
         tmp2.append(orbitalIndices[ii,1]-orbitalIndices[DeviceFirst-1,0])
     naoDev = orbitalIndices[DeviceLast-1][1]-orbitalIndices[DeviceFirst-1][0]+1
-    NCfile = OpenNetCDFFile(phononDirectory+'/%s.nc'%outlabel,
+    NCfile = OpenNetCDFFile('./%s.nc'%outlabel,
                             naoDev,xyz,DeviceFirst,DeviceLast,FCfirst,FClast)
     Write2NetCDFFile(NCfile,tmp1,'FirstOrbital',('NumDevAtoms',),
                      description='Orbital index for the first orbital on the atoms (counting from 0)')
@@ -261,46 +230,6 @@ def OutputFC(FC,filename='FC.matrix'):
                     f.write(string.rjust('%.4e'%FC[i,j,k],12))
         f.write('\n')
     f.close()
-
-def MirrorCorrection(FC,FCfirstMIN,FClastMAX,pairs):
-    FC2 = 0.0*FC.copy()
-    T = N.identity(3,N.float)
-    T[2,2] = -1.0
-    mm = N.dot
-    for i in pairs:
-        for j in pairs:
-            #print i,j,' (%i,%i)'%(pairs[i],pairs[j])
-            a,Ta = 3*(i-FCfirstMIN),3*(pairs[i]-FCfirstMIN)
-            fc1 = FC[a:a+3,j-1]
-            fc2 = mm(mm(T,FC[Ta:Ta+3,pairs[j]-1]),T)
-            fcm = (fc1+fc2)/2.0
-            FC2[a:a+3,j-1] = fcm
-    print 'Phonons.MirrorCorrection: Applied to FC'
-    return FC2
-
-
-def FindMirrorSymmetry(First,Last,xyz):
-    MirrorTol=0.1 # Ang
-    Zmirror = 0.0
-    for i in range(First,Last+1):
-        Zmirror += xyz[i-1][2] # Add up z-coord among dynamic atoms
-    Zmirror = Zmirror/(Last-First+1) # Calculate mean z-coord
-    # Go through device atoms and find pairs
-    pairs = {}
-    for i in range(First,Last+1):
-        for j in range(First,Last+1):
-            dev = [abs(xyz[i-1][0]-xyz[j-1][0]),
-                   abs(xyz[i-1][1]-xyz[j-1][1]),
-                   abs(xyz[i-1][2]+xyz[j-1][2]-2*Zmirror)]
-            if max(dev) < MirrorTol:
-                # (i,j) forms a mirror pair
-                print 'Phonons.FindMirrorSymmetry: Atoms (%i,%i) mirrors around z=%f Ang'%(i,j,Zmirror)
-                print '... abs([x1-x2,y1-y2,z1+z2-2*Zmirror]) = [%.3f,%.3f,%.3f] Ang'%(dev[0],dev[1],dev[2])
-                pairs[i] = j # Add pair to dictionary
-    if len(pairs)==0:
-        print 'Phonons.FindMirrorSymmetry: No mirror symmetries was found (tol=%f Ang).'%tol
-    return pairs
-
 
 def ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,A):
     # Print matrix A defined on the electronic subspace [FCfirst,FClast]
@@ -566,118 +495,7 @@ def CalcPhonons(FC,atomnumber,FCfirst,FClast):
         print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
         if (i-5)%6==0: print
     if (i-5)%6!=0: print
-
-
     return hw,U
-
-def CalcPhononDOS(FC,U,atomnumber,FCfirst,FClast,BulkAtomsLeft,BulkAtomsRight,outputfile='PhDOS.dat'):
-    import RecursiveMethods as RM
-    mm = N.dot
-    NumberOfAtoms = len(atomnumber)
-    const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-    
-    # Change FC to normal coordinates and include constants to make
-    # the frequencies come out in eV.
-    FCtilde = N.zeros((len(FC),len(FC)),N.float)
-    for i in range(len(FC)):
-        for j in range(NumberOfAtoms):
-            for k in range(3):
-                FCtilde[i,3*j+k] = (const**2)*FC[i,j,k]/ \
-                  ( PC.AtomicMass[atomnumber[i/3]] * PC.AtomicMass[atomnumber[j]] )**0.5
-
-    # Output the dense 3D-periodic FCtilde
-    OutputFC(FCtilde)
-
-    # Pick out 9 separate blocks from FCtilde
-    iL = 3*BulkAtomsLeft
-    iR = 3*(NumberOfAtoms-BulkAtomsRight)
-    print iL,iR
-    
-    LL = FCtilde[:iL,:iL]
-    LC = FCtilde[:iL,iL:iR]
-    LR = FCtilde[:iL,iR:]
-    CL = FCtilde[iL:iR,:iL]
-    CC = FCtilde[iL:iR,iL:iR]
-    CR = FCtilde[iL:iR,iR:]
-    RL = FCtilde[iR:,:iL]
-    RC = FCtilde[iR:,iL:iR]
-    RR = FCtilde[iR:,iR:]
-
-    OutputFC(LL,filename='FC_LL.matrix')
-    OutputFC(LR,filename='FC_LR.matrix')
-    OutputFC(RL,filename='FC_RL.matrix')
-    OutputFC(RR,filename='FC_RR.matrix')
-    
-    ID = N.identity(len(FC))
-    IDL = N.identity(len(LL))
-    IDR = N.identity(len(RR))
-    
-    print N.shape(FC),N.shape(LL),N.shape(CC),N.shape(RR)
-
-
-    # Build new FCmatrix from 7 of the 9 blocks, where
-    # direct electrode couplings not included (LR=RL=0)
-    FC2 = N.zeros((len(FC),len(FC)),N.float)
-    
-    FC2[:iL,:iL]     = LL
-    FC2[:iL,iL:iR]   = LC
-    FC2[iL:iR,:iL]   = CL
-    FC2[iL:iR,iL:iR] = CC
-    FC2[iL:iR,iR:]   = CR
-    FC2[iR:,iL:iR]   = RC
-    FC2[iR:,iR:]     = RR
-
-    # Output this corrected FCmatrix of the finite system (in the z-direction)
-    OutputFC(FC2,filename='FC2.matrix')
-    
-    # Calculate phonon self-energies (energy dependent)
-    eta = 1e-6
-    f = open(outputfile,'w')
-    f2 = open('pdos.dat','w')
-    FC2 = N.array(FC2,N.complex)
-    for z in N.arange(0.0,30e-3,1e-4):
-        z += eta*1j
-        # Calculate self-energies
-        L00,L01,L10,L11 = RM.IterateAlternating(z**2*IDL-LL,-LR,-RL,z**2*IDR-RR,
-                                                iter=1e2,method='Fast',eta=0.0,mix=0.5)
-        R00,R01,R10,R11 = RM.IterateAlternating(z**2*IDR-RR,-RL,-LR,z**2*IDL-LL,
-                                                iter=1e2,method='Fast',eta=0.0,mix=0.5)
-        # Insert self-energies in FC2
-        FC2[:iL,:iL] = z**2*IDL-L00
-        FC2[iR:,iR:] = z**2*IDR-R00
-
-        # Calculate phonon density-of-states
-        D = LA.inv(z**2*ID-FC2)  # The Phonon Greens function
-        A = -4.0*z.real*D.imag       # Spectral density
-        
-        DOS = N.trace(A) # DOS projected on whole unit cell
-        
-        #dosZ = 0.0
-        #for i in range(4):
-        #    dosZ += -A[3*(27+i)+2,3*(27+i)+2]
-
-        # Projection onto eigenmodes
-        f2.write('%.7e  '%(1000*z.real))
-        for vec in U:
-            VEC = N.zeros(len(FC2),N.float)
-            VEC[3*(FCfirst-1):3*FClast] = vec
-            pdos = mm(VEC,mm(A,VEC)) 
-            f2.write('%.3e  '%pdos)
-        f2.write('\n')
-
-        # Bulk and surface DOS    
-        D = LA.inv(L00)
-        dosSURFL = -4.0*z.real*N.trace(D.imag)
-        D = LA.inv(L11)
-        dosBULKL = -4.0*z.real*N.trace(D.imag)
-        D = LA.inv(R00)
-        dosSURFR = -4.0*z.real*N.trace(D.imag)
-        D = LA.inv(R11)
-        dosBULKR = -4.0*z.real*N.trace(D.imag)
-        f.write('%.7f    %.3e    %.3e    %.3e    %.3e    %.3e \n'%(z.real,DOS,dosSURFL,dosBULKL,dosSURFR,dosBULKR))
-    f.write('\n')
-    f.close()
-    f2.close()
 
 
 def GetFCMatrices(tree,FCfirst,FClast,NumberOfAtoms):
@@ -727,12 +545,12 @@ def ReduceAndSymmetrizeFC(FC,FCfirstMIN,FClastMAX,FCfirst,FClast):
     return FC3
 
 
-def GetFileLists(dirname,wildcard):
+def GetFileLists(wildcard):
     "Returns absolute paths to (FCfiles,TSHSfiles,XVfiles) matching the wildcard"
     dirs,tree,FCfiles,HSfiles,XVfiles = [],[],[],[],[]
     FCfirst,FClast = 1e10,-1e10
     # Find wildcard directories
-    for elm in glob.glob(dirname+'/'+wildcard):
+    for elm in glob.glob(wildcard):
         if os.path.isdir(elm):
             dirs.append(elm)
     dirs.sort()
@@ -889,6 +707,7 @@ def WriteVibDOSFile(filename,hw,gam=0.001,type='Gaussian'):
     f.close()                                                                
 
 def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
+    'Writes the vibrational normal coordinates in xcrysden axsf-format'
     f = open(filename,'w')
     f.write('ANIMSTEPS %i\n'%len(hw))    
     for i in range(len(hw)):
