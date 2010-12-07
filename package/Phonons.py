@@ -96,8 +96,11 @@ def Analyze(dirname,wildcard,
 
     # Make isotope substitutions 
     for ii,anr in Isotopes:
-        atomnumber[ii-1]=anr
-        print "Phonons.Analyse: Isotope substitution for atom index %i to atom type %i"%(ii,anr)
+        print 'Phonons.Analyse: Isotope substitution for atom index %i:'%ii
+        print '  ... atom type %i --> %i'%(atomnumber[ii-1],anr)
+        print '  ... atom mass %.4f --> %.4f'%(PC.AtomicMass[atomnumber[ii-1]],\
+                                               PC.AtomicMass[anr])
+        atomnumber[ii-1] = anr
         
     DeviceLast = min(DeviceLast,len(xyz))
     print 'Phonons.Analyze: This run uses'
@@ -333,7 +336,7 @@ def GetOrbitalIndices(dirname,speciesnumber):
         thissnr = csl2snr[file.Label]
         snr2nao[int(thissnr)] = int(file.Number_of_orbitals[0])
         file.close()
-    print 'snr2nao =',snr2nao
+    print 'Phonons.GetOrbitalIndices: Dictionary snr2nao =',snr2nao
     # Determine which orbital indices that belongs to a certain atom
     orbitalIndices = []
     tmpOrb = 0
