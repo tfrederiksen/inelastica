@@ -1,13 +1,11 @@
 from Inelastica.Phonons import *
 
-Analyze('..','FCrun*',
+Analyze('../FCrun*',
         onlySdir='../OS',
-        newPHrun='PHrun',
         DeviceFirst=0,DeviceLast=0,
         FCfirst=171,FClast=171,
-        output2file=False,outlabel='NaBCC',
+        outlabel='NaBCC',
         CorrPotentialShift=True,
-        TryMirrorSymmetry=False,
         CalcCoupl=False,
         AuxNCfile=False,
         PerBoundCorrFirst=-1,PerBoundCorrLast=-1,

@@ -14,7 +14,7 @@ from Inelastica.Phonons import *
 import os                                   
 import numpy as N
 
-submitJob = True           # Automatically submit?
+submitJob = False           # Automatically submit?
 
 # Substitution rules for generating PBS scripts
 TSPBSsubs = [['$NODES$','1:ppn=4'],['$MEM$','4gb'],['$WALLTIME$','100:00:00']]
@@ -69,8 +69,7 @@ if TS:
 if PH:
     # Device region (Hamiltonian subspace)
     DF,DL = 10,13    
-    SetupPHrun(geom+'/PHrun','FCrun*',
-               onlySdir='../OSrun',
+    SetupPHrun(geom+'/PHrun','../FCrun*',onlySdir='../OSrun',
                DeviceFirst=DF,DeviceLast=DL,
                outlabel=('Dev_%.2i-%.2i'%(DF,DL)),
                overwrite=False,submitJob=submitJob,PBSsubs=PYPBSsubs)

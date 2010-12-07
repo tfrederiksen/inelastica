@@ -501,13 +501,12 @@ def RunTBT(TSrun,Emin,Emax,NPoints,NumKxy_A1=1,NumKxy_A2=1,
 def SetupPHrun(newPHrun,wildcard,onlySdir='../OSrun',
                DeviceFirst=1,DeviceLast=1e3,FCfirst=1,FClast=1e3,
                CalcCoupl=True,outlabel='Out',
-               CorrPotentialShift=True,TryMirrorSymmetry=False,
+               CorrPotentialShift=True,
                PerBoundCorrFirst=-1,PerBoundCorrLast=-1,
                PrintSOrbitals=True,AuxNCfile=False,
                overwrite=False,PBStemplate=None,PBSsubs=None,submitJob=False):
     """
-    newPHrun             : Path+foldername for the PHrun folder to be created
-    wildcard             : Wildcard used in the search for FCrun folders
+    wildcard             : Path+wildcard used in the search for FCrun folders
     onlySdir             : Path+foldername to the relevant onlyS directory
     DeviceFirst/Last     : SIESTA atom numbers for the first/last atom to be included
                               in the device region (subspace of the Hamiltonian etc.)
@@ -515,7 +514,6 @@ def SetupPHrun(newPHrun,wildcard,onlySdir='../OSrun',
                               to move in the phonon calculation
     CorrPotentialShift   : (True/False) Whether or not to use the Fermi energy as a 
                            common reference for calculating e-ph couplings
-    TryMirrorSymmetry    : Optional argument to be passed to Phonons.py script
     PerBoundCorrFirst/   : Optional argument to be passed to Phonons.py script
     PerBoundCorrLast
     PrintSOrbitals       : Optional argument to be passed to Phonons.py script
@@ -544,15 +542,11 @@ def SetupPHrun(newPHrun,wildcard,onlySdir='../OSrun',
     print 'SetupRuns.SetupPHrun: Writing',newPHrun+'/PHrun.py'
     file = open(newPHrun+'/PHrun.py','w')
     file.write('from Inelastica.Phonons import *\n\n')
-    
-    file.write('\nAnalyze(\'..\',\'%s\',\n' %(wildcard))
-    file.write('        onlySdir=\'%s\',\n' %onlySdir)
-    file.write('        newPHrun=\'%s\',\n' %tail)
+    file.write('\nAnalyze(wildcard=\'%s\',onlySdir=\'%s\',\n' %(wildcard,onlySdir))
     file.write('        DeviceFirst=%s,DeviceLast=%s,\n' %(DeviceFirst,DeviceLast))
     file.write('        FCfirst=%s,FClast=%s,\n' %(FCfirst,FClast))
-    file.write('        output2file=True,outlabel=\'%s\',\n'%outlabel)
+    file.write('        outlabel=\'%s\',\n'%outlabel)
     file.write('        CorrPotentialShift=%s,\n'%CorrPotentialShift)
-    file.write('        TryMirrorSymmetry=%s,\n' %TryMirrorSymmetry)
     file.write('        CalcCoupl=%s,\n' %CalcCoupl)
     if AuxNCfile:
         file.write('        AuxNCfile=\'%s\',\n' %AuxNCfile)
