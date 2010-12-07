@@ -1293,27 +1293,6 @@ def CheckTermination(infile):
 #         transformed.
 #
 
-def ReadOnlyS(filename):
-    "Returns overlap matrix S from an onlyS-file"
-    print 'SiestaIO.ReadOnlyS: Reading',filename
-    # Open binary Fortran file
-    onlyS = HS(filename)
-    onlyS.setkpoint(N.zeros((3,),N.float))
-    
-    return onlyS.S
-
-def ReadTSHSFile(filename):
-    """
-    Returns tuple (eF,H,S,ia1,istep) (in eV) from an HS-file
-    for spin polarized calc, H = [Hs0, Hs1]
-    """
-    print 'SiestaIO.ReadTSHSFile: Reading',filename
-    # Open binary Fortran file
-    TSHS = HS(filename)
-    TSHS.setkpoint(N.array([0,0,0],N.float))
-    return TSHS.ef,TSHS.H.real,TSHS.S.real,TSHS.ia1,TSHS.istep
-
-
 class HS:
     """
     Create full HS from TSHS file. Read fn and assemble for specified k-point
@@ -1359,6 +1338,7 @@ class HS:
             sys.exit('SiestaIO.HS.__init__: F90helpers do not support reading of gzipped TSHS-files. Please unzip and try again.\n')
         
         if UseF90helpers and F90imported:
+            print 'SiestaIO.HS.__init__: Reading',fn
             self.gamma, self.onlyS, self.nuo, self.no, self.nspin, self.maxnh, self.qtot, \
                 self.temp, self.nua, self.ef, self.cell, self.ts_kscell, self.ts_kdispl,\
                 self.ts_gamma_scf, self.istep, self.ia1 = F90.readnewtshs.read(fn)

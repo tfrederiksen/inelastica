@@ -178,7 +178,7 @@ def Analyze(wildcard,
         else:
             print 'Phonons.Analyze: Reading from AuxNCfile =', AuxNCfile
         H0,S0,Heph = CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
-                                  hw,U,NCfile,AuxNCfile)
+                                    hw,U,NCfile,AuxNCfile)
     elif CalcCoupl:
         # Old way to calculate Heph (reading everything into the memory)
         print '\nPhonons.Analyze: Reading (H0,S0,dH) from .TSHS and .onlyS files:'
@@ -194,9 +194,14 @@ def Analyze(wildcard,
         Heph = CalcHeph(dH,hw,U,atomnumber,FCfirst)
         # If CalcCoupl, count the actual number of atomic orbitals
         NCfile.createDimension('NSpin',len(H0))
-        Write2NetCDFFile(NCfile,H0,'H0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-        Write2NetCDFFile(NCfile,S0,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
-        Write2NetCDFFile(NCfile,Heph,'He_ph',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+        # Write real part
+        Write2NetCDFFile(NCfile,H0.real,'H0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+        Write2NetCDFFile(NCfile,S0.real,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
+        Write2NetCDFFile(NCfile,Heph.real,'He_ph',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+        # Write imaginary part
+        Write2NetCDFFile(NCfile,H0.imag,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+        Write2NetCDFFile(NCfile,S0.imag,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
+        Write2NetCDFFile(NCfile,Heph.imag,'ImHe_ph',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
 
     if CalcCoupl and PrintSOrbitals:
         # Print e-ph coupling matrices in s-orbital subspace
@@ -326,10 +331,10 @@ def CalcHeph(dH,hw,U,atomnumber,FCfirst):
         else:
             print 'Phonons.CalcHeph: Nonpositive frequency --> Zero-valued coupling matrix' 
             Heph[i] = 0.0*dH[0]
-        #Check that Heph is symmetric???
+        #Check that Heph is Hermitian
         for iSpin in range(len(dH[0])):
-            if not N.allclose(Heph[i,iSpin,:,:],N.transpose(Heph[i,iSpin,:,:])):
-                print 'Phonons.CalcHeph: WARNING: Coupling matrix not symmetric!'
+            if not N.allclose(Heph[i,iSpin,:,:],N.transpose(N.conjugate(Heph[i,iSpin,:,:]))):
+                print 'Phonons.CalcHeph: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
     print '  ... Done!'
     return N.array(Heph)
 
@@ -369,7 +374,10 @@ def GetOnlyS(onlySdir,nao,displacement):
         sys.exit('Phonons.GetOnlyS: Wrong number of onlyS files found!')
     else:
         for file in onlySfiles:
-            S = SIO.ReadOnlyS(file)
+            #S = SIO.ReadOnlyS(file)
+            thisHS = SIO.HS(file)
+            thisHS.setkpoint(N.array([0,0,0],N.float))
+            S = thisHS.S
             orbitals = len(S)/2
             if orbitals!=nao:
                 print 'nao=%i,  orbitals=%i'%(nao,orbitals)
@@ -406,6 +414,7 @@ def GetOnlyS(onlySdir,nao,displacement):
 
 def GetH0S0dH(tree,FCfirst,FClast,displacement,CorrPotentialShift=True):
     dH = []
+    kpoint = N.array([0,0,0],N.float)
     for i in range(len(tree)):
         # Go through each subdirectory
         first,last,dir = tree[i][0],tree[i][1],tree[i][2]
@@ -414,21 +423,31 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement,CorrPotentialShift=True):
             sys.exit('Phonons.GetH0S0dH: Wrong number of *.TSHS files in %s\n'+\
                      'PROGRAM STOPPED!!!'%dir)
         # The first file is the one corresponding to no displacement
-        eF,H0,S0,ia1,istep = SIO.ReadTSHSFile(HSfiles[0])
-        if istep!=0:
-            print "Phonons::GetH0S0dH Assumption on file order not right ",HSfiles[0]
+        TSHS0 = SIO.HS(HSfiles[0])
+        TSHS0.setkpoint(kpoint) # Here eF is moved to zero
+        #Check that H0 is Hermitian
+        for iSpin in range(len(TSHS0.H)):
+            if not N.allclose(TSHS0.H[iSpin,:,:],N.transpose(N.conjugate(TSHS0.H[iSpin,:,:]))):
+                print 'Phonons.GetH0S0dH: WARNING: Hamiltonian H0 not Hermitian!'
+            if not N.allclose(TSHS0.S,N.transpose(N.conjugate(TSHS0.S))):
+                print 'Phonons.GetH0S0dH: WARNING: Overlap matrix S0 not Hermitian!'
+        if TSHS0.istep!=0: # the first TSHS file should have istep=0
+            print "Phonons.GetH0S0dH: Assumption on file order not right ",HSfiles[0]
             kuk
         for j in range(len(HSfiles)/2):
-            if ia1+j/3 >= FCfirst and ia1+j/3 <= FClast:
+            if TSHS0.ia1+j/3 >= FCfirst and TSHS0.ia1+j/3 <= FClast:
                 # Read TSHS file since it is within (FCfirst,FClast)
-                eFm,tmpHm,tmpSm,ia1,istep = SIO.ReadTSHSFile(HSfiles[2*j+1])
-                eFp,tmpHp,tmpSp,ia1,istep = SIO.ReadTSHSFile(HSfiles[2*j+2])
+                TSHSm = SIO.HS(HSfiles[2*j+1])
+                TSHSm.setkpoint(kpoint) # Here eF is moved to zero of HSm
+                TSHSp = SIO.HS(HSfiles[2*j+2])
+                TSHSp.setkpoint(kpoint) # Here eF is moved to zero of HSp
                 if CorrPotentialShift:
-                    for iSpin in range(len(H0)):
-                        tmpHm[iSpin,:,:] -= (eFm-eF)*S0 # NB eF-shift multiplies to SO...
-                        tmpHp[iSpin,:,:] -= (eFp-eF)*S0 
-                dH.append((tmpHp-tmpHm)/(2*displacement))
-    return eF,H0,S0,N.array(dH)
+                    for iSpin in range(len(TSHS0.H)):
+                        # Measure energies wrt. TSHS0.ef
+                        TSHSm.H[iSpin,:,:] -= (TSHSm.ef-TSHS0.ef)*TSHSm.S 
+                        TSHSp.H[iSpin,:,:] -= (TSHSp.ef-TSHS0.ef)*TSHSp.S
+                dH.append((TSHSp.H-TSHSm.H)/(2*displacement))
+    return TSHS0.ef,TSHS0.H,TSHS0.S,N.array(dH)
 
     
 def OpenNetCDFFile(filename,nao,xyz,DeviceFirst,DeviceLast,FCfirst,FClast):
@@ -728,6 +747,7 @@ def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
 
 def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,AuxNCfile,
                       displacement,CorrPotentialShift=True):
+    kpoint = N.array([0,0,0],N.float)
     index = 0
     # Read TSHSfiles
     for i in range(len(tree)):
@@ -738,39 +758,52 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
             sys.exit('Phonons.GenerateAuxNETCDF: Wrong number of *.TSHS files in %s\n'%dir+\
                      ' PROGRAM STOPPED!!!')
         # The first TSHSfile in a folder is the one corresponding to no displacement
-        eF,H0,S0,ia1,istep = SIO.ReadTSHSFile(HSfiles[0])
-        # Read the rest of TSHSfiles
+        TSHS0 = SIO.HS(HSfiles[0])
+        TSHS0.setkpoint(kpoint) # Here eF is moved to zero
         for j in range(len(HSfiles)/2):
-            if ia1+j/3 >= FCfirst and ia1+j/3 <= FClast:
+            if TSHS0.ia1+j/3 >= FCfirst and TSHS0.ia1+j/3 <= FClast:
                 # Read TSHS file since it is within (FCfirst,FClast)
-                eFm,tmpHm,tmpSm,ia1,istep = SIO.ReadTSHSFile(HSfiles[2*j+1])
-                eFp,tmpHp,tmpSp,ia1,istep = SIO.ReadTSHSFile(HSfiles[2*j+2])
+                TSHSm = SIO.HS(HSfiles[2*j+1])
+                TSHSm.setkpoint(kpoint) # Here eF is moved to zero of HSm
+                TSHSp = SIO.HS(HSfiles[2*j+2])
+                TSHSp.setkpoint(kpoint) # Here eF is moved to zero of HSp
                 if CorrPotentialShift:
-                    tmpHm -= (eFm-eF)*S0 # NB eF-shift multiplies to SO...
-                    tmpHp -= (eFp-eF)*S0
+                    # Measure energies wrt. TSHS0.ef                                                                                                                               
+                    for iSpin in range(len(TSHS0.H)):
+                        TSHSm.H[iSpin,:,:] -= (TSHSm.ef-TSHS0.ef)*TSHSm.S
+                        TSHSp.H[iSpin,:,:] -= (TSHSp.ef-TSHS0.ef)*TSHSp.S
+                # Calculate differences
+                tmpdH = (TSHSp.H-TSHSm.H)/(2*displacement)
                 try:
-                    dH[index,:] = (tmpHp-tmpHm)/(2*displacement)
+                    RedH[index,:] = tmpdH.real
+                    ImdH[index,:] = tmpdH.imag
                     index += 1
                 except:
                     # First time a netcdf-file is created
                     print 'Phonons.GenerateAuxNETCDF: Generating', AuxNCfile
                     NCfile2 = nc.NetCDFFile(AuxNCfile,'w','Created '+time.ctime(time.time()))
                     NCfile2.createDimension('Index',None)
-                    NCfile2.createDimension('NSpin',len(H0))
-                    NCfile2.createDimension('AtomicOrbitals',len(H0[0,:,:]))
+                    NCfile2.createDimension('NSpin',len(TSHS0.H))
+                    NCfile2.createDimension('AtomicOrbitals',len(TSHS0.H[0,:,:]))
                     NCfile2.createDimension('One',1)
                     FCfirsttmp = NCfile2.createVariable('FCfirst','d',('One',))
                     FCfirsttmp[:] = FCfirst
                     FClasttmp = NCfile2.createVariable('FClast','d',('One',))
                     FClasttmp[:] = FClast
-                    H0tmp = NCfile2.createVariable('H0','d',('NSpin','AtomicOrbitals','AtomicOrbitals',))
-                    print H0.shape
-                    print H0tmp.shape
-                    H0tmp[:] = H0
-                    S0tmp = NCfile2.createVariable('S0','d',('AtomicOrbitals','AtomicOrbitals',))
-                    S0tmp[:] = S0
-                    dH = NCfile2.createVariable('dH','d',('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
-                    dH[index,:] = (tmpHp-tmpHm)/(2*displacement)
+                    # Write real part of matrices
+                    ReH = NCfile2.createVariable('H0','d',('NSpin','AtomicOrbitals','AtomicOrbitals',))
+                    ReH[:] = TSHS0.H.real
+                    ReS = NCfile2.createVariable('S0','d',('AtomicOrbitals','AtomicOrbitals',))
+                    ReS[:] = TSHS0.S.real
+                    RedH = NCfile2.createVariable('dH','d',('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
+                    RedH[index,:] = tmpdH.real
+                    # Write imag part of matrices
+                    ImH = NCfile2.createVariable('ImH0','d',('NSpin','AtomicOrbitals','AtomicOrbitals',))
+                    ImH[:] = TSHS0.H.imag
+                    ImS = NCfile2.createVariable('ImS0','d',('AtomicOrbitals','AtomicOrbitals',))
+                    ImS[:] = TSHS0.S.imag
+                    ImdH = NCfile2.createVariable('ImdH','d',('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
+                    ImdH[index,:] = tmpdH.imag
                     index += 1
     NCfile2.sync()
     print 'Phonons.GenerateAuxNETCDF: len(dH) =',index
@@ -778,7 +811,7 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
     # Correct dH
     mm = N.dot
     onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,nao,displacement)
-    invS0 = LA.inv(S0)
+    invS0 = LA.inv(TSHS0.S)
     for i in range(index):
         SIO.printDone(i,index,'Correcting dH')
         dSdij = N.zeros((nao,nao),N.float)
@@ -786,8 +819,9 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
         if i%3==0:   dSdij[:,first:last+1] = dSx[:,first:last+1]  # x-move
         elif i%3==1: dSdij[:,first:last+1] = dSy[:,first:last+1]  # y-move
         elif i%3==2: dSdij[:,first:last+1] = dSz[:,first:last+1]  # z-move
-        for iSpin in range(len(H0)):
-            dH[i,iSpin,:] = dH[i,iSpin,:] - mm(N.transpose(dSdij),mm(invS0,H0[iSpin,:,:])) - mm(H0[iSpin,:,:],mm(invS0,dSdij))
+        for iSpin in range(len(TSHS0.H)):
+            RedH[i,iSpin,:] = RedH[i,iSpin,:] - mm(N.transpose(dSdij),mm(invS0,TSHS0.H[iSpin,:,:])).real - mm(TSHS0.H[iSpin,:,:],mm(invS0,dSdij)).real
+            ImdH[i,iSpin,:] = ImdH[i,iSpin,:] - mm(N.transpose(dSdij),mm(invS0,TSHS0.H[iSpin,:,:])).imag - mm(TSHS0.H[iSpin,:,:],mm(invS0,dSdij)).imag
     print '  ... Done!'
     NCfile2.sync()
     
@@ -798,21 +832,25 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
         if ii+1<PBCFirst:
             # Left contact, remove contribution to right contact
             print "Phonons.GenerateAuxNETCDF: Removing He-ph, Left atom %i" % (ii+1)
-            for aa in range(PBCorbLast+1,len(H0)):
-                for bb in range(len(H0)):
+            for aa in range(PBCorbLast+1,len(TSHS0.H)):
+                for bb in range(len(TSHS0.H)):
                     for dir in range(3): # x,y,z
-                        for iSpin in range(len(H0)):
-                            dH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
-                            dH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
+                        for iSpin in range(len(TSHS0.H)):
+                            RedH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
+                            RedH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
+                            ImdH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
+                            ImdH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
         if ii+1>PBCLast:
             # Right contact, remove contribution to left contact
             print "Phonons.GenerateAuxNETCDF: Removing He-ph, Right atom %i" % (ii+1)
             for aa in range(PBCorbFirst-1):
-                for bb in range(len(H0)):
+                for bb in range(len(TSHS0.H)):
                     for dir in range(3): # x,y,z
                         for iSpin in range(len(H0)):
-                            dH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
-                            dH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
+                            RedH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
+                            RedH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
+                            ImdH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
+                            ImdH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
     NCfile2.close()
     print 'Phonons.GenerateAuxNETCDF: File %s written.'%AuxNCfile
 
@@ -822,13 +860,17 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
     # Read AuxNCfile and downfold to device
     first,last = orbitalIndices[DeviceFirst-1][0],orbitalIndices[DeviceLast-1][1]
     NCfile2 = nc.NetCDFFile(AuxNCfile,'r')
-    H0 = N.array(NCfile2.variables['H0'])[:,first:last+1,first:last+1]
-    S0 = N.array(NCfile2.variables['S0'])[first:last+1,first:last+1]
-    dH = NCfile2.variables['dH']
-
-    NCfile.createDimension('NSpin',len(H0))
-    Write2NetCDFFile(NCfile,H0,'H0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-    Write2NetCDFFile(NCfile,S0,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
+    ReH0 = N.array(NCfile2.variables['H0'])[:,first:last+1,first:last+1]
+    ReS0 = N.array(NCfile2.variables['S0'])[first:last+1,first:last+1]
+    RedH = NCfile2.variables['dH']
+    ImH0 = N.array(NCfile2.variables['ImH0'])[:,first:last+1,first:last+1]
+    ImS0 = N.array(NCfile2.variables['ImS0'])[first:last+1,first:last+1]
+    ImdH = NCfile2.variables['ImdH']
+    NCfile.createDimension('NSpin',len(ReH0))
+    Write2NetCDFFile(NCfile,ReH0,'H0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+    Write2NetCDFFile(NCfile,ReS0,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
+    Write2NetCDFFile(NCfile,ImH0,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+    Write2NetCDFFile(NCfile,ImS0,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
 
     # Check AuxNCfile
     if FCfirst != int(NCfile2.variables['FCfirst'][0]):
@@ -839,31 +881,36 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
     # CalcHeph
     print 'Phonons.CalcHephNETCDF: Calculating...\n',
     const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-    Heph  = NCfile.createVariable('He_ph','d',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
+    ReHeph  = NCfile.createVariable('He_ph','d',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
+    ImHeph  = NCfile.createVariable('ImHe_ph','d',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
     for i in range(len(hw)):
-        Heph[i,:] = 0.0*H0
+        ReHeph[i,:] = 0.0*ReH0
+        ImHeph[i,:] = 0.0*ImH0
     NCfile.sync()
-
     for i in range(len(hw)):
         # Loop over modes
         SIO.printDone(i, len(hw),'Calculating Heph')
-        for j in range(len(hw)):
-            # Loop over atomic coordinates
-            if hw[i]>0:
-                for iSpin in range(len(H0)):
-                    Heph[i,iSpin,:] += const*N.array(dH[j,iSpin])[first:last+1,first:last+1]*U[i,j] \
-                                       /(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
-            else:
-                print 'Phonons.CalcHephNETCDF: Nonpositive frequency --> Zero-valued coupling matrix' 
-                #Heph[i,:] = 0.0*N.array(dH[0])[first:last+1,first:last+1]
-        #Check that Heph is symmetric???
-        for iSpin in range(len(H0)):
-            if not N.allclose(Heph[i,iSpin],N.transpose(Heph[i,iSpin])):
-                print 'Phonons.CalcHephNETCDF: WARNING: Coupling matrix not symmetric!'
+        if hw[i]>0:
+            for j in range(len(hw)):
+                # Loop over atomic coordinates
+                # Heph[i] += const*dH[j]*U[i,j]/(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
+                ReHeph[i,:] += const*N.array(RedH[j])[:,first:last+1,first:last+1]*U[i,j] \
+                    /(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
+                ImHeph[i,:] += const*N.array(ImdH[j])[:,first:last+1,first:last+1]*U[i,j] \
+                    /(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
+        else:
+            print 'Phonons.CalcHephNETCDF: Nonpositive frequency --> Zero-valued coupling matrix' 
+            ReHeph[i,:] = 0.0*ReH0
+            ImHeph[i,:] = 0.0*ImH0
+        #Check that Heph is Hermitian
+        for iSpin in range(len(ReH0)):
+            if not N.allclose(ReHeph[i,iSpin]+1j*ImHeph[i,iSpin],N.transpose(ReHeph[i,iSpin]-1j*ImHeph[i,iSpin])):
+                print 'Phonons.CalcHephNETCDF: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
         NCfile.sync()
     print '  ... Done!'
-    NCfile2.close()
-    return H0,S0,Heph
+    #NCfile2.close() # Leave open for later access...
+    return ReH0,ReS0,ReHeph
+
 
 
 ########### Phonon bandstructure ##########################################
