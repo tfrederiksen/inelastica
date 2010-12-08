@@ -51,7 +51,7 @@ by typing \"python WriteXMGR.py\" in the command promt. This
 will create a file \"test.agr\".
 """
 
-import time, math, os
+import time, math, os, string
 import numpy as N
 
 symbols = {'\alpha':'\\f{Symbol}a',
@@ -78,6 +78,17 @@ def Array2XYsets(A,**keywords):
         sets.append(XYset(x,y,**keywords))
     return sets
 
+def Datafile2XYsets(fn,**keywords):
+    f = open(fn,'r')
+    A = []
+    for line in f:
+        l = line.split()
+        for i in range(len(l)):
+            l[i] = float(l[i])
+        A.append(l)
+    f.close()
+    A = N.array(A)
+    return Array2XYsets(A,**keywords)
 
 
 class Dataset:
@@ -457,9 +468,9 @@ class Graph:
             xmin,ymin,xmax,ymax = self.GetWorldOfDatasets()
             rng = xmax-xmin
             if rng>1e-20:
-                unit = 0.2*10**math.floor(math.log(rng,10))
+                unit = 2*10**math.floor(math.log(rng,10))
             else:
-                unit = 1 
+                unit = 1
             self.SetXaxis(min=xmin,max=xmax,majorUnit=unit,minorUnit=unit/2.)
         if scale =='Logarithmic':
             self.string += '@ xaxes scale %s \n'%scale
@@ -525,7 +536,7 @@ class Graph:
             xmin,ymin,xmax,ymax = self.GetWorldOfDatasets()
             rng = ymax-ymin
             if rng>1e-20:
-                unit = 0.2*10**math.floor(math.log(rng,10))
+                unit = 2* 10**math.floor(math.log(rng,10))
             else:
                 unit = 1
             self.SetYaxis(min=ymin,max=ymax,majorUnit=unit,minorUnit=unit/2.)
@@ -567,7 +578,12 @@ class Graph:
     def AddDatasets(self,*datasets):
         "Append data set object(s) to graph."
         for set in datasets:
-            self.datasets.append(set)
+            if isinstance(set,Dataset):
+                self.datasets.append(set)
+            elif isinstance(set,tuple):
+                self.AddDatasets(*set)
+            elif isinstance(set,list):
+                self.AddDatasets(*tuple(set))
 
     def GetXMGRstring(self,graphnr):
         "Returns a string containing the GRACE commands that describe the graph and its data sets."
@@ -742,6 +758,7 @@ if __name__ == '__main__':
     d3 = XYset(x,y2,legend='C',Ltype=2,Lstyle=3,Lwidth=2,Lcolor=99,
                  Stype=1,Ssize=1.1,Scolor=3,Sfillcolor=4,Sfillpattern=1,
                  Slinewidth=3,Slinestyle=1)
+    dsets = Array2XYsets(10.0*N.transpose(N.array([x,y1,y2])))
 
     # Create instance of a graph
     g = Graph(d1,d2,d3)
@@ -781,6 +798,10 @@ if __name__ == '__main__':
             g.SetXaxis(min=-4,max=4)
             g.SetYaxis(min=-2,max=8)
             g.AddDatasets(d3)
+        if i==6:
+            g.AddDatasets(dsets)
+            g.SetXaxis(autoscale=True)
+            g.SetYaxis(autoscale=True)        
         p.AddGraphs(g)
 
     # Arrange the plots in a 3x3 structure
