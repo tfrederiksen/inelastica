@@ -198,23 +198,28 @@ SpinPolarization                : %i
         # For Eigenchannels and inelastica!
         return elecL, elecR, myGF, devSt, devEnd, Elist, eta, outFile
     else:
-        Tkpt=N.zeros((len(Elist),Nk1,Nk2),N.float)
+        channels = 10
+        Tkpt=N.zeros((len(Elist),Nk1,Nk2,channels+1),N.float)
         for iSpin in range(nspin):
             if nspin<2:
                 fo=open(outFile+'.AVTRANS','write')
+                fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
             else:
                 fo=open(outFile+['.UP','.DOWN'][iSpin]+'.AVTRANS','write')
             for ie, ee in enumerate(Elist):
-                Tavg = 0.0
+                Tavg = N.zeros(channels+1,N.float)
                 for ik1 in range(Nk1):
                     for ik2 in range(Nk2):
                         kpt=N.array([ik1/float(Nk1),ik2/float(Nk2)],N.float)
                         myGF.calcGF(ee+eta*1.0j,kpt,ispin=iSpin)
-                        T = myGF.calcT()
-                        Tavg = Tavg + T/Nk1/Nk2
+                        T = myGF.calcT(channels)
+                        Tavg += T/Nk1/Nk2
                         Tkpt[ie,ik1,ik2] = T
                 print ee, Tavg
-                fo.write('%.12f %.6e \n'%(ee,Tavg))
+                transline = '\n%.10f '%ee
+                for ichan in range(channels+1):
+                    transline += '%.4e '%Tavg[ichan]
+                fo.write(transline)
             fo.close()
         
             # Write k-point transmission
@@ -224,9 +229,12 @@ SpinPolarization                : %i
                 fo=open(outFile+['.UP','.DOWN'][iSpin]+'.TRANS','write')
             for ik1 in range(Nk1):
                 for ik2 in range(Nk2):
-                    fo.write('\n# k = %f, %f \n'%(ik1/float(Nk1),ik2/float(Nk2)))
+                    fo.write('\n\n# k = %f, %f '%(ik1/float(Nk1),ik2/float(Nk2)))
                     for ie, ee in enumerate(Elist):
-                        fo.write('%.12f %.6e \n'%(ee,Tkpt[ie,ik1,ik2]))
+                        transline = '\n%.10f '%ee
+                        for ichan in range(channels+1):
+                            transline += '%.4e '%Tkpt[ie,ik1,ik2,ichan]
+                        fo.write(transline)
             fo.close()
 
 
@@ -657,7 +665,7 @@ class GF:
         else:
             self.H, self.S = self.H0, self.S0
 
-    def calcT(self):
+    def calcT(self,channels=10):
         # Calculate transmission
         # Note that size of matrices not uniform and care is taken to minimize computation times
         GamL, GamR, Gr = self.GamL, self.GamR, self.Gr
@@ -671,7 +679,13 @@ class GF:
         if Trans.imag>1e-10: 
             print "Error transmission has large imaginary value :", Trans
             kuk
-        return Trans.real
+        # Calculate eigenchannel transmissions too
+        tval,tvec = LA.eig(tmp)
+        tval = sorted(tval,reverse=True) # Sort eigenvalues descending
+        T = [Trans.real]
+        for i in range(channels):
+            T += [tval[i].real]
+        return N.array(T)
 
 #############################################################################            
 
