@@ -14,45 +14,43 @@ import PhysicalConstants as PC
 import WriteXMGR as WX
 import Symmetry
 
-def Analyze(wildcard,
+def Analyze(FCwildcard,
             onlySdir='../onlyS',
-            #newPHrun='PhononCalc',
             DeviceFirst=1,DeviceLast=1e3,
             FCfirst=1,FClast=1e3,
-            output2file=False,outlabel='Out',
-            CorrPotentialShift=True,
-            CalcCoupl=True,
             PerBoundCorrFirst=-1,PerBoundCorrLast=-1,
+            outlabel='Out',
+            CalcCoupl=True,
             PrintSOrbitals=True,
-            AuxNCfile=None,Isotopes=[],
+            AuxNCfile=None,
+            Isotopes=[],
             PhBandStruct="None",
             PhBandRadie=0.0):
     """
-    Calculate electron phonon coupling from siesta calculations
-    Needs two types of siesta calculations :
-    -  FC calculation, may be in several subdirectories ...
+    Determine vibrations and electron-phonon couplings from SIESTA calculations
+    Needs two types of SIESTA calculations :
+    -  FC calculations, may be in several subdirectories ...
     -  onlyS calculation in subdirectory onlyS (to get derivative of
         overlap...)
     Input:
-    -  dirname    : main directory
-    -  wildcard   : e.g. 'Au_*', gives all subdirs for FC calculations
-    -  Ef         : Fermi energy used in correcting the Heph in the "old way"
-    -  DeviceFirst: Restrict Heph etc to the basis orbitals of these
-    -  DeviceLast :   atoms
-    -  FCfirst    : restrict FC matrix to these atoms
-    -  FClast     : (may be different from the siesta FC calculation)
-    -  Which_eph  : 0 (new corrected), 1 (old corrected, needs Ef),
-                    2 (uncorrected)
-    -  PerBoundCorrFirst : Prevent interactions through periodic
-                           boundary conditions defaults to DeviceFirst
-    -  PerBoundCorrLast  : Defaults to DeviceLast
+    -  FCwildcard : String specifying all FC directories to be used
+    -  DeviceFirst: Restrict Heph etc to the basis orbitals of these atoms
+    -  DeviceLast : - (can be a subset of the SIESTA basis)   
+    -  FCfirst    : Restrict FC matrix to these atoms
+    -  FClast     : - (can be a subset of the SIESTA FC calculations)
+    -  PerBoundCorrFirst : Prevent interactions through periodic boundary
+                    conditions (defaults to DeviceFirst)
+    -  PerBoundCorrLast : Defaults to DeviceLast
+    -  CalcCoupl  : Whether or not to calculate e-ph couplings
     -  AuxNCfile  : An optional auxillary netcdf-file used for read/writing dH matrix arrays
-    -  Isotopes   : [[ii1, anr1], ...] substitute to atom type anr for siesta numbering atom ii
-                    I.e., use to substitute deuterium (anr 1001) for hydrogens
-    - PhBandStruct: = != None -> Calculate bandstructure. 
+                    (useful for large systems where loading dH matrices to the memory becomes
+                    an issue)
+    -  Isotopes   : [[ii1, anr1], ...] substitute atom number ii1 to be of type anr1 etc.,
+                    e.g., to substitute hydrogen with deuterium (anr 1001).
+    -  PhBandStruct: = != None -> Calculate bandstructure. 
                       String "AUTO", "BCC", "FCC", "CUBIC", "GRAPHENE", 
                       "POLYMER" etc
-    - PhBandRadie : Optional max distance for forces. 0.0 -> Automatically choosen
+    -  PhBandRadie : Optional max distance for forces. 0.0 -> Automatically choosen
     """
     
     print '=========================================================================='
@@ -61,7 +59,7 @@ def Analyze(wildcard,
 
     ### Get file lists
     print '\nPhonons.Analyze: Searching file structure.'
-    tree,XVfiles,FCfirstMIN,FClastMAX = GetFileLists(wildcard)
+    tree,XVfiles,FCfirstMIN,FClastMAX = GetFileLists(FCwildcard)
     FCfirst = max(FCfirst,FCfirstMIN)
     FClast  = min(FClast,FClastMAX)
 
@@ -174,7 +172,7 @@ def Analyze(wildcard,
         # Heph couplings utilizing netcdf-file
         if not os.path.isfile(AuxNCfile):
             GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PerBoundCorrFirst,PerBoundCorrLast,
-                              AuxNCfile,displacement,CorrPotentialShift=CorrPotentialShift)
+                              AuxNCfile,displacement)
         else:
             print 'Phonons.Analyze: Reading from AuxNCfile =', AuxNCfile
         H0,S0,Heph = CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
@@ -183,7 +181,7 @@ def Analyze(wildcard,
         # Old way to calculate Heph (reading everything into the memory)
         print '\nPhonons.Analyze: Reading (H0,S0,dH) from .TSHS and .onlyS files:'
         # Read electronic structure from files
-        eF,H0,S0,dH = GetH0S0dH(tree,FCfirst,FClast,displacement,CorrPotentialShift=CorrPotentialShift)
+        eF,H0,S0,dH = GetH0S0dH(tree,FCfirst,FClast,displacement)
         # Correct dH for change in basis states with displacement
         dH = CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement)
         # Downfold matrices to the subspace of the device atoms
@@ -412,7 +410,7 @@ def GetOnlyS(onlySdir,nao,displacement):
     return S0,dSx,dSy,dSz
 
 
-def GetH0S0dH(tree,FCfirst,FClast,displacement,CorrPotentialShift=True):
+def GetH0S0dH(tree,FCfirst,FClast,displacement):
     dH = []
     kpoint = N.array([0,0,0],N.float)
     for i in range(len(tree)):
@@ -441,11 +439,10 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement,CorrPotentialShift=True):
                 TSHSm.setkpoint(kpoint) # Here eF is moved to zero of HSm
                 TSHSp = SIO.HS(HSfiles[2*j+2])
                 TSHSp.setkpoint(kpoint) # Here eF is moved to zero of HSp
-                if CorrPotentialShift:
-                    for iSpin in range(len(TSHS0.H)):
-                        # Measure energies wrt. TSHS0.ef
-                        TSHSm.H[iSpin,:,:] -= (TSHSm.ef-TSHS0.ef)*TSHSm.S 
-                        TSHSp.H[iSpin,:,:] -= (TSHSp.ef-TSHS0.ef)*TSHSp.S
+                for iSpin in range(len(TSHS0.H)):
+                    # Measure energies wrt. TSHS0.ef
+                    TSHSm.H[iSpin,:,:] -= (TSHSm.ef-TSHS0.ef)*TSHSm.S 
+                    TSHSp.H[iSpin,:,:] -= (TSHSp.ef-TSHS0.ef)*TSHSp.S
                 dH.append((TSHSp.H-TSHSm.H)/(2*displacement))
     return TSHS0.ef,TSHS0.H,TSHS0.S,N.array(dH)
 
@@ -564,19 +561,19 @@ def ReduceAndSymmetrizeFC(FC,FCfirstMIN,FClastMAX,FCfirst,FClast):
     return FC3
 
 
-def GetFileLists(wildcard):
-    "Returns absolute paths to (FCfiles,TSHSfiles,XVfiles) matching the wildcard"
+def GetFileLists(FCwildcard):
+    "Returns absolute paths to (FCfiles,TSHSfiles,XVfiles) matching the FCwildcard"
     dirs,tree,FCfiles,HSfiles,XVfiles = [],[],[],[],[]
     FCfirst,FClast = 1e10,-1e10
-    # Find wildcard directories
-    for elm in glob.glob(wildcard):
+    # Find FCwildcard directories
+    for elm in glob.glob(FCwildcard):
         if os.path.isdir(elm):
             dirs.append(elm)
     dirs.sort()
     for dir in dirs:
         localFCs,localHSs,localXVs = [],[],[]
         localFCfirst,localFClast = 1e10,-1e10
-        # Find FCfiles in wildcard directories
+        # Find FCfiles in FCwildcard directories
         FCglob = glob.glob(dir+'/*.FC*')
         FCglob.sort()
         for elm in FCglob:
@@ -596,7 +593,7 @@ def GetFileLists(wildcard):
         runfdf.close()
         FCfirst = min(FCfirst,localFCfirst)
         FClast = max(FClast,localFClast)
-        # Find TSHSfiles in wildcard directories
+        # Find TSHSfiles in FCwildcard directories
         HSglob = glob.glob(dir+'/*.TSHS*')
         HSglob.sort()
         for elm in HSglob:
@@ -616,7 +613,7 @@ def GetFileLists(wildcard):
             localHSs.append(elm)
         if (localFClast-localFCfirst+1)*6+1 != len(HSglob):
             print 'Phonons.GetFileLists: WARNING - Inconsistent number of *.TSHS files in directory %s\n'%dir
-        # Find XVfiles in wildcard directories
+        # Find XVfiles in FCwildcard directories
         for elm in glob.glob(dir+'/*.XV*'):
             if elm.endswith('.XV') or elm.endswith('.XV.gz'):
                 XVfiles.append(elm)
@@ -624,7 +621,7 @@ def GetFileLists(wildcard):
         if len(localFCs)==1:
             tree.append([localFCfirst,localFClast,dir,localFCs[0],localHSs])
         else: print 'Phonons.GetFileLists: Two FC files in a directory encountered.'
-    print 'Phonons.GetFileLists: %i folder(s) match wildcard %s' %(len(dirs),wildcard)
+    print 'Phonons.GetFileLists: %i folder(s) match FCwildcard %s' %(len(dirs),FCwildcard)
     print 'Phonons.GetFileLists: FCfirstMIN=%i, FClastMAX=%i, DynamicAtoms=%i' \
           %(FCfirst,FClast,FClast-FCfirst+1)
     tree.sort(),FCfiles.sort(),HSfiles.sort(),XVfiles.sort()
@@ -746,7 +743,7 @@ def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
 
 
 def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,AuxNCfile,
-                      displacement,CorrPotentialShift=True):
+                      displacement):
     kpoint = N.array([0,0,0],N.float)
     index = 0
     # Read TSHSfiles
@@ -767,11 +764,10 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                 TSHSm.setkpoint(kpoint) # Here eF is moved to zero of HSm
                 TSHSp = SIO.HS(HSfiles[2*j+2])
                 TSHSp.setkpoint(kpoint) # Here eF is moved to zero of HSp
-                if CorrPotentialShift:
-                    # Measure energies wrt. TSHS0.ef                                                                                                                               
-                    for iSpin in range(len(TSHS0.H)):
-                        TSHSm.H[iSpin,:,:] -= (TSHSm.ef-TSHS0.ef)*TSHSm.S
-                        TSHSp.H[iSpin,:,:] -= (TSHSp.ef-TSHS0.ef)*TSHSp.S
+                # Measure energies wrt. TSHS0.ef                                                                                                                               
+                for iSpin in range(len(TSHS0.H)):
+                    TSHSm.H[iSpin,:,:] -= (TSHSm.ef-TSHS0.ef)*TSHSm.S
+                    TSHSp.H[iSpin,:,:] -= (TSHSp.ef-TSHS0.ef)*TSHSp.S
                 # Calculate differences
                 tmpdH = (TSHSp.H-TSHSm.H)/(2*displacement)
                 try:
