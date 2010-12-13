@@ -1,0 +1,93 @@
+#!/scratch/thf/SOFTWARE/Python-2.6.5/bin/python
+
+from Inelastica import Phonons
+from optparse import OptionParser
+import os, sys, subprocess
+
+usage = "usage: %prog [options] DestinationDirectory"
+
+description = "Methods to calculate vibrations and e-ph couplings from SIESTA output"
+
+parser = OptionParser(description=description,usage=usage)
+
+parser.add_option("-F","--FCwildcard",dest="FCwildcard",
+                  help="Wildcard for FC directories [%default]",
+                  type="str",default="./FC*")
+
+parser.add_option("-O","--OSdir",dest="onlySdir",
+                  help="Location of OnlyS directory [%default]",
+                  type="str",default="./OSrun")
+
+parser.add_option("-c", "--CalcCoupl",dest="CalcCoupl",
+                  help="Calculate e-ph couplings [%default]",
+                  action="store_true",default=False)
+
+parser.add_option("-l", "--label",dest="label",
+                  help="Label for output files [%default]",
+                  type="str",default="Output")
+
+parser.add_option("--DeviceFirst",dest="DeviceFirst",
+                  help="First device atom index (in the electronic basis) [%default]",
+                  type="int",default=1)
+parser.add_option("--DeviceLast",dest="DeviceLast",
+                  help="Last device atom index (in the electronic basis) [%default]",
+                  type="int",default=1e3)
+
+parser.add_option("--FCfirst",dest="FCfirst",
+                  help="First FC atom index [%default]",
+                  type="int",default=1)
+parser.add_option("--FClast", dest="FClast",
+                  help="Last FC atom index [%default]" ,
+                  type="int",default=1e3)
+
+parser.add_option("--PBCfirst", dest="PerBoundCorrFirst",\
+                  help="For eliminating interactions through periodic boundary conditions in z-direction [%default]",
+                  type="int",default=1)
+parser.add_option("--PBClast", dest="PerBoundCorrLast",\
+                  help="For eliminating interactions through periodic boundary conditions in z-direction [%default]",
+                  type="int",default=1e3)
+
+parser.add_option("-s", "--PrintSOrbitals",dest="PrintSOrbitals",
+                  help="Print s-orbital part of device matrices [%default]",
+                  action="store_true",default=False)
+
+parser.add_option("-n", "--AuxNCfile",dest="AuxNCfile",
+                  help="Optional filename for storing matrices in netcdf file instead of in memory [%default]",
+                  default=None)
+
+parser.add_option("-i", "--Isotopes",dest="Isotopes",
+                  help="List of substitutions [[i1, anr1],...], where atom index i1 (SIESTA numbering) is set to be of type anr1 [%default]",
+                  default='[]')
+
+parser.add_option("-k", "--kpoint",dest="kpoint",
+                  help="Electronic k-point where e-ph couplings are evaluated [%default]",
+                  default='[0,0,0]')
+
+(options, args) = parser.parse_args()
+
+if len(args)!=1:
+    parser.error('ERROR: You need to specify a destination directory')
+
+# Make destination directory
+newdir = args[0]
+if not os.path.exists(newdir):
+    os.mkdir(newdir)
+
+# Log output to file
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+tee = subprocess.Popen(["tee", newdir+"/%s.log"%options.label], stdin=subprocess.PIPE)
+os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
+os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
+
+# Calculate Phonons using specified inputs
+Phonons.Analyze(FCwildcard=options.FCwildcard,onlySdir=options.onlySdir,
+                DeviceFirst=options.DeviceFirst,DeviceLast=options.DeviceLast,
+                FCfirst=options.FCfirst,FClast=options.FClast,
+                PerBoundCorrFirst=options.PerBoundCorrFirst,
+                PerBoundCorrLast=options.PerBoundCorrLast,
+                outlabel=newdir+'/'+options.label,
+                CalcCoupl=options.CalcCoupl,
+                PrintSOrbitals=options.PrintSOrbitals,
+                AuxNCfile=options.AuxNCfile,
+                Isotopes=eval(options.Isotopes),
+                kpoint=eval(options.kpoint))

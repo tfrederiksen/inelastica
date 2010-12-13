@@ -95,7 +95,8 @@ Provides:
                   'scripts/siesta_cleanup',
                   'scripts/STMimage',
                   'scripts/Vasp2Siesta',
-                  'scripts/bands2xmgr'
+                  'scripts/bands2xmgr',
+                  'scripts/Phonons'
                   ],
       packages=['Inelastica'],
       ext_modules=[F90ext],

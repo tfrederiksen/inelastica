@@ -24,6 +24,7 @@ def Analyze(FCwildcard,
             PrintSOrbitals=True,
             AuxNCfile=None,
             Isotopes=[],
+            kpoint=[0,0,0],
             PhBandStruct="None",
             PhBandRadie=0.0):
     """
@@ -47,6 +48,7 @@ def Analyze(FCwildcard,
                     an issue)
     -  Isotopes   : [[ii1, anr1], ...] substitute atom number ii1 to be of type anr1 etc.,
                     e.g., to substitute hydrogen with deuterium (anr 1001).
+    -  kpoint     : Electronic k-point where e-ph couplings are evaluated (Gamma default).
     -  PhBandStruct: = != None -> Calculate bandstructure. 
                       String "AUTO", "BCC", "FCC", "CUBIC", "GRAPHENE", 
                       "POLYMER" etc
@@ -172,7 +174,7 @@ def Analyze(FCwildcard,
         # Heph couplings utilizing netcdf-file
         if not os.path.isfile(AuxNCfile):
             GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PerBoundCorrFirst,PerBoundCorrLast,
-                              AuxNCfile,displacement)
+                              AuxNCfile,displacement,kpoint)
         else:
             print 'Phonons.Analyze: Reading from AuxNCfile =', AuxNCfile
         H0,S0,Heph = CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
@@ -181,9 +183,9 @@ def Analyze(FCwildcard,
         # Old way to calculate Heph (reading everything into the memory)
         print '\nPhonons.Analyze: Reading (H0,S0,dH) from .TSHS and .onlyS files:'
         # Read electronic structure from files
-        eF,H0,S0,dH = GetH0S0dH(tree,FCfirst,FClast,displacement)
+        eF,H0,S0,dH = GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint)
         # Correct dH for change in basis states with displacement
-        dH = CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement)
+        dH = CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,kpoint)
         # Downfold matrices to the subspace of the device atoms
         H0,S0,dH = Downfold2Device(orbitalIndices,H0,S0,dH,DeviceFirst,DeviceLast,
                                    FCfirst,FClast,PerBoundCorrFirst,PerBoundCorrLast)
@@ -204,15 +206,22 @@ def Analyze(FCwildcard,
     if CalcCoupl and PrintSOrbitals:
         # Print e-ph coupling matrices in s-orbital subspace
         for iSpin in range(len(H0)):
-            print '\nPhonons.Analyze: Hamiltonian H0 (in s-orbital subspace) Spin=',iSpin
-            ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,H0[iSpin,:,:])
-        print '\nPhonons.Analyze: Overlap matrix S0 (in s-orbital subspace)'
-        ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,S0)
+            print '\nPhonons.Analyze: Hamiltonian H0.real (in s-orbital subspace) Spin=',iSpin
+            ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,H0[iSpin,:,:].real)
+            print '\nPhonons.Analyze: Hamiltonian H0.imag (in s-orbital subspace) Spin=',iSpin
+            ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,H0[iSpin,:,:].imag)
+        print '\nPhonons.Analyze: Overlap matrix S0.real (in s-orbital subspace)'
+        ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,S0.real)
+        print '\nPhonons.Analyze: Overlap matrix S0.imag (in s-orbital subspace)'
+        ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,S0.imag)
         for iSpin in range(len(H0)):
             for i in range(len(hw)):
-                print '\nPhonons.Analyze: Coupling matrix Heph[%i] (in s-orbital subspace) Spin=%i'%(i,iSpin)
+                print '\nPhonons.Analyze: Coupling matrix Heph[%i].real (in s-orbital subspace) Spin=%i'%(i,iSpin)
                 ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
-                                       DeviceFirst,DeviceLast,Heph[i,iSpin,:,:])
+                                       DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].real)
+                print '\nPhonons.Analyze: Coupling matrix Heph[%i].imag (in s-orbital subspace) Spin=%i'%(i,iSpin)
+                ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
+                                       DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].imag)
     NCfile.close()
 
     print '=========================================================================='
@@ -245,7 +254,7 @@ def ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,
     for i in sIndices:
         print '    ',
         for j in sIndices[:10]:
-            print string.rjust('%.6f '%A[i,j],10),
+            print string.rjust('%.6f '%A[i,j].real,10),
         if len(sIndices)>10: print ' ...'
         else: print
 
@@ -331,17 +340,19 @@ def CalcHeph(dH,hw,U,atomnumber,FCfirst):
             Heph[i] = 0.0*dH[0]
         #Check that Heph is Hermitian
         for iSpin in range(len(dH[0])):
-            if not N.allclose(Heph[i,iSpin,:,:],N.transpose(N.conjugate(Heph[i,iSpin,:,:]))):
+            if not N.allclose(Heph[i,iSpin,:,:],
+                              N.transpose(N.conjugate(Heph[i,iSpin,:,:])),
+                              atol=1e-6):
                 print 'Phonons.CalcHeph: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
     print '  ... Done!'
     return N.array(Heph)
 
 
-def CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement):
+def CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,kpoint):
     print 'Phonons.CorrectdH: Applying correction to dH...'
     dHnew = dH.copy()
     mm = N.dot
-    onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,nao,displacement)
+    onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,nao,displacement,kpoint)
     invS0 = LA.inv(S0)
     for i in range(len(dH)):
         SIO.printDone(i, len(dH),'Correcting dH')
@@ -357,7 +368,7 @@ def CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement):
     return dHnew
 
 
-def GetOnlyS(onlySdir,nao,displacement):
+def GetOnlyS(onlySdir,nao,displacement,kpoint):
     print 'Phonons.GetOnlyS: Reading from', onlySdir
     onlySfiles = glob.glob(onlySdir+'/*.onlyS*')
     onlySfiles.sort()
@@ -374,7 +385,7 @@ def GetOnlyS(onlySdir,nao,displacement):
         for file in onlySfiles:
             #S = SIO.ReadOnlyS(file)
             thisHS = SIO.HS(file)
-            thisHS.setkpoint(N.array([0,0,0],N.float))
+            thisHS.setkpoint(kpoint)
             S = thisHS.S
             orbitals = len(S)/2
             if orbitals!=nao:
@@ -410,9 +421,8 @@ def GetOnlyS(onlySdir,nao,displacement):
     return S0,dSx,dSy,dSz
 
 
-def GetH0S0dH(tree,FCfirst,FClast,displacement):
+def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint):
     dH = []
-    kpoint = N.array([0,0,0],N.float)
     for i in range(len(tree)):
         # Go through each subdirectory
         first,last,dir = tree[i][0],tree[i][1],tree[i][2]
@@ -425,9 +435,13 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement):
         TSHS0.setkpoint(kpoint) # Here eF is moved to zero
         #Check that H0 is Hermitian
         for iSpin in range(len(TSHS0.H)):
-            if not N.allclose(TSHS0.H[iSpin,:,:],N.transpose(N.conjugate(TSHS0.H[iSpin,:,:]))):
+            if not N.allclose(TSHS0.H[iSpin,:,:],
+                              N.transpose(N.conjugate(TSHS0.H[iSpin,:,:])),
+                              atol=1e-6):
                 print 'Phonons.GetH0S0dH: WARNING: Hamiltonian H0 not Hermitian!'
-            if not N.allclose(TSHS0.S,N.transpose(N.conjugate(TSHS0.S))):
+            if not N.allclose(TSHS0.S,
+                              N.transpose(N.conjugate(TSHS0.S)),
+                              atol=1e-6):
                 print 'Phonons.GetH0S0dH: WARNING: Overlap matrix S0 not Hermitian!'
         if TSHS0.istep!=0: # the first TSHS file should have istep=0
             print "Phonons.GetH0S0dH: Assumption on file order not right ",HSfiles[0]
@@ -742,9 +756,8 @@ def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
     f.close()
 
 
-def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,AuxNCfile,
-                      displacement):
-    kpoint = N.array([0,0,0],N.float)
+def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,
+                      AuxNCfile,displacement,kpoint):
     index = 0
     # Read TSHSfiles
     for i in range(len(tree)):
@@ -806,7 +819,7 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
     
     # Correct dH
     mm = N.dot
-    onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,nao,displacement)
+    onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,nao,displacement,kpoint)
     invS0 = LA.inv(TSHS0.S)
     for i in range(index):
         SIO.printDone(i,index,'Correcting dH')
@@ -900,7 +913,9 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
             ImHeph[i,:] = 0.0*ImH0
         #Check that Heph is Hermitian
         for iSpin in range(len(ReH0)):
-            if not N.allclose(ReHeph[i,iSpin]+1j*ImHeph[i,iSpin],N.transpose(ReHeph[i,iSpin]-1j*ImHeph[i,iSpin])):
+            if not N.allclose(ReHeph[i,iSpin]+1j*ImHeph[i,iSpin],
+                              N.transpose(ReHeph[i,iSpin]-1j*ImHeph[i,iSpin]),
+                              atol=1e-6):
                 print 'Phonons.CalcHephNETCDF: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
         NCfile.sync()
     print '  ... Done!'
