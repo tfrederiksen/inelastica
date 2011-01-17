@@ -103,7 +103,7 @@ def GetSpecies(OUTCAR):
             atoms += [l[1][1:-1]]
     return atoms
 
-def GetVibrations(OUTCAR):
+def GetVibModesNoScaling(OUTCAR):
     file = VIO_open(OUTCAR,'r')
     print 'VaspIO.GetVibrations: Reading', OUTCAR
     freq = []
@@ -116,6 +116,30 @@ def GetVibrations(OUTCAR):
         if 'Eigenvectors after division by SQRT(mass)' in line \
                or 'Finite differences POTIM=' in line:
             datablock = False # end of data block
+        if datablock:
+            l = line.split()
+            if 'meV' in line:
+                # grep frequency
+                print line,
+                freq.append(float(l[-2]))
+                # begin vector array
+            if len(l) == 6 and l[0] != 'X':
+                v.append([float(l[3]),float(l[4]),float(l[5])])
+            if len(l)==0 and len(v)>0:
+                modes.append(N.array(v))
+                v = []
+    return N.array(freq), N.array(modes)
+
+def GetVibModesMassScaled(OUTCAR):
+    file = VIO_open(OUTCAR,'r')
+    print 'VaspIO.GetVibrations: Reading', OUTCAR
+    freq = []
+    modes = []
+    v = []    
+    datablock = False
+    for line in file:
+        if 'Eigenvectors after division by SQRT(mass)' in line:
+            datablock = True
         if datablock:
             l = line.split()
             if 'meV' in line:
