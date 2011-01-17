@@ -138,8 +138,8 @@ def GetVibModesMassScaled(OUTCAR):
     v = []    
     datablock = False
     for line in file:
-        if 'Eigenvectors after division by SQRT(mass)' in line:
-            datablock = True
+        if 'Finite differences POTIM=' in line:
+            datablock = False # end of data block
         if datablock:
             l = line.split()
             if 'meV' in line:
@@ -152,5 +152,7 @@ def GetVibModesMassScaled(OUTCAR):
             if len(l)==0 and len(v)>0:
                 modes.append(N.array(v))
                 v = []
+        if 'Eigenvectors after division by SQRT(mass)' in line:
+            datablock = True
     return N.array(freq), N.array(modes)
 
