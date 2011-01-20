@@ -116,7 +116,7 @@ def calcT(calledFromInelastica=False,InelasticaEf=0.0):
 
         A1, A2 =mm(G,G1,Gd), mm(G,G2,Gd)
 
-        T[iiE,0]=HS.GF.calcT()
+        T[iiE,0]=HS.GF.calcT()[0]
 
         if not calledFromInelastica:
             # Calculate PDOS from left and right

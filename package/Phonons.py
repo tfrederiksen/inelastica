@@ -21,7 +21,7 @@ def Analyze(FCwildcard,
             PerBoundCorrFirst=-1,PerBoundCorrLast=-1,
             outlabel='Out',
             CalcCoupl=True,
-            PrintSOrbitals=True,
+            PrintSOrbitals=False,
             AuxNCfile=None,
             Isotopes=[],
             kpoint=[0,0,0],
@@ -222,12 +222,15 @@ def Analyze(FCwildcard,
                 print '\nPhonons.Analyze: Coupling matrix Heph[%i].imag (in s-orbital subspace) Spin=%i'%(i,iSpin)
                 ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
                                        DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].imag)
-    NCfile.close()
+    #NCfile.close()
 
     print '=========================================================================='
     print '  Program finished:  %s '%time.ctime()
     print '=========================================================================='
-    
+    if CalcCoupl:
+        return hw,Heph
+    else:
+        return hw,0.0
 
 def OutputFC(FC,filename='FC.matrix'):
     print 'Phonons.OutputFC: Writing',filename
