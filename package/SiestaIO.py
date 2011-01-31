@@ -910,7 +910,7 @@ def GetPDOSenergyValues(dom):
         data[i] = float(data[i])
     return N.array(data)
 
-def GetPDOSfromOrbitals(dom,index=[],atom_index=[],species=[],nlist=[],llist=[]):
+def GetPDOSfromOrbitals(dom,index=[],atom_index=[],species=[],nlist=[],llist=[],mlist=[]):
     dim = len(GetPDOSenergyValues(dom))*GetPDOSnspin(dom)
     pdos = N.zeros(dim,N.float)
     nodes = dom.getElementsByTagName('orbital')
@@ -922,6 +922,7 @@ def GetPDOSfromOrbitals(dom,index=[],atom_index=[],species=[],nlist=[],llist=[])
         s = node.attributes['species'].value
         n = int(node.attributes['n'].value)
         l = int(node.attributes['l'].value)
+        m = int(node.attributes['m'].value)
         if i not in index and index!=[]:
             ok = False
         if ai not in atom_index and atom_index!=[]: 
@@ -931,6 +932,8 @@ def GetPDOSfromOrbitals(dom,index=[],atom_index=[],species=[],nlist=[],llist=[])
         if n not in nlist and nlist!=[]:
             ok = False
         if l not in llist and llist!=[]:
+            ok = False
+        if m not in mlist and mlist!=[]:
             ok = False
         if ok:
             usedOrbitals.append([i,ai,s,n,l])
@@ -944,6 +947,7 @@ def GetPDOSfromOrbitals(dom,index=[],atom_index=[],species=[],nlist=[],llist=[])
     if species!=[]: print '... Species =',species
     if nlist!=[]: print '... Allowed n quantum numbers =',nlist
     if llist!=[]: print '... Allowed l quantum numbers =',llist
+    if mlist!=[]: print '... Allowed m quantum numbers =',mlist
     print '... Orbitals included =',len(usedOrbitals)
     usedAtoms = []
     for orb in usedOrbitals:
@@ -951,7 +955,7 @@ def GetPDOSfromOrbitals(dom,index=[],atom_index=[],species=[],nlist=[],llist=[])
     print '... Atoms included =',len(usedAtoms)
     return pdos,usedOrbitals,usedAtoms
 
-def ReadPDOSFile(filename,index=[],atom_index=[],species=[],nlist=[],llist=[]):
+def ReadPDOSFile(filename,index=[],atom_index=[],species=[],nlist=[],llist=[],mlist=[]):
     # Reads SIESTA *.PDOS files summing up contributions from orbitals
     # belonging to a subset specified by the keywords
     if filename.endswith('.gz'):
@@ -960,13 +964,13 @@ def ReadPDOSFile(filename,index=[],atom_index=[],species=[],nlist=[],llist=[]):
     nspin = GetPDOSnspin(dom)
     norb = GetPDOSnorbitals(dom)
     ev = GetPDOSenergyValues(dom)
-    pdos,usedOrbitals,usedAtoms = GetPDOSfromOrbitals(dom,index,atom_index,species,nlist,llist)
+    pdos,usedOrbitals,usedAtoms = GetPDOSfromOrbitals(dom,index,atom_index,species,nlist,llist,mlist)
     return nspin,norb,ev,pdos,usedOrbitals,usedAtoms
 
-def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llist=[]):
+def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llist=[],mlist=[]):
     head,tail =  os.path.split(filename)
     eF = GetFermiEnergy(head+'/RUN.out')
-    nspin,norb,ev,pdos,usedOrbitals,usedAtoms = ReadPDOSFile(filename,index,atom_index,species,nlist,llist)
+    nspin,norb,ev,pdos,usedOrbitals,usedAtoms = ReadPDOSFile(filename,index,atom_index,species,nlist,llist,mlist)
     if nspin == 1: # No spin
         print 'SIO.ExtractPDOS: Writing', outfile
         f = open(outfile,'w')

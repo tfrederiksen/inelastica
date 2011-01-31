@@ -53,7 +53,7 @@ def ReadCONTCAR(filename):
         xyz[ii][:3] = xyz[ii,0]*vectors[0]+xyz[ii,1]*vectors[1]+xyz[ii,2]*vectors[2]
     return label,scalefactor,vectors,speciesnumbers,xyz
 
-def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.0,freeatoms=[]):
+def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.0,constrained=[]):
     "Write POSCAR file"
     print 'VaspIO.WritePOSCAR: Writing',filename
     file = open(filename,'w')
@@ -71,8 +71,13 @@ def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.
         line  = string.rjust('%.9f'%xyz[ii][0],16)+' '
         line += string.rjust('%.9f'%xyz[ii][1],16)+' '
         line += string.rjust('%.9f'%xyz[ii][2],16)+' '
-        if ii in freeatoms:
-            line += ' T T T\n'
+        if len(constrained)>0:
+            for jj in range(3):
+                if constrained[ii,jj] > 0:
+                    line += ' T'
+                else:
+                    line += ' F'
+            line += '\n'
         else:
             line += ' F F F\n'
         file.write(line)
