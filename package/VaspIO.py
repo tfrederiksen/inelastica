@@ -57,7 +57,8 @@ def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.
     "Write POSCAR file"
     print 'VaspIO.WritePOSCAR: Writing',filename
     file = open(filename,'w')
-    file.write(label+'\n')
+    #file.write(label+'\n')
+    file.write(label)
     file.write('  %.12f \n'%scalefactor)
     for ii in range(3):
         for jj in range(3):
@@ -161,3 +162,57 @@ def GetVibModesMassScaled(OUTCAR):
             datablock = True
     return N.array(freq), N.array(modes)
 
+def ExtractPDOS(filename,outfile,atom_index=[]):
+    "Read DOSCAR file and sum over group of atoms (python numbering)"
+    f = VIO_open(filename,'r')
+    # Read number of atoms on first line
+    s = f.readline()
+    s = s.split()
+    atoms = int(s[0])
+    print 'Atoms =',atoms
+    # skip 4 lines
+    for i in range(4):
+        f.readline()
+    # Read Emin,Emax,pts,eF
+    s = f.readline()
+    s = s.split()
+    Emax = float(s[0])
+    Emin = float(s[1])
+    pts = int(s[2])
+    eF = float(s[3])
+    print 'Emin,Emax,pts =',Emin,Emax,pts
+    print 'eF = ',eF
+    # If atom_index not specified take all:
+    if atom_index==[]: 
+        atom_index = range(atoms)
+    # Loop over atom PDOS
+    dat = N.zeros((pts,19),N.float)
+    for a in atom_index:
+        for e in range(pts):
+            s = f.readline()
+            s = s.split()
+            # determine spin deg. freedom
+            if e==0:
+                if len(s)==19: spin=2
+                else: spin = 1
+            for i in range(len(s)):
+                s[i] = float(s[i])
+            dat[e,0] = s[0]-eF
+            dat[e,1:1+9*spin] += N.array(s[1:1+9*spin])
+        # skip header line
+        f.readline()
+    # Make spin=2 negative
+    if spin==2:
+        sgn = N.ones(1+9*spin)
+        for i in range(9):
+            sgn[2+2*i] = -1.0
+        sgn2 = N.array(pts*[sgn])
+        dat = dat*sgn2
+    # Write output
+    fout = open(outfile,'w')
+    for i in range(pts):
+        s = ''
+        for j in range(1+9*spin):
+            s += '%.5e '%dat[i,j]
+        fout.write(s+'\n')
+    fout.close()
