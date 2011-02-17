@@ -753,7 +753,10 @@ def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
                 ln += ' %.6f %.6f %.6f'%(0,0,0)
             else:
                 for k in range(3):
-                    ln += ' %.6f'%U[i][3*(j+1-FCfirst)+k]
+                    try:
+                        ln += ' %.6f'%U[i][3*(j+1-FCfirst)+k]
+                    except:
+                        ln += ' %.6f'%U[i,j,k]
             ln += '\n'
             f.write(ln)
     f.close()
