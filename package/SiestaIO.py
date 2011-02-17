@@ -970,6 +970,10 @@ def ReadPDOSFile(filename,index=[],atom_index=[],species=[],nlist=[],llist=[],ml
 def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llist=[],mlist=[]):
     head,tail =  os.path.split(filename)
     eF = GetFermiEnergy(head+'/RUN.out')
+    if eF == 0.0:
+        print 'SIO.ExtractPDOS: Reading',filename[:-5]+'.EIG'
+        eF = ReadEIGfile(filename[:-5]+'.EIG')
+        print '... eF = %.4f eV'%eF
     nspin,norb,ev,pdos,usedOrbitals,usedAtoms = ReadPDOSFile(filename,index,atom_index,species,nlist,llist,mlist)
     if nspin == 1: # No spin
         print 'SIO.ExtractPDOS: Writing', outfile
