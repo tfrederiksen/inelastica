@@ -79,15 +79,19 @@ def Array2XYsets(A,**keywords):
     return sets
 
 def Datafile2XYsets(fn,**keywords):
+    print 'WriteXMGR.Datafile2XYsets: reading', fn
     f = open(fn,'r')
     A = []
     for line in f:
-        l = line.split()
-        for i in range(len(l)):
-            l[i] = float(l[i])
-        A.append(l)
+        if line[0] != '#' and len(line) > 0:
+            l = line.split()
+            for i in range(len(l)):
+                l[i] = float(l[i])
+            if len(l)>=2:
+                A.append(l)
     f.close()
     A = N.array(A)
+    print ' ... data shape =', N.shape(A)
     return Array2XYsets(A,**keywords)
 
 
@@ -406,6 +410,10 @@ class Graph:
             self.string += '@ legend %s \n'%flag[showlegend]
         if xpos!='' and ypos!='':
             self.string += '@ legend %.8f, %.8f \n'%(xpos,ypos)
+        if xpos!='' and ypos=='':
+            self.string += '@ legend %.8f, %.8f \n'%(xpos,0.80)
+        if xpos=='' and ypos!='':
+            self.string += '@ legend %.8f, %.8f \n'%(0.20,ypos)
         if boxLstyle!='':
             self.string += '@ legend box linestyle %i \n'%boxLstyle
         if fillpattern!='':
