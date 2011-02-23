@@ -150,7 +150,7 @@ class Symmetry:
         FCcellOrigo = self.xyz[FCfirst-1, :]-moveIntoCell(self.xyz[FCfirst-1, :]-self.xyz[0], self.a1, self.a2, self.a3, self.accuracy)
         for iU in range(NU):
             for ii in range(NFC):
-                SIO.printDone(iU*NFC+ii, NU*NFC,'Symmertrizing')
+                SIO.printDone(iU*NFC+ii, NU*NFC,'Symmetrizing')
 
                 # Figure out which atoms are connected by symmetry op.
                 xyz = self.xyz.copy()-self.origo[iU]-FCcellOrigo
@@ -562,26 +562,29 @@ class Symmetry:
                                    180/N.pi)]
         # Move angels into range [0,90] 
         angles = [min(ii,180-ii) for ii in angles] 
-        type = 'UNKNOWN'
+        print 'Lattice angles  =', angles
+        print 'Lattice lengths =', length
+        latticetype = 'UNKNOWN'
         if N.allclose(length[0],length[1],atol=self.accuracy) and\
                 N.allclose(length[1],length[2],atol=self.accuracy):
             # All lengths same
             if N.sum(N.abs(N.array(angles)-90))<2:
-                type = 'CUBIC'
+                latticetype = 'CUBIC'
             if N.sum(N.abs(N.array(angles)-60))<2:
-                type = 'FCC'
+                latticetype = 'FCC'
             if N.sum(N.abs(N.array(angles)-70.5))<4:
-                type = 'BCC'
+                latticetype = 'BCC'
+        elif N.allclose(length[0],length[1],atol=self.accuracy) and \
+                N.sum(N.abs(N.array(angles)-90))<2:
+            latticetype = 'TETRAGONAL'
         elif N.allclose(length[1],length[2],atol=self.accuracy):
             if N.sum(N.abs(N.array(angles)-90))<2:
-                type = 'POLYMER'
+                latticetype = 'POLYMER'
         elif N.allclose(length[0],length[1],atol=self.accuracy):
             if N.abs(angles[0]-60)<2:
-                type="GRAPHENE"
-        print "Symmetry: Lattice type = %s"%type
-        self.latticeType = type
-        
-        return
+                latticetype="GRAPHENE"
+        print "Symmetry: Lattice  = %s"%latticetype
+        self.latticeType = latticetype
 
     def makeHumanReadable(self,a1,a2,a3):
         # TODO! Does not give "Human" readbility ...
@@ -768,6 +771,18 @@ class Symmetry:
             what = [['K-000',-K,K,101],
                     ['000-M',M,0*M,101],
                     ['M-K',K-M,M,57]]
+        elif self.latticeType == 'TETRAGONAL':
+            ipiv = N.argsort(distance(N.array([a1,a2,a3])))
+            bb1, bb2, bb3 = [b1,b2,b3][int(ipiv[0])], [b1,b2,b3][int(ipiv[1])], [b1,b2,b3][int(ipiv[2])]
+            X = bb1/2
+            M = (bb1+bb2)/2
+            R = bb3/2
+            G = 0*bb1
+            what = [['X-G',G-X,X,101],
+                    ['G-M',M-G,G,101],
+                    ['M-X',X-M,M,101],
+                    ['X-G',G-X,X,101],
+                    ['G-R',R-G,G,101]]
         else:
             print "Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType
             kuk
