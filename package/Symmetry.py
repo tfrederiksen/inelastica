@@ -105,7 +105,7 @@ class Symmetry:
         FC = FCn
         
         # Rearange basis to fit FCfirst...FClast order in Siesta FC file
-        basisxyz = moveIntoCell(self.xyz[FCfirst-1:FClast]-self.xyz[0,:],\
+        basisxyz = moveIntoCell(self.xyz[FCfirst-1:FClast],\
                                 self.a1,self.a2,self.a3,self.accuracy)
         ipiv = []
         for elem in basisxyz[0:FClast-FCfirst+1]:
@@ -120,7 +120,7 @@ class Symmetry:
         self.basis.snr, self.basis.anr = N.array(self.basis.snr)[ipiv], N.array(self.basis.anr)[ipiv]
 
         # Find out which basis atom corresponds to each atom
-        xyz = moveIntoCell(self.xyz-self.xyz[0, :],self.a1,self.a2,self.a3,self.accuracy)
+        xyz = moveIntoCell(self.xyz,self.a1,self.a2,self.a3,self.accuracy)
         self.basisatom = N.zeros((self.NN))
         for ii in range(self.basis.NN):
             indx = N.where(N.sum(N.abs(xyz-self.basis.xyz[ii,:]), axis=1)<self.accuracy)
@@ -147,13 +147,12 @@ class Symmetry:
         UR = [self.U33[ii] for ii in range(NU)]
         PL  = N.zeros((NU, NFC, NN, NN),N.int)
         PR  = N.zeros((NU, NFC),N.int)
-        FCcellOrigo = self.xyz[FCfirst-1, :]-moveIntoCell(self.xyz[FCfirst-1, :]-self.xyz[0], self.a1, self.a2, self.a3, self.accuracy)
         for iU in range(NU):
             for ii in range(NFC):
                 SIO.printDone(iU*NFC+ii, NU*NFC,'Symmetrizing')
 
                 # Figure out which atoms are connected by symmetry op.
-                xyz = self.xyz.copy()-self.origo[iU]-FCcellOrigo
+                xyz = self.xyz.copy()-self.origo[iU]
                 FCxyz = xyz[FCfirst-1+ii, :].copy()
                 xyz = moveIntoClosest(N.array(xyz)-FCxyz,\
                                     self.pbc[0],self.pbc[1],self.pbc[2])+FCxyz
@@ -175,23 +174,43 @@ class Symmetry:
                 indx = N.where(distance(xyz-FCxyz)<radi)[0]
     
                 # Find the target atom
-                diff = N.sum(N.abs(nxyz.reshape((1,-1,3))-\
-                         xyz[indx].reshape((-1,1,3))),axis=2)<self.accuracy
-                tindx = N.where(diff)[1]
-                
+                diff = N.sum(N.abs(nxyz[indx].reshape((-1,1,3))-\
+                         xyz.reshape((1,-1,3))),axis=2)<self.accuracy
+                tindx = N.where(diff)
+                tindx2 = tindx[1]
+                indx3= indx[tindx[0]]
+                if len(indx3)!=len(indx):
+                    for ix in range(-1,2):
+                        for iy in range(-1,2):
+                            for iz in range(-1,2):
+                                if ix!=0 or iy!=0 or iz!=0:
+                                    tindxs = N.where(N.sum(N.abs(nxyz[indx].reshape((-1,1,3))+\
+                                                                  self.pbc[0]*ix+self.pbc[1]*iy+self.pbc[2]*iz-\
+                                                                  xyz.reshape((1,-1,3))),axis=2)<self.accuracy)
+                                    indx3 = N.concatenate((indx3, indx[tindxs[0]]))
+                                    tindx2 = N.concatenate((tindx2, tindxs[1]))
+                if len(indx3)!=len(indx):
+                    print "kuk"
                 # Make permutation matrix
-                PL[iU,ii, tindx,indx] = 1
-                indx = N.where(distance(xyz-tFCxyz)<self.accuracy)
-                PR[iU, ii] = self.basisatom[indx[0]]
+                PL[iU,ii, tindx2,indx3] = 1
+                indx2 = N.where(distance(xyz-tFCxyz)<self.accuracy)
+                PR[iU, ii] = self.basisatom[indx2[0]]
+
+                for kk in range(len(indx3)):
+                    oFC = FC[ii,:,indx3[kk],:].reshape((3,3))
+                    sFC = mm(UL[iU],FC[indx2[0],:,tindx2[kk],:].reshape((3,3)),UR[iU])
+                    if N.max(N.abs(oFC-sFC))>0.5:
+                        print oFC
+                        print sFC
         
         def applySym(FC):
-            FCn = N.tensordot(UL[iU], FC, ((1, 1)))
+            FCn = N.tensordot(UR[iU], FC, ((1, 1)))
             FCn = N.swapaxes(FCn, 0, 1)
-            FCn = N.tensordot(FCn, UR[iU], ((3, 0)))
+            FCn = N.tensordot(FCn, UL[iU], ((3, 0)))
             FCn2=0*FCn
             for ii in range(NFC):   
                 tmp = N.tensordot(PL[iU,ii, :, :], \
-                                                            FCn[ii, :, :, :], ((1, 1)))
+                                      FCn[ii, :, :, :], ((1, 1)))
                 tmp = N.swapaxes(tmp, 0, 1)
                 FCn2[PR[iU, ii], :, :, :] = tmp
             return FCn2
@@ -527,8 +546,16 @@ class Symmetry:
         print "a2 = (%f,%f,%f), N2=%i"%(a2[0],a2[1],a2[2],N2)
         print "a3 = (%f,%f,%f), N3=%i"%(a3[0],a3[1],a3[2],N3)
 
+        # Shift to more convenient origin
+        xyz = moveIntoCell(self.xyz, a1, a2, a3, self.accuracy)
+        tmp=mm(N.array([b1,b2,b3]),N.transpose(xyz))
+        mx, my, mz = min(tmp[0,:]),min(tmp[1,:]),min(tmp[2,:])
+        shift = mx*a1+my*a2+mz*a3
+        print "Shifting coordinates by : ",-shift
+        self.xyz = self.xyz-shift
+
         # Find basis
-        xyz = moveIntoCell(self.xyz-self.xyz[0,:], a1, a2, a3, self.accuracy)
+        xyz = moveIntoCell(self.xyz, a1, a2, a3, self.accuracy)
         class basis:
             pass
         basis.xyz, basis.snr, basis.anr = [], [], []
