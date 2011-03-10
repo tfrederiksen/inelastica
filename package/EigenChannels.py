@@ -88,6 +88,7 @@ def calcT(calledFromInelastica=False,InelasticaEf=0.0):
 
     S, H = mm(Us,S,Us), mm(Us,HS.GF.H,Us)
 
+
     # Matrix to save total and eigenchannel transmissions
     T=N.zeros((len(E),1+general.numchan),N.complex)
     IETS.T = T
@@ -169,6 +170,14 @@ def calcT(calledFromInelastica=False,InelasticaEf=0.0):
                 if not calledFromInelastica:
                     IETS.ECleft, IETS.ECright = ECleft, ECright
                     writeFGRrates()
+
+    # Calculate eigenstates of device Hamiltonian
+    if general.MolStates>0.0:
+        ev, es = LA.eigh(H)
+        for ii in range(len(ev)):
+            if N.abs(ev[ii])<general.MolStates:
+                fn=general.DestDir+'/'+general.SiestaOutFile+'.ES.%i.%2.2f'%(ii,ev[ii])
+                writeWavefunction(mm(Us,es[:,ii]),fn=fn)
 
     if not calledFromInelastica:
         writeTrans(T,H,E)
@@ -686,13 +695,13 @@ def writeXSF(fn,YY,nx,ny,nz,origo,dstep):
 
 
 ########################################################
-def writeWavefunction(Y):
+def writeWavefunction(Y,fn=None):
     """
     Writes wave function to the specified output type
     Y: vector for wavefunction
                 
     """
-    fn = fileName()
+    if fn==None: fn = fileName()
 
     # Rotate in complex space
     max_amp=-1.0
@@ -758,6 +767,8 @@ For help use --help!
                   type='int', default=4)
     EC.add_option("-B", "--BothSides", dest='bothsides', default=False,action='store_true',
                   help="Calculate eigenchannels from both sides [%default]")
+    EC.add_option("-M", "--MolecularStates", dest='MolStates', default=0.0, type='float',
+                  help="Calculate eigenstates ov device Hamiltonian within [%default] eV from Ef")
     EC.add_option("-r", "--Res", dest='res', default=0.4,type='float',
                   help="Resolution [%default Ang]")
     EC.add_option("-w", "--format", dest='format', default='macu',type='string',
