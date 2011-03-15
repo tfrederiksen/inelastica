@@ -16,7 +16,7 @@ class Symmetry:
     a1..3    : Lattice vectors of unitcell
     b1..3    : Reciprocal lattice vectors
     bp1..bp3 : Reciprocal lattice vectors to PBC.
-    latticeType : string FCC / BCC / CUBE / HEX / GRAPHENE / POLYMER
+    latticeType : string FCC/BCC/CUBIC/HEX/GRAPHENE/POLYMER/TETRAGONAL
     basis.xyz : xyz of basis inside a1..a3
     basis.snr, .anr, .NN : Siesta/atomic number and number of atoms
 
@@ -219,6 +219,9 @@ class Symmetry:
         print "Symmetry: Iterative application of symmetries"
         iter, change = 0, 10
         FCo = FC.copy()
+        # Uncomment the two lines below to skip the application of symmetries
+        #iter, change = 10, 10
+        #FCs = FC.copy()
         while iter<10 and change>1e-10:
             FCs = FCo
             for iU in range(NU):
@@ -773,12 +776,15 @@ class Symmetry:
                     ['110-000',-K,K,101],
                     ['000-111',0.5*L,0*L,51]]
         elif self.latticeType == 'BCC':
-            H = (b1-signs[1]*b2-signs[2]*b3)/2
-            NN = (b1-signs[1]*b2)
-            P = (b1+signs[1]*b2+signs[2]*b3)/2
-            what = [['000-100',H,0*H,101],
-                    ['111-000',-P,P,101],
-                    ['000-110',.5*NN,0*NN,51]]
+            H = abs(b1-signs[1]*b2-signs[2]*b3)/2
+            NN = abs(b1-signs[1]*b2)/2
+            P = abs(b1+signs[1]*b2+signs[2]*b3)/4
+            G = 0*P
+            what = [['G-H',H-G,G,101],
+                    ['H-N',NN-H,H,101],
+                    ['N-G',G-NN,NN,101],
+                    ['G-P',P-G,G,101],
+                    ['P-H',H-P,P,101]]
         elif self.latticeType == 'CUBIC':
             X = b1
             L = b1+b2+b3
@@ -786,8 +792,7 @@ class Symmetry:
             what = [['000-100',X,0*X,101],
                     ['100-110',K-X,X,101],
                     ['110-000',-K,K,101],
-                    ['000-111',L,0*L,101],
-                    ]
+                    ['000-111',L,0*L,101]]
         elif self.latticeType == 'POLYMER':
             ipiv = N.argsort(distance(N.array([a1,a2,a3])))
             X = [b1,b2,b3][int(ipiv[0])]
