@@ -94,7 +94,7 @@ class Symmetry:
     def symmetrizeFC(self,FC,FCfirst,FClast,radi=0.0):
         NN, NU, NFC = self.NN, len(self.U33), FClast-FCfirst+1
         if self.basis.NN>NFC:
-            print "Phonons: ERROR: FCfirst/last do contain all atoms in the basis (%i)."%Sym.basis.NN
+            print "Phonons: ERROR: FCfirst/last do contain all atoms in the basis (%i)."%self.basis.NN
             kuk
 
         # Rearrange to FC_ia,jb, force from atom j, axis b to atom i, axis a

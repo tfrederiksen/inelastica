@@ -1518,7 +1518,7 @@ class HS:
             print "ERROR: Trying to set non-zero k-point for Gamma point calculation"
             kuk
         if N.max(abs(self.kpoint-kpoint))>1e-10:
-            print "SiestaIO.HS.setkpoint: Setting k-point to",kpoint
+            #print "SiestaIO.HS.setkpoint: Setting k-point to",kpoint
             self.kpoint=kpoint.copy()
             self.S=self.setkpointhelper(self.Ssparse,kpoint,UseF90helpers)
             if not self.onlyS:    

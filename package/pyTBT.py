@@ -147,6 +147,9 @@ SystemLabel[.UP/.DOWN].AVTRANS   Averaged over k-points.
     else:
         devEnd=deviceRegion[1]
 
+    # Voltage
+    voltage  =SIO.GetFDFlineWithDefault(fn,'TS.Voltage', float, 0.0, 'pyTBT')
+
     # Energy range
     nE  =SIO.GetFDFlineWithDefault(fn,'TS.TBT.NPoints', int, 21, 'pyTBT')
     minE=SIO.GetFDFlineWithDefault(fn,'TS.TBT.Emin', float, -1.0, 'pyTBT')
@@ -171,8 +174,8 @@ SystemLabel[.UP/.DOWN].AVTRANS   Averaged over k-points.
     ##############################################################################
     # Define electrodes and device
 
-    elecL=surfaceGF(fnL,NA1L,NA2L)
-    elecR=surfaceGF(fnR,NA1R,NA2R)
+    elecL=surfaceGF(fnL,NA1L,NA2L,-voltage/2)
+    elecR=surfaceGF(fnR,NA1R,NA2R,voltage/2)
     myGF = GF(outFile+'.TSHS',elecL,elecR,Bulk=UseBulk,DeviceAtoms=[devSt, devEnd])
     nspin = myGF.HS.nspin
     if devSt==0:
@@ -190,9 +193,10 @@ eta [eV]                        : %f
 Device [Atoms Siesta numbering] : %i:%i 
 Bulk                            : %s
 SpinPolarization                : %i
+Voltage                         : %f
 ##############################################################
 
-"""%(minE,dE,maxE,Nk1,Nk2,eta,devSt,devEnd,UseBulk,nspin)
+"""%(minE,dE,maxE,Nk1,Nk2,eta,devSt,devEnd,UseBulk,nspin,voltage)
 
     if not pyTBT:
         # For Eigenchannels and inelastica!
@@ -245,7 +249,7 @@ class surfaceGF:
     For spinpolarized use the ispin given, for nonpolarized use 
     the same self-energy for both spin 
     """
-    def __init__(self,fn,NA1,NA2,UseF90helpers=True):
+    def __init__(self,fn,NA1,NA2,voltage,UseF90helpers=True):
         self.HS=SIO.HS(fn,UseF90helpers=UseF90helpers)
         if self.HS.gamma:
             print "Are you trying to sneak a Gamma point electrode calculation past me?"
@@ -253,6 +257,7 @@ class surfaceGF:
         self.NA1=NA1
         self.NA2=NA2
         self.kpoint = N.array([1e10,1e10],N.float)
+        self.voltage = voltage
 
     def getSig(self,ee,qp=N.array([0,0],N.float),left=True,Bulk=False,ispin=0,UseF90helpers=True):
         """
@@ -267,7 +272,11 @@ class surfaceGF:
         Gs = (E S - H -Sigma)^-1 for Sigma
 
         For Bulk = True: Return E S - H - Sig (which we substitute into the bigger H)
+        The voltage is assumed to be applied symmetrically and just shifts the energies of the self-energy
         """
+
+        eeshifted = ee-self.voltage # Shift of self energies due to voltage
+        
         if ispin>self.HS.nspin:
             ispin=0
             print "Warning: Non-spinpolarized electrode calculation used for both spin up and down"
@@ -305,8 +314,8 @@ class surfaceGF:
                 kpoint[1]=kpoint[1]/NA2
                 kpoint[0]+=ik1*1.0/NA1
                 kpoint[1]+=ik2*1.0/NA2
-                g0=self.getg0(ee,kpoint,left=left,ispin=ispin)             
-                matESmH = ee*self.S-self.H[ispin,:,:]
+                g0=self.getg0(eeshifted,kpoint,left=left,ispin=ispin)             
+                matESmH = eeshifted*self.S-self.H[ispin,:,:]
                 if F90imported and UseF90helpers:
                     ESmH, SGF = F90.f90distributegs(loop=N.array(loop,N.int), nuo=nuo,\
                                   nua=nua, na1=NA1, na2=NA2, kpoint=kpoint,\
