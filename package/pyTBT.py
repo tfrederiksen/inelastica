@@ -249,7 +249,7 @@ class surfaceGF:
     For spinpolarized use the ispin given, for nonpolarized use 
     the same self-energy for both spin 
     """
-    def __init__(self,fn,NA1,NA2,voltage,UseF90helpers=True):
+    def __init__(self,fn,NA1,NA2,voltage=0.0,UseF90helpers=True):
         self.HS=SIO.HS(fn,UseF90helpers=UseF90helpers)
         if self.HS.gamma:
             print "Are you trying to sneak a Gamma point electrode calculation past me?"
