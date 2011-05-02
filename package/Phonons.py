@@ -11,8 +11,11 @@ import SiestaIO as SIO
 import gzip
 import copy
 import PhysicalConstants as PC
-import WriteXMGR as WX
+import WriteXMGR as XMGR
 import Symmetry
+import MiscMath as MM
+
+mm = MM.mm
 
 def Analyze(FCwildcard,
             onlySdir='../onlyS',
@@ -329,7 +332,6 @@ def Downfold2Device(orbitalIndices,H0,S0,dH,DeviceFirst,DeviceLast,FCfirst,FClas
 def CalcHeph(dH,hw,U,atomnumber,FCfirst):
     print 'Phonons.CalcHeph: Calculating...\n',
     const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-    mm = N.dot
     Heph = 0.0*dH
     for i in range(len(hw)):
         # Loop over modes
@@ -354,7 +356,6 @@ def CalcHeph(dH,hw,U,atomnumber,FCfirst):
 def CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,kpoint):
     print 'Phonons.CorrectdH: Applying correction to dH...'
     dHnew = dH.copy()
-    mm = N.dot
     onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,nao,displacement,kpoint)
     invS0 = LA.inv(S0)
     for i in range(len(dH)):
@@ -366,7 +367,7 @@ def CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,kpoin
         elif i%3==1: dSdij[:,first:last+1] = dSy[:,first:last+1]  # y-move
         elif i%3==2: dSdij[:,first:last+1] = dSz[:,first:last+1]  # z-move
         for iSpin in range(len(H0)):
-            dHnew[i,iSpin,:,:] = dH[i,iSpin,:,:] - mm(N.transpose(dSdij),mm(invS0,H0[iSpin,:,:])) - mm(H0[iSpin,:,:],mm(invS0,dSdij))
+            dHnew[i,iSpin,:,:] = dH[i,iSpin,:,:] - mm(N.transpose(dSdij),invS0,H0[iSpin,:,:]) - mm(H0[iSpin,:,:],invS0,dSdij)
     print '  ... Done!'
     return dHnew
 
@@ -812,7 +813,6 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
     print 'Phonons.GenerateAuxNETCDF: len(dH) =',index
     
     # Correct dH
-    mm = N.dot
     onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,nao,displacement,kpoint)
     invS0 = LA.inv(TSHS0.S)
     for i in range(index):
@@ -823,8 +823,8 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
         elif i%3==1: dSdij[:,first:last+1] = dSy[:,first:last+1]  # y-move
         elif i%3==2: dSdij[:,first:last+1] = dSz[:,first:last+1]  # z-move
         for iSpin in range(len(TSHS0.H)):
-            RedH[i,iSpin,:] = RedH[i,iSpin,:] - mm(N.transpose(dSdij),mm(invS0,TSHS0.H[iSpin,:,:])).real - mm(TSHS0.H[iSpin,:,:],mm(invS0,dSdij)).real
-            ImdH[i,iSpin,:] = ImdH[i,iSpin,:] - mm(N.transpose(dSdij),mm(invS0,TSHS0.H[iSpin,:,:])).imag - mm(TSHS0.H[iSpin,:,:],mm(invS0,dSdij)).imag
+            RedH[i,iSpin,:] = RedH[i,iSpin,:] - mm(N.transpose(dSdij),invS0,TSHS0.H[iSpin,:,:]).real - mm(TSHS0.H[iSpin,:,:],invS0,dSdij).real
+            ImdH[i,iSpin,:] = ImdH[i,iSpin,:] - mm(N.transpose(dSdij),invS0,TSHS0.H[iSpin,:,:]).imag - mm(TSHS0.H[iSpin,:,:],invS0,dSdij).imag
     print '  ... Done!'
     NCfile2.sync()
     
@@ -966,7 +966,7 @@ def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,\
     # Get bandlines
     what = Sym.what()
 
-    bands, XMGR = [], []
+    bands, datasets = [], []
     for elem in what:
         # Calculate bands
         bands+=[ calcPhBands(MSFC, a1, a2, a3, xyz,\
@@ -980,16 +980,16 @@ def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,\
             f.write("\n")
         f.close()
         xx = N.array(range(elem[3]),N.float)/(elem[3]-1.0)
-        #XMGR += [[WX.XYDYset(xx,bands[-1][:,ii].real,bands[-1][:,ii].imag/2,Lcolor=ii+1) for ii in range(len(bands[-1][0,:]))]]
-        XMGR += [[WX.XYset(xx,bands[-1][:,ii].real,Lcolor=ii+1) for ii in range(len(bands[-1][0,:]))]]
+        #datasets += [[XMGR.XYDYset(xx,bands[-1][:,ii].real,bands[-1][:,ii].imag/2,Lcolor=ii+1) for ii in range(len(bands[-1][0,:]))]]
+        datasets += [[XMGR.XYset(xx,bands[-1][:,ii].real,Lcolor=ii+1) for ii in range(len(bands[-1][0,:]))]]
 
     tmp = [N.max(ii.real) for ii in bands]
     maxEnergy = N.max(tmp)
     maxEnergy = int(maxEnergy/10.0)*10+10
 
     gg=[]
-    for jj, ii in enumerate(XMGR):
-        g =WX.Graph()
+    for jj, ii in enumerate(datasets):
+        g =XMGR.Graph()
         for data in ii:
             g.AddDatasets(data)
         g.SetSubtitle(what[jj][0])
@@ -1001,7 +1001,7 @@ def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,\
             g.SetYaxis(label='',majorUnit=1e10,minorUnit=2,max=maxEnergy,min=0)
         gg+=[g]
 
-    p = WX.Plot('PhononBands.agr',gg[0])
+    p = XMGR.Plot('PhononBands.agr',gg[0])
 
     for ii in range(1,len(gg)):
         p.AddGraphs(gg[ii])
@@ -1032,7 +1032,4 @@ def calcPhBands(FCmean, a1, a2, a3, xyz, kdir, korig, Nk, Nbasis, basisatom):
         a,b = LA.eig(FCk*units)
         Band[ik,:] = N.sort(N.sqrt(a))
     return Band
-            
-def dist(x):
-    return N.sqrt(N.dot(x,x))
 
