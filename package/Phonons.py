@@ -600,14 +600,8 @@ def GetFileLists(FCwildcard):
         if len(FCglob)!=1:
             print 'Phonons.GetFileLists: Not exactly one *.FC file in directory',dir
         # Determine FCfirst and FClast without TSHS files
-        runfdf = SIO.SIO_open(dir+'/RUN.fdf','r')
-        lines = runfdf.readlines()
-        for line in lines:
-            if line.find('MD.FCfirst')>-1:
-                localFCfirst = int(string.split(line)[1])
-            if line.find('MD.FClast')>-1:
-                localFClast = int(string.split(line)[1])
-        runfdf.close()
+        localFCfirst = int(SIO.GetFDFline(dir+'/RUN.fdf',KeyWord='MD.FCfirst')[0])
+        localFClast = int(SIO.GetFDFline(dir+'/RUN.fdf',KeyWord='MD.FClast')[0])
         FCfirst = min(FCfirst,localFCfirst)
         FClast = max(FClast,localFClast)
         # Find TSHSfiles in FCwildcard directories
@@ -649,14 +643,8 @@ def CorrectXVfile(XVfile):
     dir,file = os.path.split(XVfile)
     FCfirst, FClast = 1e10,-1e10
     # Determine FCfirst and FClast without TSHS files
-    runfdf = SIO.SIO_open(dir+'/RUN.fdf','r')
-    lines = runfdf.readlines()
-    for line in lines:
-        if line.find('MD.FCfirst')>-1:
-            localFCfirst = int(string.split(line)[1])
-        if line.find('MD.FClast')>-1:
-            localFClast = int(string.split(line)[1])
-    runfdf.close()
+    localFCfirst = int(SIO.GetFDFline(dir+'/RUN.fdf',KeyWord='MD.FCfirst')[0])
+    localFClast = int(SIO.GetFDFline(dir+'/RUN.fdf',KeyWord='MD.FClast')[0])
     FCfirst = min(FCfirst,localFCfirst)
     FClast = max(FClast,localFClast)
     #Old way based on the HS filenames

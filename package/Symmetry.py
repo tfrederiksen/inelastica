@@ -196,6 +196,7 @@ class Symmetry:
                 indx2 = N.where(distance(xyz-tFCxyz)<self.accuracy)
                 PR[iU, ii] = self.basisatom[indx2[0]]
 
+                # TF: Check that the symmetry operations apply to FC??
                 for kk in range(len(indx3)):
                     oFC = FC[ii,:,indx3[kk],:].reshape((3,3))
                     sFC = mm(UL[iU],FC[indx2[0],:,tindx2[kk],:].reshape((3,3)),UR[iU])
@@ -815,6 +816,22 @@ class Symmetry:
                     ['M-X',X-M,M,101],
                     ['X-G',G-X,X,101],
                     ['G-R',R-G,G,101]]
+        elif self.latticeType == 'FCT':
+            ipiv = N.argsort(distance(N.array([a1,a2,a3])))
+            bb1, bb2, bb3 = [b1,b2,b3][int(ipiv[0])], [b1,b2,b3][int(ipiv[1])], [b1,b2,b3][int(ipiv[2])]
+            X = (bb1+bb3)/2
+            Z = bb1+(bb2+bb3)/2
+            L = (bb1+bb2+bb3)/2
+            XP = (bb2+bb3)/2
+            ZP = bb2+(bb1+bb3)/2
+            G = 0*bb1
+            what = [['G-X',X-G,G,101],
+                    ['X-Z',Z-X,X,101],
+                    ['Z-G',G-Z,Z,101],
+                    ['G-Z\'',ZP-G,G,101],
+                    ['Z\'-X\'',XP-ZP,ZP,101],
+                    ['X\'-G',G-XP,XP,101],
+                    ['G-L',L-G,G,101]]
         else:
             print "Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType
             kuk
