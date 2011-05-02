@@ -5,14 +5,19 @@ Bandstructure and Fermi surface calculator
 import Symmetry as SYM
 import SiestaIO as SIO
 import MakeGeom as MG
-import WriteXMGR as XMGR
+import MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
 import Scientific.IO.NetCDF as NC
 import sys, string, struct, glob,  os
 from optparse import OptionParser, OptionGroup
 import PhysicalConstants as PC
-import WriteXMGR as WX
+import WriteXMGR as XMGR
+
+mm = MM.mm
+outerAdd = MM.outerAdd
+dist = MM.dist
+mysqrt = MM.mysqrt
 
 # Dummy classes for global variables
 # general, HS, basis and geom are a global variables
@@ -170,7 +175,7 @@ def writeBands(ispin,what,bands):
     for jj,  elem in enumerate(what):
         f=open(general.DestDir+'/'+elem[0]+sspin+'.dat','w')
         xx = N.array(range(elem[3]),N.float)/(elem[3]-1.0)
-        iColor, XMGR = 1, []
+        iColor, Datasets = 1, []
         for ii in range(len(bands[jj][0,:])):
             # Choose bands within +-5 eV from Ef
             if N.sum((bands[jj][:,ii]<general.eMax)*\
@@ -178,12 +183,12 @@ def writeBands(ispin,what,bands):
                 f.write("\n# Band %i \n"%(ii))                
                 for kk,data in enumerate(bands[jj][:,ii]):
                     f.write("%i %e\n"%(kk,data))
-                XMGR += [WX.XYset(xx,bands[jj][:,ii],Lcolor=iColor)]
+                Datasets += [XMGR.XYset(xx,bands[jj][:,ii],Lcolor=iColor)]
                 iColor += 1
         f.close()
 
-        g = WX.Graph()
-        for data in XMGR:
+        g = XMGR.Graph()
+        for data in Datasets:
             g.AddDatasets(data)
         g.SetSubtitle(what[jj][0])
 
@@ -196,7 +201,7 @@ def writeBands(ispin,what,bands):
                            max=general.eMax,min=general.eMin)
         Graphs+=[g]
 
-    p = WX.Plot(general.DestDir+'/BandStruct.agr',Graphs[0])
+    p = XMGR.Plot(general.DestDir+'/BandStruct.agr',Graphs[0])
 
     for ii in range(1,len(Graphs)):
         p.AddGraphs(Graphs[ii])
@@ -272,38 +277,6 @@ For help use --help!
     myprint('Number of k-points : %f'%general.NNk,file)
     myprint('##################################################################################',file)
     file.close()
-
-################# Math helpers ################################
-def mm(* args):
-    # mm with arbitrary number of arguments
-    tmp=args[0].copy()
-    for mat in args[1:]:
-        tmp=N.dot(tmp,mat)
-    return tmp
-
-def outerAdd(* args):
-    # A_ijk=B_i+C_j+D_k
-    tmp=args[0].copy()
-    for ii in range(1,len(args)):
-        tmp=N.add.outer(tmp,args[ii])
-    return tmp
-
-def dist(x):
-    return N.sqrt(N.dot(x,x))
-
-def mysqrt(x):
-    # Square root of matrix    
-    ev,U = LA.eig(x)
-    U = N.transpose(U)
-
-    tmp=N.zeros((len(ev),len(ev)),N.complex)
-    for ii in range(len(ev)):
-        tmp[ii,ii]=N.sqrt(ev[ii])
-        
-    return mm(LA.inv(U),tmp,U)
-
-def dagger(x):
-    return N.conjugate(N.transpose(x))
 
     
 ##################### Start main routine #####################

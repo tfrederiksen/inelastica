@@ -1,5 +1,8 @@
 import SiestaIO as SIO
+import MiscMath as MM
 import numpy as N
+
+mm = MM.mm
 
 class Symmetry:
     """
@@ -801,9 +804,10 @@ class Symmetry:
         elif self.latticeType == 'GRAPHENE':
             M = (b1+b2)/2
             K = M+(b1-b2)/6
-            what = [['K-000',-K,K,101],
-                    ['000-M',M,0*M,101],
-                    ['M-K',K-M,M,57]]
+            G = 0*M
+            what = [['G-M',M,G,101],
+                    ['M-K',K-M,M,101],
+                    ['K-G',G-K,K,101]]
         elif self.latticeType == 'TETRAGONAL':
             ipiv = N.argsort(distance(N.array([a1,a2,a3])))
             bb1, bb2, bb3 = [b1,b2,b3][int(ipiv[0])], [b1,b2,b3][int(ipiv[1])], [b1,b2,b3][int(ipiv[2])]
@@ -897,13 +901,6 @@ def myUnique2(set,accuracy):
 
     return set
 
-def mm(* args):                                                
-    # mm with arbitrary number of arguments                    
-    tmp=args[0].copy()                                         
-    for mat in args[1:]:                                       
-        tmp=N.dot(tmp,mat)                                     
-    return tmp                                                 
-
 def distance(x):
     return N.sqrt(N.sum(x*x, axis=-1))
 
@@ -950,7 +947,7 @@ def myPermute(list):
             nlist += [[list[0][ii]]]
     return nlist
 
-def  findRadi(a1, a2, a3):
+def findRadi(a1, a2, a3):
     # Find sphere that fits in a1..3
     poss = []
     for i1 in range(-1,2):

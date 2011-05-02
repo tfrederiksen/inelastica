@@ -7,11 +7,16 @@ in the LOE approximation, Paulsson et al., PRB 72, 201101R (2005).
 import pyTBT
 import SiestaIO as SIO
 import EigenChannels as EC
-
+import MiscMath as MM
 import numpy as N
 import Scientific.IO.NetCDF as NC
-import numpy.fft as FFT
 import time
+
+mm = MM.mm
+dagger = MM.dagger
+fermi = MM.fermi
+box = MM.box
+interpolate = MM.interpolate
 
 class parameter: pass
 
@@ -67,7 +72,7 @@ def calcIETS():
     for ii in range(len(Omega)):        
         hw=Omega[ii]
         tmp=box(hw,-hw,Egrid,kT)
-        tmp2, ker = Hilbert(tmp,ker)
+        tmp2, ker = MM.Hilbert(tmp,ker)
         hilb.append(tmp2)
         SIO.printDone(ii,len(Omega),'LOE : Hilbert transform')
 
@@ -149,7 +154,7 @@ def calcIETS():
                 InH[iV]+=(tmp-V*nPh[iOmega])*EC.IETS.nHT[iOmega]
                 
                 # Finite temp Hilbert
-                IH[iV]-=EC.IETS.HT[iOmega]*trapez(Egrid,kasse*hilb[iOmega],\
+                IH[iV]-=EC.IETS.HT[iOmega]*MM.trapez(Egrid,kasse*hilb[iOmega],\
                                                       equidistant=True)/2
 
         InH[iV]+=V*T # Last to reduce cancelation errors
@@ -382,119 +387,6 @@ def writeData2Datafile(file,dict,hw):
     f = open(file,'a')
     f.write(form %data)
     f.close()
-
-################################################################
-# Mathematical help functions
-################################################################
-
-def mm(* args):
-    tmp=args[0].copy()
-    for ii in range(1,len(args)):
-        tmp=N.dot(tmp,args[ii])
-    return tmp
-
-def dagger(a):
-    return N.transpose(N.conjugate(a))
-
-def sign(a):
-    if a<0:
-        return -1.0
-    else:
-        return 1.0
-
-def fermi(mu,E,kT):
-    return 1/(N.exp(N.clip((E-mu)/kT,-70.0,70.0))+1)
-
-def box(mu1,mu2,grid,kT):
-    # f2-f1 (Box!)
-    return fermi(mu2,grid,kT)-fermi(mu1,grid,kT)
-
-def trapez(x,f,equidistant=False):
-    '''
-    Integration of vector f on grid x using the 3'd degree polynomial.
-    The grid x does not have to be equidistant.
-    '''
-    if equidistant:
-        # Trapez method!
-        d = N.array((x[1]-x[0])*N.ones(len(x)),N.complex)
-        d[0] = d[0]/2
-        d[-1] = d[-1]/2
-        return N.dot(d,f)
-    else:
-        # 3'd degree polynomial except for 1'st and last bins
-        sum=(x[1]-x[0])*(f[0]+f[1])/2+(x[-1]-x[-2])*(f[-1]+f[-2])/2
-        for ii in range(1,len(x)-2):
-            x0,x1,x2,x3=x[ii-1],x[ii],x[ii+1],x[ii+2]
-            y0,y1,y2,y3=f[ii-1],f[ii],f[ii+1],f[ii+2]
-            sum+=((x1-x2)*(-6*x0**2*(x0-x3)*x3**2*(y1+y2)+4*x0*x2*(x0-x3)*x3*(x0+x3)*(2*y1+y2)+\
-                 3*x2**3*(x3**2*(y0-y1)+x0**2*(y1-y3))+\
-                 x1**3*(-2*x2*(x3*(y0-y2)+x0*(y2-y3))+3*(x3**2*(y0-y2)+x0**2*(y2-y3))+\
-                 x2**2*(-y0+y3))+x2**4*(x3*(-y0+y1)+x0*(-y1+y3))+\
-                 x2**2*(-2*x3**3*(y0-y1)-3*x0**2*x3*(3*y1+y2)+3*x0*x3**2*(3*y1+y2)+\
-                 2*x0**3*(-y1+y3))+x1**4*(x3*(-y0+y2)+x2*(y0-y3)+x0*(-y2+y3))+\
-                 x1*(4*x0*(x0-x3)*x3*(x0+x3)*(y1+2*y2)-2*x2**3*(x3*(y0-y1)+x0*(y1-y3))+\
-                 x2**4*(y0-y3)+x2*(-6*x0**2*x3*(y1+y2)+6*x0*x3**2*(y1+y2)+\
-                 4*x3**3*(y0+y1+y2)-4*x0**3*(y1+y2+y3))-\
-                 3*x2**2*(x3**2*(y0+2*y1+y2)-x0**2*(2*y1+y2+y3)))+\
-                 x1**2*(-2*x3**3*(y0-y2)-3*x0**2*x3*(y1+3*y2)+3*x0*x3**2*(y1+3*y2)+\
-                 x2**3*(-y0+y3)+2*x0**3*(-y2+y3)-\
-                 3*x2*(x3**2*(y0+y1+2*y2)-x0**2*(y1+2*y2+y3))+\
-                 3*x2**2*(x3*(2*y0+y1+y2)-x0*(y1+y2+2*y3)))))/\
-                 (12.*(x0-x1)*(x0-x2)*(x0-x3)*(x1-x3)*(x2-x3))
-        return sum
-
-def generateGrid(a,b,pts):
-    w = N.arange(pts)
-    w = N.array(w,N.float)/(pts-1)
-    return a*(1-w)+b*w
-
-def interpolate(nx,x,y):
-    """
-    Interpolate f(x)=y to find f(nx)
-    Makes no checks for nx inside x region!!!
-    """
-    ny=N.array([0.0]*len(nx))
-    Lpos=N.searchsorted(x,nx)
-    for ix,pos in enumerate(Lpos):
-        if pos<len(x):
-            ny[ix]=y[pos-1]+(y[pos]-y[pos-1])/(x[pos]-x[pos-1])*(nx[ix]-x[pos-1])
-        else:
-            #TF: NB EXTRAPOLATION condition added!
-            ny[ix]=y[-1]+(y[-1]-y[-2])/(x[-1]-x[-2])*(nx[ix]-x[-1])
-    return ny
-
-# DEFINITION OF THE HILBERT TRANSFORM:
-# H[f](y) = 1/\pi p.v.\int^{\infty}_{\infty} dx { f(x)/(x-y) }
-def Hilbert(f,ker=None):
-    'Hilbert transform'
-    
-    def kernel(f):
-        'Hilbert transform kernel'
-        n = 2*len(f)
-        aux = N.zeros(n/2+1,N.float)
-        for i in N.arange(1,n/2+1):
-            aux[i] = i*N.log(i)
-        ker = N.zeros(n,N.float)
-        for i in N.arange(1,n/2):
-            ker[i] = aux[i+1]-2*aux[i]+aux[i-1]
-            ker[n-i] = -ker[i]
-        return -FFT.fft(ker)/N.pi
-
-    def transform(f,ker):
-        'Convolution with kernel'
-        n = len(f)
-        fpad = FFT.fft(N.array((f,N.zeros(n))).flat)
-        r = FFT.ifft(fpad*ker)
-        return r[0:n]
-
-    if ker!=None:
-        # A kernel was specified at the function call
-        return transform(f,ker), ker
-    else:
-        print 'Hilbert: Generating kernel'
-        ker = kernel(f)
-        return transform(f,ker), ker
-
 
 ##################### Start main routine #####################
 

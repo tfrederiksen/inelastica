@@ -9,7 +9,7 @@ fudgeEnergy = 5e-5         # Fudge energy in eV used to see if Ef is close to th
 import pyTBT
 import SiestaIO as SIO
 import MakeGeom as MG
-#import EigenChannels as EC
+import MiscMath as MM
 import WriteXMGR as XMGR
 import numpy as N
 import numpy.linalg as LA
@@ -458,10 +458,16 @@ def calcWF(Y):
         # Numpy has changed the choose function to crap!
         RR=N.take(basis.orb[ii],ri)
 
-        SphHar=sphericalHarmonic(ii)
+        # Calculate spherical harmonics
+        l = basis.L[ii]
+        m = basis.M[ii]
+        if l==3:
+            print 'f-shell : l=%i, m=%i (NOT TESTED!!)'%(l,m)
+        SphHar = MM.sphericalHarmonics(sinth,costh,sinfi,cosfi)
+        thisSphHar = SphHar[l][m+l]
 
         YY[ixmin:ixmax,iymin:iymax,izmin:izmax]=YY[ixmin:ixmax,iymin:iymax,izmin:izmax]+\
-                                                 RR*SphHar(sinth,costh,sinfi,cosfi)*Y[ii]
+                                                 RR*thisSphHar*Y[ii]
 
     return YY, general.res, origo, nx, ny, nz
 
@@ -914,101 +920,11 @@ def fileName():
     return general.DestDir+'/'+fn
 
 ################# Math helpers ################################
-def mm(* args):
-    # mm with arbitrary number of arguments
-    tmp=args[0].copy()
-    for mat in args[1:]:
-        tmp=N.dot(tmp,mat)
-    return tmp
-
-def outerAdd(* args):
-    # A_ijk=B_i+C_j+D_k
-    tmp=args[0].copy()
-    for ii in range(1,len(args)):
-        tmp=N.add.outer(tmp,args[ii])
-    return tmp
-
-def dist(x):
-    return N.sqrt(N.dot(x,x))
-
-def mysqrt(x):
-    # Square root of matrix    
-    ev,U = LA.eig(x)
-    U = N.transpose(U)
-
-    tmp=N.zeros((len(ev),len(ev)),N.complex)
-    for ii in range(len(ev)):
-        tmp[ii,ii]=N.sqrt(ev[ii])
-        
-    return mm(LA.inv(U),tmp,U)
-
-def dagger(x):
-    return N.conjugate(N.transpose(x))
-
-def sphericalHarmonic(ii):
-    pi=3.141592654
-
-    def Y00(sinth,costh,sinfi,cosfi):
-        # l=0 m=0
-        return 1/(2.*N.sqrt(pi))
-    def Y1m1(sinth,costh,sinfi,cosfi):
-        # l=1 m=-1
-        return -(N.sqrt(3/pi)*sinfi*sinth)/2.
-    def Y10(sinth,costh,sinfi,cosfi):
-        # l=1 m=0
-        return (costh*N.sqrt(3/pi))/2.
-    def Y11(sinth,costh,sinfi,cosfi):
-        # l=1 m=1
-        return -(cosfi*N.sqrt(3/pi)*sinth)/2.
-    def Y2m2(sinth,costh,sinfi,cosfi):
-        # l=2 m=-2
-        return (cosfi*N.sqrt(15/pi)*sinfi)/4. - \
-               (cosfi*costh**2*N.sqrt(15/pi)*sinfi)/4. + \
-               (cosfi*N.sqrt(15/pi)*sinfi*sinth**2)/4.
-    def Y2m1(sinth,costh,sinfi,cosfi):
-        # l=2 m=-1
-        return -(costh*N.sqrt(15/pi)*sinfi*sinth)/2.
-    def Y20(sinth,costh,sinfi,cosfi):
-        # l=2 m=0
-        return N.sqrt(5/pi)/8. + (3*costh**2*N.sqrt(5/pi))/8. - (3*N.sqrt(5/pi)*sinth**2)/8.
-    def Y21(sinth,costh,sinfi,cosfi):
-        # l=2 m=1
-        return -(cosfi*costh*N.sqrt(15/pi)*sinth)/2.
-    def Y22(sinth,costh,sinfi,cosfi):
-        # l=2 m=2
-        return (cosfi**2*N.sqrt(15/pi))/8. - (cosfi**2*costh**2*N.sqrt(15/pi))/    8. - (N.sqrt(15/pi)*sinfi**2)/8. + (costh**2*N.sqrt(15/pi)*sinfi**2)/    8. + (cosfi**2*N.sqrt(15/pi)*sinth**2)/8. - (N.sqrt(15/pi)*sinfi**2*sinth**2)/    8.
-    def Y3m3(sinth,costh,sinfi,cosfi):
-        # l=3 m=-3
-        return (-9*cosfi**2*N.sqrt(35/(2.*pi))*sinfi*sinth)/    16. + (9*cosfi**2*costh**2*N.sqrt(35/(2.*pi))*sinfi*sinth)/    16. + (3*N.sqrt(35/(2.*pi))*sinfi**3*sinth)/    16. - (3*costh**2*N.sqrt(35/(2.*pi))*sinfi**3*sinth)/    16. - (3*cosfi**2*N.sqrt(35/(2.*pi))*sinfi*sinth**3)/    16. + (N.sqrt(35/(2.*pi))*sinfi**3*sinth**3)/16.
-    def Y3m2(sinth,costh,sinfi,cosfi):
-        # l=3 m=-2
-        return (cosfi*costh*N.sqrt(105/pi)*sinfi)/8. - (cosfi*costh**3*N.sqrt(105/pi)*sinfi)/    8. + (3*cosfi*costh*N.sqrt(105/pi)*sinfi*sinth**2)/8.
-    def Y3m1(sinth,costh,sinfi,cosfi):
-        # l=3 m=-1
-        return -(N.sqrt(21/(2.*pi))*sinfi*sinth)/    16. - (15*costh**2*N.sqrt(21/(2.*pi))*sinfi*sinth)/    16. + (5*N.sqrt(21/(2.*pi))*sinfi*sinth**3)/16.
-    def Y30(sinth,costh,sinfi,cosfi):
-        # l=3 m=0
-        return (3*costh*N.sqrt(7/pi))/16. + (5*costh**3*N.sqrt(7/pi))/    16. - (15*costh*N.sqrt(7/pi)*sinth**2)/16.
-    def Y31(sinth,costh,sinfi,cosfi):
-        # l=3 m=1
-        return -(cosfi*N.sqrt(21/(2.*pi))*sinth)/    16. - (15*cosfi*costh**2*N.sqrt(21/(2.*pi))*sinth)/    16. + (5*cosfi*N.sqrt(21/(2.*pi))*sinth**3)/16.
-    def Y32(sinth,costh,sinfi,cosfi):
-        # l=3 m=2
-        return (cosfi**2*costh*N.sqrt(105/pi))/16. - (cosfi**2*costh**3*N.sqrt(105/pi))/    16. - (costh*N.sqrt(105/pi)*sinfi**2)/    16. + (costh**3*N.sqrt(105/pi)*sinfi**2)/    16. + (3*cosfi**2*costh*N.sqrt(105/pi)*sinth**2)/    16. - (3*costh*N.sqrt(105/pi)*sinfi**2*sinth**2)/16.
-    def Y33(sinth,costh,sinfi,cosfi):
-        # l=3 m=3
-        return (-3*cosfi**3*N.sqrt(35/(2.*pi))*sinth)/    16. + (3*cosfi**3*costh**2*N.sqrt(35/(2.*pi))*sinth)/    16. + (9*cosfi*N.sqrt(35/(2.*pi))*sinfi**2*sinth)/    16. - (9*cosfi*costh**2*N.sqrt(35/(2.*pi))*sinfi**2*sinth)/    16. - (cosfi**3*N.sqrt(35/(2.*pi))*sinth**3)/    16. + (3*cosfi*N.sqrt(35/(2.*pi))*sinfi**2*sinth**3)/16.
-      
-    l=basis.L[ii]
-    m=basis.M[ii]
-
-    tmp=[[Y00],[Y1m1,Y10,Y11],[Y2m2,Y2m1,Y20,Y21,Y22],[Y3m3,Y3m2,Y3m1,Y30,Y31,Y32,Y33]]
-
-    if l==3:
-        print 'f-shell : l=%i, m=%i (NOT TESTED!!)'%(l,m)
-
-    return tmp[l][m+l]
-
+mm = MM.mm
+outerAdd = MM.outerAdd
+dist = MM.dist
+mysqrt = MM.mysqrt
+dagger = MM.dagger
     
 ##################### Start main routine #####################
 

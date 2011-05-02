@@ -28,6 +28,7 @@
 
 
 import SiestaIO as SIO
+import MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
 import sys, string
@@ -50,15 +51,9 @@ except:
     print "        cd F90;source compile.bat"
     print "########################################################"
 
-def mm(* args):
-    # Matrix multiplication with arbitrary number of arguments
-    tmp=N.dot(args[0],args[1])
-    for ii in range(len(args)-2):
-        tmp=N.dot(tmp,args[ii+2])
-    return tmp
 
-def dag(x):
-    return N.transpose(N.conjugate(x))
+mm = MM.mm # Matrix multiplication
+dagger = MM.dagger # Hermitian conjugation
 
 
 ################### Main program ############################
@@ -358,7 +353,7 @@ class surfaceGF:
         h00,s00,h01,s01 = self.H[ispin,:,:],self.S,self.H01[ispin,:,:],self.S01
         NN, ee = len(h00), N.real(ee)+N.max([N.imag(ee),1e-8])*1.0j
         if left:
-            h01, s01 = dag(h01), dag(s01)
+            h01, s01 = dagger(h01), dagger(s01)
 
         # Solve generalized eigen-problem
         # ( e I - h00 , -I) (eps)          (h01 , 0) (eps)
@@ -366,7 +361,7 @@ class surfaceGF:
         a, b = N.zeros((2*NN,2*NN),N.complex), N.zeros((2*NN,2*NN),N.complex)
         a[0:NN,0:NN] = ee*s00-h00
         a[0:NN,NN:2*NN] = -N.eye(NN)
-        a[NN:2*NN,0:NN] = dag(h01)-ee*dag(s01)
+        a[NN:2*NN,0:NN] = dagger(h01)-ee*dagger(s01)
         b[0:NN,0:NN] = h01-ee*s01
         b[NN:2*NN,NN:2*NN] = N.eye(NN)
         ev, evec = SLA.eig(a,b)
@@ -375,17 +370,17 @@ class surfaceGF:
         ipiv = N.where(N.abs(ev)<1.0)[0]
         ev, evec = ev[ipiv], N.transpose(evec[:NN,ipiv])        
         # Normalize evec
-        norm = N.sqrt(N.diag(mm(evec,dag(evec))))
+        norm = N.sqrt(N.diag(mm(evec,dagger(evec))))
         evec = mm(N.diag(1.0/norm),evec)
 
         # E^+ Lambda_+ (E^+)^-1 --->>> g00
         EP = N.transpose(evec)
-        FP = mm(EP,N.diag(ev),LA.inv(mm(dag(EP),EP)),dag(EP))
+        FP = mm(EP,N.diag(ev),LA.inv(mm(dagger(EP),EP)),dagger(EP))
         g00 = LA.inv(ee*s00-h00-mm(h01-ee*s01,FP))
 
         # Check!
         err=N.max(N.abs(g00-LA.inv(ee*s00-h00-\
-                         mm(h01-ee*s01,g00,dag(h01)-ee*dag(s01)))))
+                         mm(h01-ee*s01,g00,dagger(h01)-ee*dagger(s01)))))
         if err>1.0e-8 and left:
             print "WARNING: Lopez-scheme not-so-well converged for LEFT electrode at E = %.4f eV:"%ee, err
         if err>1.0e-8 and not left:
@@ -421,7 +416,7 @@ class surfaceGF:
         """
         H, S, H01, S01 = self.H[ispin,:,:] ,self.S ,self.H01[ispin,:,:], self.S01
 
-        alpha, beta = dag(H01)-ee*dag(S01), H01-ee*S01
+        alpha, beta = dagger(H01)-ee*dagger(S01), H01-ee*S01
         eps, epss = H.copy(), H.copy()
         
         converged=False
@@ -441,9 +436,9 @@ class surfaceGF:
             if LopezConvTest<1.0e-40:
                 gs=LA.inv(ee*S-epss)
                 if left:
-                    test=ee*S-H-mm(ee*dag(S01)-dag(H01),gs,ee*S01-H01)
+                    test=ee*S-H-mm(ee*dagger(S01)-dagger(H01),gs,ee*S01-H01)
                 else:
-                    test=ee*S-H-mm(ee*S01-H01,gs,ee*dag(S01)-dag(H01))
+                    test=ee*S-H-mm(ee*S01-H01,gs,ee*dagger(S01)-dagger(H01))
                 myConvTest=N.max(abs(mm(test,gs)-N.identity((self.HS.nuo),N.complex)))
                 if myConvTest<1.0e-5: # THF: tolerance slightly raised from originally 2.0e-7
                     converged=True
@@ -623,7 +618,7 @@ class GF:
         else:
             self.SigR=SigR0
 
-        self.GamL, self.GamR = 1.0j*(self.SigL-dag(self.SigL)), 1.0j*(self.SigR-dag(self.SigR))
+        self.GamL, self.GamR = 1.0j*(self.SigL-dagger(self.SigL)), 1.0j*(self.SigR-dagger(self.SigR))
 
         # Finally ready to calculate Gr
         eSmH=ee*self.S-self.H
@@ -682,7 +677,7 @@ class GF:
 
         tmp=mm(GamL,Gr[0:nuoL,nuo-nuoR:nuo])
         tmp=mm(tmp,GamR)
-        tmp2=dag(Gr)
+        tmp2=dagger(Gr)
         tmp=mm(tmp,tmp2[nuo-nuoR:nuo,0:nuoL])
         Trans= N.trace(tmp)
         if Trans.imag>1e-10: 
