@@ -224,8 +224,8 @@ class Symmetry:
         iter, change = 0, 10
         FCo = FC.copy()
         # Uncomment the two lines below to skip the application of symmetries
-        iter, change = 10, 10
-        FCs = FC.copy()
+        #iter, change = 10, 10
+        #FCs = FC.copy()
         while iter<10 and change>1e-10:
             FCs = FCo
             for iU in range(NU):
