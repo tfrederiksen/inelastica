@@ -539,7 +539,7 @@ def SetupPHrun(newPHrun,wildcard,onlySdir='../OSrun',
     print 'SetupRuns.SetupPHrun: Writing',newPHrun+'/PHrun.py'
     file = open(newPHrun+'/PHrun.py','w')
     file.write('from Inelastica.Phonons import *\n\n')
-    file.write('\nAnalyze(FCwildcard=\'%s\',onlySdir=\'%s\',\n' %(wildcard,onlySdir))
+    file.write('\nAnalyze(FCwildcard=\'%s\',onlySdir=\'%s\',\n' %(wildcard,onlySdir))    
     file.write('        DeviceFirst=%s,DeviceLast=%s,\n' %(DeviceFirst,DeviceLast))
     file.write('        FCfirst=%s,FClast=%s,\n' %(FCfirst,FClast))
     file.write('        outlabel=\'%s\',\n'%outlabel)
@@ -837,6 +837,11 @@ def WritePBS(PBStemplate,PBSout,PBSsubs):
     # Make default job name
     fullPath, crap = os.path.split(os.path.abspath(PBSout))
     last2dir = string.split(fullPath,'/')[-2:]
+    try: # Check for numbers at start ... not liked by PBS
+        tmp=int(last2dir[0][0])+1
+        last2dir[0]='a'+last2dir[0]
+    except:
+        pass
     if not PBSsubs: PBSsubs = []
     newPBSsub = PBSsubs+[['$DEFJOBNAME$',last2dir[0]+'-'+last2dir[1]]] 
     infile = open(PBStemplate)

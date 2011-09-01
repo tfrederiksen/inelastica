@@ -395,7 +395,8 @@ class Geom:
         """
         # Determine interlayer separation
         LayersPerBlock = BlockSize/AtomsPerLayer
-        LayerSep = (self.xyz[BlockSize-1][2]-self.xyz[0][2])/(LayersPerBlock-1)
+        LayerSep = (self.xyz[(LayersPerBlock-1)*AtomsPerLayer+1][2]-\
+                        self.xyz[0][2])/(LayersPerBlock-1)
         
         print 'MakeGeom.PasteElectrodeLayers:'
         print '   ... Initial number of atoms      = %i' %len(self.xyz)
@@ -418,7 +419,7 @@ class Geom:
         # Append layers to the right
         BlocksRight = LayersRight/LayersPerBlock
         ExtraLayersRight = LayersRight%LayersPerBlock
-        pieceR.move([0,0,self.pbc[2][2]])
+        pieceR.move(self.pbc[2])
         for i in range(BlocksRight):
             self.addGeom(pieceR)
             pieceR.move([0,0,LayersPerBlock*LayerSep])
