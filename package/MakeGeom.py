@@ -99,6 +99,8 @@ class Geom:
                 self.readXYZ(fn)
             elif fn.endswith('.fdf') or fn.endswith('.fdf.gz'):
                 self.readFDF(fn)
+            elif fn.endswith('.STRUCT_OUT') or fn.endswith('.STRUCT_OUT.gz'):
+                self.readSTRUCT_OUT(fn)
             elif 'CONTCAR' in fn:
                 self.readCONTCAR(fn)
 
@@ -583,6 +585,9 @@ class Geom:
             geom.repeteGeom(self.pbc[i],rep=rep[i])
             geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
         SIO.WriteMKLFile(fn,geom.anr,geom.xyz,[],[],0,0)
+
+    def readSTRUCT_OUT(self,fn):
+        self.pbc,self.snr,self.anr,self.xyz = SIO.ReadSTRUCT_OUTFile(fn)
 
     def readCONTCAR(self,fn):
         "Read geometry from VASP CONTCAR file"

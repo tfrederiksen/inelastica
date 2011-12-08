@@ -446,7 +446,36 @@ def WriteFDFFileZmat(filename,vectors,speciesnumber,atomnumber,xyz,first=0,last=
     file.write('variables\n')
     file.write('constraints\n')
     file.write('%endblock Zmatrix\n')
-            
+
+#--------------------------------------------------------------------------------                                                                                                                                                           
+# Read systemlabel.STRUCT_OUT files
+
+def ReadSTRUCT_OUTFile(filename):
+    file = SIO_open(filename,'r')
+    # Read cell vectors (lines 1-3)
+    vectors = []
+    for i in range(3):
+        data = string.split(file.readline())
+        vectors.append([string.atof(data[j]) for j in range(3)])
+    # Read number of atoms (line 4)
+    numberOfAtoms = string.atoi(string.split(file.readline())[0])
+    # Read remaining lines
+    speciesnumber, atomnumber, xyz = [], [], []
+    for line in file.readlines():
+        if len(line)>4: # Ignore blank lines
+            data = string.split(line)
+            speciesnumber.append(string.atoi(data[0]))
+            atomnumber.append(string.atoi(data[1]))
+            xyz.append([string.atof(data[2+j]) for j in range(3)])
+    file.close()
+    if len(speciesnumber)!=numberOfAtoms:
+        print 'SiestaIO.ReadSTRUCT_OUTFile: Inconstency in %s detected!' %filename
+    xyz = N.array(xyz,N.float)
+    vectors = N.array(vectors,N.float)
+    for i in range(len(xyz)):
+        xyz[i] = N.dot(vectors,xyz[i])
+    return vectors,speciesnumber,atomnumber,xyz
+          
 #--------------------------------------------------------------------------------
 # Writing SIESTA Fortran binary files
 
@@ -644,7 +673,7 @@ def GetFermiEnergy(infile):
     print '... eF = %.4f eV'%E
     return E
 
-def ReadEIGfile(infile,printing=False):
+def ReadEIGfile(infile,printing=False,FermiRef=True):
     # Read *EIG file and print eigenvalues with respect to eF.
     f = SIO_open(infile,'rb')
     eF = float(string.split(f.readline())[0])
@@ -655,6 +684,9 @@ def ReadEIGfile(infile,printing=False):
     for line in f.readlines():
         eig = string.split(line)
         EIG += eig
+    if not FermiRef:
+        # Do not take Fermi level as energy reference
+        eF = 0.0
     if printing:
         print '# State, eigenvalue wrt. eF'
         for i in range(len(EIG)):
@@ -967,13 +999,18 @@ def ReadPDOSFile(filename,index=[],atom_index=[],species=[],nlist=[],llist=[],ml
     pdos,usedOrbitals,usedAtoms = GetPDOSfromOrbitals(dom,index,atom_index,species,nlist,llist,mlist)
     return nspin,norb,ev,pdos,usedOrbitals,usedAtoms
 
-def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llist=[],mlist=[]):
+def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llist=[],mlist=[],FermiRef=True):
     head,tail =  os.path.split(filename)
-    eF = GetFermiEnergy(head+'/RUN.out')
-    if eF == 0.0:
-        print 'SIO.ExtractPDOS: Reading',filename[:-5]+'.EIG'
-        eF = ReadEIGfile(filename[:-5]+'.EIG')
-        print '... eF = %.4f eV'%eF
+    if FermiRef:
+        # Set energy reference to the Fermi energy
+        eF = GetFermiEnergy(head+'/RUN.out')
+        if eF == 0.0:
+            print 'SIO.ExtractPDOS: Reading',filename[:-5]+'.EIG'
+            eF = ReadEIGfile(filename[:-5]+'.EIG')
+            print '... eF = %.4f eV'%eF
+    else:
+        # Set energy reference to SIESTAs internal
+        eF = 0.0
     nspin,norb,ev,pdos,usedOrbitals,usedAtoms = ReadPDOSFile(filename,index,atom_index,species,nlist,llist,mlist)
     if nspin == 1: # No spin
         print 'SIO.ExtractPDOS: Writing', outfile

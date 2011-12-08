@@ -57,8 +57,10 @@ def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.
     "Write POSCAR file"
     print 'VaspIO.WritePOSCAR: Writing',filename
     file = open(filename,'w')
-    #file.write(label+'\n')
-    file.write(label)
+    if label[:-2]!='\n':
+        file.write(label+'\n')
+    else:
+        file.write(label)
     file.write('  %.12f \n'%scalefactor)
     for ii in range(3):
         for jj in range(3):
