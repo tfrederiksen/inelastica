@@ -1,3 +1,5 @@
+print "SVN $Id$"
+
 """
 Inelastica:
 Calculates the Inelastic electron tunneling spectra IETS from e-ph coupling

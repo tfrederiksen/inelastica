@@ -1,3 +1,5 @@
+print "SVN $Id$"
+
 # From Kittel: Introd. Solid State Physics, 7th ed. (1996)
 Rydberg2eV = 13.6058
 Bohr2Ang = 0.529177 

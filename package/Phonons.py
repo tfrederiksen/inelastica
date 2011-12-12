@@ -1,3 +1,5 @@
+print "SVN $Id$"
+
 """
 Routines to calculate vibrational frequencies and e-ph coupling.
 

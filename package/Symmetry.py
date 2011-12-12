@@ -1,3 +1,5 @@
+print "SVN $Id$"
+
 import SiestaIO as SIO
 import MiscMath as MM
 import numpy as N

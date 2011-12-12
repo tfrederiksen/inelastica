@@ -1,3 +1,5 @@
+print "SVN $Id$"
+
 """
 Eigenchannels:
 1: Eigenchannels, method from Paulsson and Brandbyge PRB 2007

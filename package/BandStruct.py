@@ -1,3 +1,5 @@
+print "SVN $Id$"
+
 """
 Bandstructure and Fermi surface calculator
 """

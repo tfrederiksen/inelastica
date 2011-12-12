@@ -1,3 +1,5 @@
+print "SVN $Id$"
+
 """
 Routines for IO in different formats:
 1: Geometries in xyz, XV, ANI, fdf, mkl etc formats

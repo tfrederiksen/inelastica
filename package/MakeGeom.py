@@ -1,3 +1,5 @@
+print "SVN $Id$"
+
 """
 Routines to read, write and manipulate geometries.
 """
