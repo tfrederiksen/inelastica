@@ -118,8 +118,8 @@ def Analyze(FCwildcard,
     FCp = CorrectFCMatrix(FCp,FCfirstMIN,FClastMAX,len(xyz))
     FCmean = (FCm+FCp)/2
 
-    ### Write mass-scaled FC-matrix to file
-    OutputFC(FCmean,filename='./%s.MSFC'%outlabel)
+    ### Write FC-matrix to file
+    OutputFC(FCmean,filename='./%s.FC'%outlabel)
     
     ### Calculate phonon bandstructure
     if PhBandStruct!="None":
@@ -131,7 +131,7 @@ def Analyze(FCwildcard,
     print '\nPhonons.Analyze: Calculating phonons from FCmean, FCm, FCp:'
     # Mean
     FC2 = ReduceAndSymmetrizeFC(FCmean,FCfirstMIN,FClastMAX,FCfirst,FClast)
-    OutputFC(FC2,filename='./%s.reduced.MSFC'%outlabel)
+    OutputFC(FC2,filename='./%s.reduced.FC'%outlabel)
     hw,U = CalcPhonons(FC2,atomnumber,FCfirst,FClast)
     # FCm
     FC2 = ReduceAndSymmetrizeFC(FCm,FCfirstMIN,FClastMAX,FCfirst,FClast)
@@ -165,8 +165,8 @@ def Analyze(FCwildcard,
     Write2NetCDFFile(NCfile,hw,'hw',('PhononModes',),units='eV')
     Write2NetCDFFile(NCfile,U,'U',('PhononModes','PhononModes',),
                      description='U[i,j] where i is mode index and j atom displacement')
-    Write2NetCDFFile(NCfile,vectors,'UnitCell',('XYZ','XYZ',),units='Ang')
-    Write2NetCDFFile(NCfile,xyz,'GeometryXYZ',('NumTotAtoms','XYZ',),units='Ang')
+    Write2NetCDFFile(NCfile,vectors,'UnitCell',('dim3','dim3',),units='Ang')
+    Write2NetCDFFile(NCfile,xyz,'GeometryXYZ',('NumTotAtoms','dim3',),units='Ang')
     Write2NetCDFFile(NCfile,atomnumber,'AtomNumbers',('NumTotAtoms',),units='Atomic Number')
     Write2NetCDFFile(NCfile,speciesnumber,'SpeciesNumbers',('NumTotAtoms',),units='Species Number')
     DeviceAtoms = range(DeviceFirst,DeviceLast+1)
@@ -183,7 +183,7 @@ def Analyze(FCwildcard,
         else:
             print 'Phonons.Analyze: Reading from AuxNCfile =', AuxNCfile
         H0,S0,Heph = CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
-                                    hw,U,NCfile,AuxNCfile)
+                                    hw,U,NCfile,AuxNCfile,kpoint)
     elif CalcCoupl:
         # Old way to calculate Heph (reading everything into the memory)
         print '\nPhonons.Analyze: Reading (H0,S0,dH) from .TSHS and .onlyS files:'
@@ -199,6 +199,8 @@ def Analyze(FCwildcard,
         Heph = CalcHeph(dH,hw,U,atomnumber,FCfirst)
         # If CalcCoupl, count the actual number of atomic orbitals
         NCfile.createDimension('NSpin',len(H0))
+        print '\nPhonons.Analyze: Setting kpoint =',kpoint
+        Write2NetCDFFile(NCfile,kpoint,'kpoint',('dim3',))
         # Write real part
         Write2NetCDFFile(NCfile,H0.real,'H0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
         Write2NetCDFFile(NCfile,S0.real,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
@@ -472,8 +474,8 @@ def OpenNetCDFFile(filename,nao,xyz,DeviceFirst,DeviceLast,FCfirst,FClast):
     file = nc.NetCDFFile(filename,'w','Created '+time.ctime(time.time()))
     file.title = 'Output from Phonons.py'
     file.createDimension('AtomicOrbitals',int(nao))
-    file.createDimension('XYZ',3)
-    file.createDimension('One',1)
+    file.createDimension('dim3',3)
+    file.createDimension('dim1',1)
     file.createDimension('PhononModes',(FClast-FCfirst+1)*3)
     file.createDimension('NumTotAtoms',len(xyz))
     file.createDimension('NumDevAtoms',DeviceLast-DeviceFirst+1)
@@ -791,11 +793,14 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                     NCfile2.createDimension('Index',None)
                     NCfile2.createDimension('NSpin',len(TSHS0.H))
                     NCfile2.createDimension('AtomicOrbitals',len(TSHS0.H[0,:,:]))
-                    NCfile2.createDimension('One',1)
-                    FCfirsttmp = NCfile2.createVariable('FCfirst','d',('One',))
+                    NCfile2.createDimension('dim1',1)
+                    NCfile2.createDimension('dim3',3)
+                    FCfirsttmp = NCfile2.createVariable('FCfirst','d',('dim1',))
                     FCfirsttmp[:] = FCfirst
-                    FClasttmp = NCfile2.createVariable('FClast','d',('One',))
+                    FClasttmp = NCfile2.createVariable('FClast','d',('dim1',))
                     FClasttmp[:] = FClast
+                    kpointtmp = NCfile2.createVariable('kpoint','d',('dim3',))
+                    kpointtmp[:] = kpoint
                     # Write real part of matrices
                     ReH = NCfile2.createVariable('H0','d',('NSpin','AtomicOrbitals','AtomicOrbitals',))
                     ReH[:] = TSHS0.H.real
@@ -861,7 +866,7 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
 
 
 def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
-                   hw,U,NCfile,AuxNCfile):
+                   hw,U,NCfile,AuxNCfile,kpoint):
     # Read AuxNCfile and downfold to device
     first,last = orbitalIndices[DeviceFirst-1][0],orbitalIndices[DeviceLast-1][1]
     NCfile2 = nc.NetCDFFile(AuxNCfile,'r')
@@ -871,11 +876,16 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
     ImH0 = N.array(NCfile2.variables['ImH0'])[:,first:last+1,first:last+1]
     ImS0 = N.array(NCfile2.variables['ImS0'])[first:last+1,first:last+1]
     ImdH = NCfile2.variables['ImdH']
+    auxkpoint = NCfile2.variables['kpoint'][:]
+    print '   ... kpoint from %s ='%AuxNCfile,auxkpoint
+    if not N.allclose(auxkpoint,kpoint):
+        sys.exit('Aux. file does not match specified kpoint. Delete %s and try again!'%AuxNCfile)
     NCfile.createDimension('NSpin',len(ReH0))
     Write2NetCDFFile(NCfile,ReH0,'H0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
     Write2NetCDFFile(NCfile,ReS0,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
     Write2NetCDFFile(NCfile,ImH0,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
     Write2NetCDFFile(NCfile,ImS0,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
+    Write2NetCDFFile(NCfile,kpoint,'kpoint',('dim3',))
 
     # Check AuxNCfile
     if FCfirst != int(NCfile2.variables['FCfirst'][0]):
