@@ -4,21 +4,23 @@ print "SVN $Id$"
 Nudged elastic band
 """
 try: 
-    import Inelastica.SiestaIO as SIO
-    import Inelastica.SetupRuns as SUR
-    import Inelastica.MakeGeom as MG
-    import Inelastica.MiscMath as MM
-    import Inelastica.PhysicalConstants as PC
-except:
     import SiestaIO as SIO
     import SetupRuns as SUR
     import MakeGeom as MG
     import MiscMath as MM
     import PhysicalConstants as PC
+    import WriteXMGR as XMGR
+except:
+    import Inelastica.SiestaIO as SIO
+    import Inelastica.SetupRuns as SUR
+    import Inelastica.MakeGeom as MG
+    import Inelastica.MiscMath as MM
+    import Inelastica.PhysicalConstants as PC
+    import Inelastica.WriteXMGR as XMGR
 
 import numpy as N
 import numpy.linalg as LA
-import sys, string, struct, glob, os, copy, time
+import sys, string, struct, glob, os, copy, time, pickle
 from optparse import OptionParser, OptionGroup
 
 ##################### Global variabels #################
@@ -26,6 +28,8 @@ class general:
     pass
 steps=[]
 
+class savedData:
+    pass
 
 ########################################################
 ##################### Main routine #####################
@@ -37,7 +41,7 @@ def main():
 
 ########################################################
 def runNEB():
-    global general, steps
+    global general, steps, savedData
     
     # Restarting?
     fns=glob.glob('NEB_*/CGrun')
@@ -47,6 +51,14 @@ def runNEB():
         sys.exit('Number of NEB_??? directories %i does not match number of steps %i'%(len(fns),general.NNEB))
     else:
         restart=True
+        
+    if restart:
+        savedData=pickle.load(open('NEB_%i/savedData.pickle'%0,'r'))
+    else:
+        savedData.E = []
+        savedData.F = []
+        savedData.geom = []
+        savedData.Fmax = []
 
     fns = ["NEB_%i/CGrun"%ii for ii in range(general.NNEB)]
     fns = [general.initial+"/CGrun"]+fns+[general.final+"/CGrun"]
@@ -73,6 +85,18 @@ def runNEB():
             if not nextstep:
                 time.sleep(60)
         
+        savedData.E += [GetTotalEnergy(ii.dir+'/RUN.out') for ii in steps]
+        savedData.F += [ii.forces for ii in steps]
+        savedData.Fmax += [ii.Ftot for ii in steps]
+        savedData.geom += [ii.XVgeom for ii in steps]
+        # Write status
+        for ii in range(len(steps)):
+            geoms = [savedData.geom[jj][ii] for jj in range(len(savedData.geom))]
+            Ftots = [savedData.Fmax[jj][ii] for jj in range(len(savedData.geom))]
+            Fs    = [savedData.F[jj][ii] for jj in range(len(savedData.geom))]
+            SIO.WriteANIFile('NEB_%i/Steps.ANI'%ii,geoms,Ftots)
+            SIO.WriteAXSFFiles('NEB_%i/Steps.XASF'%ii,geoms,forces=Fs)
+        
         oldgeom = [copy.deepcopy(ii.XVgeom) for ii in steps]
         for ii,jj in enumerate(steps[1:-1]):
             jj.update(oldgeom[ii-1],oldgeom[ii+1])
@@ -85,6 +109,7 @@ def runNEB():
         done = True
         for ii in steps:
             done = done and ii.converged    
+        pickle.dump(savedData,open('NEB_%i/savedData.pickle'%0,'w'))
 
 #################### Class for each step ###############
 class step:
