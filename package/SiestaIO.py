@@ -147,6 +147,31 @@ def ReadAXVFile(filename,MDstep,tmpXVfile="tmp.XV",ReadVelocity=False):
 
 
 #--------------------------------------------------------------------------------
+# AXSF-format
+def WriteAXSFFiles(filename,geoms,forces=None):
+    'Writes [geom1, geom2 ...] to AXSF format'
+    f = open(filename,'w')
+    f.write('ANIMSTEPS %i\nCRYSTAL\n'%len(geoms))    
+    for i in range(len(geoms)):
+        f.write('PRIMVEC %i\n'%(i+1))
+        f.write('%.6f %.6f %.6f\n'%(geoms[i].pbc[0][0],geoms[i].pbc[0][1],geoms[i].pbc[0][2]))
+        f.write('%.6f %.6f %.6f\n'%(geoms[i].pbc[1][0],geoms[i].pbc[1][1],geoms[i].pbc[1][2]))
+        f.write('%.6f %.6f %.6f\n'%(geoms[i].pbc[2][0],geoms[i].pbc[2][1],geoms[i].pbc[2][2]))
+        f.write('PRIMCOORD %i\n'%(i+1))
+        f.write('%i 1\n'%(len(geoms[i].xyz)))
+        
+        for j in range(len(geoms[i].xyz)):
+            ln = ' %i'%geoms[i].anr[j]
+            for k in range(3):
+                ln += ' %.6f'%geoms[i].xyz[j][k]
+            if forces!=None:
+                for k in range(3):
+                    ln += ' %.6f'%forces[i][j][k+1]
+            ln += '\n'
+            f.write(ln)
+    f.close()
+
+
 # ANI-format
 
 def WriteANIFile(filename,Geom,Energy,InUnits='Ang',OutUnits='Ang'):

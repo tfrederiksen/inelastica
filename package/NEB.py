@@ -18,7 +18,7 @@ except:
 
 import numpy as N
 import numpy.linalg as LA
-import sys, string, struct, glob, os, copy
+import sys, string, struct, glob, os, copy, time
 from optparse import OptionParser, OptionGroup
 
 ##################### Global variabels #################
@@ -56,15 +56,42 @@ def runNEB():
 
     steps = [step(fn,restart,ii,initial=i,final=f) for ii,fn in enumerate(fns)]
 
-    # Start initial calculation
-    for ii in steps:
-        ii.run()
+    done=False
+
+    while not done:
+        # Start  calculations
+        for ii in steps:
+            ii.run()
+
+        nextstep=False
+        while not nextstep:
+            for ii in steps:
+                if not ii.checkDone():
+                    break
+            else: 
+                nextstep=True
+            if not nextstep:
+                time.sleep(60)
+        
+        oldgeom = [copy.deepcopy(ii.XVgeom) for ii in steps]
+        for ii,jj in enumerate(steps[1:-1]):
+            jj.update(oldgeom[ii-1],oldgeom[ii+1])
+
+        geoms = [ii.XVgeom for ii in steps]
+        Ftots  = [ii.Ftot for ii in steps]
+        Fs     = [ii.forces for ii in steps]
+        SIO.WriteANIFile('NEB_%i/NextStep.ANI'%0,geoms,Ftots)
+        SIO.WriteAXSFFiles('NEB_%i/NextStep.XASF'%0,geoms,forces=Fs)
+        done = True
+        for ii in steps:
+            done = done and ii.converged    
 
 #################### Class for each step ###############
 class step:
     global steps, general
     def __init__(self,dir,restart,iistep,initial=None,final=None):
         self.dir=dir
+        self.converged, self.Ftot = False, 0.0
         self.ii=iistep
         self.fixed = (iistep==0) or (iistep==general.NNEB+1)
         
@@ -78,7 +105,6 @@ class step:
             xyz = mix*ixyz+(1.0-mix)*fxyz
             self.FDFgeom = copy.deepcopy(initial.XVgeom)
             self.FDFgeom.xyz = [xyz[ii,:] for ii in range(len(xyz))]
-            self.FDFgeom.writeFDF(dir+"/STRUCT.fdf")
 
             # Append lines to RUN.fdf
             elm = dir+"/RUN.fdf"
@@ -87,30 +113,82 @@ class step:
             f.close()
             f = open(elm,'w')
             f.write('### Lines appended %s \n' %time.ctime())
-            f.write("SolutionMethod       diagon")
-            f.write("MD.TypeOfRun         CG")
-            f.write("MD.NumCGsteps        0")
-            f.write("TS.SaveHS            True")
+            f.write("SolutionMethod       diagon\n")
+            f.write("MD.TypeOfRun         CG\n")
+            f.write("MD.NumCGsteps        0\n")
+            f.write("TS.SaveHS            True\n")
+            f.write("MD.UseSaveXV         False\n")
+            f.write("MD.UseSaveCG         False\n")
+            f.write('# end of lines appended %s \n' %time.ctime())
             for line in lines: f.write(line)
             f.close()
 
-        self.done=False or self.fixed
-        
-        self.FDFgeom = MG.Geom(dir+"/RUN.fdf")
-        try:
-            self.XVgeom  = readxv(dir)
-            self.forces  = SIO.ReadForces(dir+"/RUN.out")
-            if N.allclose(self.XVgeom.xyz,self.FDFgeom.xyz,1e-6):
-                self.done=True
-        except:
-            pass
+        self.done = self.checkDone()
+        if self.fixed:
+             self.FDFgeom = MG.Geom(self.dir+"/RUN.fdf")
+             self.XVgeom  = readxv(self.dir)
+             self.forces  = SIO.ReadForces(self.dir+"/RUN.out")
+             self.forces = self.forces[-len(self.XVgeom.xyz):]
         self.const = SIO.GetFDFblock(dir+"/RUN.fdf","GeometryConstraints")
+
+    def checkDone(self):
+        if self.fixed==True:
+            return True
+        else:
+            self.FDFgeom = MG.Geom(self.dir+"/RUN.fdf")
+            done = False
+            try:
+                self.XVgeom  = readxv(self.dir)
+                self.forces  = SIO.ReadForces(self.dir+"/RUN.out")
+                if N.allclose(self.XVgeom.xyz,self.FDFgeom.xyz,1e-6):
+                    done=True
+            except:
+                done=False
+            print done
+            return done
 
     def run(self):
         if not self.done:
+            try:
+                os.remove(self.dir+"/RUN.out")
+            except:
+                pass
+            fns=glob.glob(self.dir+'/*.XV')
+            for fn in fns: os.remove(fn)
+            fns=glob.glob(self.dir+'/*.ANI')
+            for fn in fns: os.remove(fn)
+            self.FDFgeom.writeFDF(self.dir+"/STRUCT.fdf")
             SUR.MakePBS(None, self.dir+"/RUN.pbs",\
                             [['$NODES$','1:ppn=%i'%general.proc]],\
                             True, type = 'TS')
+
+    def update(self,left,right):
+        # calculate new geometry
+        xyz, F = N.array(self.XVgeom.xyz), N.array(self.forces)
+        F = F[:,1:4]
+        lxyz, rxyz = N.array(left.xyz), N.array(right.xyz)
+
+        tangent = rxyz-lxyz
+        tangent = tangent/N.sqrt(N.sum(tangent*tangent)) # Normalize
+        FS = general.SK*(rxyz+lxyz-2*xyz) # Spring forces
+        Ftot = F+FS
+        Ftot = N.sum(Ftot*tangent)*tangent    # Allong tangent               
+        
+        # Apply constraints
+        for s,f in general.const:
+            for ii in range(s,f+1):
+                Ftot[ii,:]=0
+                
+        dx = Ftot*general.moveK
+        dx = N.clip(dx,-general.maxDist,general.maxDist)
+        xyz = xyz+dx
+        xyz=[xyz[ii,:] for ii in range(len(xyz))]
+        self.FDFgeom.xyz = xyz
+        self.XVgeom.xyz = xyz
+
+        self.Ftot = N.max(N.sqrt(N.sum(Ftot*Ftot,1)))
+        self.converged = self.Ftot<general.convCrit
+        self.done = False
 
 def checkConst(initial,final):
     if initial.const!=final.const:
@@ -149,7 +227,7 @@ Nudged elastic band calculation.
 Initial and Final and final states are read from the directories:
 Initial/CGrun
 Final/CGrun
-The directories should contain RUN.fdf (main fdf file) and STRUCT.fdf containing the structure of the the system (read from RUN.fdf with %include).
+The directories should contain RUN.fdf (main fdf file) and STRUCT.fdf containing the structure of the the system (read from RUN.fdf with %include). RUN.out should contain the output of the Siesta calculations.
 
 Intermediate steps will be written in:
 NEB_.../CGrun directories
@@ -167,18 +245,29 @@ For help use --help!
     EC.add_option("-p", "--Proc", dest="proc",\
                       help="Number of processors [%default]",\
                       type='int', default=1)
+    EC.add_option("-d", "--MoveK", dest="moveK",\
+                      help="Distance moved/force [A/(eV/A)] [%default]",\
+                      type='float', default=0.5)
+    EC.add_option("-m", "--MaxDist", dest="maxDist",\
+                      help="Maximum distance moved [A/direction] [%default]",\
+                      type='float', default=0.2)
+    EC.add_option("-c", "--ConvCrit", dest="convCrit",\
+                      help="Convergence criteria, max force on atom [eV/A] [%default]",\
+                      type='float', default=0.08)
+
     parser.add_option_group(EC)
     
     (general, args) = parser.parse_args()
     print description
 
-    if len(sys.argv)<3:
+    print args
+    if len(args)<2:
         parser.error("ERROR: You need to specify initial and final geometries")
-    if len(sys.argv)>3:
+    if len(args)>2:
         parser.error("ERROR: you have more than 2 geometries")
 
-    general.initial = sys.argv[1]
-    general.final = sys.argv[2]
+    general.initial = args[0]
+    general.final = args[1]
 
     class myopen:
         # Double stdout to RUN.out and stdout
@@ -196,6 +285,11 @@ For help use --help!
     print('##################################################################################')
     print('## NEB options')
     print('Number of intermediate steps  : %i'%general.NNEB)
+    print('Spring constant [eV/A^2]      : %f'%general.SK)
+    print('Processor                     : %i'%general.proc)
+    print('Move constant [A/(eV/A)]      : %f'%general.moveK)
+    print('Max move distance/coord [A]   : %f'%general.maxDist)
+    print('Convergence criteria [eV/A]   : %f'%general.convCrit)
     print('##################################################################################')
 
 ################# Math helpers ################################
