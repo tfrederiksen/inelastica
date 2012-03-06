@@ -66,7 +66,8 @@ F90ext = Next.Extension('Inelastica.F90helpers',\
                         ['package/F90/distributegs.F',
                          'package/F90/readNewTSHS.F90',
                          'package/F90/removeUnitCellXij.F',
-                         'package/F90/setkpointhelper.F'])
+                         'package/F90/setkpointhelper.F'],
+                        f2py_options=['fcompiler=intele'])
 
 # Main setup of python modules
 setup(name='Inelastica',

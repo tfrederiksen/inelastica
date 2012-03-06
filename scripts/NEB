@@ -1,5 +1,5 @@
 #! /usr/bin/env python
 
-import NEB as NEB
+import Inelastica.NEB as NEB
 NEB.main()
 
