@@ -80,6 +80,20 @@ class step:
             self.FDFgeom.xyz = [xyz[ii,:] for ii in range(len(xyz))]
             self.FDFgeom.writeFDF(dir+"/STRUCT.fdf")
 
+            # Append lines to RUN.fdf
+            elm = dir+"/RUN.fdf"
+            f = open(elm,'r')
+            lines = f.readlines()
+            f.close()
+            f = open(elm,'w')
+            f.write('### Lines appended %s \n' %time.ctime())
+            f.write("SolutionMethod       diagon")
+            f.write("MD.TypeOfRun         CG")
+            f.write("MD.NumCGsteps        0")
+            f.write("TS.SaveHS            True")
+            for line in lines: f.write(line)
+            f.close()
+
         self.done=False or self.fixed
         
         self.FDFgeom = MG.Geom(dir+"/RUN.fdf")
