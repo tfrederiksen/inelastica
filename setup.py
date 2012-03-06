@@ -96,7 +96,8 @@ Provides:
                   'scripts/STMimage',
                   'scripts/Vasp2Siesta',
                   'scripts/bands2xmgr',
-                  'scripts/Phonons'
+                  'scripts/Phonons',
+                  'scripts/NEB'
                   ],
       packages=['Inelastica'],
       ext_modules=[F90ext],
