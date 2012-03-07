@@ -52,19 +52,20 @@ def runNEB():
     else:
         restart=True
         
-    if restart:
-        savedData.E,savedData.F,savedData.Fmax,savedData.geom=pickle.load(open('NEB_%i/savedData.pickle'%0,'r'))
-    else:
-        savedData.E = []
-        savedData.F = []
-        savedData.geom = []
-        savedData.Fmax = []
-
     fns = ["NEB_%i/CGrun"%ii for ii in range(general.NNEB)]
     fns = [general.initial+"/CGrun"]+fns+[general.final+"/CGrun"]
     
     i, f = step(fns[0],False,0), step(fns[general.NNEB+1],False,general.NNEB+1)
     checkConst(i,f)
+
+    if restart:
+        savedData.E,savedData.F,savedData.Fmax,savedData.geom=pickle.load(open('NEB_%i/savedData.pickle'%0,'r'))
+    else:
+        savedData.E    = []
+        savedData.F    = []
+        savedData.geom = []
+        savedData.Fmax = []
+        savedData.v    = N.zeros((general.NNEB+2,len(i.geom.xyz),3),N.float)
 
     steps = [step(fn,restart,ii,initial=i,final=f) for ii,fn in enumerate(fns)]
 
@@ -100,13 +101,6 @@ def runNEB():
             Ftots = [savedData.Fmax[jj][ii] for jj in range(len(savedData.geom))]
             Fs    = [savedData.F[jj][ii] for jj in range(len(savedData.geom))]
             SIO.WriteANIFile('NEB_%i/Steps.ANI'%(ii-1),geoms,Ftots)
-            print len(geoms)
-            print len(geoms[0].xyz)
-            print len(geoms[0].xyz[0])
-            print len(Fs)
-            print len(Fs[0])
-            print len(Fs[0][0])
-            print Fs
             SIO.WriteAXSFFiles('NEB_%i/Steps.XASF'%(ii-1),geoms,forces=Fs)
 
         geoms = [ii.XVgeom for ii in steps]
@@ -216,10 +210,11 @@ class step:
                 Ftot[ii,:]=0
 
         self.Ftot=Ftot
-
-        dx = Ftot*general.moveK
-        dx = N.clip(dx,-general.maxDist,general.maxDist)
-        xyz = xyz+dx
+        savedData.v[self.ii,:;:]=N.sum(savedData.c[self.ii,:,:]*tangent)*tangent
+        if N.sum(Ftot*savedData.v[self.ii,:,:])<0:
+            savedData.v[self.ii,:,:]=0
+        savedData.v[self.ii,:,:]=savedData.v[self.ii,:,:]+Ftot*general.moveK
+        xyz = xyz+savedData.v[self.ii,:,:]
         xyz=[xyz[ii,:] for ii in range(len(xyz))]
         self.FDFgeom.xyz = xyz
         self.XVgeom.xyz = xyz
