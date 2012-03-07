@@ -53,7 +53,7 @@ def runNEB():
         restart=True
         
     if restart:
-        savedData=pickle.load(open('NEB_%i/savedData.pickle'%0,'r'))
+        savedData.E,savedData.F,savedData.Fmax,savedData.geom=pickle.load(open('NEB_%i/savedData.pickle'%0,'r'))
     else:
         savedData.E = []
         savedData.F = []
@@ -83,40 +83,49 @@ def runNEB():
             else: 
                 nextstep=True
             if not nextstep:
-                time.sleep(60)
+                time.sleep(10)
         
-        savedData.E += [GetTotalEnergy(ii.dir+'/RUN.out') for ii in steps]
-        savedData.F += [ii.forces for ii in steps]
-        savedData.Fmax += [ii.Ftot for ii in steps]
-        savedData.geom += [ii.XVgeom for ii in steps]
-        # Write status
-        for ii in range(len(steps)):
-            geoms = [savedData.geom[jj][ii] for jj in range(len(savedData.geom))]
-            Ftots = [savedData.Fmax[jj][ii] for jj in range(len(savedData.geom))]
-            Fs    = [savedData.F[jj][ii] for jj in range(len(savedData.geom))]
-            SIO.WriteANIFile('NEB_%i/Steps.ANI'%ii,geoms,Ftots)
-            SIO.WriteAXSFFiles('NEB_%i/Steps.XASF'%ii,geoms,forces=Fs)
-        
+        savedData.E += [[SIO.GetTotalEnergy(ii.dir+'/RUN.out') for ii in steps]]
+        savedData.geom += [[copy.copy(ii.XVgeom) for ii in steps]]
+
         oldgeom = [copy.deepcopy(ii.XVgeom) for ii in steps]
         for ii,jj in enumerate(steps[1:-1]):
             jj.update(oldgeom[ii-1],oldgeom[ii+1])
 
+        # Write status
+        savedData.F += [[ii.Ftot for ii in steps]]
+        savedData.Fmax += [[ii.Fmax for ii in steps]]
+        for ii in range(1,len(steps)-1):
+            geoms = [savedData.geom[jj][ii] for jj in range(len(savedData.geom))]
+            Ftots = [savedData.Fmax[jj][ii] for jj in range(len(savedData.geom))]
+            Fs    = [savedData.F[jj][ii] for jj in range(len(savedData.geom))]
+            SIO.WriteANIFile('NEB_%i/Steps.ANI'%(ii-1),geoms,Ftots)
+            print len(geoms)
+            print len(geoms[0].xyz)
+            print len(geoms[0].xyz[0])
+            print len(Fs)
+            print len(Fs[0])
+            print len(Fs[0][0])
+            print Fs
+            SIO.WriteAXSFFiles('NEB_%i/Steps.XASF'%(ii-1),geoms,forces=Fs)
+
         geoms = [ii.XVgeom for ii in steps]
-        Ftots  = [ii.Ftot for ii in steps]
-        Fs     = [ii.forces for ii in steps]
-        SIO.WriteANIFile('NEB_%i/NextStep.ANI'%0,geoms,Ftots)
-        SIO.WriteAXSFFiles('NEB_%i/NextStep.XASF'%0,geoms,forces=Fs)
+        Fmax  = [ii.Fmax for ii in steps]
+        Ftot  = [ii.Ftot for ii in steps]
+        SIO.WriteANIFile('NEB_%i/NextStep.ANI'%0,geoms,Fmax)
+        SIO.WriteAXSFFiles('NEB_%i/NextStep.XASF'%0,geoms,forces=Ftot)
         done = True
         for ii in steps:
             done = done and ii.converged    
-        pickle.dump(savedData,open('NEB_%i/savedData.pickle'%0,'w'))
+        pickle.dump((savedData.E,savedData.F,savedData.Fmax,savedData.geom),\
+                    open('NEB_%i/savedData.pickle'%0,'w'))
 
 #################### Class for each step ###############
 class step:
     global steps, general
     def __init__(self,dir,restart,iistep,initial=None,final=None):
         self.dir=dir
-        self.converged, self.Ftot = False, 0.0
+        self.converged, self.Fmax = False, 0.0
         self.ii=iistep
         self.fixed = (iistep==0) or (iistep==general.NNEB+1)
         
@@ -127,10 +136,11 @@ class step:
             # Interpolate
             ixyz, fxyz = N.array(initial.XVgeom.xyz), N.array(final.XVgeom.xyz)
             mix = float(iistep)/(general.NNEB+1.0)
-            xyz = mix*ixyz+(1.0-mix)*fxyz
-            self.FDFgeom = copy.deepcopy(initial.XVgeom)
+            xyz = (1-mix)*ixyz+mix*fxyz
+            self.FDFgeom = copy.copy(initial.XVgeom)
             self.FDFgeom.xyz = [xyz[ii,:] for ii in range(len(xyz))]
-
+            self.FDFgeom.writeFDF(self.dir+"/STRUCT.fdf")
+            
             # Append lines to RUN.fdf
             elm = dir+"/RUN.fdf"
             f = open(elm,'r')
@@ -149,17 +159,18 @@ class step:
             f.close()
 
         self.done = self.checkDone()
-        if self.fixed:
-             self.FDFgeom = MG.Geom(self.dir+"/RUN.fdf")
-             self.XVgeom  = readxv(self.dir)
-             self.forces  = SIO.ReadForces(self.dir+"/RUN.out")
-             self.forces = self.forces[-len(self.XVgeom.xyz):]
         self.const = SIO.GetFDFblock(dir+"/RUN.fdf","GeometryConstraints")
 
     def checkDone(self):
         if self.fixed==True:
+            self.FDFgeom = MG.Geom(self.dir+"/RUN.fdf")
+            self.XVgeom  = readxv(self.dir)
+            self.forces  = SIO.ReadForces(self.dir+"/RUN.out")
+            self.forces  = self.forces[-len(self.XVgeom.xyz):]
+            self.Ftot    = self.forces
             return True
         else:
+            SIO.CheckTermination(self.dir+"/RUN.out")
             self.FDFgeom = MG.Geom(self.dir+"/RUN.fdf")
             done = False
             try:
@@ -169,7 +180,6 @@ class step:
                     done=True
             except:
                 done=False
-            print done
             return done
 
     def run(self):
@@ -196,14 +206,17 @@ class step:
         tangent = rxyz-lxyz
         tangent = tangent/N.sqrt(N.sum(tangent*tangent)) # Normalize
         FS = general.SK*(rxyz+lxyz-2*xyz) # Spring forces
+        FS = N.sum(FS*tangent)*tangent    # Allong tangent
+        F  = F-N.sum(F*tangent)*tangent  # orthogonal to tangent
         Ftot = F+FS
-        Ftot = N.sum(Ftot*tangent)*tangent    # Allong tangent               
         
         # Apply constraints
         for s,f in general.const:
             for ii in range(s,f+1):
                 Ftot[ii,:]=0
-                
+
+        self.Ftot=Ftot
+
         dx = Ftot*general.moveK
         dx = N.clip(dx,-general.maxDist,general.maxDist)
         xyz = xyz+dx
@@ -211,7 +224,7 @@ class step:
         self.FDFgeom.xyz = xyz
         self.XVgeom.xyz = xyz
 
-        self.Ftot = N.max(N.sqrt(N.sum(Ftot*Ftot,1)))
+        self.Fmax = N.max(N.sqrt(N.sum(Ftot*Ftot,1)))
         self.converged = self.Ftot<general.convCrit
         self.done = False
 
