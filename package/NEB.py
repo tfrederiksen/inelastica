@@ -59,13 +59,13 @@ def runNEB():
     checkConst(i,f)
 
     if restart:
-        savedData.E,savedData.F,savedData.Fmax,savedData.geom=pickle.load(open('NEB_%i/savedData.pickle'%0,'r'))
+        savedData.E,savedData.F,savedData.Fmax,savedData.geom,savedData.v=pickle.load(open('NEB_%i/savedData.pickle'%0,'r'))
     else:
         savedData.E    = []
         savedData.F    = []
         savedData.geom = []
         savedData.Fmax = []
-        savedData.v    = N.zeros((general.NNEB+2,len(i.geom.xyz),3),N.float)
+        savedData.v    = N.zeros((general.NNEB+2,len(i.XVgeom.xyz),3),N.float)
 
     steps = [step(fn,restart,ii,initial=i,final=f) for ii,fn in enumerate(fns)]
 
@@ -91,7 +91,7 @@ def runNEB():
 
         oldgeom = [copy.deepcopy(ii.XVgeom) for ii in steps]
         for ii,jj in enumerate(steps[1:-1]):
-            jj.update(oldgeom[ii-1],oldgeom[ii+1])
+            jj.update(oldgeom[ii],oldgeom[ii+2])
 
         # Write status
         savedData.F += [[ii.Ftot for ii in steps]]
@@ -111,7 +111,7 @@ def runNEB():
         done = True
         for ii in steps:
             done = done and ii.converged    
-        pickle.dump((savedData.E,savedData.F,savedData.Fmax,savedData.geom),\
+        pickle.dump((savedData.E,savedData.F,savedData.Fmax,savedData.geom,savedData.v),\
                     open('NEB_%i/savedData.pickle'%0,'w'))
 
 #################### Class for each step ###############
@@ -210,17 +210,20 @@ class step:
                 Ftot[ii,:]=0
 
         self.Ftot=Ftot
-        savedData.v[self.ii,:;:]=N.sum(savedData.c[self.ii,:,:]*tangent)*tangent
+        savedData.v[self.ii,:,:]=savedData.v[self.ii,:,:]-N.sum(savedData.v[self.ii,:,:]*tangent)*tangent
         if N.sum(Ftot*savedData.v[self.ii,:,:])<0:
             savedData.v[self.ii,:,:]=0
         savedData.v[self.ii,:,:]=savedData.v[self.ii,:,:]+Ftot*general.moveK
+        steplen=N.sqrt(N.sum(savedData.v[self.ii,:,:]*savedData.v[self.ii,:,:]))
+        if steplen>general.maxDist:
+            savedData.v[self.ii,:,:]=savedData.v[self.ii,:,:]/steplen*general.maxDist
         xyz = xyz+savedData.v[self.ii,:,:]
         xyz=[xyz[ii,:] for ii in range(len(xyz))]
         self.FDFgeom.xyz = xyz
         self.XVgeom.xyz = xyz
 
         self.Fmax = N.max(N.sqrt(N.sum(Ftot*Ftot,1)))
-        self.converged = self.Ftot<general.convCrit
+        self.converged = self.Fmax<general.convCrit
         self.done = False
 
 def checkConst(initial,final):
@@ -274,16 +277,16 @@ For help use --help!
                       type='int', default=10)
     EC.add_option("-k", "--SpringK", dest="SK",\
                       help="Spring constant [eV/A] [%default]",\
-                      type='float', default=1.0)
+                      type='float', default=100.0)
     EC.add_option("-p", "--Proc", dest="proc",\
                       help="Number of processors [%default]",\
                       type='int', default=1)
     EC.add_option("-d", "--MoveK", dest="moveK",\
                       help="Distance moved/force [A/(eV/A)] [%default]",\
-                      type='float', default=0.5)
+                      type='float', default=0.004)
     EC.add_option("-m", "--MaxDist", dest="maxDist",\
                       help="Maximum distance moved [A/direction] [%default]",\
-                      type='float', default=0.2)
+                      type='float', default=0.04)
     EC.add_option("-c", "--ConvCrit", dest="convCrit",\
                       help="Convergence criteria, max force on atom [eV/A] [%default]",\
                       type='float', default=0.08)
