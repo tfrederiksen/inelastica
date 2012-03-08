@@ -170,6 +170,7 @@ class step:
             try:
                 self.XVgeom  = readxv(self.dir)
                 self.forces  = SIO.ReadForces(self.dir+"/RUN.out")
+                print len(self.forces[0])
                 if N.allclose(self.XVgeom.xyz,self.FDFgeom.xyz,1e-6):
                     done=True
             except:
@@ -177,7 +178,7 @@ class step:
             return done
 
     def run(self):
-        if not self.done:
+        if (not self.done) and (not self.converged):
             try:
                 os.remove(self.dir+"/RUN.out")
             except:
@@ -194,6 +195,9 @@ class step:
     def update(self,left,right):
         # calculate new geometry
         xyz, F = N.array(self.XVgeom.xyz), N.array(self.forces)
+        if len(F[0])!=4:
+            print F
+            print F.shape
         F = F[:,1:4]
         lxyz, rxyz = N.array(left.xyz), N.array(right.xyz)
 
