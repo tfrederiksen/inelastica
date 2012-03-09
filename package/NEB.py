@@ -59,7 +59,14 @@ def runNEB():
     checkConst(i,f)
 
     if restart:
-        savedData.E,savedData.F,savedData.Fmax,savedData.geom,savedData.v=pickle.load(open('NEB_%i/savedData.pickle'%0,'r'))
+        try:
+            savedData.E,savedData.F,savedData.Fmax,savedData.geom,savedData.v=pickle.load(open('NEB_%i/savedData.pickle'%0,'r'))
+        except:
+            savedData.E    = []
+            savedData.F    = []
+            savedData.geom = []
+            savedData.Fmax = []
+            savedData.v    = N.zeros((general.NNEB+2,len(i.XVgeom.xyz),3),N.float)
     else:
         savedData.E    = []
         savedData.F    = []
@@ -84,7 +91,7 @@ def runNEB():
             else: 
                 nextstep=True
             if not nextstep:
-                time.sleep(10)
+                time.sleep(30)
         
         savedData.E += [[SIO.GetTotalEnergy(ii.dir+'/RUN.out') for ii in steps]]
         savedData.geom += [[copy.copy(ii.XVgeom) for ii in steps]]
@@ -162,6 +169,7 @@ class step:
             self.forces  = SIO.ReadForces(self.dir+"/RUN.out")
             self.forces  = self.forces[-len(self.XVgeom.xyz):]
             self.Ftot    = self.forces
+            self.converged = True
             return True
         else:
             SIO.CheckTermination(self.dir+"/RUN.out")
