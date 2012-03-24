@@ -168,6 +168,7 @@ def GetVibModesMassScaled(OUTCAR):
 
 def ExtractPDOS(filename,outfile,atom_index=[]):
     "Read DOSCAR file and sum over group of atoms (python numbering)"
+    print 'VaspIO.ExtractPDOS: Reading',filename
     f = VIO_open(filename,'r')
     # Read number of atoms on first line
     s = f.readline()
@@ -191,20 +192,56 @@ def ExtractPDOS(filename,outfile,atom_index=[]):
         atom_index = range(atoms)
     # Loop over atom PDOS
     dat = N.zeros((pts,19),N.float)
-    for a in atom_index:
+    for j in range(atoms):
         for e in range(pts):
             s = f.readline()
             s = s.split()
             # determine spin deg. freedom
             if e==0:
-                if len(s)==19: spin=2
-                else: spin = 1
+                if len(s)==19:
+                    spin = 2
+                elif len(s)==10:
+                    spin = 1
+                elif len(s)==3:
+                    # VASP wrote 3-column data...
+                    extrablock = 1
+                else:
+                    extrablock = 0
             for i in range(len(s)):
                 s[i] = float(s[i])
-            dat[e,0] = s[0]-eF
-            dat[e,1:1+9*spin] += N.array(s[1:1+9*spin])
+            if (j-extrablock) in atom_index:
+                dat[e,0] = s[0]-eF
+                dat[e,1:1+9*spin] += N.array(s[1:1+9*spin])
+                if e==0:
+                    print '  adding %i'%(j-extrablock),
+            elif e==0:
+                print '  skipping %i'%(j-extrablock),
         # skip header line
         f.readline()
+    if extrablock==1:
+        # Need to read one more block
+        j += 1
+        for e in range(pts):
+            s = f.readline()
+            s = s.split()
+            # determine spin deg. freedom
+            if e==0:
+                if len(s)==19:
+                    spin = 2
+                elif len(s)==10:
+                    spin = 1
+            for i in range(len(s)):
+                s[i] = float(s[i])
+            if (j-extrablock) in atom_index:
+                dat[e,0] = s[0]-eF
+                dat[e,1:1+9*spin] += N.array(s[1:1+9*spin])
+                if e==0:
+                    print '  adding %i'%(j-extrablock),
+            elif e==0:
+                print '  skipping %i'%(j-extrablock),
+        # skip header line
+        f.readline()
+        print
     # Make spin=2 negative
     if spin==2:
         sgn = N.ones(1+9*spin)
@@ -213,6 +250,7 @@ def ExtractPDOS(filename,outfile,atom_index=[]):
         sgn2 = N.array(pts*[sgn])
         dat = dat*sgn2
     # Write output
+    print 'VaspIO.ExtractPDOS: Writing',outfile
     fout = open(outfile,'w')
     for i in range(pts):
         s = ''
