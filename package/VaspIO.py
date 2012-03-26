@@ -192,6 +192,7 @@ def ExtractPDOS(filename,outfile,atom_index=[]):
         atom_index = range(atoms)
     # Loop over atom PDOS
     dat = N.zeros((pts,19),N.float)
+    extrablock = 0
     for j in range(atoms):
         for e in range(pts):
             s = f.readline()
@@ -202,11 +203,9 @@ def ExtractPDOS(filename,outfile,atom_index=[]):
                     spin = 2
                 elif len(s)==10:
                     spin = 1
-                elif len(s)==3:
+                else:
                     # VASP wrote 3-column data...
                     extrablock = 1
-                else:
-                    extrablock = 0
             for i in range(len(s)):
                 s[i] = float(s[i])
             if (j-extrablock) in atom_index:
