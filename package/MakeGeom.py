@@ -611,7 +611,7 @@ class Geom:
 #--------------------------------------------------------------------------------
 # Interface with VASP
 
-    def writePOSCAR(self,fn):
+    def writePOSCAR(self,fn,constrained=[]):
         "Write POSCAR coordinate file for VASP"
         geom = copy.deepcopy(self)
         tmp = []
@@ -629,7 +629,7 @@ class Geom:
         members = []
         for i in range(len(anrnum)):
             if anrnum[i]!=0: members += [anrnum[i]]
-        VIO.WritePOSCAR(fn,geom.pbc,members,xyz)
+        VIO.WritePOSCAR(fn,geom.pbc,members,xyz,constrained=constrained)
           
 
 #--------------------------------------------------------------------------------
