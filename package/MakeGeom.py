@@ -95,7 +95,7 @@ class Geom:
         self.xyz, self.anr, self.snr = [], [], []
         
         if len(fn)>1:
-            if fn.endswith('.XV') or fn.endswith('.XV.gz'):
+            if fn.endswith('.XV') or fn.endswith('.XV.gz') or fn.endswith('.XV2') or fn.endswith('.XV2.gz'):
                 self.readXV(fn)
             elif fn.endswith('.xyz') or fn.endswith('.xyz.gz'):
                 self.readXYZ(fn)
@@ -121,6 +121,7 @@ class Geom:
     
     def addAtom(self,xyz,snr,anr):
         "Add atom"
+        self.xyz = list(self.xyz)
         self.xyz.append(xyz[:])
         self.snr.append(snr)
         self.anr.append(anr)
@@ -594,8 +595,9 @@ class Geom:
     def readCONTCAR(self,fn):
         "Read geometry from VASP CONTCAR file"
         label,scalefactor,vectors,speciesnumbers,xyz = VIO.ReadCONTCAR(fn)
-        self.pbc = list(vectors)
-        self.xyz = list(xyz[:,:3])
+        self.pbc = N.array(vectors)
+        self.xyz = N.array(xyz[:,:3])
+        self.constrained = N.array(xyz[:,3:])
         self.natoms = len(xyz)
         self.snr = []
         self.anr = []
@@ -629,8 +631,7 @@ class Geom:
         members = []
         for i in range(len(anrnum)):
             if anrnum[i]!=0: members += [anrnum[i]]
-        VIO.WritePOSCAR(fn,geom.pbc,members,xyz,constrained=constrained)
-          
+        VIO.WritePOSCAR(fn,geom.pbc,members,xyz,constrained=constrained)          
 
 #--------------------------------------------------------------------------------
 # Conversion functions:
@@ -657,7 +658,7 @@ def convert(infile,outfile,rep=[1,1,1],MoveInsideUnitCell=False,RoundOff=False):
         geom.writeMKL(outfile,rep)
     elif outfile[-6:] == 'POSCAR':
         print 'Repetition not implemented with the POSCAR conversion'
-        geom.writePOSCAR(outfile)
+        geom.writePOSCAR(outfile,constrained=geom.constrained)
     else:
         print 'Error - did not recognize output format in %s' %outfile
 

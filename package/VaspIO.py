@@ -103,6 +103,17 @@ def GetEnergies(OUTCAR):
     file.close()
     return freeE, Etot, EtotSigma0
 
+def GetMagnetization(OSZICAR):
+    file = VIO_open(OSZICAR,'r')
+    print 'VaspIO.GetMagnetization: Reading', OSZICAR
+    #
+    mag = 1e100
+    for line in file:
+        if 'mag=' in line:
+            l = line.split()
+            mag = float(l[-1])      # Pick last appearance
+    return mag
+
 def GetSpecies(OUTCAR):
     file = VIO_open(OUTCAR,'r')
     print 'VaspIO.GetSpecies: Reading', OUTCAR
