@@ -105,7 +105,10 @@ class Geom:
                 self.readSTRUCT_OUT(fn)
             elif 'CONTCAR' in fn:
                 self.readCONTCAR(fn)
-
+        try:
+            self.constrained
+        except:
+            self.constrained = 0*self.xyz
 
     # BASIC FUNCTIONS
         
