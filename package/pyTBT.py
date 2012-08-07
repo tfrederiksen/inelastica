@@ -274,7 +274,7 @@ class surfaceGF:
 
         eeshifted = ee-self.voltage # Shift of self energies due to voltage
         
-        if ispin>self.HS.nspin:
+        if ispin>=self.HS.nspin:
             ispin=0
             print "Warning: Non-spinpolarized electrode calculation used for both spin up and down"
 
