@@ -119,9 +119,10 @@ def GetSpecies(OUTCAR):
     print 'VaspIO.GetSpecies: Reading', OUTCAR
     atoms = []
     for line in file:
-        if 'VRHFIN' in line:
+        if 'TITEL' in line:
             l = line.split()
-            atoms += [l[1][1:-1]]
+            print l
+            atoms += [l[3]]
     return atoms
 
 def GetVibModesNoScaling(OUTCAR):
