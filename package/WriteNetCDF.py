@@ -1,3 +1,5 @@
+print "SVN $Id$"
+
 import numpy as N
 import Scientific.IO.NetCDF as NC
 
