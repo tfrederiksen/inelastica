@@ -100,8 +100,24 @@ def GetEnergies(OUTCAR):
             l = line.split()
             Etot = float(l[3])       # Pick last appearance
             EtotSigma0 = float(l[6]) # Pick last appearance
+        if 'energy without entropy =' in line:
+            l = line.split()
+            Etot = float(l[4])       # Pick last appearance
+            EtotSigma0 = float(l[7]) # Pick last appearance
     file.close()
     return freeE, Etot, EtotSigma0
+
+def GetEnergiesFromOszi(OSZICAR):
+    file = VIO_open(OSZICAR,'r')
+    print 'VaspIO.GetEnergiesFromOszi: Reading', OSZICAR
+    #
+    f,e0 = 1e100,1e100
+    for line in file:
+        if 'F=' in line:
+            l = line.split()
+            f = float(l[2]) # read Free energy
+            e0 = float(l[4]) # read energy for sigma->0
+    return f,e0
 
 def GetMagnetization(OSZICAR):
     file = VIO_open(OSZICAR,'r')
