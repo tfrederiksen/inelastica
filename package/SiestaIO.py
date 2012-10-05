@@ -393,7 +393,7 @@ def ReadFDFFile(infile):
     """ Reads an FDF file and gives the output values: pbc, xyz, snr, anr, natoms
         infile = FDF inputfile"""
     pbc = Getpbc(infile)
-    xyz = Getxyz(infile)
+    xyz = Getxyz(infile,pbc)
     snr = Getsnr(infile)
     anr = Getanr(infile)
     natoms = Getnatoms(infile)
@@ -567,13 +567,32 @@ def Getnatoms(infile):
       return int(natoms[0])
 
    
-def Getxyz(infile):
+def Getxyz(infile,pbc=[]):
     """ Gives a list of the xyz posistions in a FDF file
         infile = FDF input file"""
+    latt_const = GetFDFline(infile,'LatticeConstant')
+    AC_format=GetFDFline(infile,'AtomicCoordinatesFormat')
+    if latt_const[1]=='Bohr' :
+	latt_const=float(latt_const[0])*PC.Bohr2Ang
+    else :
+     	latt_const=float(latt_const[0])
     data = GetFDFblock(infile, 'AtomicCoordinatesAndAtomicSpecies')
     xyz = []
-    for i in range(len(data)):
-        xyz.append([string.atof(data[i][j]) for j in range(3)])
+    if AC_format[0]=='Ang' or AC_format[0]=='NotScaledCartesianAng' :
+    	for i in range(len(data)):
+    	    xyz.append([string.atof(data[i][j]) for j in range(3)])
+    elif AC_format[0]=='Bohr' or AC_format[0]=='NotScaledCartesianBohr' :
+    	for i in range(len(data)):
+    	    xyz.append([string.atof(data[i][j])*PC.Bohr2Ang for j in range(3)])
+    elif AC_format[0]=='ScaledCartesian':    
+    	for i in range(len(data)):
+    	    xyz.append([string.atof(data[i][j])*latt_const for j in range(3)])
+    elif AC_format[0]=='Fractional' or AC_format[0]=='ScaledByLatticeVectors' :
+	for i in range(len(data)):
+    	    xyz.append([string.atof(data[i][0])*pbc[0][j]+string.atof(data[i][1])*pbc[1][j]+string.atof(data[i][2])*pbc[2][j] for j in range(3)])
+    else :
+	print("Give correct AtomicCoordinates Format")
+	kuk
     return xyz
 
 
@@ -582,8 +601,13 @@ def Getpbc(infile):
         infile = FDF input file"""
     data = GetFDFblock(infile,'LatticeVectors')
     pbc = []
+    latt_const = GetFDFline(infile,'LatticeConstant')
+    if latt_const[1]=='Bohr' :
+	latt_const=float(latt_const[0])*PC.Bohr2Ang
+    else :
+     	latt_const=float(latt_const[0])
     for i in range(len(data)):
-        pbc.append([string.atof(data[i][j]) for j in range(3)])
+        pbc.append([string.atof(data[i][j])*latt_const for j in range(3)])
     return pbc
 
 
