@@ -35,7 +35,11 @@ def ReadCONTCAR(filename):
     for ii in range(3):
         tmp = file.readline().split()
         vectors[ii] = N.array(tmp,N.float)
-    speciesnumbers = N.array(file.readline().split(),N.int)
+    try:
+        speciesnumbers = N.array(file.readline().split(),N.int)
+    except:
+        print 'Found chemical species labels in CONTCAR'
+        speciesnumbers = N.array(file.readline().split(),N.int)
     natoms = N.sum(speciesnumbers)
     # Read 'Selective Dynamics' and 'Direct' lines
     file.readline()
@@ -93,7 +97,7 @@ def GetEnergies(OUTCAR):
     #
     freeE, Etot, EtotSigma0 = 1e100, 1e100, 1e100
     for line in file:
-        if 'TOTEN' in line:
+        if 'free energy    TOTEN' in line:
             l = line.split()
             freeE = float(l[4])      # Pick last appearance
         if 'energy  without entropy=' in line:
