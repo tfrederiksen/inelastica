@@ -11,9 +11,9 @@ SystemLabel         NaBCC
 SpinPolarized       F
 
 %block kgrid_Monkhorst_Pack
-  1 0 0   0
-  0 1 0   0
-  0 0 1   0
+  1 0 0   0.0
+  0 1 0   0.0
+  0 0 1   0.0
 %endblock kgrid_Monkhorst_Pack
 
 Reparametrize.Pseudos  T       # Options for more accuracy

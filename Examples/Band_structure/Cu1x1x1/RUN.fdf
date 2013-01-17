@@ -8,9 +8,9 @@ SystemLabel         CuFCC
 SpinPolarized       F
 
 %block kgrid_Monkhorst_Pack
-  11 0 0   0
-  0 11 0   0
-  0 0 11   0
+  11 0 0   0.0
+  0 11 0   0.0
+  0 0 11   0.0
 %endblock kgrid_Monkhorst_Pack
 
 %block ChemicalSpeciesLabel

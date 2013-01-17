@@ -11,9 +11,9 @@ SystemLabel         NaCl
 SpinPolarized       F
 
 %block kgrid_Monkhorst_Pack
-  1 0 0   0
-  0 1 0   0
-  0 0 1   0
+  1 0 0   0.0
+  0 1 0   0.0
+  0 0 1   0.0
 %endblock kgrid_Monkhorst_Pack
 
 %block ChemicalSpeciesLabel
