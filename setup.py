@@ -89,6 +89,8 @@ Provides:
       scripts  = ['scripts/Inelastica',
                   'scripts/EigenChannels',
                   'scripts/pyTBT',
+                  'scripts/EigenChannels2',
+                  'scripts/pyTBT2',
                   'scripts/geom2geom',
                   'scripts/geom2zmat',
                   'scripts/SDOS',
