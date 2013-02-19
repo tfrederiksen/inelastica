@@ -15,6 +15,8 @@ import numpy as N
 import numpy.linalg as LA
 import Inelastica.SiestaIO as SIO
 from optparse import OptionParser
+import xml.dom.minidom as xml
+import gzip
 
 #####################################################
 # Mathematical help functions
@@ -54,18 +56,13 @@ For help use --help!
                       help="Spin type (1-up, 2-down) [%default]", 
                       type='int', default=1)
 
-    # Device region
-    parser.add_option("-f", "--devSt", dest="devSt",
-                      help="Device start [first device atom]", 
-                      type='int', default=0)
-    parser.add_option("-l", "--devEnd", dest="devEnd",
-                      help="Device end [last device atom]", 
-                      type='int', default=0)
-
     # Left / Right?
     parser.add_option("-r", "--Right", dest='LR', default=False,
                       action='store_true',
                       help="Left (false) or Right (true) SDOS [%default]")
+    parser.add_option("-b", "--both", dest='both', default=False,
+                      action='store_true',
+                      help="Left+right SDOS [%default]")
 
     (general, args) = parser.parse_args()
     print description
@@ -81,15 +78,14 @@ def main():
     elecL, elecR, myGF, pyTBTdevSt, pyTBTdevEnd, general.Elist, \
            general.eta, general.outFile = pyTBT.main(pyTBT=False, fn='RUN.fdf')
 
-    # Make default values for device region shifted
-    if general.devSt == 0:
-        general.devSt = pyTBTdevSt
-    if general.devEnd == 0:
-        general.devEnd = pyTBTdevEnd
+    general.devSt = pyTBTdevSt
+    general.devEnd = pyTBTdevEnd
     
     print "##############################################################"
     print "# Options:"
-    if general.LR:
+    if general.both:
+        print "Calculation of DOS from BOTH electrodes"
+    elif general.LR:
         print "Calculation of DOS from RIGHT electrode"
     else:
         print "Calculation of DOS from LEFT electrode"
@@ -125,18 +121,7 @@ def main():
     devOrbEnd = myGF.HS.lasto[general.devEnd]-1
     pyTBTdevOrbEnd = devOrbEnd-myGF.HS.lasto[pyTBTdevSt-1]
     
-    DOS=N.zeros((len(general.Elist),max(basis.L)+1),N.float)
-
-    if general.iSpin == 1:
-        outfn = general.outFile+'.SDOS'
-    else:
-        outfn = general.outFile+'.down.SDOS'
-        
-    outfile = open(outfn,'w',0)
-    print "Output written to :",outfn 
-    print 
-    print "Energy (without eta) : Total DOS"
-    outfile.write('# Total SDOS\n')
+    DOS=N.zeros((len(general.Elist),myGF.nuo),N.float)
 
     kpt=N.zeros((2),N.float)
     for iee, ee in enumerate(general.Elist):
@@ -150,38 +135,54 @@ def main():
                 GamL, GamR, Gr = myGF.GamL, myGF.GamR, myGF.Gr
                 nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
 
-                if general.LR:
+                if general.LR or general.both:
                     # Right : A2
                     A = mm(Gr[:,nuo-nuoR:nuo],GamR,dag(Gr)[nuo-nuoR:nuo,:])
-                else:
+                    
+                if general.both:
                     # Left : A1
+                    A += mm(Gr[:,0:nuoL],GamL,dag(Gr)[0:nuoL,:])
+                elif not general.LR:
                     A = mm(Gr[:,0:nuoL],GamL,dag(Gr)[0:nuoL,:])
-                
                 Aav += mm(myGF.S,A)
 
         # DOS
         Aav = Aav.real/(general.Nkx*general.Nky*2*N.pi)
-        # Decompose into L-shells
-        for ii in range(pyTBTdevOrbSt,pyTBTdevOrbEnd+1):
-            L = basis.L[ii+myGF.HS.lasto[pyTBTdevSt-1]]
-            DOS[iee,L] += Aav[ii,ii]
+        DOS[iee,:] += N.diag(Aav)
 
-        print DOS[iee,:]
         print ee," ",N.sum(DOS[iee,:])
-        outfile.write('%f %f\n'%(ee,N.sum(DOS[iee,:])))
 
-    # Output results
-    for iL in range(max(basis.L)+1):
-        if N.sum(DOS[:,iL])>1e-5:
-            outfile.write('\n# SDOS L=%i\n'%iL)
-            for iee,ee in enumerate(general.Elist):
-                outfile.write('%f %f\n'%(ee,DOS[iee,iL]))
+    doc = xml.Document()
+    pdos = doc.createElement('pdos')
+    doc.appendChild(pdos)
+    xmladd(doc,pdos,'nspin','%i'%general.iSpin)
+    xmladd(doc,pdos,'norbitals','%i'%(nuo))
+    xmladd(doc,pdos,'energy_values',myprint(general.Elist))
+    for ii in range(nuo):
+        orb = doc.createElement('orbital')
+        pdos.appendChild(orb)
+        io = myGF.nuoL+ii
+        orb.setAttribute('index','%i'%io)
+        orb.setAttribute('atom_index','%i'%basis.atomnum[io])
+        orb.setAttribute('species',basis.label[io])
+        orb.setAttribute('position','%f %f %f'%(basis.xyz[io,0],basis.xyz[io,1],basis.xyz[io,2]))
+        orb.setAttribute('n','%i'%basis.N[io])
+        orb.setAttribute('l','%i'%basis.L[io])
+        orb.setAttribute('m','%i'%basis.M[io])
+        xmladd(doc,pdos,'data',myprint(DOS[:,ii]))
+    doc.writexml(gzip.GzipFile('Device.PDOS.gz','w'))
 
-    outfile.write('\n')
-    outfile.close()
-            
-                
-            
+def myprint(x): # Do numpy list to string
+    str=''
+    for ii in range(len(x)):
+        str+='%s\n'%x[ii]
+    return str
+def xmladd(doc,parent,name,values):
+    # Who came up with xml ... accountant moroons?
+    elem = doc.createElement(name)
+    parent.appendChild(elem)
+    txt=doc.createTextNode(values)
+    elem.appendChild(txt)
 
     
 #####################################################

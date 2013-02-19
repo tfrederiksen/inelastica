@@ -1280,10 +1280,11 @@ def BuildBasis(XVfile,FirstAtom,LastAtom,lasto):
     basis.ii = N.zeros((nn,),N.int)
     basis.L = N.zeros((nn,),N.int)
     basis.M = N.zeros((nn,),N.int)
+    basis.N = N.zeros((nn,),N.int)
     basis.atomnum = N.zeros((nn,),N.int)
     basis.xyz = N.zeros((nn,3),N.float)
     basis.delta = N.zeros((nn,),N.float)
-    basis.orb = []
+    basis.orb, basis.label = [], []
     basis.coff = N.zeros((nn,),N.float)
     
     # Describe each basis orbital
@@ -1297,10 +1298,12 @@ def BuildBasis(XVfile,FirstAtom,LastAtom,lasto):
                 basis.atomnum[iorb]= an
                 basis.L[iorb] = ion.L[jj]
                 basis.M[iorb] = kk
+                basis.N[iorb] = ion.N[jj]
                 basis.xyz[iorb,:] = xyz[ii]
                 basis.delta[iorb] = ion.delta[jj]
                 basis.orb.append(ion.orb[jj,:])
                 basis.coff[iorb] = (len(ion.orb[jj,:])-1)*ion.delta[jj]
+                basis.label.append(ion.label)
                 iorb = iorb+1
 
     print 'SiestaIO.BuildBasis: Generated basis'
