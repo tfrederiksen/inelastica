@@ -1062,18 +1062,24 @@ def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llis
         # Set energy reference to SIESTAs internal
         eF = 0.0
     nspin,norb,ev,pdos,usedOrbitals,usedAtoms = ReadPDOSFile(filename,index,atom_index,species,nlist,llist,mlist)
-    if nspin == 1: # No spin
-        print 'SIO.ExtractPDOS: Writing', outfile
-        f = open(outfile,'w')
-        for i in range(len(ev)):
-	    f.write('%.6f %.9f\n'%(ev[i]-eF,pdos[i]))
-        f.close()
-    elif nspin == 2: # Spin polarized
-        print 'SIO.ExtractPDOS: Writing', outfile
-        f = open(outfile,'w')
-        for i in range(len(ev)):
-	    f.write('%.6f %.9f %.9f\n'%(ev[i]-eF,pdos[2*i],-pdos[2*i+1]))
-        f.close()
+    if outfile!=None: # Write to file or return lists
+        if nspin == 1: # No spin
+            print 'SIO.ExtractPDOS: Writing', outfile
+            f = open(outfile,'w')
+            for i in range(len(ev)):
+                f.write('%.6f %.9f\n'%(ev[i]-eF,pdos[i]))
+            f.close()
+        elif nspin == 2: # Spin polarized
+            print 'SIO.ExtractPDOS: Writing', outfile
+            f = open(outfile,'w')
+            for i in range(len(ev)):
+                f.write('%.6f %.9f %.9f\n'%(ev[i]-eF,pdos[2*i],-pdos[2*i+1]))
+            f.close()
+    else: 
+        if nspin == 2:
+            return nspin, ev-eF, [pdos[::2], pdos[1::2]]
+        else:
+            return nspin, ev-eF, [pdos]
 
 # Functions specific to syslabel.PROJBANDS files
 # (k-resolved PDOS is available from a modified SIESTA by D. Sanchez-Portal)
