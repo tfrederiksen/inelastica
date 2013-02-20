@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/python
 """
 Calculate dos from the surface Green's function from a electrode calculation
 
@@ -144,7 +144,7 @@ def main():
                     A += mm(Gr[:,0:nuoL],GamL,dag(Gr)[0:nuoL,:])
                 elif not general.LR:
                     A = mm(Gr[:,0:nuoL],GamL,dag(Gr)[0:nuoL,:])
-                Aav += mm(myGF.S,A)
+                Aav += mm(A,myGF.S)
 
         # DOS
         Aav = Aav.real/(general.Nkx*general.Nky*2*N.pi)
@@ -163,13 +163,13 @@ def main():
         pdos.appendChild(orb)
         io = myGF.nuoL+ii
         orb.setAttribute('index','%i'%io)
-        orb.setAttribute('atom_index','%i'%basis.atomnum[io])
+        orb.setAttribute('atom_index','%i'%(basis.ii[io]+1))
         orb.setAttribute('species',basis.label[io])
         orb.setAttribute('position','%f %f %f'%(basis.xyz[io,0],basis.xyz[io,1],basis.xyz[io,2]))
         orb.setAttribute('n','%i'%basis.N[io])
         orb.setAttribute('l','%i'%basis.L[io])
         orb.setAttribute('m','%i'%basis.M[io])
-        xmladd(doc,pdos,'data',myprint(DOS[:,ii]))
+        xmladd(doc,orb,'data',myprint(DOS[:,ii]))
     doc.writexml(gzip.GzipFile('Device.PDOS.gz','w'))
 
 def myprint(x): # Do numpy list to string
