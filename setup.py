@@ -78,11 +78,11 @@ Provides:
 1:	File format conversions for geometry, try: geom2geom --help
 2:	Phonon calculations (including e-ph coupling)
 3:	Transmission calculations, try: pyTBT --help
-4:	Eigenchannels analyzis, try: Eigenchannels --help
+4:	Eigenchannels analysis, try: EigenChannels --help
 5:	IETS calculations, try: Inelastica --help
 6:	Scripts to set up the above type of calculations.""",
       author='Magnus Paulsson and Thomas Frederiksen', 
-      author_email='magnus.paulsson@hik.se',  
+      author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',  
       url='https://sourceforge.net/apps/mediawiki/inelastica', 
       license='GPL. Please cite: Frederiksen et al., PRB 75, 205413 (2007)', 
       package_dir={'Inelastica': 'package'},
