@@ -165,8 +165,8 @@ def main():
     for ii in range(nuo):
         orb = doc.createElement('orbital')
         pdos.appendChild(orb)
-        io = myGF.nuoL+ii
-        orb.setAttribute('index','%i'%io)
+        io = devOrbSt+ii
+        orb.setAttribute('index','%i'%(io+1))
         orb.setAttribute('atom_index','%i'%(basis.ii[io]+1))
         orb.setAttribute('species',basis.label[io])
         orb.setAttribute('position','%f %f %f'%(basis.xyz[io,0],basis.xyz[io,1],basis.xyz[io,2]))
