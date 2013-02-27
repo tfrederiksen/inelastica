@@ -85,9 +85,9 @@ def ReadXVFile(filename,InUnits='Bohr',OutUnits='Ang',ReadVelocity=False):
     if len(speciesnumber)!=numberOfAtoms:
         print 'SiestaIO.ReadXVFile: Inconstency in %s detected!' %filename
     if ReadVelocity:
-        return vectors,speciesnumber,atomnumber,xyz, V
+        return N.array(vectors),N.array(speciesnumber),N.array(atomnumber),N.array(xyz), N.array(V)
     else:
-        return vectors,speciesnumber,atomnumber,xyz
+        return N.array(vectors),N.array(speciesnumber),N.array(atomnumber),N.array(xyz)
 
 def WriteXVFile(filename,vectors,speciesnumber,atomnumber,xyz,\
                 InUnits='Ang',OutUnits='Bohr',Velocity=[]):
@@ -368,7 +368,7 @@ def ReadXYZFile(filename):
     file.close()
     if len(xyz)!=numberOfAtoms:
         print 'SiestaIO.ReadXYZFile: Inconstency in %s detected!' %filename
-    return label,atomnumber,xyz
+    return label,N.array(atomnumber),N.array(xyz)
 
 
 def WriteXYZFile(filename,atomnumber,xyz):
@@ -1049,7 +1049,7 @@ def ReadPDOSFile(filename,index=[],atom_index=[],species=[],nlist=[],llist=[],ml
     pdos,usedOrbitals,usedAtoms = GetPDOSfromOrbitals(dom,index,atom_index,species,nlist,llist,mlist)
     return nspin,norb,ev,pdos,usedOrbitals,usedAtoms
 
-def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llist=[],mlist=[],FermiRef=True):
+def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llist=[],mlist=[],FermiRef=True,Normalize=False):
     head,tail =  os.path.split(filename)
     if FermiRef:
         # Set energy reference to the Fermi energy
@@ -1062,6 +1062,9 @@ def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llis
         # Set energy reference to SIESTAs internal
         eF = 0.0
     nspin,norb,ev,pdos,usedOrbitals,usedAtoms = ReadPDOSFile(filename,index,atom_index,species,nlist,llist,mlist)
+    if Normalize:
+        pdos = pdos/len(usedAtoms)
+        print 'SIO.ExtractPDOS: Normalizing PDOS to states/atom/eV'
     if outfile!=None: # Write to file or return lists
         if nspin == 1: # No spin
             print 'SIO.ExtractPDOS: Writing', outfile
@@ -1403,8 +1406,8 @@ class HS:
     
     External variables:
     N            : Size of matrices
-    H            : Hamiltonian
-    S            : Overlap
+    H[ispin,i,j] : Hamiltonian
+    S[i,j]       : Overlap
 
     Internal variables from TS (index described as fortran def):
     (NOTE all python lists start with index 0!)
@@ -1614,7 +1617,7 @@ class HS:
             print "ERROR: Trying to set non-zero k-point for Gamma point calculation"
             kuk
         if N.max(abs(self.kpoint-kpoint))>1e-10:
-            #print "SiestaIO.HS.setkpoint: Setting k-point to",kpoint
+            print "SiestaIO.HS.setkpoint: Setting k-point to",kpoint
             self.kpoint=kpoint.copy()
             self.S=self.setkpointhelper(self.Ssparse,kpoint,UseF90helpers)
             if not self.onlyS:    
