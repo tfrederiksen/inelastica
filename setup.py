@@ -80,7 +80,8 @@ Provides:
 3:	Transmission calculations, try: pyTBT --help
 4:	Eigenchannels analysis, try: EigenChannels --help
 5:	IETS calculations, try: Inelastica --help
-6:	Scripts to set up the above type of calculations.""",
+6:      grid2grid, try: grid2grid --help
+7:	Scripts to set up the above type of calculations.""",
       author='Magnus Paulsson and Thomas Frederiksen', 
       author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',  
       url='https://sourceforge.net/apps/mediawiki/inelastica', 
@@ -100,7 +101,8 @@ Provides:
                   'scripts/Vasp2Siesta',
                   'scripts/bands2xmgr',
                   'scripts/Phonons',
-                  'scripts/NEB'
+                  'scripts/NEB',
+                  'scripts/grid2grid'
                   ],
       packages=['Inelastica'],
       ext_modules=[F90ext],
