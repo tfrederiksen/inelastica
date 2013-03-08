@@ -122,7 +122,7 @@ class Geom:
         self.anr=self.anr[0:rmnr]+self.anr[rmnr+1:self.natoms]
         self.natoms=self.natoms-1
     
-    def addAtom(self,xyz,snr,anr):
+    def addAtom(self,xyz,snr,anr,constrained=[0,0,0]):
         "Add atom"
         self.xyz = list(self.xyz)
         self.xyz.append(xyz[:])
@@ -403,8 +403,7 @@ class Geom:
         """
         # Determine interlayer separation
         LayersPerBlock = BlockSize/AtomsPerLayer
-        LayerSep = (self.xyz[(LayersPerBlock-1)*AtomsPerLayer+1][2]-\
-                        self.xyz[0][2])/(LayersPerBlock-1)
+        LayerSep = self.xyz[AtomsPerLayer][2]-self.xyz[0][2]
         
         print 'MakeGeom.PasteElectrodeLayers:'
         print '   ... Initial number of atoms      = %i' %len(self.xyz)
