@@ -427,21 +427,27 @@ class surfaceGF:
             iteration+=1
             oldeps, oldepss = eps.copy(), epss.copy()
             oldalpha, oldbeta = alpha.copy(), beta.copy()
-            tmp=LA.inv(ee*S - oldeps)
-            alpha, beta = mm(oldalpha,tmp,oldalpha), mm(oldbeta,tmp,oldbeta)
-            eps = oldeps + mm(oldalpha,tmp,oldbeta)+mm(oldbeta,tmp,oldalpha)
+            # tmp=LA.inv(ee*S - oldeps)
+            tmpalpha = LA.linsolve(ee*S-oldeps,oldalpha)
+            tmpbeta = LA.linsolve(ee*S-oldeps,oldbeta)
+#            alpha, beta = mm(oldalpha,tmp,oldalpha), mm(oldbeta,tmp,oldbeta)
+#            eps = oldeps + mm(oldalpha,tmp,oldbeta)+mm(oldbeta,tmp,oldalpha)
+            alpha, beta = mm(oldalpha,tmpalpha), mm(oldbeta,tmpbeta)
+            eps = oldeps + mm(oldalpha,tmpbeta)+mm(oldbeta,tmpalpha)
             if left:
-                epss = oldepss + mm(oldalpha,tmp,oldbeta)
+                epss = oldepss + mm(oldalpha,tmpbeta)
             else:
-                epss = oldepss + mm(oldbeta,tmp,oldalpha)
+                epss = oldepss + mm(oldbeta,tmpalpha)
             LopezConvTest=N.max(abs(alpha)+abs(beta))
             if LopezConvTest<1.0e-40:
-                gs=LA.inv(ee*S-epss)
                 if left:
-                    test=ee*S-H-mm(ee*dagger(S01)-dagger(H01),gs,ee*S01-H01)
+                    gs=LA.linsolve(ee*S-epss,ee*S01-H01)
+                    test=ee*S-H-mm(ee*dagger(S01)-dagger(H01),gs)
                 else:
-                    test=ee*S-H-mm(ee*S01-H01,gs,ee*dagger(S01)-dagger(H01))
+                    gs=LA.linsolve(ee*S-epss,ee*dagger(S01)-dagger(H01))
+                    test=ee*S-H-mm(ee*S01-H01,gs)
                 myConvTest=N.max(abs(mm(test,gs)-N.identity((self.HS.nuo),N.complex)))
+                print myConvTest
                 if myConvTest<1.0e-5: # THF: tolerance slightly raised from originally 2.0e-7
                     converged=True
                     if myConvTest>1.0e-8 and left:

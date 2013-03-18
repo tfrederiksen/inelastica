@@ -31,7 +31,8 @@ def Analyze(FCwildcard,
             Isotopes=[],
             kpoint=[0,0,0],
             PhBandStruct="None",
-            PhBandRadie=0.0):
+            PhBandRadie=0.0,
+            AuxNCUseSinglePrec=False):
     """
     Determine vibrations and electron-phonon couplings from SIESTA calculations
     Needs two types of SIESTA calculations :
@@ -179,11 +180,11 @@ def Analyze(FCwildcard,
         # Heph couplings utilizing netcdf-file
         if not os.path.isfile(AuxNCfile):
             GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PerBoundCorrFirst,PerBoundCorrLast,
-                              AuxNCfile,displacement,kpoint)
+                              AuxNCfile,displacement,kpoint,AuxNCUseSinglePrec)
         else:
             print 'Phonons.Analyze: Reading from AuxNCfile =', AuxNCfile
         H0,S0,Heph = CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
-                                    hw,U,NCfile,AuxNCfile,kpoint)
+                                    hw,U,NCfile,AuxNCfile,kpoint,AuxNCUseSinglePrec)
     elif CalcCoupl:
         # Old way to calculate Heph (reading everything into the memory)
         print '\nPhonons.Analyze: Reading (H0,S0,dH) from .TSHS and .onlyS files:'
@@ -383,10 +384,10 @@ def GetOnlyS(onlySdir,nao,displacement,kpoint):
     if len(onlySfiles)<1:
         sys.exit('Phonons.GetOnlyS: No .onlyS file found!')
     # nao is number of orbitals in the original (not-doubled) structure
-    S0 = N.zeros((nao,nao),N.float)
-    dxm,dxp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float)
-    dym,dyp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float)
-    dzm,dzp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float) 
+    # S0 = N.zeros((nao,nao),N.float)
+    # dxm,dxp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float)
+    # dym,dyp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float)
+    # dzm,dzp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float) 
     if len(onlySfiles)!=6:
         sys.exit('Phonons.GetOnlyS: Wrong number of onlyS files found!')
     else:
@@ -395,6 +396,7 @@ def GetOnlyS(onlySdir,nao,displacement,kpoint):
             thisHS = SIO.HS(file)
             thisHS.setkpoint(kpoint)
             S = thisHS.S
+            del thisHS
             orbitals = len(S)/2
             if orbitals!=nao:
                 print 'nao=%i,  orbitals=%i'%(nao,orbitals)
@@ -756,7 +758,20 @@ def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
 
 
 def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,
-                      AuxNCfile,displacement,kpoint):
+                      AuxNCfile,displacement,kpoint,SinglePrec):
+    if SinglePrec:
+        precision = 'f'
+        SIO.HS.setkpoint2=SIO.HS.setkpoint
+        def mysetk(self,kpt):
+            self.setkpoint2(kpt)
+            try:
+                self.H = N.array(self.H,N.complex64)
+            except:
+                pass
+            self.S = N.array(self.S,N.complex64)
+        SIO.HS.setkpoint=mysetk
+    else:
+        precision = 'd'
     index = 0
     # Read TSHSfiles
     for i in range(len(tree)):
@@ -802,18 +817,18 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                     kpointtmp = NCfile2.createVariable('kpoint','d',('dim3',))
                     kpointtmp[:] = kpoint
                     # Write real part of matrices
-                    ReH = NCfile2.createVariable('H0','d',('NSpin','AtomicOrbitals','AtomicOrbitals',))
+                    ReH = NCfile2.createVariable('H0',precision,('NSpin','AtomicOrbitals','AtomicOrbitals',))
                     ReH[:] = TSHS0.H.real
-                    ReS = NCfile2.createVariable('S0','d',('AtomicOrbitals','AtomicOrbitals',))
+                    ReS = NCfile2.createVariable('S0',precision,('AtomicOrbitals','AtomicOrbitals',))
                     ReS[:] = TSHS0.S.real
-                    RedH = NCfile2.createVariable('dH','d',('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
+                    RedH = NCfile2.createVariable('dH',precision,('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
                     RedH[index,:] = tmpdH.real
                     # Write imag part of matrices
-                    ImH = NCfile2.createVariable('ImH0','d',('NSpin','AtomicOrbitals','AtomicOrbitals',))
+                    ImH = NCfile2.createVariable('ImH0',precision,('NSpin','AtomicOrbitals','AtomicOrbitals',))
                     ImH[:] = TSHS0.H.imag
-                    ImS = NCfile2.createVariable('ImS0','d',('AtomicOrbitals','AtomicOrbitals',))
+                    ImS = NCfile2.createVariable('ImS0',precision,('AtomicOrbitals','AtomicOrbitals',))
                     ImS[:] = TSHS0.S.imag
-                    ImdH = NCfile2.createVariable('ImdH','d',('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
+                    ImdH = NCfile2.createVariable('ImdH',precision,('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
                     ImdH[index,:] = tmpdH.imag
                     index += 1
     NCfile2.sync()
@@ -824,7 +839,11 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
     invS0 = LA.inv(TSHS0.S)
     for i in range(index):
         SIO.printDone(i,index,'Correcting dH')
-        dSdij = N.zeros((nao,nao),N.float)
+        if SinglePrec:
+            dSdij = N.zeros((nao,nao),N.float32)
+        else:
+            dSdij = N.zeros((nao,nao),N.float)
+
         first,last = orbitalIndices[FCfirst-1+i/3]
         if i%3==0:   dSdij[:,first:last+1] = dSx[:,first:last+1]  # x-move
         elif i%3==1: dSdij[:,first:last+1] = dSy[:,first:last+1]  # y-move
@@ -866,7 +885,11 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
 
 
 def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
-                   hw,U,NCfile,AuxNCfile,kpoint):
+                   hw,U,NCfile,AuxNCfile,kpoint,SinglePrec):
+    if SinglePrec:
+        precision = 'f'
+    else:
+        precision = 'd'
     # Read AuxNCfile and downfold to device
     first,last = orbitalIndices[DeviceFirst-1][0],orbitalIndices[DeviceLast-1][1]
     NCfile2 = nc.NetCDFFile(AuxNCfile,'r')
@@ -896,8 +919,8 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
     # CalcHeph
     print 'Phonons.CalcHephNETCDF: Calculating...\n',
     const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-    ReHeph  = NCfile.createVariable('He_ph','d',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
-    ImHeph  = NCfile.createVariable('ImHe_ph','d',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
+    ReHeph  = NCfile.createVariable('He_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
+    ImHeph  = NCfile.createVariable('ImHe_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
     for i in range(len(hw)):
         ReHeph[i,:] = 0.0*ReH0
         ImHeph[i,:] = 0.0*ImH0
