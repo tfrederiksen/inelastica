@@ -688,13 +688,13 @@ def CheckForIdenticalXVfiles(XVfileList):
     for i in range(len(XVfileList)-1):
         vectors1,speciesnumber1,atomnumber1,xyz1 = SIO.ReadXVFile(XVfileList[i])
         vectors2,speciesnumber2,atomnumber2,xyz2 = SIO.ReadXVFile(XVfileList[i+1])
-        if vectors1!=vectors2:
+        if not N.allclose(vectors1,vectors2,1e-7):
             count += 1
             print err, XVfileList[i],XVfileList[i+1], '(vectors) WARNING'
-        if speciesnumber1!=speciesnumber2:
+        if not N.allclose(speciesnumber1,speciesnumber2,1e-7):
             count += 1
             print err, XVfileList[i],XVfileList[i+1], '(speciesnumber) WARNING'
-        if atomnumber1!=atomnumber2:
+        if not N.allclose(atomnumber1,atomnumber2,1e-7):
             count += 1
             print err, XVfileList[i],XVfileList[i+1], '(atomnumber) WARNING'
         if not N.allclose(xyz1,xyz2,1e-7):
