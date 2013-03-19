@@ -227,9 +227,10 @@ def Analyze(FCwildcard,
                 print '\nPhonons.Analyze: Coupling matrix Heph[%i].real (in s-orbital subspace) Spin=%i'%(i,iSpin)
                 ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
                                        DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].real)
-                print '\nPhonons.Analyze: Coupling matrix Heph[%i].imag (in s-orbital subspace) Spin=%i'%(i,iSpin)
-                ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
-                                       DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].imag)
+                if N.dot(kpoint,kpoint)>1e-7:
+                    print '\nPhonons.Analyze: Coupling matrix Heph[%i].imag (in s-orbital subspace) Spin=%i'%(i,iSpin)
+                    ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
+                                           DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].imag)
     #NCfile.close()
 
     print '=========================================================================='
@@ -759,19 +760,23 @@ def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
 
 def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,
                       AuxNCfile,displacement,kpoint,SinglePrec):
-    if SinglePrec:
-        precision = 'f'
-        SIO.HS.setkpoint2=SIO.HS.setkpoint
-        def mysetk(self,kpt):
-            self.setkpoint2(kpt)
-            try:
-                self.H = N.array(self.H,N.complex64)
-            except:
-                pass
-            self.S = N.array(self.S,N.complex64)
-        SIO.HS.setkpoint=mysetk
-    else:
-        precision = 'd'
+    if SinglePrec: precision = 'f'
+    else: precision = 'd'
+    SIO.HS.setkpoint2=SIO.HS.setkpoint
+    def mysetk(self,kpt):
+        if N.dot(kpt,kpt)<1e-7: 
+            if SinglePrec: type = N.float32
+            else: type = N.float
+        else:
+            if SinglePrec: type = N.complex64
+            else: type = N.complex
+        self.setkpoint2(kpt)
+        try: self.H = N.array(self.H,type)
+        except: pass
+        self.S = N.array(self.S,type)
+    SIO.HS.setkpoint=mysetk
+    GammaPoint = N.dot(kpoint,kpoint)<1e-7
+
     index = 0
     # Read TSHSfiles
     for i in range(len(tree)):
@@ -799,7 +804,7 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                 tmpdH = (TSHSp.H-TSHSm.H)/(2*displacement)
                 try:
                     RedH[index,:] = tmpdH.real
-                    ImdH[index,:] = tmpdH.imag
+                    if not GammaPoint: ImdH[index,:] = tmpdH.imag
                     index += 1
                 except:
                     # First time a netcdf-file is created
@@ -818,18 +823,21 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                     kpointtmp[:] = kpoint
                     # Write real part of matrices
                     ReH = NCfile2.createVariable('H0',precision,('NSpin','AtomicOrbitals','AtomicOrbitals',))
+                    print precision
+                    print TSHS0.H.dtype
                     ReH[:] = TSHS0.H.real
                     ReS = NCfile2.createVariable('S0',precision,('AtomicOrbitals','AtomicOrbitals',))
                     ReS[:] = TSHS0.S.real
                     RedH = NCfile2.createVariable('dH',precision,('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
                     RedH[index,:] = tmpdH.real
                     # Write imag part of matrices
-                    ImH = NCfile2.createVariable('ImH0',precision,('NSpin','AtomicOrbitals','AtomicOrbitals',))
-                    ImH[:] = TSHS0.H.imag
-                    ImS = NCfile2.createVariable('ImS0',precision,('AtomicOrbitals','AtomicOrbitals',))
-                    ImS[:] = TSHS0.S.imag
-                    ImdH = NCfile2.createVariable('ImdH',precision,('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
-                    ImdH[index,:] = tmpdH.imag
+                    if not GammaPoint:
+                        ImH = NCfile2.createVariable('ImH0',precision,('NSpin','AtomicOrbitals','AtomicOrbitals',))
+                        ImH[:] = TSHS0.H.imag
+                        ImS = NCfile2.createVariable('ImS0',precision,('AtomicOrbitals','AtomicOrbitals',))
+                        ImS[:] = TSHS0.S.imag
+                        ImdH = NCfile2.createVariable('ImdH',precision,('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
+                        ImdH[index,:] = tmpdH.imag
                     index += 1
     NCfile2.sync()
     print 'Phonons.GenerateAuxNETCDF: len(dH) =',index
@@ -850,7 +858,7 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
         elif i%3==2: dSdij[:,first:last+1] = dSz[:,first:last+1]  # z-move
         for iSpin in range(len(TSHS0.H)):
             RedH[i,iSpin,:] = RedH[i,iSpin,:] - mm(N.transpose(dSdij),invS0,TSHS0.H[iSpin,:,:]).real - mm(TSHS0.H[iSpin,:,:],invS0,dSdij).real
-            ImdH[i,iSpin,:] = ImdH[i,iSpin,:] - mm(N.transpose(dSdij),invS0,TSHS0.H[iSpin,:,:]).imag - mm(TSHS0.H[iSpin,:,:],invS0,dSdij).imag
+            if not GammaPoint: ImdH[i,iSpin,:] = ImdH[i,iSpin,:] - mm(N.transpose(dSdij),invS0,TSHS0.H[iSpin,:,:]).imag - mm(TSHS0.H[iSpin,:,:],invS0,dSdij).imag
     print '  ... Done!'
     NCfile2.sync()
     
@@ -867,8 +875,9 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                         for iSpin in range(len(TSHS0.H)):
                             RedH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
                             RedH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
-                            ImdH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
-                            ImdH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
+                            if not GammaPoint:
+                                ImdH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
+                                ImdH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
         if ii+1>PBCLast:
             # Right contact, remove contribution to left contact
             print "Phonons.GenerateAuxNETCDF: Removing He-ph, Right atom %i" % (ii+1)
@@ -878,8 +887,9 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                         for iSpin in range(len(H0)):
                             RedH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
                             RedH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
-                            ImdH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
-                            ImdH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
+                            if not GammaPoint:
+                                ImdH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
+                                ImdH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
     NCfile2.close()
     print 'Phonons.GenerateAuxNETCDF: File %s written.'%AuxNCfile
 
@@ -890,15 +900,17 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
         precision = 'f'
     else:
         precision = 'd'
+    GammaPoint = N.dot(kpoint,kpoint)<1e-7
     # Read AuxNCfile and downfold to device
     first,last = orbitalIndices[DeviceFirst-1][0],orbitalIndices[DeviceLast-1][1]
     NCfile2 = nc.NetCDFFile(AuxNCfile,'r')
     ReH0 = N.array(NCfile2.variables['H0'])[:,first:last+1,first:last+1]
     ReS0 = N.array(NCfile2.variables['S0'])[first:last+1,first:last+1]
     RedH = NCfile2.variables['dH']
-    ImH0 = N.array(NCfile2.variables['ImH0'])[:,first:last+1,first:last+1]
-    ImS0 = N.array(NCfile2.variables['ImS0'])[first:last+1,first:last+1]
-    ImdH = NCfile2.variables['ImdH']
+    if not GammaPoint:
+        ImH0 = N.array(NCfile2.variables['ImH0'])[:,first:last+1,first:last+1]
+        ImS0 = N.array(NCfile2.variables['ImS0'])[first:last+1,first:last+1]
+        ImdH = NCfile2.variables['ImdH']
     auxkpoint = NCfile2.variables['kpoint'][:]
     print '   ... kpoint from %s ='%AuxNCfile,auxkpoint
     if not N.allclose(auxkpoint,kpoint):
@@ -906,9 +918,10 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
     NCfile.createDimension('NSpin',len(ReH0))
     Write2NetCDFFile(NCfile,ReH0,'H0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
     Write2NetCDFFile(NCfile,ReS0,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
-    Write2NetCDFFile(NCfile,ImH0,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-    Write2NetCDFFile(NCfile,ImS0,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
-    Write2NetCDFFile(NCfile,kpoint,'kpoint',('dim3',))
+    if not GammaPoint:
+        Write2NetCDFFile(NCfile,ImH0,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+        Write2NetCDFFile(NCfile,ImS0,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
+        Write2NetCDFFile(NCfile,kpoint,'kpoint',('dim3',))
 
     # Check AuxNCfile
     if FCfirst != int(NCfile2.variables['FCfirst'][0]):
@@ -920,10 +933,10 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
     print 'Phonons.CalcHephNETCDF: Calculating...\n',
     const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
     ReHeph  = NCfile.createVariable('He_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
-    ImHeph  = NCfile.createVariable('ImHe_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
+    if not GammaPoint: ImHeph  = NCfile.createVariable('ImHe_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
     for i in range(len(hw)):
         ReHeph[i,:] = 0.0*ReH0
-        ImHeph[i,:] = 0.0*ImH0
+        if not GammaPoint: ImHeph[i,:] = 0.0*ImH0
     NCfile.sync()
     for i in range(len(hw)):
         # Loop over modes
@@ -934,24 +947,27 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
                 # Heph[i] += const*dH[j]*U[i,j]/(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
                 ReHeph[i,:] += const*N.array(RedH[j])[:,first:last+1,first:last+1]*U[i,j] \
                     /(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
-                ImHeph[i,:] += const*N.array(ImdH[j])[:,first:last+1,first:last+1]*U[i,j] \
+                if not GammaPoint: ImHeph[i,:] += const*N.array(ImdH[j])[:,first:last+1,first:last+1]*U[i,j] \
                     /(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
         else:
             print 'Phonons.CalcHephNETCDF: Nonpositive frequency --> Zero-valued coupling matrix' 
             ReHeph[i,:] = 0.0*ReH0
-            ImHeph[i,:] = 0.0*ImH0
+            if not GammaPoint: ImHeph[i,:] = 0.0*ImH0
         #Check that Heph is Hermitian
         for iSpin in range(len(ReH0)):
-            if not N.allclose(ReHeph[i,iSpin]+1j*ImHeph[i,iSpin],
-                              N.transpose(ReHeph[i,iSpin]-1j*ImHeph[i,iSpin]),
-                              atol=1e-6):
-                print 'Phonons.CalcHephNETCDF: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
+            if not GammaPoint:
+                if not N.allclose(ReHeph[i,iSpin]+1j*ImHeph[i,iSpin],
+                                  N.transpose(ReHeph[i,iSpin]-1j*ImHeph[i,iSpin]),
+                                  atol=1e-5):
+                    print 'Phonons.CalcHephNETCDF: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
+            else:
+                if not N.allclose(ReHeph[i,iSpin],N.transpose(ReHeph[i,iSpin]),atol=1e-5):
+                    print 'Phonons.CalcHephNETCDF: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
+                    
         NCfile.sync()
     print '  ... Done!'
     #NCfile2.close() # Leave open for later access...
     return ReH0,ReS0,ReHeph
-
-
 
 ########### Phonon bandstructure ##########################################
 def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,\
