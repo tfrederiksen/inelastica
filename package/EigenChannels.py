@@ -6,13 +6,11 @@ Eigenchannels:
 2: Analyze IETS spectra, Paulsson et al PRL 2008
 3: Calculate "bond" currents
 """
-fudgeEnergy = 5e-5         # Fudge energy in eV used to see if Ef is close to the calculated energy
 
-import pyTBT
+import NEGF
 import SiestaIO as SIO
 import MakeGeom as MG
 import MiscMath as MM
-import WriteXMGR as XMGR
 import numpy as N
 import numpy.linalg as LA
 import Scientific.IO.NetCDF as NC
@@ -20,25 +18,19 @@ import sys, string, struct, glob,  os
 from optparse import OptionParser, OptionGroup
 import PhysicalConstants as PC
 
-# Dummy classes for global variables
-class HS:       pass
-class IETS:     pass
-# general, basis and geom are a global variables
 
 ########################################################
 ##################### Main routine #####################
 ########################################################
 def main():
-    setupParameters()
-
-    readxv()
-    readHS()
-    readbasis()
-    calcT()
+    general = setupParameters()
+    geom = readxv()
+    myGF = readHS(general)
+    basis = readbasis(general,myGF.HS)
+    calcT(general,geom,myGF,basis)
 
 ########################################################
 def readxv():
-    global geom
     # Read geometry from first .XV file found in dir
     fns=glob.glob('*.XV')
 
@@ -51,360 +43,106 @@ def readxv():
 
     print('Reading geometry from "%s" file' % fns[0])
     geom = MG.Geom(fns[0])
+    return geom
 
 ########################################################
-def readbasis():
-    global basis
+def readbasis(param,GF):
     fn=glob.glob('*.XV')
-    basis = SIO.BuildBasis(fn[0], general.from_atom, general.to_atom, HS.GF.HS.lasto)
+    basis = SIO.BuildBasis(fn[0], param.from_atom, param.to_atom, GF.lasto)
+    return basis
 
 ########################################################
-def readHS():
+def readHS(general):
     # Setup H, S and self-energies
-    HS.L, HS.R, HS.GF, devSt, devEnd, general.Elist, general.eta, general.SiestaOutFile = \
-        pyTBT.main(pyTBT=False, fn=general.fdfFile, 
-                   deviceRegion=[general.from_atom, general.to_atom])
-    if general.PhononNetCDF!=None:
-        # Check device region so that it crashes fast!
-        NNTS = len(HS.GF.H)
-        NCfile = NC.NetCDFFile(general.PhononNetCDF,'r')
-        NNPH = len(N.array(NCfile.variables['S0'][:,:]))
-        NCfile.close()
-        if NNPH!=NNTS:
-            print "ERROR: Eigenchannels : ERROR the device regions of pyTBT and PhononNetCDF do not match!!!"
-            sys.exit(1)
+    fnL  = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.HSFileLeft', str, None, 'Error Eigenchannels')
+    NA1L = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA1Left', int, 1, 'Error Eigenchannels')
+    NA2L = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA2Left', int, 1, 'Error Eigenchannels')
+    fnR  = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.HSFileRight', str, None, 'Error Eigenchannels')
+    NA1R = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA1Right', int, 1, 'Error Eigenchannels')
+    NA2R = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA2Right', int, 1, 'Error Eigenchannels')
+    voltage  =SIO.GetFDFlineWithDefault(general.fdfFile,'TS.Voltage', float, 0.0, 'Error Eigenchannels')
+
+    elecL = NEGF.ElectrodeSelfEnergy(fnL,NA1L,NA2L,voltage/2.)
+    elecR = NEGF.ElectrodeSelfEnergy(fnR,NA1R,NA2R,-voltage/2.)
+
+    systemlabel = SIO.GetFDFlineWithDefault(general.fdfFile,'SystemLabel', str, None, 'pyTBT')
+
+    myGF = NEGF.GF(systemlabel+'.TSHS',elecL,elecR,Bulk=True,DeviceAtoms=[general.from_atom, general.to_atom])
+
+    myGF.calcGF(general.energy+general.eta*1j, general.kPoint[0:2], ispin=general.iSpin)
+
+    return myGF
 
 ########################################################
-def calcT(calledFromInelastica=False,InelasticaEf=0.0):
-    # Calculate eigenchannels for specific k-point
-    if calledFromInelastica:
-        E=N.array([InelasticaEf],N.float)
-    else:
-        E = general.Elist
-    HS.GF.calcGF(E[0]+general.eta*1j, general.kPoint[0:2], ispin=general.iSpin)
-
-    # Orthogonalize everything
-    S=HS.GF.S.copy()
-    Usi=mysqrt(S)
-    Us=LA.inv(Usi)
-
-    S, H = mm(Us,S,Us), mm(Us,HS.GF.H,Us)
-
-
+def calcT(general,geom,myGF,basis):
     # Matrix to save total and eigenchannel transmissions
-    T=N.zeros((len(E),1+general.numchan),N.complex)
-    IETS.T = T
+    # BEFORE ORTHOGO
+    T = myGF.calcT(general.numchan)
+    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%general.energy
+    for t in T:
+        print '%.9f '%t,
+    print
 
-    PDOSL, PDOSR = N.zeros((len(E),len(H)),N.float), N.zeros((len(E),len(H)),N.float)
+    # Now orthogonalize in device region
+    myGF.orthogonalize()
 
-    # Loop over energy points
-    for iiE in range(len(E)):
-        SIO.printDone(iiE,len(E),'Transmission') 
+    # Check that we get the same transmission:
+    T = myGF.calcT(general.numchan)
+    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%general.energy
+    for t in T:
+        print '%.9f '%t,
+    print
 
-        # Setup the normal quantites
-        EE=E[iiE]
-        if iiE!=0:
-            # Already done for first point, see above
-            HS.GF.calcGF(EE+general.eta*1j, general.kPoint[0:2], 
-                         ispin=general.iSpin)
-        
-        # Gammas in pyTBT GF can be smaller than device region
-        nnL,  nnR = len(HS.GF.GamL),  len(HS.GF.GamR)
-        G1,  G2 = N.zeros(HS.GF.H.shape, N.complex), N.zeros(HS.GF.H.shape, N.complex)
-        G1[0:nnL, 0:nnL] ,  G2[-nnR:, -nnR:] = HS.GF.GamL, HS.GF.GamR
-        G1, G2 = mm(Us,G1,Us), mm(Us,G2,Us)
+    # Calculate Eigenchannels
+    myGF.calcEigChan(general.numchan)
 
-        G=mm(Usi,HS.GF.Gr,Usi)
-        Gd=dagger(G)
+    # Calculate Eigenchannels from left
+    ECleft, EigT = myGF.ECleft, myGF.EigTleft
+    print 'Left eigenchannel transmissions:',EigT
+    for jj in range(general.numchan):
+        T[jj+1]=EigT[len(EigT)-jj-1]
 
-        A1, A2 =mm(G,G1,Gd), mm(G,G2,Gd)
-
-        T[iiE,0]=HS.GF.calcT()[0]
-
-        if not calledFromInelastica:
-            # Calculate PDOS from left and right
-            A1NO, A2NO = mm(Us,A1,Us), mm(Us,A2,Us)
-            for ij in range(len(H)):
-                PDOSL[iiE,ij]=abs(A1NO[ij,ij])
-                PDOSR[iiE,ij]=abs(A2NO[ij,ij])
-
-        # Calculate total "bond currents"
-        if abs(EE-general.energy)<fudgeEnergy and not calledFromInelastica:
-            Curr=-calcCurrent(A1NO)
-            general.iChan, general.iSide = 0, 0
-            writeCurrent(Curr)
-            Curr=-calcCurrent(A2NO)
-            general.iSide = 1
-            writeCurrent(Curr)
-
-        if not calledFromInelastica:
-            # Calculate Eigenchannels from left
-            EigC, EigT = calcEigChan(A1,G2,Us)
-            for jj in range(general.numchan):
-                T[iiE,1+jj]=EigT[len(EigT)-jj-1]
-
-        # Save to file
-        if abs(EE-general.energy)<fudgeEnergy and not calledFromInelastica:
-            ECleft=EigC
-            # Write wave functions
-            for jj in range(general.numchan):
-                general.iSide, general.iChan = 0, jj+1
-                writeWavefunction(ECleft[jj])
-                Curr=calcCurrent(ECleft[jj])
-                writeCurrent(Curr)
+    # Write wave functions
+    for jj in range(general.numchan):
+        general.iSide, general.iChan = 0, jj+1
+        writeWavefunction(general,geom,basis,ECleft[jj])
+        Curr=calcCurrent(general,basis,myGF.HNO,ECleft[jj])
+        writeCurrent(general,geom,Curr)
                     
-        # Calculate eigenchannels from right
-        if abs(EE-general.energy)<fudgeEnergy and (general.bothsides or general.PhononNetCDF!=None):
-            if not calledFromInelastica:
-                ECright, EigT = calcEigChan(A2,G1,Us)
+    # Calculate eigenchannels from right
+    if general.bothsides:
+        ECright, EigT = myGF.ECright, myGF.EigTright
+        print 'Right eigenchannel transmissions:',EigT
+        for jj in range(general.numchan):
+            general.iSide, general.iChan = 1, jj+1
+            writeWavefunction(general,geom,basis,ECright[jj])
+            Curr=calcCurrent(general,basis,myGF.HNO,ECright[jj])
+            writeCurrent(general,geom,Curr)
             
-            if general.bothsides and not calledFromInelastica:
-                # Write wave functions
-                for jj in range(general.numchan):
-                    general.iSide, general.iChan = 1, jj+1
-                    writeWavefunction(ECright[jj])
-                    Curr=calcCurrent(ECright[jj])
-                    writeCurrent(Curr)
-            
-            # Calculate inelastic scattering rates
-            if general.PhononNetCDF!=None:
-                calcIETS(T,G,Gd,G1,G2,A1,A2,Us,Usi,iiE,calledFromInelastica)
-                if not calledFromInelastica:
-                    IETS.ECleft, IETS.ECright = ECleft, ECright
-                    writeFGRrates()
+    # Calculate total "bond currents"
+    A1NO = mm(myGF.Us,myGF.A1,myGF.Us)
+    A2NO = mm(myGF.Us,myGF.A2,myGF.Us)
+    Curr=-calcCurrent(general,basis,myGF.HNO,A1NO)
+    general.iChan, general.iSide = 0, 0
+    writeCurrent(general,geom,Curr)
+    Curr=-calcCurrent(general,basis,myGF.HNO,A2NO)
+    general.iSide = 1
+    writeCurrent(general,geom,Curr)
 
     # Calculate eigenstates of device Hamiltonian
+    systemlabel = SIO.GetFDFlineWithDefault(general.fdfFile,'SystemLabel', str, None, 'Error Eigenchannels')
     if general.MolStates>0.0:
-        ev, es = LA.eigh(H)
+        print 'calculating molecular eigenstates of folded, orthogonalized device hamiltonian'
+        ev, es = LA.eigh(myGF.H)
         for ii in range(len(ev)):
             if N.abs(ev[ii])<general.MolStates:
-                fn=general.DestDir+'/'+general.SiestaOutFile+'.ES.%i.%2.2f'%(ii,ev[ii])
-                writeWavefunction(mm(Us,es[:,ii]),fn=fn)
+                fn=general.DestDir+'/'+systemlabel+'.S%.3i.E%.3f'%(ii,ev[ii])
+                writeWavefunction(general,geom,basis,mm(myGF.Us,es[:,ii]),fn=fn)
 
-    if not calledFromInelastica:
-        writeTrans(T,H,E)
-
-########################################################
-def calcEigChan(A1,G2,Us):
-    # Calculate Eigenchannels using recipie from PRB
-    # For right eigenchannels, A1=A2, G2=G1 !!!
-    ev, U = LA.eigh(A1)
-    U = N.transpose(U)
-
-    Utilde=0.0*U
-
-    for jj in range(len(ev)): # Problems with negative numbers
-        if ev[jj]<0: ev[jj]=0
-        Utilde[jj,:]=N.sqrt(ev[jj]/(2*N.pi))*U[jj,:]
-    Utilde=N.transpose(Utilde)
-        
-    tt=mm(dagger(Utilde),2*N.pi*G2,Utilde)
-    evF, UF = LA.eigh(tt)
-    UF = N.transpose(UF)
-
-    NumChans=max(N.sum(evF>1e-6),general.numchan)
-
-    EC=[]
-    for jj in range(NumChans):
-        tmp=mm(Us,Utilde,UF[len(evF)-jj-1,:])
-        EC.append(tmp.copy())
-
-    return EC, evF
-
-########################################################
-def calcIETS(T,G,Gd,G1,G2,A1,A2,Us,Usi,iiE,calledFromInelastica=False):                
-    # Calculate inelastic scattering rates, total and per eigenchannel
-    IETS.totTrans = T[iiE,0]
-
-    NCfile = NC.NetCDFFile(general.PhononNetCDF,'r')
-    print 'Reading ',general.PhononNetCDF
-    hw = N.array(NCfile.variables['hw'][:]) 
-    bA1 = mm(Gd,G1,G) 
-    
-    # Structures to save Power, e-h damping, (non-)Hilbert term
-    P1T,P2T = [],[]
-    ehDamp1, ehDamp2 = [], []
-    nHT,nHTin,nHTel,HT = [],[],[],[]
-    
-    # Save bond current changes due to inelastic scattering 
-    dGnout, dGnin = [], []
-    
-    for ihw in range(len(hw)):
-        SIO.printDone(ihw,len(hw),'IETS FGR')
-        M = N.array(NCfile.variables['He_ph'][ihw,general.iSpin,:,:])
-        H1=mm(Us,M,Us)
-        MA1M, MA2M = mm(H1,A1,H1), mm(H1,A2,H1)
-        MAM, MA2mA1M = MA1M+MA2M, MA2M-MA1M
-        
-        # Cryptic? Changes in G^lesser due to e-ph interaction at high and low energies, i.e.,
-        # the changes in occupation due to out(in)-scattering
-        tmp1, tmp2 = mm(G,MA2M,A1), mm(G,MA1M,A1)
-        if not calledFromInelastica:
-            dGnout.append(calcCurrent(mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
-            dGnin.append(calcCurrent(mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
-
-        # Power, damping and current rates
-        P1T.append(checkImPart(N.trace(mm(MAM,A1+A2))))
-        P2T.append(checkImPart(N.trace(mm(MA1M,A2))))        
-        ehDamp1.append(checkImPart(N.trace(mm(MA1M,A1))))
-        ehDamp2.append(checkImPart(N.trace(mm(MA2M,A2))))
-        nHT.append(checkImPart(N.trace(mm(-2*MA2M+1.0j*(mm(MAM,G,G2)-mm(G2,Gd,MAM)),bA1))/2.0))
-        nHTin.append(checkImPart(N.trace(mm(-2*MA2M,bA1))/2.0))
-        nHTel.append(checkImPart(N.trace(mm(1.0j*(mm(MAM,G,G2)-mm(G2,Gd,MAM)),bA1))/2.0))
-        HT.append(checkImPart(N.trace(mm((mm(G2,Gd,MA2mA1M)+mm(MA2mA1M,G,G2)),bA1))))
-    NCfile.close()
-
-    IETS.dGnin, IETS.dGnout = dGnin, dGnout
-    IETS.P1T, IETS.P2T = P1T, P2T
-    IETS.ehDamp1, IETS.ehDamp2 = ehDamp1, ehDamp2
-    IETS.nHT, IETS.HT = nHT, HT
-    IETS.nHTin, IETS.nHTel = nHTin, nHTel
-    IETS.hw = hw
-
-########################################################
-def checkImPart(x):
-    if abs(x.imag)>0.0000001:
-        print "LOE : Imaginary part (%.3e) too big"%x.imag
-        kuk
-    return x.real   
-
-########################################################
-def writeFGRrates():
-    unitConv=1.602177e-19/N.pi/1.054572e-34
-
-    NCfile = NC.NetCDFFile(general.PhononNetCDF,'r')
-    print 'Reading ',general.PhononNetCDF
-
-    general.iChan, general.iSide = 0, 2
-    fn = fileName()
-    outFile = file(fn+'.FGR.out','w')
-    outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (unitConv*IETS.totTrans.real,))
-
-    tmp=N.sort(abs(N.array(IETS.nHT[:])))
-    SelectionMin=tmp[-general.NumPhCurr]        
-    
-    for ihw in range(len(IETS.hw)):
-        SIO.printDone(ihw,len(IETS.hw),'Golden Rate') 
-        M = N.array(NCfile.variables['He_ph'][ihw,general.iSpin,:,:])
-        rate=N.zeros((len(IETS.ECleft),len(IETS.ECright)),N.float)
-        totrate=0.0
-        for iL in range(len(IETS.ECleft)):
-            for iR in range(len(IETS.ECright)):
-                tmp=N.dot(N.conjugate(IETS.ECleft[iL]),mm(M,IETS.ECright[iR]))
-                rate[iL,iR]=(2*N.pi)**2*abs(tmp)**2
-                totrate+=rate[iL,iR]
-
-        if abs(IETS.nHT[ihw])>=SelectionMin:
-            general.iChan = ihw
-            currOut, currIn = IETS.dGnout[ihw], IETS.dGnin[ihw]
-            general.iSide = 3
-            writeCurrent(currIn)
-            general.iSide = 4
-            writeCurrent(currOut)
-        
-        outFile.write('\nPhonon mode %i : %f eV [Rates in units of (1/s/eV)]\n' % (ihw,IETS.hw[ihw]))
-        outFile.write('eh-damp : %e (1/s) , heating %e (1/(sV)))\n' % (IETS.P1T[ihw]*unitConv*IETS.hw[ihw],IETS.P2T[ihw]*unitConv))
-        outFile.write('eh-damp 1, 2 (MA1MA1, MA2MA2): %e (1/s) , %e (1/(s)))\n' % (IETS.ehDamp1[ihw]*unitConv*IETS.hw[ihw],IETS.ehDamp2[ihw]*unitConv*IETS.hw[ihw]))
-        outFile.write('SymI : %e (1/(sV)) , AsymI %e (?))\n' % (IETS.nHT[ihw]*unitConv,IETS.HT[ihw]*unitConv))
-        outFile.write('Elast : %e (1/(sV)) , Inelast %e (1/(sV)))\n' % (IETS.nHTel[ihw]*unitConv,IETS.nHTin[ihw]*unitConv))
-        outFile.write('down=left EC, right=right EC\n')
-        if IETS.P2T[ihw]>0.0:
-            if abs(totrate/(IETS.P2T[ihw])-1)<0.05:
-                outFile.write('Sum/Tr[MA1MA2] , Tr: %1.3f  %e\n'%(totrate/(IETS.P2T[ihw]),unitConv*IETS.P2T[ihw]))
-            else:
-                outFile.write('WARNING: !!!! Sum/Tr[MA1MA2] , Tr: %2.2e  %e\n'%(totrate/(IETS.P2T[ihw]),unitConv*IETS.P2T[ihw]))
-        else:
-            outFile.write(' Tr:  %e\n'%(unitConv*IETS.P2T[ihw]))
-        for iL in range(len(IETS.ECleft)):
-            for iR in range(len(IETS.ECright)):
-                outFile.write('%e ' % (unitConv*rate[iL,iR],))
-            outFile.write('\n')
-    outFile.close()
-    NCfile.close()
-    
-########################################################
-def TODO():
-    # Divide PDOS into S, P, D orbitals ... TODO! Crap with selecting interesting region
-    PDOS2=N.zeros((len(E),3),N.float)    
-    for ii in range(len(E)):
-        for jj in range(len(H)):
-            if basis.atomnum[jj]==27:
-                if basis.M[jj]==0:
-                    PDOS2[ii,basis.L[jj]]+=PDOS[ii,jj]
-
-    for jj in range(3):
-        tmp=['S','P','D']
-        foS=file('Co.'+tmp[jj]+'.txt','w')
-        for ii in range(len(E)):
-            foS.write('%f %f\n'%(E[ii],PDOS2[ii,jj]))
-        foS.close()
-
-    PDOS2=N.zeros((len(E),3),N.float)
-    
-    for ii in range(len(E)):
-        for jj in range(len(H)):
-            if basis.atomnum[jj]==79:
-                PDOS2[ii,basis.L[jj]]+=PDOS[ii,jj]
-
-    for jj in range(3):
-        tmp=['S','P','D']
-        foS=file('Au.'+tmp[jj]+'.txt','w')
-        for ii in range(len(E)):
-            foS.write('%f %f\n'%(E[ii],PDOS2[ii,jj]))
-        foS.close()
-
-########################################################
-def writeTrans(T,H,E):
-    T = N.transpose(T)
-
-    # Make plot
-    g = XMGR.Graph()
-    
-    # Add total and eigenchannel transmissions
-    g.AddDatasets(
-        XMGR.XYset(E,T[0].real,legend='T\stot',Lwidth=2)
-        )
-    for i in range(1,len(T)):
-        g.AddDatasets(
-            XMGR.XYset(E,T[i].real,legend='T\s%i'%i)
-            )
-
-    # Add eigenvalues of the periodic system
-    ev, U = LA.eigh(H)
-    first,last = 0,0
-    for jj in range(len(ev)):
-        if ev[jj] <= min(E):
-            first = jj
-        if ev[jj] <= max(E):
-            last = jj
-    g.AddDatasets(
-        XMGR.XYset(ev[first:last+1],0.0*ev[first:last+1],
-                   legend='EV',Stype=4,Lstyle=0)
-        )
-
-    # Set axes and write XMGR plot to file
-    KP = general.kPoint
-    fn = general.DestDir+'/'+general.SiestaOutFile \
-         + ('.KP_%.3f_%.3f_%.3f'%(KP[0],KP[1],KP[2]) ) \
-         + '.TRANS'
-    g.SetXaxis(label='E-E\sF\N (eV)',autoscale=True)
-    g.SetYaxis(label='Transmission',autoscale=True)
-    g.SetTitle(fn,size=1.3)
-    g.ShowLegend()
-    p = XMGR.Plot(fn+'.xmgr',g)
-    p.WriteFile()
-
-    # Write ASCII data file
-    f = open(fn,'w')
-    for i in range(len(E)):
-        f.write('\n%.6f   '%E[i])
-        for j in range(len(T)):
-            f.write('%.6f '%T[j][i].real)
-    f.close()
 
 
 ########################################################
-def calcWF(Y):
+def calcWF(general,geom,basis,Y):
     """
     Calculate wavefunction, returns:
     YY : complex wavefunction on regular grid
@@ -475,14 +213,14 @@ def calcWF(Y):
 
 ###################### Current densities #########################
 
-def calcCurrent(Y):
+def calcCurrent(general,basis,H,Y):
     """
     Calculate current density in atomic bonds
     Y : complex scattering state or
     Y : A_l or A_r! (for total current)
     """
     
-    NN=len(HS.GF.H)
+    NN=len(H)
     NN2=general.to_atom-general.from_atom+1
     Curr=N.zeros((NN2,NN2),N.float)
     
@@ -491,26 +229,26 @@ def calcCurrent(Y):
             a1=basis.ii[ii]-general.from_atom
             for jj in range(NN):
                 a2=basis.ii[jj]-general.from_atom
-                tmp=HS.GF.H[jj,ii]*Y[ii,jj]/2/N.pi
+                tmp=H[jj,ii]*Y[ii,jj]/2/N.pi
                 Curr[a1,a2]=Curr[a1,a2]+4*N.pi*tmp.imag
     else:
         for ii in range(NN):
             a1=basis.ii[ii]-general.from_atom
             for jj in range(NN):
                 a2=basis.ii[jj]-general.from_atom
-                tmp=HS.GF.H[ii,jj]*N.conjugate(Y[ii])*Y[jj]
+                tmp=H[ii,jj]*N.conjugate(Y[ii])*Y[jj]
                 Curr[a1,a2]=Curr[a1,a2]+4*N.pi*tmp.imag
     
     return Curr
 
 ########################################################
-def writeCurrent(Curr):
+def writeCurrent(general,geom,Curr):
     """
     Write bond currents to file
     fn : Filename
     Curr : Bond current matrix
     """
-    fn=fileName()
+    fn=fileName(general)
     xyz=N.array(geom.xyz[general.from_atom-1:general.to_atom])
     atomnum=geom.anr[general.from_atom-1:general.to_atom]
 
@@ -527,7 +265,7 @@ def writeCurrent(Curr):
     foC.close()
 
 ########################################################
-def writenetcdf(fn,YY,nx,ny,nz,origo,dstep):
+def writenetcdf(geom,fn,YY,nx,ny,nz,origo,dstep):
     """
     THF: Write eigenchannels to netcdf format
     """
@@ -582,12 +320,10 @@ def writenetcdf(fn,YY,nx,ny,nz,origo,dstep):
     file.close()
     
 ################# Write cube file ######################
-def writecube(fn,YY,nx,ny,nz,origo,dstep):
+def writecube(geom,fn,YY,nx,ny,nz,origo,dstep):
     """
     Write wavefunction to cube file.
     """
-    global geom
-
     xyz=N.array(geom.xyz)
     anr=geom.anr
 
@@ -634,7 +370,7 @@ def writemacubin(fn,YY,nx,ny,nz,origo,dstep):
     fo.close()
 
 ################ Write wave function in XSF format ##################################
-def writeXSF(fn,YY,nx,ny,nz,origo,dstep):
+def writeXSF(geom,fn,YY,nx,ny,nz,origo,dstep):
     """
     Write XSF datagrid for XCrysden
     """
@@ -703,14 +439,14 @@ def writeXSF(fn,YY,nx,ny,nz,origo,dstep):
 
 
 ########################################################
-def writeWavefunction(Y,fn=None):
+def writeWavefunction(general,geom,basis,Y,fn=None):
     """
     Writes wave function to the specified output type
     Y: vector for wavefunction
                 
     """
-    if fn==None: fn = fileName()
-
+    if fn==None: fn = fileName(general)
+    print 'Eigenchannels.writeWavefunction: Writing',fn
     # Rotate in complex space
     max_amp=-1.0
     phase=1.0+0.0j
@@ -728,39 +464,29 @@ def writeWavefunction(Y,fn=None):
         (basis.ii[ii],basis.atomnum[ii],basis.M[ii],basis.L[ii],abs(Y[ii])))
     foT.close()
 
-    YY, dstep, origo, nx, ny, nz = calcWF(Y)
+    YY, dstep, origo, nx, ny, nz = calcWF(general,geom,basis,Y)
 
     # Write wave function in specified file format
-    if general.format == 'macu':
+    if general.format.lower() == 'macu':
         writemacubin(fn+'.Re.macu',YY.real,nx,ny,nz,origo,dstep)
         writemacubin(fn+'.Im.macu',YY.imag,nx,ny,nz,origo,dstep)
 
-    if general.format == 'cube':
-        writecube(fn+'.Re.cube',YY.real,nx,ny,nz,origo,dstep)
-        writecube(fn+'.Im.cube',YY.imag,nx,ny,nz,origo,dstep)
+    if general.format.lower() == 'cube':
+        writecube(geom,fn+'.Re.cube',YY.real,nx,ny,nz,origo,dstep)
+        writecube(geom,fn+'.Im.cube',YY.imag,nx,ny,nz,origo,dstep)
         
-    if general.format == 'XSF':
-        writeXSF(fn+'.XSF',YY,nx,ny,nz,origo,dstep)
+    if general.format.lower() == 'xsf':
+        writeXSF(geom,fn+'.XSF',YY,nx,ny,nz,origo,dstep)
 
-    if general.format == 'nc':
-        writenetcdf(fn+'.nc',YY,nx,ny,nz,origo,dstep)
+    if general.format.lower() == 'nc':
+        writenetcdf(geom,fn+'.nc',YY,nx,ny,nz,origo,dstep)
 
 
 ###########################################################
-def setupParameters(calledFromInelastica=False):
+def setupParameters():
     # Note: can be called from Inelastica as well!
-    global general
-    
     usage = "usage: %prog [options] DestinationDirectory"
-    if calledFromInelastica:
-        description = """
-Inelastica script that calculates the IETS signal using the lowest order expansion, 
-see Frederiksen et al. PRB 75, 205413 (2007) 
-
-For help use --help!
-"""
-    else:
-        description = """
+    description = """
 Eigenchannels script that calculates:
 1) Eigenchannels, Paulsson et al. PRB 76, 115117 (2007).
 2) Fermi golden rule scattering rates, Paulsson et al. PRL 100, 226604 (2008).
@@ -769,65 +495,40 @@ Eigenchannels script that calculates:
 For help use --help!
 """
     parser = OptionParser(usage,description=description)
-    EC = OptionGroup(parser, "Options for Eigenchannels")
-    ECandIN = OptionGroup(parser, "Options for Eigenchannels and Inelastica")
-    EC.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]", 
+    parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]", 
                   type='int', default=4)
-    EC.add_option("-B", "--BothSides", dest='bothsides', default=False,action='store_true',
+    parser.add_option("-B", "--BothSides", dest='bothsides', default=False,action='store_true',
                   help="Calculate eigenchannels from both sides [%default]")
-    EC.add_option("-M", "--MolecularStates", dest='MolStates', default=0.0, type='float',
-                  help="Calculate eigenstates ov device Hamiltonian within [%default] eV from Ef")
-    EC.add_option("-r", "--Res", dest='res', default=0.4,type='float',
+    parser.add_option("-M", "--MolecularStates", dest='MolStates', default=0.0, type='float',
+                  help="Calculate eigenstates of device Hamiltonian within [%default] eV from Ef")
+    parser.add_option("-r", "--Res", dest='res', default=0.4,type='float',
                   help="Resolution [%default Ang]")
-    EC.add_option("-w", "--format", dest='format', default='macu',type='string',
+    parser.add_option("-w", "--format", dest='format', default='macu',type='string',
                   help="Wavefunction format (macu, cube, XSF, or nc) [%default]")
-    EC.add_option("-N", "--NumPhCurr", dest='NumPhCurr', default=10,type='int',
+    parser.add_option("-N", "--NumPhCurr", dest='NumPhCurr', default=10,type='int',
                   help="Max number of changes in bond currents from inelastic scattering  [%default]")
-    parser.add_option_group(EC)
-    
-    ECandIN.add_option("-e", "--Ef", dest='Ef', default=0.0,type='float',
-                       help="Fermi energy [%default eV]")
-    ECandIN.add_option("-f", "--fdf", dest='fdfFile', default='./RUN.fdf',type='string',
-                       help="fdf file used for transiesta calculation [%default]")
-    ECandIN.add_option("-p", "--PhononNetCDF", dest='PhononNetCDF', default=None,type='string',
-                       help="Electron-phonon coupling NetCDF [%default]")
-    ECandIN.add_option("-s", "--iSpin", dest='iSpin', default=1,type='int',
-                       help="Spin channel [%default]")
-    ECandIN.add_option("-k", "--kPoint", dest='kPoint', default='[0,0]',type='string',
-                       help="2D k-point in range [0,1] given as string! default='[0.0,0.0]'")
-    parser.add_option_group(ECandIN)
+    parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
+                  help="Energy where eigenchannel scattering states are evaluated [%default eV]")
+    parser.add_option("--eta", dest='eta', default=0.000001,type='float',
+                  help="Tiny imag. part in Green's functions etc. [%default eV]")
+    parser.add_option("-f", "--fdf", dest='fdfFile', default='./RUN.fdf',type='string',
+                  help="fdf file used for transiesta calculation [%default]")
+    parser.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
+                  help="Spin channel [%default]")
+    parser.add_option("-k", "--kPoint", dest='kPoint', default='[0.0,0.0]',type='string',
+                  help="2D k-point in range [0,1[ given as string, default=%default")
 
-    if calledFromInelastica:
-        IN = OptionGroup(parser, "Options for Inelastica")
-        IN.add_option("-t", "--Temp", dest='Temp', default=4.2,type='float',
-                      help="Temperature [%default K]")
-        IN.add_option("-b", "--BiasPoints", dest='biasPoints', default=801,type='int',
-                      help="Number of bias points [%default]")
-        IN.add_option("-v", "--MinMaxVoltage", dest='MinMaxVoltage', default='-0.4:0.4',type='string',
-                      help="Voltage range ['%default' V]")
-        IN.add_option("-c", "--ModeCutoff", dest='modeCutoff', default='0.0025',type='float',
-                      help="Ignore phonon modes with lower hw [%default eV]")
-        IN.add_option("-V", "--Vrms", dest='Vrms', default='0.005',type='float',
-                      help="Lock in amplifier broadening [%default V]")
-        IN.add_option("-H", "--Heating", dest='PhHeating', default=False,action='store_true',
-                      help="Include heating of vibrational modes [%default]")
-        IN.add_option("-x", "--PhExtDamp", dest='PhExtDamp', default=1e-15,type='float',
-                      help="External damping [%default (?) TODO check unit!]")
-        parser.add_option_group(IN)
-    
     (general, args) = parser.parse_args()
     print description
-
-    general.energy, general.iSpin = general.Ef, general.iSpin-1
     
     if general.kPoint[0]!='[' or general.kPoint[-1]!=']':
-        parser.error("ERROR: --kPoint='[0.0,0.0]' not --kPoint=%s"%general.kPoint)
+        parser.error("ERROR: please specify --kPoint='[x.x,y.y]' not --kPoint=%s"%general.kPoint)
     else:
         try:
             tmp=string.split(general.kPoint[1:-1],',')
             general.kPoint = N.array([float(tmp[0]),float(tmp[1]),0],N.float)
         except:
-            parser.error("ERROR: --kPoint='[0.0,0.0]' not --kPoint=%s"%general.kPoint)
+            parser.error("ERROR: please specify --kPoint='[x.x,y.y]' not --kPoint=%s"%general.kPoint)
 
     if not os.path.exists(general.fdfFile):
         parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
@@ -839,25 +540,16 @@ For help use --help!
             general.fdfFile,'TS.TBT.PDOSTo', int, None, 'Eigenchannels')
     except:
         parser.error("Specify device region with TS.TBT.PDOS[To/From] keyword.")
-    if calledFromInelastica:
-        if general.PhononNetCDF==None:
-            parser.error("ERROR: Inelastica needs a PhononNetCDF file!")
-        try:
-            tmp=string.split(general.MinMaxVoltage,':')
-            general.minBias = float(tmp[0])
-            general.maxBias = float(tmp[1])
-        except:
-            parser.error("ERROR: Inelastica failed to parse bias voltage!")
 
-    print args
     if len(args)!=1:
         parser.error('ERROR: You need to specify destination directory')
     general.DestDir = args[0]
     if not os.path.isdir(general.DestDir):
         print '\nEigenchannels : Creating folder %s' %general.DestDir
         os.mkdir(general.DestDir)
-    else:
-        parser.error('ERROR: destination directory %s already exist!'%general.DestDir)
+#    else:
+#        parser.error('ERROR: destination directory %s already exist!'%general.DestDir)
+    return general
 
     def myprint(arg,file):
         # Save in parameter file
@@ -907,25 +599,24 @@ For help use --help!
     file.close()
 
 ################# File names ##################################
-def fileName():
+def fileName(general):
+    systemlabel = SIO.GetFDFlineWithDefault(general.fdfFile,'SystemLabel', str, None, 'Error Eigenchannels')
     # Generate filename '.EC.{1,Tot}{L,R,,In,Out}[UP][Ef=1.0].'
     if general.iChan==0:
-        fn=general.SiestaOutFile+\
-            '.EC.Tot%s%s'%(['L','R','','In','Out'][general.iSide],\
-                               ['','UP','DOWN'][general.iSpin+HS.GF.HS.nspin-1])
+        fn=systemlabel+'.EC.Tot%s%s'%(['L','R','','In','Out'][general.iSide],\
+                                      ['','UP','DOWN'][general.iSpin])
     else:
-        fn=general.SiestaOutFile+\
-            '.EC.%i%s%s'%(general.iChan,['L','R','','In','Out'][general.iSide],\
-                              ['','UP','DOWN'][general.iSpin+HS.GF.HS.nspin-1])
+        fn=systemlabel+'.EC.%i%s%s'%(general.iChan,['L','R','','In','Out'][general.iSide],\
+                                     ['','UP','DOWN'][general.iSpin])
     if general.energy!=0.0:
-        fn=fn+'Ef=%2.3f'%general.energy
+        fn += '_E%.3f'%general.energy
+    if general.kPoint[0]!=0.0 or general.kPoint[1]!=0.0:
+        fn += '_kx%.3f_ky%.3f'%(general.kPoint[0],general.kPoint[1])
     return general.DestDir+'/'+fn
 
 ################# Math helpers ################################
 mm = MM.mm
 outerAdd = MM.outerAdd
-dist = MM.dist
-mysqrt = MM.mysqrt
 dagger = MM.dagger
     
 ##################### Start main routine #####################
