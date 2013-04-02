@@ -49,62 +49,12 @@ except:
 
 
 ################### Main program ############################
-def main(pyTBT=True,deviceRegion=[0,0],fn=None):
-    """
-    Running standalone to calculate transmission 
-    *OR* 
-      called from Eigenchannels or Inelastica 
-      returning elecL, elecR, GF, deviceStart, deviceEnd
-    """
-    
-    if pyTBT: 
-        usage = "usage: %prog RUN.fdf"
-        descr = "pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge."
-        intro = """
-pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge.
-
-pyTBT reads some of the TBT and TS keywords from the fdf file:
-
-Electrodes:
-TS.HSFileLeft         filename.TSHS
-TS.ReplicateA1Left    1
-TS.ReplicateA2Left    1
-TS.HSFileRight        filename.TSHS
-TS.ReplicateA1Right   1
-TS.ReplicateA2Right   1
-Note: Fredericos TBtrans and the Transiesta version planned to be release in 2009 cannot use ReplicateA1,2 but pyTBT can.
-
-Device region:
-TS.TBT.PDOSFrom       10       [default=1]
-TS.TBT.PDOSTo         20       [default=last atom]
-Note: If you just want transmission pyTBT is quickest if the device region
-      is the middle 1/3 of the orbitals.
-
-Transmission energies [default]:
-TS.TBT.NPoints        21              
-TS.TBT.Emin          -1.000000 eV  
-TS.TBT.Emax           1.000000 eV 
-
-How self-energies are applied:
-TS.UseBulkInElectrodes .True.
-Note, False for this option does not seem to be a good choice.
-
-NEW KEYWORDS:
-pyTBT.eta             0.000001 eV [default, imaginary part of energy]
-
-Kpoint sampling of transmission:
-pyTBT.K_A1            1           [default=1]
-pyTBT.K_A2            1
-
-
-Ouputfiles:
-SystemLabel[.UP/.DOWN].TRANS     Transmission k-point dependent.
-SystemLabel[.UP/.DOWN].AVTRANS   Averaged over k-points.
-
-"""
-        parser = OptionParser(usage,description=descr)
-        print intro
-        parser.parse_args()
+def main():
+    usage = "usage: %prog RUN.fdf"
+    descr = "pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge."
+    parser = OptionParser(usage,description=descr)
+    parser.parse_args()
+    print descr
 
     # Read options
     ##############################################################################
