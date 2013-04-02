@@ -108,7 +108,7 @@ class Geom:
         try:
             self.constrained
         except:
-            self.constrained = 0*self.xyz
+            self.constrained = 0*N.array(self.xyz)
 
     # BASIC FUNCTIONS
         
@@ -125,16 +125,27 @@ class Geom:
     def addAtom(self,xyz,snr,anr,constrained=[0,0,0]):
         "Add atom"
         self.xyz = list(self.xyz)
+        self.snr = list(self.snr)
+        self.anr = list(self.anr)
         self.xyz.append(xyz[:])
         self.snr.append(snr)
         self.anr.append(anr)
+        self.xyz = N.array(self.xyz)
+        self.snr = N.array(self.snr)
+        self.anr = N.array(self.anr)
         self.natoms += 1
 
     def prependAtom(self,xyz,snr,anr,index=0):
         "Add atom"
+        self.xyz = list(self.xyz)
+        self.snr = list(self.snr)
+        self.anr = list(self.anr)
         self.xyz.insert(index,xyz[:])
         self.snr.insert(index,snr)
         self.anr.insert(index,anr)
+        self.xyz = N.array(self.xyz)
+        self.snr = N.array(self.snr)
+        self.anr = N.array(self.anr)
         self.natoms += 1
 
     def sort(self):
@@ -153,9 +164,15 @@ class Geom:
 
     def reverse(self):
         # TF/051114
+        self.xyz = list(self.xyz)
+        self.snr = list(self.snr)
+        self.anr = list(self.anr)
         self.xyz.reverse()
         self.snr.reverse()
         self.anr.reverse()
+        self.xyz = N.array(self.xyz)
+        self.snr = N.array(self.snr)
+        self.anr = N.array(self.anr)
         
     def roundDigits(self,digits=9):
         for i in range(len(self.xyz)):
@@ -513,11 +530,8 @@ class Geom:
         d = len(U)/3
         U = N.reshape(U,(d,3))
         firstdynatom = int(file.variables['DynamicAtoms'][0]-1)
-        self.xyz = N.array(self.xyz)
         for i in range(d):
             self.xyz[i+firstdynatom] += displacement*N.array(U[i])
-        self.xyz = list(self.xyz)
-
 
     # GENERAL IO-FUNCTIONS
     
