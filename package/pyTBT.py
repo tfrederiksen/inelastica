@@ -58,13 +58,13 @@ def main():
 
     # Read options
     ##############################################################################
-    if fn==None:
-        try: 
-            fn = sys.argv[1]
-            print "pyTBT reading keywords from ",fn
-        except:
-            fn = 'RUN.fdf'
-            print "pyTBT::WARNING reading keywords from default file : ",fn
+    
+    try: 
+        fn = sys.argv[1]
+        print "pyTBT reading keywords from ",fn
+    except:
+        fn = 'RUN.fdf'
+        print "pyTBT::WARNING reading keywords from default file : ",fn
 
     # Electrodes
     fnL  =SIO.GetFDFlineWithDefault(fn,'TS.HSFileLeft', str, None, 'pyTBT')
@@ -75,15 +75,9 @@ def main():
     NA2R =SIO.GetFDFlineWithDefault(fn,'TS.ReplicateA2Right', int, 1, 'pyTBT')
 
     # Device region
-    if deviceRegion[0]==0:
-        devSt =SIO.GetFDFlineWithDefault(fn,'TS.TBT.PDOSFrom', int, 0, 'pyTBT')
-    else:
-        devSt=deviceRegion[0]
-    if deviceRegion[1]==0:
-        devEnd=SIO.GetFDFlineWithDefault(fn,'TS.TBT.PDOSTo', int, 0, 'pyTBT')
-    else:
-        devEnd=deviceRegion[1]
-
+    devSt =SIO.GetFDFlineWithDefault(fn,'TS.TBT.PDOSFrom', int, 0, 'pyTBT')
+    devEnd=SIO.GetFDFlineWithDefault(fn,'TS.TBT.PDOSTo', int, 0, 'pyTBT')
+    
     # Voltage
     voltage  =SIO.GetFDFlineWithDefault(fn,'TS.Voltage', float, 0.0, 'pyTBT')
 
