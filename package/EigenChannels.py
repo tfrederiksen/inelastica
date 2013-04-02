@@ -26,6 +26,7 @@ def main():
     general = setupParameters()
     geom = readxv()
     myGF = readHS(general)
+    general.nspin = myGF.HS.nspin
     basis = readbasis(general,myGF.HS)
     calcT(general,geom,myGF,basis)
 
@@ -65,9 +66,7 @@ def readHS(general):
     elecL = NEGF.ElectrodeSelfEnergy(fnL,NA1L,NA2L,voltage/2.)
     elecR = NEGF.ElectrodeSelfEnergy(fnR,NA1R,NA2R,-voltage/2.)
 
-    systemlabel = SIO.GetFDFlineWithDefault(general.fdfFile,'SystemLabel', str, None, 'pyTBT')
-
-    myGF = NEGF.GF(systemlabel+'.TSHS',elecL,elecR,Bulk=True,DeviceAtoms=[general.from_atom, general.to_atom])
+    myGF = NEGF.GF(general.systemlabel+'.TSHS',elecL,elecR,Bulk=True,DeviceAtoms=[general.from_atom, general.to_atom])
 
     myGF.calcGF(general.energy+general.eta*1j, general.kPoint[0:2], ispin=general.iSpin)
 
@@ -130,13 +129,12 @@ def calcT(general,geom,myGF,basis):
     writeCurrent(general,geom,Curr)
 
     # Calculate eigenstates of device Hamiltonian
-    systemlabel = SIO.GetFDFlineWithDefault(general.fdfFile,'SystemLabel', str, None, 'Error Eigenchannels')
     if general.MolStates>0.0:
         print 'calculating molecular eigenstates of folded, orthogonalized device hamiltonian'
         ev, es = LA.eigh(myGF.H)
         for ii in range(len(ev)):
             if N.abs(ev[ii])<general.MolStates:
-                fn=general.DestDir+'/'+systemlabel+'.S%.3i.E%.3f'%(ii,ev[ii])
+                fn=general.DestDir+'/'+general.systemlabel+'.S%.3i.E%.3f'%(ii,ev[ii])
                 writeWavefunction(general,geom,basis,mm(myGF.Us,es[:,ii]),fn=fn)
 
 
@@ -521,6 +519,9 @@ For help use --help!
     (general, args) = parser.parse_args()
     print description
     
+    # Sanity checks
+
+    # Check k-point input
     if general.kPoint[0]!='[' or general.kPoint[-1]!=']':
         parser.error("ERROR: please specify --kPoint='[x.x,y.y]' not --kPoint=%s"%general.kPoint)
     else:
@@ -530,9 +531,14 @@ For help use --help!
         except:
             parser.error("ERROR: please specify --kPoint='[x.x,y.y]' not --kPoint=%s"%general.kPoint)
 
+    # Check for Siesta input file
     if not os.path.exists(general.fdfFile):
         parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
 
+    # Find Systemlabel keyword
+    general.systemlabel = SIO.GetFDFlineWithDefault(general.fdfFile,'SystemLabel', str, 'Systemlabel', 'Error Eigenchannels')
+        
+    # Find TS.TBT.PDOSTo/From keywords
     try:
         general.from_atom = SIO.GetFDFlineWithDefault(
             general.fdfFile,'TS.TBT.PDOSFrom', int, None, 'Eigenchannels')
@@ -577,7 +583,7 @@ For help use --help!
     myprint('NumChan          : %i'%general.numchan,file)
     myprint('Res [Ang]        : %f'%general.res,file)
     myprint('PhononNetCDF     : %s'%general.PhononNetCDF,file)
-    myprint('iSpin            : %i'%(general.iSpin+1),file)
+    myprint('iSpin            : %i'%(general.iSpin),file)
     myprint('kPoint           : [%f,%f]'%(general.kPoint[0],general.kPoint[1]),file)
     myprint('BothSides        : %s'%general.bothsides,file)
     myprint('Device [from,to] : [%i,%i]'%(general.from_atom, general.to_atom),file)
@@ -600,14 +606,14 @@ For help use --help!
 
 ################# File names ##################################
 def fileName(general):
-    systemlabel = SIO.GetFDFlineWithDefault(general.fdfFile,'SystemLabel', str, None, 'Error Eigenchannels')
+    systemlabel = general.systemlabel
     # Generate filename '.EC.{1,Tot}{L,R,,In,Out}[UP][Ef=1.0].'
     if general.iChan==0:
-        fn=systemlabel+'.EC.Tot%s%s'%(['L','R','','In','Out'][general.iSide],\
-                                      ['','UP','DOWN'][general.iSpin])
+        fn=systemlabel+'.EC.Tot%s'%(['L','R','','In','Out'][general.iSide])
     else:
-        fn=systemlabel+'.EC.%i%s%s'%(general.iChan,['L','R','','In','Out'][general.iSide],\
-                                     ['','UP','DOWN'][general.iSpin])
+        fn=systemlabel+'.EC.%i%s'%(general.iChan,['L','R','','In','Out'][general.iSide])
+    if general.nspin==2:
+        fn += ['UP','DOWN'][general.iSpin]
     if general.energy!=0.0:
         fn += '_E%.3f'%general.energy
     if general.kPoint[0]!=0.0 or general.kPoint[1]!=0.0:
