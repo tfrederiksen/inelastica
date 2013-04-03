@@ -26,7 +26,7 @@ import MiscMath as MM
 import NEGF
 import numpy as N
 import numpy.linalg as LA
-import sys, string
+import sys, string, os
 from optparse import OptionParser, OptionGroup
 try:
     import scipy.linalg as SLA 
@@ -50,27 +50,49 @@ except:
 
 ################### Main program ############################
 def main():
-    usage = "usage: %prog RUN.fdf"
-    descr = "pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge."
-    parser = OptionParser(usage,description=descr)
-    parser.parse_args()
-    print descr
+    usage = "usage: %prog [options] DestinationDirectory"
+    description = """pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge.
+For help use --help!
+ """
+    parser = OptionParser(usage,description=description)
 
-    # Read options
+    # Determine keywords provided
+    parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]",
+                      type='int', default=10)
+    parser.add_option("--eta", dest="eta", help="Imaginary part in self-energies [%default eV]",
+                      type='float', default=0.000001)
+    parser.add_option("--k1points", dest='Nk1', default=1,type='int',
+                      help="Number of k-points along reciprocal lattice vector b1 [%default]")
+    parser.add_option("--k2points", dest='Nk2', default=1,type='int',
+                      help="Number of k-points along reciprocal lattice vector b2 [%default]")
+    parser.add_option("-s", "--sym", dest='symmetry',default=False,action='store_true',
+                      help="Use time reversal symmetry to reduce number of k-points [%default]")
+    parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
+                      help="Input fdf-file for TranSIESTA calculations [%default]")
+    
+    (general, args) = parser.parse_args()
+    print description
+
+    if len(args)!=1:
+        parser.error('ERROR: You need to specify destination directory')
+    general.DestDir = args[0]
+
+    if not os.path.isdir(general.DestDir):
+        print '\npyTBT: Creating folder %s' %general.DestDir
+        os.mkdir(general.DestDir)
+    
+    # Read options from fdf files
     ##############################################################################
     
-    try: 
-        fn = sys.argv[1]
-        print "pyTBT reading keywords from ",fn
-    except:
-        fn = 'RUN.fdf'
-        print "pyTBT::WARNING reading keywords from default file : ",fn
-
+    fn = general.fn
+    head,tail = os.path.split(fn)
+    print "pyTBT: Reading keywords from %s \n"%fn
+    
     # Electrodes
-    fnL  =SIO.GetFDFlineWithDefault(fn,'TS.HSFileLeft', str, None, 'pyTBT')
+    fnL  =head+'/'+SIO.GetFDFlineWithDefault(fn,'TS.HSFileLeft', str, None, 'pyTBT')
     NA1L =SIO.GetFDFlineWithDefault(fn,'TS.ReplicateA1Left', int, 1, 'pyTBT')
     NA2L =SIO.GetFDFlineWithDefault(fn,'TS.ReplicateA2Left', int, 1, 'pyTBT')
-    fnR  =SIO.GetFDFlineWithDefault(fn,'TS.HSFileRight', str, None, 'pyTBT')
+    fnR  =head+'/'+SIO.GetFDFlineWithDefault(fn,'TS.HSFileRight', str, None, 'pyTBT')
     NA1R =SIO.GetFDFlineWithDefault(fn,'TS.ReplicateA1Right', int, 1, 'pyTBT')
     NA2R =SIO.GetFDFlineWithDefault(fn,'TS.ReplicateA2Right', int, 1, 'pyTBT')
 
@@ -94,20 +116,21 @@ def main():
 
     UseBulk=SIO.GetFDFlineWithDefault(fn,'TS.UseBulkInElectrodes', bool, True, 'pyTBT')
 
-    eta=SIO.GetFDFlineWithDefault(fn,'pyTBT.eta', float, 0.000001, 'pyTBT')
-    Nk1=SIO.GetFDFlineWithDefault(fn,'pyTBT.K_A1', int, 1, 'pyTBT')
-    Nk2=SIO.GetFDFlineWithDefault(fn,'pyTBT.K_A2', int, 1, 'pyTBT')
-
-    outFile=SIO.GetFDFlineWithDefault(fn,'SystemLabel', str, None, 'pyTBT')
-
-    #=SIO.GetFDFlineWithDefault(fn,'', int, , 'pyTBT')
+    #eta=SIO.GetFDFlineWithDefault(fn,'pyTBT.eta', float, 0.000001, 'pyTBT')
+    #Nk1=SIO.GetFDFlineWithDefault(fn,'pyTBT.K_A1', int, 1, 'pyTBT')
+    #Nk2=SIO.GetFDFlineWithDefault(fn,'pyTBT.K_A2', int, 1, 'pyTBT')
+    eta = general.eta
+    Nk1 = general.Nk1
+    Nk2 = general.Nk2
+    general.systemlabel = SIO.GetFDFlineWithDefault(fn,'SystemLabel', str, 'Systemlabel', 'pyTBT')
+    outFile=general.DestDir+'/'+general.systemlabel
 
     ##############################################################################
     # Define electrodes and device
 
     elecL = NEGF.ElectrodeSelfEnergy(fnL,NA1L,NA2L,voltage/2.)
     elecR = NEGF.ElectrodeSelfEnergy(fnR,NA1R,NA2R,-voltage/2.)
-    myGF = NEGF.GF(outFile+'.TSHS',elecL,elecR,Bulk=UseBulk,DeviceAtoms=[devSt, devEnd])
+    myGF = NEGF.GF(head+'/%s.TSHS'%general.systemlabel,elecL,elecR,Bulk=UseBulk,DeviceAtoms=[devSt, devEnd])
     nspin = myGF.HS.nspin
     if devSt==0:
         devSt=GF.DeviceAtoms[0]
@@ -129,7 +152,7 @@ Voltage                         : %f
 
 """%(minE,dE,maxE,Nk1,Nk2,eta,devSt,devEnd,UseBulk,nspin,voltage)
 
-    channels = 10
+    channels = general.numchan
     Tkpt=N.zeros((len(Elist),Nk1,Nk2,channels+1),N.float)
     outFile += '.%ix%i'%(Nk1,Nk2)
     for iSpin in range(nspin):
