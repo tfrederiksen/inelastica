@@ -167,6 +167,7 @@ Voltage                         : %f
             fo=open(outFile+'.AVTRANS','write')
         else:
             fo=open(outFile+['.UP','.DOWN'][iSpin]+'.AVTRANS','write')
+        fo.write('# Nk1=%i Nk2=%i eta=%.4e\n'%(Nk1,Nk2,eta))
         fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
         for ie, ee in enumerate(Elist):
             Tavg = N.zeros(channels+1,N.float)
