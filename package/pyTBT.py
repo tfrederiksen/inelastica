@@ -59,17 +59,19 @@ For help use --help!
     # Determine keywords provided
     parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]",
                       type='int', default=10)
-    parser.add_option("--eta", dest="eta", help="Imaginary part in self-energies [%default eV]",
+    parser.add_option("-e","--eta", dest="eta", help="Imaginary part in self-energies [%default eV]",
                       type='float', default=0.000001)
-    parser.add_option("--k1points", dest='Nk1', default=1,type='int',
-                      help="Number of k-points along reciprocal lattice vector b1 [%default]")
-    parser.add_option("--k2points", dest='Nk2', default=1,type='int',
-                      help="Number of k-points along reciprocal lattice vector b2 [%default]")
+    parser.add_option("-1","--k1points", dest='Nk1', default=1,type='int',
+                      help="k-points Nk1 [%default]")
+    parser.add_option("-2","--k2points", dest='Nk2', default=1,type='int',
+                      help="k-points Nk2 [%default]")
     parser.add_option("-s", "--sym", dest='symmetry',default=False,action='store_true',
-                      help="Use time reversal symmetry to reduce number of k-points [%default]")
+                      help="Use time reversal symmetry to reduce number of k-points (Nk2 will span only the range [0,0.5]) [%default]")
+    parser.add_option("-g", "--avoid-gamma", dest='skipgamma',default=False,action='store_true',
+                      help="Avoid gamma point in k-point sampling")
     parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
                       help="Input fdf-file for TranSIESTA calculations [%default]")
-    
+
     (general, args) = parser.parse_args()
     print description
 
@@ -80,6 +82,11 @@ For help use --help!
     if not os.path.isdir(general.DestDir):
         print '\npyTBT: Creating folder %s' %general.DestDir
         os.mkdir(general.DestDir)
+
+    # Make sure to avoid Gamma point if time-reversal symmetry is used
+    if general.symmetry and not general.skipgamma:
+        print 'pyTBT: Avoid sampling Gamma point.'
+        general.skipgamma = True
     
     # Read options from fdf files
     ##############################################################################
@@ -166,6 +173,10 @@ Voltage                         : %f
             for ik1 in range(Nk1):
                 for ik2 in range(Nk2):
                     kpt=N.array([ik1/float(Nk1),ik2/float(Nk2)],N.float)
+                    if general.skipgamma:
+                        kpt += N.array([1./float(2*Nk1),1./float(2*Nk2)],N.float)
+                    if general.symmetry:
+                        kpt[1] = kpt[1]/2
                     myGF.calcGF(ee+eta*1.0j,kpt,ispin=iSpin)
                     T = myGF.calcT(channels)
                     Tavg += T/Nk1/Nk2
@@ -184,7 +195,12 @@ Voltage                         : %f
             fo=open(outFile+['.UP','.DOWN'][iSpin]+'.TRANS','write')
         for ik1 in range(Nk1):
             for ik2 in range(Nk2):
-                fo.write('\n\n# k = %f, %f '%(ik1/float(Nk1),ik2/float(Nk2)))
+                kpt=N.array([ik1/float(Nk1),ik2/float(Nk2)],N.float)
+                if general.skipgamma:
+                    kpt += N.array([1./float(2*Nk1),1./float(2*Nk2)],N.float)
+                if general.symmetry:
+                    kpt[1] = kpt[1]/2
+                fo.write('\n\n# k = %f, %f '%(kpt[0],kpt[1]))
                 for ie, ee in enumerate(Elist):
                     transline = '\n%.10f '%ee
                     for ichan in range(channels+1):
