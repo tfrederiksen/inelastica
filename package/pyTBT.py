@@ -167,7 +167,7 @@ Voltage                         : %f
             fo=open(outFile+'.AVTRANS','write')
         else:
             fo=open(outFile+['.UP','.DOWN'][iSpin]+'.AVTRANS','write')
-        fo.write('# Nk1=%i Nk2=%i eta=%.4e\n'%(Nk1,Nk2,eta))
+        fo.write('# Nk1=%i Nk2=%i eta=%.2e\n'%(Nk1,Nk2,eta))
         fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
         for ie, ee in enumerate(Elist):
             Tavg = N.zeros(channels+1,N.float)
@@ -185,7 +185,10 @@ Voltage                         : %f
             print ee, Tavg
             transline = '\n%.10f '%ee
             for ichan in range(channels+1):
-                transline += '%.4e '%Tavg[ichan]
+                if ichan==0:
+                    transline += '%.8e '%Tavg[ichan]
+                else:
+                    transline += '%.4e '%Tavg[ichan]
             fo.write(transline)
         fo.close()
         
@@ -205,7 +208,10 @@ Voltage                         : %f
                 for ie, ee in enumerate(Elist):
                     transline = '\n%.10f '%ee
                     for ichan in range(channels+1):
-                        transline += '%.4e '%Tkpt[ie,ik1,ik2,ichan]
+                        if ichan==0:
+                            transline += '%.8e '%Tkpt[ie,ik1,ik2,ichan]
+                        else:
+                            transline += '%.4e '%Tkpt[ie,ik1,ik2,ichan]
                     fo.write(transline)
         fo.close()
 
