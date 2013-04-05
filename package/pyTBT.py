@@ -61,16 +61,18 @@ For help use --help!
                       type='int', default=10)
     parser.add_option("-e","--eta", dest="eta", help="Imaginary part in self-energies [%default eV]",
                       type='float', default=0.000001)
-    parser.add_option("-1","--k1points", dest='Nk1', default=1,type='int',
+    parser.add_option("-x","--Nk1", dest='Nk1', default=1,type='int',
                       help="k-points Nk1 [%default]")
-    parser.add_option("-2","--k2points", dest='Nk2', default=1,type='int',
+    parser.add_option("-y","--Nk2", dest='Nk2', default=1,type='int',
                       help="k-points Nk2 [%default]")
     parser.add_option("-s", "--sym", dest='symmetry',default=False,action='store_true',
-                      help="Use time reversal symmetry to reduce number of k-points (Nk2 will span only the range [0,0.5]) [%default]")
+                      help="Use time reversal symmetry to reduce number of k-points (Nk2 points sample only the range [0,0.5]) [%default]")
     parser.add_option("-g", "--avoid-gamma", dest='skipgamma',default=False,action='store_true',
-                      help="Avoid gamma point in k-point sampling")
+                      help="Avoid gamma point in k-point sampling [%default]")
     parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
                       help="Input fdf-file for TranSIESTA calculations [%default]")
+    parser.add_option("-d", "--skip-dos", dest='dos',default=True,action='store_true',
+                      help="Calculate DOS calculation? [%default]")
 
     (general, args) = parser.parse_args()
     print description
@@ -84,9 +86,11 @@ For help use --help!
         os.mkdir(general.DestDir)
 
     # Make sure to avoid Gamma point if time-reversal symmetry is used
-    if general.symmetry and not general.skipgamma:
-        print 'pyTBT: Avoid sampling Gamma point.'
-        general.skipgamma = True
+    if general.symmetry:
+        print 'pyTBT: Applying time-reversal symmetry (Nk2=%i sampling in the range [0,0.5])'%general.Nk2
+        if not general.skipgamma:
+            print '... needs to avoid Gamma point. Using flag -g (skipgamma)'
+            general.skipgamma = True
     
     # Read options from fdf files
     ##############################################################################
@@ -129,8 +133,10 @@ For help use --help!
     eta = general.eta
     Nk1 = general.Nk1
     Nk2 = general.Nk2
+
     general.systemlabel = SIO.GetFDFlineWithDefault(fn,'SystemLabel', str, 'Systemlabel', 'pyTBT')
-    outFile=general.DestDir+'/'+general.systemlabel
+
+    outFile=general.DestDir+'/'+general.systemlabel + '.%ix%i'%(Nk1,Nk2)
 
     ##############################################################################
     # Define electrodes and device
@@ -159,9 +165,12 @@ Voltage                         : %f
 
 """%(minE,dE,maxE,Nk1,Nk2,eta,devSt,devEnd,UseBulk,nspin,voltage)
 
+    
     channels = general.numchan
     Tkpt=N.zeros((len(Elist),Nk1,Nk2,channels+1),N.float)
-    outFile += '.%ix%i'%(Nk1,Nk2)
+    DOSL=N.zeros((len(Elist),myGF.nuo),N.float)
+    DOSR=N.zeros((len(Elist),myGF.nuo),N.float)
+    # Loop over spin
     for iSpin in range(nspin):
         if nspin<2:
             fo=open(outFile+'.AVTRANS','write')
@@ -169,19 +178,35 @@ Voltage                         : %f
             fo=open(outFile+['.UP','.DOWN'][iSpin]+'.AVTRANS','write')
         fo.write('# Nk1=%i Nk2=%i eta=%.2e\n'%(Nk1,Nk2,eta))
         fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
+        # Loop over energy
         for ie, ee in enumerate(Elist):
             Tavg = N.zeros(channels+1,N.float)
+            AavL = N.zeros((myGF.nuo,myGF.nuo),N.complex)
+            AavR = N.zeros((myGF.nuo,myGF.nuo),N.complex)
+            # Loops over k-points
             for ik1 in range(Nk1):
                 for ik2 in range(Nk2):
                     kpt=N.array([ik1/float(Nk1),ik2/float(Nk2)],N.float)
                     if general.skipgamma:
+                        # Add \Delta k/2 to shift away from Gamma
                         kpt += N.array([1./float(2*Nk1),1./float(2*Nk2)],N.float)
                     if general.symmetry:
+                        # Let Nk2 points sample only the range [0,0.5]
                         kpt[1] = kpt[1]/2
                     myGF.calcGF(ee+eta*1.0j,kpt,ispin=iSpin)
+                    # Transmission:
                     T = myGF.calcT(channels)
-                    Tavg += T/Nk1/Nk2
+                    Tavg += T/(Nk1*Nk2)
                     Tkpt[ie,ik1,ik2] = T
+                    # DOS calculation:
+                    if general.dos:
+                        GamL, GamR, Gr = myGF.GamL, myGF.GamR, myGF.Gr
+                        nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
+                        AL = MM.mm(Gr[:,0:nuoL],GamL,MM.dagger(Gr)[0:nuoL,:])
+                        AR = MM.mm(Gr[:,nuo-nuoR:nuo],GamR,MM.dagger(Gr)[nuo-nuoR:nuo,:])
+                        AavL += MM.mm(AL,myGF.S)
+                        AavR += MM.mm(AR,myGF.S)
+            # Print calculated quantities
             print ee, Tavg
             transline = '\n%.10f '%ee
             for ichan in range(channels+1):
@@ -190,9 +215,14 @@ Voltage                         : %f
                 else:
                     transline += '%.4e '%Tavg[ichan]
             fo.write(transline)
+            # Partial density of states:
+            if general.dos:
+                DOSL[ie,:] += N.diag(AavL).real/(Nk1*Nk2*2*N.pi)
+                DOSR[ie,:] += N.diag(AavR).real/(Nk1*Nk2*2*N.pi)
+                print ee," ",N.sum(DOSL[ie,:]),N.sum(DOSR[ie,:]), '# DOS'
         fo.close()
         
-        # Write k-point transmission
+        # Write k-point-resolved transmission
         if nspin<2:
             fo=open(outFile+'.TRANS','write')
         else:
@@ -215,6 +245,8 @@ Voltage                         : %f
                     fo.write(transline)
         fo.close()
 
+    # Things only needed for SDOS script
+    return elecL, elecR, myGF, devSt, devEnd, Elist,eta, general.systemlabel
 
 if __name__ == '__main__':
     main()
