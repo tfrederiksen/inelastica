@@ -245,8 +245,110 @@ Voltage                         : %f
                     fo.write(transline)
         fo.close()
 
+    general.devSt = devSt
+    general.devEnd = devEnd
+    general.Elist = Elist
+
+    writeSDOS(outFile+'.SDOS.gz',general,myGF,DOSL+DOSR) 
     # Things only needed for SDOS script
     return elecL, elecR, myGF, devSt, devEnd, Elist,eta, general.systemlabel
 
 if __name__ == '__main__':
     main()
+
+
+
+
+# SDOS stuff
+"""
+Calculate dos from the surface Green's function from a electrode calculation
+
+NOTE! The DOS is a sum over the atoms of the unitcell.
+NOTE! The outfile contains the DOS divided into s,p,d,f shells.
+      This decomposition is not perfect since polarized basis orbitals
+      will end up in L+1 part, i.e., 6s polarized orbital = 6p
+"""
+
+#####################################################
+# Main program
+def writeSDOS(fn,general,myGF,DOS):
+    import xml.dom.minidom as xml
+    import gzip
+
+    # Read basis
+    basis=SIO.BuildBasis(general.systemlabel+'.XV',1,myGF.HS.nua,myGF.HS.lasto)
+    
+    # First, last orbital in full space and pyTBT folded space.
+    devOrbSt = myGF.HS.lasto[general.devSt-1]
+    pyTBTdevOrbSt = devOrbSt-myGF.HS.lasto[general.devSt-1]
+    devOrbEnd = myGF.HS.lasto[general.devEnd]-1
+    pyTBTdevOrbEnd = devOrbEnd-myGF.HS.lasto[general.devSt-1]
+
+    doc = xml.Document()
+    pdos = doc.createElement('pdos')
+    doc.appendChild(pdos)
+    xmladd(doc,pdos,'nspin','%i'%myGF.HS.nspin)
+    xmladd(doc,pdos,'norbitals','%i'%(myGF.nuo))
+    xmladd(doc,pdos,'energy_values',myprint(general.Elist+myGF.HS.ef))
+    for ii in range(myGF.nuo):
+        orb = doc.createElement('orbital')
+        pdos.appendChild(orb)
+        io = devOrbSt+ii
+        orb.setAttribute('index','%i'%(io+1))
+        orb.setAttribute('atom_index','%i'%(basis.ii[io]+1))
+        orb.setAttribute('species',basis.label[io])
+        orb.setAttribute('position','%f %f %f'%(basis.xyz[io,0],basis.xyz[io,1],basis.xyz[io,2]))
+        orb.setAttribute('n','%i'%basis.N[io])
+        orb.setAttribute('l','%i'%basis.L[io])
+        orb.setAttribute('m','%i'%basis.M[io])
+        xmladd(doc,orb,'data',myprint(DOS[:,ii]))
+    #doc.writexml(gzip.GzipFile(general.outFile+'.SDOS.gz','w'))
+    doc.writexml(gzip.GzipFile(fn,'w'))
+
+    atoms = list(set(basis.label))
+    lVals  = list(set(basis.L))
+    plots = [[atoms,lVals,'Tot']]
+    plots += [[atoms,[lVal],'Tot L=%i'%lVal] for lVal in lVals]
+    plots += [[[atom],lVals,atom+' Tot'] for atom in atoms]
+    plots += [[[atom],[lVal],atom+' L=%i'%lVal] for lVal in lVals for atom in atoms]
+
+    # Make plot
+    #import Inelastica.WriteXMGR as XMGR
+    import WriteXMGR as XMGR
+    g = XMGR.Graph()
+    for atom, lVal, name in plots:
+        print atom
+        print lVal
+        print name
+        print [ii for ii in lVal]
+        nspin, ee, PDOS = SIO.ExtractPDOS(fn,None,\
+                                      FermiRef=False,llist=lVal,\
+                                      species=atom)        
+        for iS in range(nspin):
+            g.AddDatasets(
+                XMGR.XYset(ee,(-1)**iS*PDOS[iS],legend=name,Lwidth=2))
+
+    g.AddDatasets(XMGR.XYset(N.array([myGF.HS.ef,myGF.HS.ef]),
+                             N.array([0,1]),legend='Ef',Lwidth=1))
+
+    # Set axes and write XMGR plot to file
+    g.SetXaxis(label='E (eV)',autoscale=True)
+    g.SetYaxis(label='SDOS',autoscale=True)
+    g.SetTitle(fn,size=1.3)
+    g.ShowLegend()
+    p = XMGR.Plot(fn+'.xmgr',g)
+    p.WriteFile()
+
+
+def myprint(x): # Do numpy list to string
+    str=''
+    for ii in range(len(x)):
+        str+='%s\n'%x[ii]
+    return str
+def xmladd(doc,parent,name,values):
+    # Who came up with xml ... accountant moroons?
+    elem = doc.createElement(name)
+    parent.appendChild(elem)
+    txt=doc.createTextNode(values)
+    elem.appendChild(txt)
+
