@@ -295,7 +295,7 @@ def writeSDOS(fn,general,myGF,DOS):
         pdos.appendChild(orb)
         io = devOrbSt+ii
         orb.setAttribute('index','%i'%(io+1))
-        orb.setAttribute('atom_index','%i'%(basis.ii[io]+1))
+        orb.setAttribute('atom_index','%i'%basis.ii[io])
         orb.setAttribute('species',basis.label[io])
         orb.setAttribute('position','%f %f %f'%(basis.xyz[io,0],basis.xyz[io,1],basis.xyz[io,2]))
         orb.setAttribute('n','%i'%basis.N[io])
