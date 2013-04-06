@@ -249,7 +249,10 @@ Voltage                         : %f
     general.devEnd = devEnd
     general.Elist = Elist
 
-    writeSDOS(outFile+'.SDOS.gz',general,myGF,DOSL+DOSR) 
+    WritePDOS(outFile+'.PDOS.gz',general,myGF,DOSL+DOSR)
+    WritePDOS(outFile+'.PDOSL.gz',general,myGF,DOSR)
+    WritePDOS(outFile+'.PDOSR.gz',general,myGF,DOSR)
+    
     # Things only needed for SDOS script
     return elecL, elecR, myGF, devSt, devEnd, Elist,eta, general.systemlabel
 
@@ -261,7 +264,7 @@ if __name__ == '__main__':
 
 # SDOS stuff
 """
-Calculate dos from the surface Green's function from a electrode calculation
+Calculate DOS from the surface Green's function from electrode calculations
 
 NOTE! The DOS is a sum over the atoms of the unitcell.
 NOTE! The outfile contains the DOS divided into s,p,d,f shells.
@@ -271,7 +274,7 @@ NOTE! The outfile contains the DOS divided into s,p,d,f shells.
 
 #####################################################
 # Main program
-def writeSDOS(fn,general,myGF,DOS):
+def WritePDOS(fn,general,myGF,DOS):
     import xml.dom.minidom as xml
     import gzip
 
@@ -290,6 +293,7 @@ def writeSDOS(fn,general,myGF,DOS):
     xmladd(doc,pdos,'nspin','%i'%myGF.HS.nspin)
     xmladd(doc,pdos,'norbitals','%i'%(myGF.nuo))
     xmladd(doc,pdos,'energy_values',myprint(general.Elist+myGF.HS.ef))
+    xmladd(doc,pdos,'E_Fermi','%.8f'%myGF.HS.ef)
     for ii in range(myGF.nuo):
         orb = doc.createElement('orbital')
         pdos.appendChild(orb)
@@ -302,7 +306,6 @@ def writeSDOS(fn,general,myGF,DOS):
         orb.setAttribute('l','%i'%basis.L[io])
         orb.setAttribute('m','%i'%basis.M[io])
         xmladd(doc,orb,'data',myprint(DOS[:,ii]))
-    #doc.writexml(gzip.GzipFile(general.outFile+'.SDOS.gz','w'))
     doc.writexml(gzip.GzipFile(fn,'w'))
 
     atoms = list(set(basis.label))
@@ -313,7 +316,6 @@ def writeSDOS(fn,general,myGF,DOS):
     plots += [[[atom],[lVal],atom+' L=%i'%lVal] for lVal in lVals for atom in atoms]
 
     # Make plot
-    #import Inelastica.WriteXMGR as XMGR
     import WriteXMGR as XMGR
     g = XMGR.Graph()
     for atom, lVal, name in plots:
@@ -326,25 +328,22 @@ def writeSDOS(fn,general,myGF,DOS):
                                       species=atom)        
         for iS in range(nspin):
             g.AddDatasets(
-                XMGR.XYset(ee,(-1)**iS*PDOS[iS],legend=name,Lwidth=2))
-
-    g.AddDatasets(XMGR.XYset(N.array([myGF.HS.ef,myGF.HS.ef]),
-                             N.array([0,1]),legend='Ef',Lwidth=1))
+                XMGR.XYset(ee-myGF.HS.ef,(-1)**iS*PDOS[iS],legend=name,Lwidth=2))
 
     # Set axes and write XMGR plot to file
-    g.SetXaxis(label='E (eV)',autoscale=True)
-    g.SetYaxis(label='SDOS',autoscale=True)
+    g.SetXaxis(label='E-E\sF\N (eV)',autoscale=True)
+    g.SetYaxis(label='DOS (1/eV)',autoscale=True)
     g.SetTitle(fn,size=1.3)
     g.ShowLegend()
     p = XMGR.Plot(fn+'.xmgr',g)
     p.WriteFile()
-
 
 def myprint(x): # Do numpy list to string
     str=''
     for ii in range(len(x)):
         str+='%s\n'%x[ii]
     return str
+
 def xmladd(doc,parent,name,values):
     # Who came up with xml ... accountant moroons?
     elem = doc.createElement(name)

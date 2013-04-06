@@ -711,7 +711,7 @@ def GetTotalEnergy(infile):
 
 def GetFermiEnergy(infile):
     # Read Fermi energy from SIESTA stdout file
-    print 'SIO.GetFermiEnergy: Reading',infile
+    print 'SiestaIO.GetFermiEnergy: Reading',infile
     f = SIO_open(infile,'rb')
     lines = f.readlines()
     f.close()
@@ -720,8 +720,10 @@ def GetFermiEnergy(infile):
         words = string.split(line)
         if 'Fermi' in words and 'energy' in words:
             E = string.atof(words[-2])
+            print '... eF = %.4f eV'%E
             break
-    print '... eF = %.4f eV'%E
+    if E==0.0:
+        print '... did not find the Fermi energy'
     return E
 
 def ReadEIGfile(infile,printing=False,FermiRef=True):
@@ -975,6 +977,16 @@ def ReadDOSFile(filename):
 
 import xml.dom.minidom as xml
 
+def GetXMLFermiEnergy(dom):
+    "Looks for the Fermi energy in xml file"
+    try:
+        node = dom.getElementsByTagName('E_Fermi')[0] # First (and only) entry
+        eF = float(node.childNodes[0].data)
+        print 'SiestaIO.GetXMLFermiEnergy: Found E_Fermi = %.8f eV'%eF
+    except:
+        eF = 0.0
+    return eF
+
 def GetPDOSnspin(dom):
     "Returns an integer for the number of spins (variable nspin)"
     node = dom.getElementsByTagName('nspin')[0] # First (and only) entry
@@ -1046,34 +1058,37 @@ def ReadPDOSFile(filename,index=[],atom_index=[],species=[],nlist=[],llist=[],ml
     nspin = GetPDOSnspin(dom)
     norb = GetPDOSnorbitals(dom)
     ev = GetPDOSenergyValues(dom)
+    eF = GetXMLFermiEnergy(dom)
     pdos,usedOrbitals,usedAtoms = GetPDOSfromOrbitals(dom,index,atom_index,species,nlist,llist,mlist)
-    return nspin,norb,ev,pdos,usedOrbitals,usedAtoms
+    return nspin,norb,ev,pdos,usedOrbitals,usedAtoms,eF
 
 def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llist=[],mlist=[],FermiRef=True,Normalize=False):
+    print 'SiestaIO.ExtractPDOS: Reading',filename 
     head,tail =  os.path.split(filename)
+    nspin,norb,ev,pdos,usedOrbitals,usedAtoms,eF = ReadPDOSFile(filename,index,atom_index,species,nlist,llist,mlist)
     if FermiRef:
         # Set energy reference to the Fermi energy
-        eF = GetFermiEnergy(head+'/RUN.out')
         if eF == 0.0:
-            print 'SIO.ExtractPDOS: Reading',filename[:-5]+'.EIG'
+            eF = GetFermiEnergy(head+'/RUN.out')
+        if eF == 0.0:
+            print 'SiestaIO.ExtractPDOS: Reading',filename[:-5]+'.EIG'
             eF = ReadEIGfile(filename[:-5]+'.EIG')
             print '... eF = %.4f eV'%eF
     else:
         # Set energy reference to SIESTAs internal
         eF = 0.0
-    nspin,norb,ev,pdos,usedOrbitals,usedAtoms = ReadPDOSFile(filename,index,atom_index,species,nlist,llist,mlist)
     if Normalize:
         pdos = pdos/len(usedAtoms)
-        print 'SIO.ExtractPDOS: Normalizing PDOS to states/atom/eV'
+        print 'SiestaIO.ExtractPDOS: Normalizing PDOS to states/atom/eV'
     if outfile!=None: # Write to file or return lists
         if nspin == 1: # No spin
-            print 'SIO.ExtractPDOS: Writing', outfile
+            print 'SiestaIO.ExtractPDOS: Writing', outfile
             f = open(outfile,'w')
             for i in range(len(ev)):
                 f.write('%.6f %.9f\n'%(ev[i]-eF,pdos[i]))
             f.close()
         elif nspin == 2: # Spin polarized
-            print 'SIO.ExtractPDOS: Writing', outfile
+            print 'SiestaIO.ExtractPDOS: Writing', outfile
             f = open(outfile,'w')
             for i in range(len(ev)):
                 f.write('%.6f %.9f %.9f\n'%(ev[i]-eF,pdos[2*i],-pdos[2*i+1]))
