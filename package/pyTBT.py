@@ -250,7 +250,7 @@ Voltage                         : %f
     general.Elist = Elist
 
     WritePDOS(outFile+'.PDOS.gz',general,myGF,DOSL+DOSR)
-    WritePDOS(outFile+'.PDOSL.gz',general,myGF,DOSR)
+    WritePDOS(outFile+'.PDOSL.gz',general,myGF,DOSL)
     WritePDOS(outFile+'.PDOSR.gz',general,myGF,DOSR)
     
     # Things only needed for SDOS script
