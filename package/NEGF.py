@@ -5,7 +5,6 @@ import MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
 import sys, string
-import scipy.linalg as SA
 
 
 ################## Help functions ############################
