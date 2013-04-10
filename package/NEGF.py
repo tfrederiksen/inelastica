@@ -5,6 +5,7 @@ import MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
 import sys, string
+import scipy.linalg as SA
 
 
 ################## Help functions ############################
@@ -208,13 +209,14 @@ class ElectrodeSelfEnergy:
             iteration+=1
             oldeps, oldepss = eps.copy(), epss.copy()
             oldalpha, oldbeta = alpha.copy(), beta.copy()
-            tmp=LA.inv(ee*S - oldeps)
-            alpha, beta = MM.mm(oldalpha,tmp,oldalpha), MM.mm(oldbeta,tmp,oldbeta)
-            eps = oldeps + MM.mm(oldalpha,tmp,oldbeta)+MM.mm(oldbeta,tmp,oldalpha)
+            tmpa=LA.solve(ee*S - oldeps,oldalpha)
+            tmpb=LA.solve(ee*S - oldeps,oldbeta)
+            alpha, beta = MM.mm(oldalpha,tmpa), MM.mm(oldbeta,tmpb)
+            eps = oldeps + MM.mm(oldalpha,tmpb)+MM.mm(oldbeta,tmpa)
             if left:
-                epss = oldepss + MM.mm(oldalpha,tmp,oldbeta)
+                epss = oldepss + MM.mm(oldalpha,tmpb)
             else:
-                epss = oldepss + MM.mm(oldbeta,tmp,oldalpha)
+                epss = oldepss + MM.mm(oldbeta,tmpa)
             LopezConvTest=N.max(abs(alpha)+abs(beta))
             if LopezConvTest<1.0e-40:
                 gs=LA.inv(ee*S-epss)
