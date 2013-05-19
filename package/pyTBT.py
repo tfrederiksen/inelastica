@@ -34,20 +34,6 @@ try:
 except:
     hasSciPy = False 
 
-################### Help functions ############################
-try:
-    import F90helpers as F90
-    F90imported = True
-except:
-    F90imported = False
-    print "########################################################"
-    print "Perhaps time to compile F90/setkpointhelper"
-    print "Try:" 
-    print "        cd F90;source compile.bat"
-    print "########################################################"
-
-
-
 ################### Main program ############################
 def main():
     usage = "usage: %prog [options] DestinationDirectory"
@@ -252,29 +238,21 @@ Voltage                         : %f
     WritePDOS(outFile+'.PDOS.gz',general,myGF,DOSL+DOSR)
     WritePDOS(outFile+'.PDOSL.gz',general,myGF,DOSL)
     WritePDOS(outFile+'.PDOSR.gz',general,myGF,DOSR)
+
     
-    # Things only needed for SDOS script
-    return elecL, elecR, myGF, devSt, devEnd, Elist,eta, general.systemlabel
-
-if __name__ == '__main__':
-    main()
 
 
 
-
-# SDOS stuff
-"""
-Calculate DOS from the surface Green's function from electrode calculations
-
-NOTE! The DOS is a sum over the atoms of the unitcell.
-NOTE! The outfile contains the DOS divided into s,p,d,f shells.
-      This decomposition is not perfect since polarized basis orbitals
-      will end up in L+1 part, i.e., 6s polarized orbital = 6p
-"""
-
-#####################################################
-# Main program
 def WritePDOS(fn,general,myGF,DOS):
+    """
+    PDOS from the surface Green's function from electrode calculations
+    
+    NOTE! The DOS is a sum over the atoms of the unitcell.
+    NOTE! The outfile contains the DOS divided into s,p,d,f shells.
+    This decomposition is not perfect since polarized basis orbitals
+    will end up in L+1 part, i.e., 6s polarized orbital = 6p
+    """
+
     import xml.dom.minidom as xml
     import gzip
 

@@ -7,19 +7,6 @@ import numpy.linalg as LA
 import sys, string
 
 
-################## Help functions ############################
-try:
-    import F90helpers as F90
-    F90imported = True
-except:
-    F90imported = False
-    print "########################################################"
-    print "Perhaps time to compile F90/setkpointhelper"
-    print "Try:" 
-    print "        cd F90;source compile.bat"
-    print "########################################################"
-
-
 class ElectrodeSelfEnergy:
     """ 
     Calculate surface Greensfunction and self energy
@@ -94,8 +81,8 @@ class ElectrodeSelfEnergy:
                 kpoint[1]+=ik2*1.0/NA2
                 g0=self.getg0(eeshifted,kpoint,left=left,ispin=ispin)             
                 matESmH = eeshifted*self.S-self.H[ispin,:,:]
-                if F90imported and UseF90helpers:
-                    ESmH, SGF = F90.f90distributegs(loop=N.array(loop,N.int), nuo=nuo,\
+                if SIO.F90imported and UseF90helpers:
+                    ESmH, SGF = SIO.F90.f90distributegs(loop=N.array(loop,N.int), nuo=nuo,\
                                   nua=nua, na1=NA1, na2=NA2, kpoint=kpoint,\
                                   matesmh=matESmH, g0=g0, esmh=ESmH, sgf=SGF)
                 else:
