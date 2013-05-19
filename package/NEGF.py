@@ -24,7 +24,7 @@ class ElectrodeSelfEnergy:
         self.kpoint = N.array([1e10,1e10],N.float)
         self.voltage = voltage
 
-    def getSig(self,ee,qp=N.array([0,0],N.float),left=True,Bulk=False,ispin=0,UseF90helpers=True):
+    def getSig(self,ee,qp=N.array([0,0],N.float),left=True,Bulk=False,ispin=0,UseF90helpers=True,etaLead=0.0):
         """
         Get self-energy for specified 2-D surface k-point 
         Copy out g0 (surface greens function for smaller electrode calculation) 
@@ -79,7 +79,8 @@ class ElectrodeSelfEnergy:
                 kpoint[1]=kpoint[1]/NA2
                 kpoint[0]+=ik1*1.0/NA1
                 kpoint[1]+=ik2*1.0/NA2
-                g0=self.getg0(eeshifted,kpoint,left=left,ispin=ispin)             
+                # Surface GF with possible extra imaginary part (etaLead):
+                g0=self.getg0(eeshifted+1j*etaLead,kpoint,left=left,ispin=ispin)             
                 matESmH = eeshifted*self.S-self.H[ispin,:,:]
                 if SIO.F90imported and UseF90helpers:
                     ESmH, SGF = SIO.F90.f90distributegs(loop=N.array(loop,N.int), nuo=nuo,\
@@ -107,6 +108,7 @@ class ElectrodeSelfEnergy:
     def getg0(self,ee,kpoint,left=True,ispin=0):
         # Calculate surface Green's function for small electrode calculation
         self.setupHS(kpoint)
+        print "NEGF.getg0: Constructing surface GF at (ReE,ImE) = (%.6e,%6e)"%(real(ee),imag(ee))
         return self.calcg0_old(ee,left=left,ispin=ispin)
         #Potentially faster method but seems to have numerical instability
         #if hasSciPy and :
@@ -332,7 +334,7 @@ class GF:
         # Quantities expressed in nonorthogonal basis:
         self.OrthogonalDeviceRegion = False
 
-    def calcGF(self,ee,kpoint,ispin=0):
+    def calcGF(self,ee,kpoint,ispin=0,etaLead=0.0):
         "Calculate GF etc at energy ee and 2d k-point"
 
         nuo, nuoL, nuoR = self.nuo, self.nuoL, self.nuoR
@@ -342,8 +344,8 @@ class GF:
         self.setkpoint(kpoint,ispin=ispin)
 
         # Calculate Sigma without folding
-        SigL0 = self.elecL.getSig(ee,kpoint,left=True,Bulk=self.Bulk,ispin=ispin)
-        SigR0 = self.elecR.getSig(ee,kpoint,left=False,Bulk=self.Bulk,ispin=ispin)
+        SigL0 = self.elecL.getSig(ee,kpoint,left=True,Bulk=self.Bulk,ispin=ispin,etaLead=etaLead)
+        SigR0 = self.elecR.getSig(ee,kpoint,left=False,Bulk=self.Bulk,ispin=ispin,etaLead=etaLead)
         
         if FoldedL:
             # Fold down from nuoL0 to the device region
@@ -351,9 +353,7 @@ class GF:
             # A21 A22  *  g21 g22  = 0 I ->
             # g22 = (A22-A21.A11^-1.A12)^-1 ->
             # Sigma = A21.A11^-1.A12          (tau=A12)
-            
             devEndL = self.devEndL
-
             # Do folding
             eSmH = ee*self.S0-self.H0                                        
             eSmHmS = eSmH[0:devEndL,0:devEndL].copy()                             
@@ -372,9 +372,7 @@ class GF:
 
         if FoldedR:
             # Fold down from nuoR0 to the device region
-            
             devStR = self.devStR
-
             eSmH = ee*self.S0-self.H0                      
             eSmHmS = eSmH[devStR-1:nuo0,devStR-1:nuo0].copy()
             tmpnuo=len(eSmHmS)                             

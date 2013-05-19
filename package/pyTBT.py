@@ -45,8 +45,10 @@ For help use --help!
     # Determine keywords provided
     parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]",
                       type='int', default=10)
-    parser.add_option("-e","--eta", dest="eta", help="Imaginary part in self-energies [%default eV]",
+    parser.add_option("-e","--eta", dest="eta", help="Imaginary part added to all energies (device and leads) [%default eV]",
                       type='float', default=0.000001)
+    parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
+                      type='float', default=0.0)
     parser.add_option("-x","--Nk1", dest='Nk1', default=1,type='int',
                       help="k-points Nk1 [%default]")
     parser.add_option("-y","--Nk2", dest='Nk2', default=1,type='int',
@@ -117,6 +119,7 @@ For help use --help!
     #Nk1=SIO.GetFDFlineWithDefault(fn,'pyTBT.K_A1', int, 1, 'pyTBT')
     #Nk2=SIO.GetFDFlineWithDefault(fn,'pyTBT.K_A2', int, 1, 'pyTBT')
     eta = general.eta
+    etaLead = general.etaLead
     Nk1 = general.Nk1
     Nk2 = general.Nk2
 
@@ -142,15 +145,15 @@ pyTBT
 
 Energy [eV]                     : %f:%f:%f
 kpoints                         : %i, %i 
-eta [eV]                        : %f 
+eta [eV]                        : %f
+etaLead [eV]                    : %f
 Device [Atoms Siesta numbering] : %i:%i 
 Bulk                            : %s
 SpinPolarization                : %i
 Voltage                         : %f
 ##############################################################
 
-"""%(minE,dE,maxE,Nk1,Nk2,eta,devSt,devEnd,UseBulk,nspin,voltage)
-
+"""%(minE,dE,maxE,Nk1,Nk2,eta,etaLead,devSt,devEnd,UseBulk,nspin,voltage)
     
     channels = general.numchan
     Tkpt=N.zeros((len(Elist),Nk1,Nk2,channels+1),N.float)
@@ -162,7 +165,7 @@ Voltage                         : %f
             fo=open(outFile+'.AVTRANS','write')
         else:
             fo=open(outFile+['.UP','.DOWN'][iSpin]+'.AVTRANS','write')
-        fo.write('# Nk1=%i Nk2=%i eta=%.2e\n'%(Nk1,Nk2,eta))
+        fo.write('# Nk1=%i Nk2=%i eta=%.2e etaLead=%.2e\n'%(Nk1,Nk2,eta,etaLead))
         fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
         # Loop over energy
         for ie, ee in enumerate(Elist):
@@ -179,7 +182,7 @@ Voltage                         : %f
                     if general.symmetry:
                         # Let Nk2 points sample only the range [0,0.5]
                         kpt[1] = kpt[1]/2
-                    myGF.calcGF(ee+eta*1.0j,kpt,ispin=iSpin)
+                    myGF.calcGF(ee+eta*1.0j,kpt,ispin=iSpin,etaLead=etaLead)
                     # Transmission:
                     T = myGF.calcT(channels)
                     Tavg += T/(Nk1*Nk2)
