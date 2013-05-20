@@ -108,7 +108,7 @@ class ElectrodeSelfEnergy:
     def getg0(self,ee,kpoint,left=True,ispin=0):
         # Calculate surface Green's function for small electrode calculation
         self.setupHS(kpoint)
-        print "NEGF.getg0: Constructing surface GF at (ReE,ImE) = (%.6e,%6e)"%(real(ee),imag(ee))
+        print "NEGF.getg0: Constructing surface GF at (ReE,ImE) = (%.6e,%6e)"%(ee.real,ee.imag)
         return self.calcg0_old(ee,left=left,ispin=ispin)
         #Potentially faster method but seems to have numerical instability
         #if hasSciPy and :
