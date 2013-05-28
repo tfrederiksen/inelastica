@@ -81,6 +81,9 @@ def calcTeig(general,myGF):
     # Matrix to save total and eigenchannel transmissions
     # BEFORE ORTHOGO
     T = myGF.calcT(general.numchan)
+
+    NEGF.SavedSig.close() # Make sure saved Sigma is written to file
+
     print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%general.energy
     for t in T:
         print '%.9f '%t,

@@ -211,6 +211,8 @@ Voltage                         : %f
                 print ee," ",N.sum(DOSL[ie,:]),N.sum(DOSR[ie,:]), '# DOS'
         fo.close()
         
+        NEGF.SavedSig.close() # Make sure saved Sigma is written to file
+        
         # Write k-point-resolved transmission
         if nspin<2:
             fo=open(outFile+'.TRANS','write')

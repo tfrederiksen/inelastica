@@ -5,7 +5,126 @@ import MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
 import sys, string
+import pickle, hashlib, glob, time, os 
+import Scientific.IO.NetCDF as NC
 
+def myHash(data):
+    return hashlib.md5(pickle.dumps(data)).hexdigest()
+def hash2dec(hash):
+    return [int(ii,16) for ii in hash]
+def dec2hash(dec):
+    s=''
+    for ii in range(len(dec)):
+        s=s+hex(dec[ii])[2:]
+    return s
+
+class SigDir:
+    def __init__(self,path):
+        self.path, self.data = path, {}
+        self.files, self.newFile = [], None
+        for ii in glob.glob(path+'/Sig*.nc'):
+            print ii 
+            self.add(ii)
+        
+    def add(self,fn):
+        ncfile = NC.NetCDFFile(fn,'r')
+        if 'Done' in ncfile.variables:
+            print "Read ",fn
+            ncv = ncfile.variables 
+            hash, hash2l, reE, imE, kp, LR, ispin, etaLead = ncv['hash'][:], ncv['hash2'][:], ncv['reE'][:], ncv['imE'][:], ncv['kp'][:], ncv['left'][:], ncv['ispin'][:], ncv['etaLead'][:]
+            hash = [dec2hash(ii) for ii in hash]
+            for ii in range(len(reE)):
+                hash2 = dec2hash(hash2l[ii])
+                print "Found ",hash2
+                self.data[hash2] = [ncfile, ii]
+            self.files+=[ncfile]
+        else:
+            ncfile.close()
+        
+    def getSig(self,hash,ee,kp,left,ispin,etaLead):
+        if left:
+            left=1
+        else:
+            left=0
+        hash2 = myHash([N.array(hash),N.array(ee.real),N.array(ee.imag),N.array(kp),N.array(left),N.array(ispin),N.array(etaLead)])
+        print "Get ",hash2
+        if hash2 in self.data:
+            print "Found"
+            ncf, ii = self.data[hash2]
+            return True, ncf.variables['reSig'][ii,:,:]+1j*ncf.variables['imSig'][ii,:,:]
+        else:
+            return False, None
+
+    def addSig(self,hash,ee,kp,left,ispin,etaLead,Sig):
+        #print "Add ",hash,ee,kp,left,ispin,etaLead,Sig
+        if left:
+            left=1
+        else:
+            left=0
+        if self.newFile == None:
+            self.newFileIndx = 0
+            nf = NC.NetCDFFile(self.path+'/Sig_'+str(N.floor(N.random.rand()*1e9))+\
+                                '.nc','w','Created '+time.ctime(time.time()))
+            nf.createDimension('One',1)
+            nf.createDimension('Two',2)
+            nf.createDimension('32',32)
+            nf.createDimension('Dim',len(Sig))
+            nf.createDimension('List',None)
+            nf.createVariable('kp','d',('List','Two'))
+            nf.createVariable('reE','d',('List',))
+            nf.createVariable('imE','d',('List',))
+            nf.createVariable('left','i',('List',))
+            nf.createVariable('hash','i',('List','32'))
+            nf.createVariable('hash2','i',('List','32'))
+            nf.createVariable('ispin','i',('List',))
+            nf.createVariable('etaLead','d',('List',))
+            nf.createVariable('reSig','d',('List','Dim','Dim'))
+            nf.createVariable('imSig','d',('List','Dim','Dim'))
+            self.newFile = nf
+            self.files+=[nf]
+        NN=self.newFileIndx
+        hash2=myHash([N.array(hash),N.array(ee.real),N.array(ee.imag),N.array(kp),N.array(left),N.array(ispin),N.array(etaLead)])
+        nfv=self.newFile.variables
+        nfv['hash'][NN,:], nfv['reE'][NN], nfv['imE'][NN] = hash2dec(hash), ee.real, ee.imag
+        nfv['hash2'][NN,:]= hash2dec(hash2)
+        nfv['kp'][NN,:], nfv['left'][NN], nfv['ispin'][NN], nfv['etaLead'][NN] = kp, left, ispin, etaLead
+        nfv['reSig'][NN,:,:], nfv['imSig'][NN,:,:] = Sig.real, Sig.imag
+        print "Put ", hash2
+        self.data[hash2] = [self.newFile, NN]
+        self.newFileIndx+=1
+
+    def close(self):
+        if not self.newFile==None:
+            print "1"
+            var=self.newFile.createVariable('Done','i',('One',))
+            print "2"
+            var = 1
+        for f in self.files:
+            print "Close!",f
+            f.close()
+
+class SavedSigClass:
+    """
+    Saves calculated Sig in files in the directory of the TSHS file for the electrode.
+    1: Each process opens a new file if it needs to write Sigma
+    2: The file cannot be read before the finnished flag is set
+    3: The integrity of the data is maintained by a hash of HS, NA1, NA2, voltage
+    """
+    def __init__(self):
+        self.sigs={}
+    def add_hsfile(self,path):
+        if not path in self.sigs:
+            self.sigs[path]=SigDir(path)
+    def getSig(self,path,hash,ee,kp,left,ispin,etaLead):
+        return self.sigs[path].getSig(hash,ee,kp,left,ispin,etaLead)
+    def addSig(self,path,hash,ee,kp,left,ispin,etaLead,Sig):
+        self.sigs[path].addSig(hash,ee,kp,left,ispin,etaLead,Sig)
+    def close(self):
+        for ii in self.sigs: self.sigs[ii].close()
+        self.sigs={}
+        
+global SavedSig
+SavedSig = SavedSigClass()
 
 class ElectrodeSelfEnergy:
     """ 
@@ -14,8 +133,12 @@ class ElectrodeSelfEnergy:
     For spinpolarized use the ispin given, for nonpolarized use 
     the same self-energy for both spin 
     """
+    global SavedSig
     def __init__(self,fn,NA1,NA2,voltage=0.0,UseF90helpers=True):
+        self.path = os.path.split(os.path.abspath(fn))[0]
         self.HS=SIO.HS(fn,UseF90helpers=UseF90helpers)
+        self.hash=myHash([self.HS,NA1,NA2,voltage])
+        SavedSig.add_hsfile(self.path)
         if self.HS.gamma:
             print "Are you trying to sneak a Gamma point electrode calculation past me?"
             kuk
@@ -24,7 +147,7 @@ class ElectrodeSelfEnergy:
         self.kpoint = N.array([1e10,1e10],N.float)
         self.voltage = voltage
 
-    def getSig(self,ee,qp=N.array([0,0],N.float),left=True,Bulk=False,ispin=0,UseF90helpers=True,etaLead=0.0):
+    def getSig(self,ee,qp=N.array([0,0],N.float),left=True,Bulk=False,ispin=0,UseF90helpers=True,etaLead=0.0,useSaved=True):
         """
         Get self-energy for specified 2-D surface k-point 
         Copy out g0 (surface greens function for smaller electrode calculation) 
@@ -42,6 +165,10 @@ class ElectrodeSelfEnergy:
 
         eeshifted = ee-self.voltage # Shift of self energies due to voltage
         
+        if useSaved:
+            Found, Sig = SavedSig.getSig(self.path,self.hash,eeshifted,qp,left*1,ispin,etaLead)
+            if Found: return Sig
+
         if ispin>=self.HS.nspin:
             ispin=0
             print "Warning: Non-spinpolarized electrode calculation used for both spin up and down"
@@ -103,12 +230,14 @@ class ElectrodeSelfEnergy:
             Sig=ESmH-LA.inv(SGF)
         else:
             Sig=LA.inv(SGF)
+        if useSaved:
+            SavedSig.addSig(self.path,self.hash,eeshifted,qp,left,ispin,etaLead,Sig)
         return Sig
 
     def getg0(self,ee,kpoint,left=True,ispin=0):
         # Calculate surface Green's function for small electrode calculation
         self.setupHS(kpoint)
-        print "NEGF.getg0: Constructing surface GF at (ReE,ImE) = (%.6e,%6e)"%(ee.real,ee.imag)
+        #print "NEGF.getg0: Constructing surface GF at (ReE,ImE) = (%.6e,%6e)"%(ee.real,ee.imag)
         return self.calcg0_old(ee,left=left,ispin=ispin)
         #Potentially faster method but seems to have numerical instability
         #if hasSciPy and :
