@@ -100,8 +100,9 @@ class SigDir:
             print "2"
             var = 1
         for f in self.files:
-            print "Close!",f
+            print "Closing",f
             f.close()
+            print "...done!"
 
 class SavedSigClass:
     """
@@ -147,7 +148,7 @@ class ElectrodeSelfEnergy:
         self.kpoint = N.array([1e10,1e10],N.float)
         self.voltage = voltage
 
-    def getSig(self,ee,qp=N.array([0,0],N.float),left=True,Bulk=False,ispin=0,UseF90helpers=True,etaLead=0.0,useSaved=True):
+    def getSig(self,ee,qp=N.array([0,0],N.float),left=True,Bulk=False,ispin=0,UseF90helpers=True,etaLead=0.0,useSigNCfiles=False):
         """
         Get self-energy for specified 2-D surface k-point 
         Copy out g0 (surface greens function for smaller electrode calculation) 
@@ -165,7 +166,7 @@ class ElectrodeSelfEnergy:
 
         eeshifted = ee-self.voltage # Shift of self energies due to voltage
         
-        if useSaved:
+        if useSigNCfiles:
             Found, Sig = SavedSig.getSig(self.path,self.hash,eeshifted,qp,left*1,ispin,etaLead)
             if Found: return Sig
 
@@ -230,7 +231,7 @@ class ElectrodeSelfEnergy:
             Sig=ESmH-LA.inv(SGF)
         else:
             Sig=LA.inv(SGF)
-        if useSaved:
+        if useSigNCfiles:
             SavedSig.addSig(self.path,self.hash,eeshifted,qp,left,ispin,etaLead,Sig)
         return Sig
 
@@ -463,7 +464,7 @@ class GF:
         # Quantities expressed in nonorthogonal basis:
         self.OrthogonalDeviceRegion = False
 
-    def calcGF(self,ee,kpoint,ispin=0,etaLead=0.0):
+    def calcGF(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=True):
         "Calculate GF etc at energy ee and 2d k-point"
 
         nuo, nuoL, nuoR = self.nuo, self.nuoL, self.nuoR
@@ -473,8 +474,8 @@ class GF:
         self.setkpoint(kpoint,ispin=ispin)
 
         # Calculate Sigma without folding
-        SigL0 = self.elecL.getSig(ee,kpoint,left=True,Bulk=self.Bulk,ispin=ispin,etaLead=etaLead)
-        SigR0 = self.elecR.getSig(ee,kpoint,left=False,Bulk=self.Bulk,ispin=ispin,etaLead=etaLead)
+        SigL0 = self.elecL.getSig(ee,kpoint,left=True,Bulk=self.Bulk,ispin=ispin,etaLead=etaLead,useSigNCfiles=useSigNCfiles)
+        SigR0 = self.elecR.getSig(ee,kpoint,left=False,Bulk=self.Bulk,ispin=ispin,etaLead=etaLead,useSigNCfiles=useSigNCfiles)
         
         if FoldedL:
             # Fold down from nuoL0 to the device region

@@ -59,8 +59,10 @@ For help use --help!
                       help="Avoid gamma point in k-point sampling [%default]")
     parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
                       help="Input fdf-file for TranSIESTA calculations [%default]")
-    parser.add_option("-d", "--skip-dos", dest='dos',default=True,action='store_true',
-                      help="Calculate DOS calculation? [%default]")
+    parser.add_option("-d", "--skipDOS", dest='dos',default=True,action='store_false',
+                      help="Skip calculation of PDOS [%default]")
+    parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
+                      help="Use SigNCfiles [%default]")
 
     (general, args) = parser.parse_args()
     print description
@@ -156,15 +158,15 @@ Voltage                         : %f
 """%(minE,dE,maxE,Nk1,Nk2,eta,etaLead,devSt,devEnd,UseBulk,nspin,voltage)
     
     channels = general.numchan
-    Tkpt=N.zeros((len(Elist),Nk1,Nk2,channels+1),N.float)
-    DOSL=N.zeros((len(Elist),myGF.nuo),N.float)
-    DOSR=N.zeros((len(Elist),myGF.nuo),N.float)
+    if general.dos:
+        DOSL=N.zeros((nspin,len(Elist),myGF.nuo),N.float)
+        DOSR=N.zeros((nspin,len(Elist),myGF.nuo),N.float)
     # Loop over spin
     for iSpin in range(nspin):
-        if nspin<2:
-            fo=open(outFile+'.AVTRANS','write')
-        else:
-            fo=open(outFile+['.UP','.DOWN'][iSpin]+'.AVTRANS','write')
+        Tkpt=N.zeros((len(Elist),Nk1,Nk2,channels+1),N.float)
+        if nspin<2: thisspinlabel = outFile
+        else: thisspinlabel = outFile+['.UP','.DOWN'][iSpin]
+        fo=open(thisspinlabel+'.AVTRANS','write')
         fo.write('# Nk1=%i Nk2=%i eta=%.2e etaLead=%.2e\n'%(Nk1,Nk2,eta,etaLead))
         fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
         # Loop over energy
@@ -182,7 +184,7 @@ Voltage                         : %f
                     if general.symmetry:
                         # Let Nk2 points sample only the range [0,0.5]
                         kpt[1] = kpt[1]/2
-                    myGF.calcGF(ee+eta*1.0j,kpt,ispin=iSpin,etaLead=etaLead)
+                    myGF.calcGF(ee+eta*1.0j,kpt,ispin=iSpin,etaLead=etaLead,useSigNCfiles=general.signc)
                     # Transmission:
                     T = myGF.calcT(channels)
                     Tavg += T/(Nk1*Nk2)
@@ -206,18 +208,13 @@ Voltage                         : %f
             fo.write(transline)
             # Partial density of states:
             if general.dos:
-                DOSL[ie,:] += N.diag(AavL).real/(Nk1*Nk2*2*N.pi)
-                DOSR[ie,:] += N.diag(AavR).real/(Nk1*Nk2*2*N.pi)
-                print ee," ",N.sum(DOSL[ie,:]),N.sum(DOSR[ie,:]), '# DOS'
+                DOSL[iSpin,ie,:] += N.diag(AavL).real/(Nk1*Nk2*2*N.pi)
+                DOSR[iSpin,ie,:] += N.diag(AavR).real/(Nk1*Nk2*2*N.pi)
+                print 'ispin= %i, e= %.4f, DOSL= %.4f, DOSR= %.4f'%(iSpin,ee,N.sum(DOSL[iSpin,ie,:]),N.sum(DOSR[iSpin,ie,:]))
         fo.close()
         
-        NEGF.SavedSig.close() # Make sure saved Sigma is written to file
-        
         # Write k-point-resolved transmission
-        if nspin<2:
-            fo=open(outFile+'.TRANS','write')
-        else:
-            fo=open(outFile+['.UP','.DOWN'][iSpin]+'.TRANS','write')
+        fo=open(thisspinlabel+'.TRANS','write')
         for ik1 in range(Nk1):
             for ik2 in range(Nk2):
                 kpt=N.array([ik1/float(Nk1),ik2/float(Nk2)],N.float)
@@ -235,18 +232,16 @@ Voltage                         : %f
                             transline += '%.4e '%Tkpt[ie,ik1,ik2,ichan]
                     fo.write(transline)
         fo.close()
-
+    # End loop over spin
+    NEGF.SavedSig.close() # Make sure saved Sigma is written to file
     general.devSt = devSt
     general.devEnd = devEnd
     general.Elist = Elist
-
-    WritePDOS(outFile+'.PDOS.gz',general,myGF,DOSL+DOSR)
-    WritePDOS(outFile+'.PDOSL.gz',general,myGF,DOSL)
-    WritePDOS(outFile+'.PDOSR.gz',general,myGF,DOSR)
-
+    if general.dos:
+        WritePDOS(outFile+'.PDOS.gz',general,myGF,DOSL+DOSR)
+        WritePDOS(outFile+'.PDOSL.gz',general,myGF,DOSL)
+        WritePDOS(outFile+'.PDOSR.gz',general,myGF,DOSR)
     
-
-
 
 def WritePDOS(fn,general,myGF,DOS):
     """
@@ -288,9 +283,10 @@ def WritePDOS(fn,general,myGF,DOS):
         orb.setAttribute('n','%i'%basis.N[io])
         orb.setAttribute('l','%i'%basis.L[io])
         orb.setAttribute('m','%i'%basis.M[io])
-        xmladd(doc,orb,'data',myprint(DOS[:,ii]))
+        xmladd(doc,orb,'data',myprint(DOS[:,:,ii]))
     doc.writexml(gzip.GzipFile(fn,'w'))
 
+    # Make plot
     atoms = list(set(basis.label))
     lVals  = list(set(basis.L))
     plots = [[atoms,lVals,'Tot']]
@@ -298,7 +294,6 @@ def WritePDOS(fn,general,myGF,DOS):
     plots += [[[atom],lVals,atom+' Tot'] for atom in atoms]
     plots += [[[atom],[lVal],atom+' L=%i'%lVal] for lVal in lVals for atom in atoms]
 
-    # Make plot
     import WriteXMGR as XMGR
     g = XMGR.Graph()
     for atom, lVal, name in plots:
@@ -321,11 +316,20 @@ def WritePDOS(fn,general,myGF,DOS):
     p = XMGR.Plot(fn+'.xmgr',g)
     p.WriteFile()
 
-def myprint(x): # Do numpy list to string
-    str=''
-    for ii in range(len(x)):
-        str+='%s\n'%x[ii]
-    return str
+def myprint(x): # Do numpy vector or matrix to string
+    s = ''
+    dim = len(x.shape)
+    if dim==1:
+        rows, = x.shape
+        for i in range(rows):
+            s += '%s\n'%x[i]
+    if dim==2:
+        columns,rows = x.shape
+        for i in range(rows):
+            for j in range(columns):
+                s += '%s '%x[j,i]
+            s += '\n'
+    return s
 
 def xmladd(doc,parent,name,values):
     # Who came up with xml ... accountant moroons?
