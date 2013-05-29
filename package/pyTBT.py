@@ -33,7 +33,7 @@ try:
     hasSciPy = True
 except:
     hasSciPy = False 
-
+        
 ################### Main program ############################
 def main():
     usage = "usage: %prog [options] DestinationDirectory"
@@ -53,8 +53,12 @@ For help use --help!
                       help="k-points Nk1 [%default]")
     parser.add_option("-y","--Nk2", dest='Nk2', default=1,type='int',
                       help="k-points Nk2 [%default]")
+    parser.add_option("-a","--Gk1", dest='Gk1', default=0,type='int',
+                      help="Gaussian quadrature k-point sampling a1 dir gives N*(N+1) points [%default]")
+    parser.add_option("-b","--Gk2", dest='Gk2', default=0,type='int',
+                      help="Gaussian quadrature k-point sampling a2 dir gives N*(N+1) points [%default]")
     parser.add_option("-s", "--sym", dest='symmetry',default=False,action='store_true',
-                      help="Use time reversal symmetry to reduce number of k-points (Nk2 points sample only the range [0,0.5]) [%default]")
+                      help="Use time reversal symmetry to reduce number of k-points. Only usefull with Nk1=Nk2 or Gk1=Gk2 [%default]")
     parser.add_option("-g", "--avoid-gamma", dest='skipgamma',default=False,action='store_true',
                       help="Avoid gamma point in k-point sampling [%default]")
     parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
@@ -78,9 +82,6 @@ For help use --help!
     # Make sure to avoid Gamma point if time-reversal symmetry is used
     if general.symmetry:
         print 'pyTBT: Applying time-reversal symmetry (Nk2=%i sampling in the range [0,0.5])'%general.Nk2
-        if not general.skipgamma:
-            print '... needs to avoid Gamma point. Using flag -g (skipgamma)'
-            general.skipgamma = True
     
     # Read options from fdf files
     ##############################################################################
@@ -122,9 +123,9 @@ For help use --help!
     #Nk2=SIO.GetFDFlineWithDefault(fn,'pyTBT.K_A2', int, 1, 'pyTBT')
     eta = general.eta
     etaLead = general.etaLead
-    Nk1 = general.Nk1
-    Nk2 = general.Nk2
 
+    kPointList, kWeights, NNk, Nk1, Nk2, GaussKronrod = getKpoints(general)
+    
     general.systemlabel = SIO.GetFDFlineWithDefault(fn,'SystemLabel', str, 'Systemlabel', 'pyTBT')
 
     outFile=general.DestDir+'/'+general.systemlabel + '.%ix%i'%(Nk1,Nk2)
@@ -163,74 +164,70 @@ Voltage                         : %f
         DOSR=N.zeros((nspin,len(Elist),myGF.nuo),N.float)
     # Loop over spin
     for iSpin in range(nspin):
-        Tkpt=N.zeros((len(Elist),Nk1,Nk2,channels+1),N.float)
+        Tkpt=N.zeros((len(Elist),NNk,channels+1),N.float)
         if nspin<2: thisspinlabel = outFile
         else: thisspinlabel = outFile+['.UP','.DOWN'][iSpin]
         fo=open(thisspinlabel+'.AVTRANS','write')
         fo.write('# Nk1=%i Nk2=%i eta=%.2e etaLead=%.2e\n'%(Nk1,Nk2,eta,etaLead))
-        fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
+        if GaussKronrod: fo.write('# E   Ttot(E)   Ti(E) (i=1-10) T_error(E)\n')
+        else: fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
         # Loop over energy
         for ie, ee in enumerate(Elist):
-            Tavg = N.zeros(channels+1,N.float)
+            Tavg = N.zeros((channels+1,len(kWeights)),N.float)
             AavL = N.zeros((myGF.nuo,myGF.nuo),N.complex)
             AavR = N.zeros((myGF.nuo,myGF.nuo),N.complex)
             # Loops over k-points
-            for ik1 in range(Nk1):
-                for ik2 in range(Nk2):
-                    kpt=N.array([ik1/float(Nk1),ik2/float(Nk2)],N.float)
-                    if general.skipgamma:
-                        # Add \Delta k/2 to shift away from Gamma
-                        kpt += N.array([1./float(2*Nk1),1./float(2*Nk2)],N.float)
-                    if general.symmetry:
-                        # Let Nk2 points sample only the range [0,0.5]
-                        kpt[1] = kpt[1]/2
-                    myGF.calcGF(ee+eta*1.0j,kpt,ispin=iSpin,etaLead=etaLead,useSigNCfiles=general.signc)
-                    # Transmission:
-                    T = myGF.calcT(channels)
-                    Tavg += T/(Nk1*Nk2)
-                    Tkpt[ie,ik1,ik2] = T
-                    # DOS calculation:
-                    if general.dos:
-                        GamL, GamR, Gr = myGF.GamL, myGF.GamR, myGF.Gr
-                        nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
-                        AL = MM.mm(Gr[:,0:nuoL],GamL,MM.dagger(Gr)[0:nuoL,:])
-                        AR = MM.mm(Gr[:,nuo-nuoR:nuo],GamR,MM.dagger(Gr)[nuo-nuoR:nuo,:])
-                        AavL += MM.mm(AL,myGF.S)
-                        AavR += MM.mm(AR,myGF.S)
+            for ik in range(NNk):
+                kpt=N.array(kPointList[ik],N.float)
+                myGF.calcGF(ee+eta*1.0j,kpt,ispin=iSpin,etaLead=etaLead,useSigNCfiles=general.signc)
+                # Transmission:
+                T = myGF.calcT(channels)
+                for iw in range(len(kWeights)):
+                    Tavg[:,iw] += T*kWeights[iw][ik]
+                Tkpt[ie,ik] = T
+                # DOS calculation:
+                if general.dos:
+                    GamL, GamR, Gr = myGF.GamL, myGF.GamR, myGF.Gr
+                    nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
+                    AL = MM.mm(Gr[:,0:nuoL],GamL,MM.dagger(Gr)[0:nuoL,:])
+                    AR = MM.mm(Gr[:,nuo-nuoR:nuo],GamR,MM.dagger(Gr)[nuo-nuoR:nuo,:])
+                    AavL += kWeights[0][ik]*MM.mm(AL,myGF.S)
+                    AavR += kWeights[0][ik]*MM.mm(AR,myGF.S)
             # Print calculated quantities
-            print ee, Tavg
+            if GaussKronrod:
+                err = (N.abs(Tavg[0,0]-Tavg[1,0])+N.abs(Tavg[0,0]-Tavg[2,0]))/2
+                print ee, Tavg[:,0], err
+            else:
+                print ee, Tavg[:,0]
+            
             transline = '\n%.10f '%ee
             for ichan in range(channels+1):
                 if ichan==0:
-                    transline += '%.8e '%Tavg[ichan]
+                    transline += '%.8e '%Tavg[ichan,0]
                 else:
-                    transline += '%.4e '%Tavg[ichan]
+                    transline += '%.4e '%Tavg[ichan,0]
+            if GaussKronrod: transline += '%.4e '%err
             fo.write(transline)
             # Partial density of states:
             if general.dos:
-                DOSL[iSpin,ie,:] += N.diag(AavL).real/(Nk1*Nk2*2*N.pi)
-                DOSR[iSpin,ie,:] += N.diag(AavR).real/(Nk1*Nk2*2*N.pi)
+                DOSL[iSpin,ie,:] += N.diag(AavL).real/(2*N.pi)
+                DOSR[iSpin,ie,:] += N.diag(AavR).real/(2*N.pi)
                 print 'ispin= %i, e= %.4f, DOSL= %.4f, DOSR= %.4f'%(iSpin,ee,N.sum(DOSL[iSpin,ie,:]),N.sum(DOSR[iSpin,ie,:]))
         fo.close()
         
         # Write k-point-resolved transmission
         fo=open(thisspinlabel+'.TRANS','write')
-        for ik1 in range(Nk1):
-            for ik2 in range(Nk2):
-                kpt=N.array([ik1/float(Nk1),ik2/float(Nk2)],N.float)
-                if general.skipgamma:
-                    kpt += N.array([1./float(2*Nk1),1./float(2*Nk2)],N.float)
-                if general.symmetry:
-                    kpt[1] = kpt[1]/2
-                fo.write('\n\n# k = %f, %f '%(kpt[0],kpt[1]))
-                for ie, ee in enumerate(Elist):
-                    transline = '\n%.10f '%ee
-                    for ichan in range(channels+1):
-                        if ichan==0:
-                            transline += '%.8e '%Tkpt[ie,ik1,ik2,ichan]
-                        else:
-                            transline += '%.4e '%Tkpt[ie,ik1,ik2,ichan]
-                    fo.write(transline)
+        for ik in range(NNk):
+            kpt=kPointList[ik]
+            fo.write('\n\n# k = %f, %f '%(kpt[0],kpt[1]))
+            for ie, ee in enumerate(Elist):
+                transline = '\n%.10f '%ee
+                for ichan in range(channels+1):
+                    if ichan==0:
+                        transline += '%.8e '%Tkpt[ie,ik,ichan]
+                    else:
+                        transline += '%.4e '%Tkpt[ie,ik,ichan]
+                fo.write(transline)
         fo.close()
     # End loop over spin
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
@@ -337,4 +334,63 @@ def xmladd(doc,parent,name,values):
     parent.appendChild(elem)
     txt=doc.createTextNode(values)
     elem.appendChild(txt)
+
+def getKpoints(general):
+    # Do 1-D k-points
+    if general.Gk1!=0 or general.Gk2!=0:
+        GaussKronrod=True
+        kl1, kwl1, kwle1 = MM.GaussKronrod(general.Gk1)
+        kl2, kwl2, kwle2 = MM.GaussKronrod(general.Gk2)        
+    else:
+        GaussKronrod=False
+        kl1 = [(ii*1.0)/general.Nk1-0.5+0.5/general.Nk1 for ii in range(general.Nk1)]
+        kwl1 = [1.0/general.Nk1 for ii in range(general.Nk1)]
+        kl2 = [(ii*1.0)/general.Nk2-0.5+0.5/general.Nk2 for ii in range(general.Nk2)]
+        kwl2 = [1.0/general.Nk2 for ii in range(general.Nk2)]
+        kl1, kwl1, kl2, kwl2 = N.array(kl1), N.array(kwl1), N.array(kl2), N.array(kwl2)
+
+    # Shift away from gamma for normal k-points
+    if general.skipgamma and not GaussKronrod:
+        if general.Nk1%2==1: kl1 += 0.5/general.Nk1
+        if general.Nk2%2==1: kl2 += 0.5/general.Nk2
+
+    # Repeat out for 2D
+    kl, kwl = N.zeros((len(kl1)*len(kl2),2)), N.zeros((len(kl1)*len(kl2),))
+    if GaussKronrod:
+        TDkwle1, TDkwle2 = N.zeros((len(kl1)*len(kl2),)), N.zeros((len(kl1)*len(kl2),))
+    jj=0
+    for i1 in range(len(kl1)):
+        for i2 in range(len(kl2)):
+            kl[jj,:]=[kl1[i1],kl2[i2]]
+            kwl[jj]=kwl1[i1]*kwl2[i2]
+            if GaussKronrod:
+                TDkwle1[jj]=kwle1[i1]*kwl2[i2]
+                TDkwle2[jj]=kwl1[i1]*kwle2[i2]
+            jj+=1
+
+    # Remove duplicates for time-inversion symmetry
+    if general.symmetry:
+        indx = []
+        for i1 in range(len(kl)):
+            for i2 in range(len(indx)):
+                if N.allclose(-kl[i1],kl[indx[i2][0]],atol=1e-7,rtol=1e-7):
+                    indx[i2][1]+=1
+                    break
+            else:
+                indx+=[[i1,1]]
+        indx, weight   = N.array([ii[0] for ii in indx]), N.array([ii[1] for ii in indx])
+        kl, kwl = kl[indx], kwl[indx]*weight
+        if GaussKronrod:
+            TDkwle1, TDkwle2 = TDkwle1[indx]*weight, TDkwle2[indx]*weight
+
+    print kl
+    print kwl
+    print TDkwle1
+    print TDkwle2
+    
+    if GaussKronrod:
+        return kl, [kwl, TDkwle1, TDkwle2], len(kl), general.Gk1, general.Gk1, GaussKronrod
+    else:
+        return kl, [kwl], len(kl), general.Nk1, general.Nk1, GaussKronrod
+
 
