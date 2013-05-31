@@ -195,7 +195,7 @@ Voltage                         : %f
                     AavR += kWeights[0][ik]*MM.mm(AR,myGF.S)
             # Print calculated quantities
             if GaussKronrod:
-                err = (N.abs(Tavg[0,0]-Tavg[1,0])+N.abs(Tavg[0,0]-Tavg[2,0]))/2
+                err = (N.abs(Tavg[0,0]-Tavg[0,1])+N.abs(Tavg[0,0]-Tavg[0,2]))/2
                 print ee, Tavg[:,0], err
             else:
                 print ee, Tavg[:,0]
