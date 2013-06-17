@@ -3,11 +3,12 @@ sys.path+=['..']
 
 import Inelastica.pyTBT as pyTBT
 import Inelastica.SiestaIO as SIO
+import Inelastica.NEGF as NEGF
 import numpy as N
 import numpy.random as RA
 
 def main():
-    if not pyTBT.F90imported:
+    if not SIO.F90imported:
         print "To test the F90 routines you better compile them first"
         kuk
 
@@ -37,14 +38,14 @@ def main():
 
     # Test removeUnitCellXij
     print 'TESTING removeUnitCellXij method'
-    elec1=pyTBT.surfaceGF('../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS',3,3,UseF90helpers=False)
-    elec2=pyTBT.surfaceGF('../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS',3,3,UseF90helpers=True)
+    elec1=NEGF.ElectrodeSelfEnergy('../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS',3,3,UseF90helpers=False)
+    elec2=NEGF.ElectrodeSelfEnergy('../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS',3,3,UseF90helpers=True)
     maxerr=N.max(abs(elec1.HS.xij-elec2.HS.xij))
     print "Maximum difference between Xij :",maxerr    
 
     # SurfaceGF
     print '\nTESTING pyTBT.surfaceGF method (1x1 vs 3x3)'
-    elec=pyTBT.surfaceGF('../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS',3,3)
+    elec=NEGF.ElectrodeSelfEnergy('../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS',3,3)
 
     for ii in range(10):
         k=N.array(RA.random(3),N.float)
