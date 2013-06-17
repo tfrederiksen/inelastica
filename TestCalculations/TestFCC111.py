@@ -1,13 +1,13 @@
 import sys, profile
 sys.path+=['../..']
 
-import Inelastica.pyTBT as pyTBT
+import Inelastica.NEGF as NEGF
 import numpy as N
 import numpy.random as RA
 
 def main():
-    elec1=pyTBT.surfaceGF('Self-energy-FCC111/ELEC-1x1/Au3D_BCA.TSHS',3,3)
-    elec3=pyTBT.surfaceGF('Self-energy-FCC111/ELEC-3x3/Au3D_BCA.TSHS',1,1)
+    elec1=NEGF.ElectrodeSelfEnergy('Self-energy-FCC111/ELEC-1x1/Au3D_BCA.TSHS',3,3)
+    elec3=NEGF.ElectrodeSelfEnergy('Self-energy-FCC111/ELEC-3x3/Au3D_BCA.TSHS',1,1)
     maxerr=0.0
 
     for ii in range(10):
