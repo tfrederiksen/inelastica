@@ -11,56 +11,59 @@ description = "Methods to calculate vibrations and e-ph couplings from SIESTA ou
 parser = OptionParser(description=description,usage=usage)
 
 parser.add_option("-F","--FCwildcard",dest="FCwildcard",
-                  help="Wildcard for FC directories [%default]",
+                  help="Wildcard for FC directories [default=%default]",
                   type="str",default="./FC*")
 
 parser.add_option("-O","--OSdir",dest="onlySdir",
-                  help="Location of OnlyS directory [%default]",
+                  help="Location of OnlyS directory [default=%default]",
                   type="str",default="./OSrun")
 
 parser.add_option("-c", "--CalcCoupl",dest="CalcCoupl",
-                  help="Calculate e-ph couplings [%default]",
+                  help="Calculate e-ph couplings [default=%default]",
                   action="store_true",default=False)
 
 parser.add_option("-l", "--label",dest="label",
-                  help="Label for output files [%default]",
+                  help="Label for output files [default=%default]",
                   type="str",default="Output")
 
 parser.add_option("--DeviceFirst",dest="DeviceFirst",
-                  help="First device atom index (in the electronic basis) [%default]",
+                  help="First device atom index (in the electronic basis) [default=%default]",
                   type="int",default=1)
 parser.add_option("--DeviceLast",dest="DeviceLast",
-                  help="Last device atom index (in the electronic basis) [%default]",
+                  help="Last device atom index (in the electronic basis) [default=%default]",
                   type="int",default=1e3)
 
 parser.add_option("--FCfirst",dest="FCfirst",
-                  help="First FC atom index [%default]",
+                  help="First FC atom index [default=%default]",
                   type="int",default=1)
 parser.add_option("--FClast", dest="FClast",
-                  help="Last FC atom index [%default]" ,
+                  help="Last FC atom index [default=%default]" ,
                   type="int",default=1e3)
 
 parser.add_option("--PBCfirst", dest="PerBoundCorrFirst",\
-                  help="For eliminating interactions through periodic boundary conditions in z-direction [%default]",
+                  help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
                   type="int",default=1)
 parser.add_option("--PBClast", dest="PerBoundCorrLast",\
-                  help="For eliminating interactions through periodic boundary conditions in z-direction [%default]",
+                  help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
                   type="int",default=1e3)
 
 parser.add_option("-s", "--PrintSOrbitals",dest="PrintSOrbitals",
-                  help="Print s-orbital part of device matrices [%default]",
+                  help="Print s-orbital part of device matrices [default=%default]",
                   action="store_true",default=False)
 
+parser.add_option("-a", "--AbsoluteEnergyReference",dest="AbsEref",
+                  help="Use an absolute energy reference (Fermi energy of equilibrium structure) for displaced Hamiltonians (e.g., when eF is not well-defined) instead of the instantaneous Fermi energy for the displaced geometries, cf. Eq.(17) in PRB 75, 205413 (2007) [default=%default]",action="store_true",default=False)
+
 parser.add_option("-n", "--AuxNCfile",dest="AuxNCfile",
-                  help="Optional filename for storing matrices in netcdf file instead of in memory [%default]",
+                  help="Optional filename for storing matrices in netcdf file instead of in memory [default=%default]",
                   default=None)
 
 parser.add_option("-i", "--Isotopes",dest="Isotopes",
-                  help="List of substitutions [[i1, anr1],...], where atom index i1 (SIESTA numbering) is set to be of type anr1 [%default]",
+                  help="List of substitutions [[i1, anr1],...], where atom index i1 (SIESTA numbering) is set to be of type anr1 [default=%default]",
                   default='[]')
 
 parser.add_option("-k", "--kpoint",dest="kpoint",
-                  help="Electronic k-point where e-ph couplings are evaluated [%default]",
+                  help="Electronic k-point where e-ph couplings are evaluated [default=%default]",
                   default='[0,0,0]')
 
 (options, args) = parser.parse_args()
@@ -88,6 +91,7 @@ Phonons.Analyze(FCwildcard=options.FCwildcard,onlySdir=options.onlySdir,
                 outlabel=newdir+'/'+options.label,
                 CalcCoupl=options.CalcCoupl,
                 PrintSOrbitals=options.PrintSOrbitals,
+                AbsEref=options.AbsEref,
                 AuxNCfile=options.AuxNCfile,
                 Isotopes=eval(options.Isotopes),
                 kpoint=eval(options.kpoint))

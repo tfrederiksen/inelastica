@@ -27,6 +27,7 @@ def Analyze(FCwildcard,
             outlabel='Out',
             CalcCoupl=True,
             PrintSOrbitals=False,
+            AbsEref=True,
             AuxNCfile=None,
             Isotopes=[],
             kpoint=[0,0,0],
@@ -49,6 +50,8 @@ def Analyze(FCwildcard,
                     conditions (defaults to DeviceFirst)
     -  PerBoundCorrLast : Defaults to DeviceLast
     -  CalcCoupl  : Whether or not to calculate e-ph couplings
+    -  PrintSOrbitals : Print e-ph couplings in the s-orbital space
+    -  CorrectFermiShifts : Use instantaneous Fermi energy as reference in finite-difference scheme
     -  AuxNCfile  : An optional auxillary netcdf-file used for read/writing dH matrix arrays
                     (useful for large systems where loading dH matrices to the memory becomes
                     an issue)
@@ -176,11 +179,13 @@ def Analyze(FCwildcard,
     Write2NetCDFFile(NCfile,range(FCfirst,FClast+1),'DynamicAtoms',('NumFCAtoms',),
                      description='Range of atomic indices (counting from 1)')
 
+    if CalcCoupl:
+        print '\nPhonons.Analyze: AbsEref =',AbsEref
     if CalcCoupl and AuxNCfile:
         # Heph couplings utilizing netcdf-file
         if not os.path.isfile(AuxNCfile):
             GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PerBoundCorrFirst,PerBoundCorrLast,
-                              AuxNCfile,displacement,kpoint,AuxNCUseSinglePrec)
+                              AuxNCfile,displacement,kpoint,AuxNCUseSinglePrec,AbsEref)
         else:
             print 'Phonons.Analyze: Reading from AuxNCfile =', AuxNCfile
         H0,S0,Heph = CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
@@ -189,7 +194,7 @@ def Analyze(FCwildcard,
         # Old way to calculate Heph (reading everything into the memory)
         print '\nPhonons.Analyze: Reading (H0,S0,dH) from .TSHS and .onlyS files:'
         # Read electronic structure from files
-        eF,H0,S0,dH = GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint)
+        eF,H0,S0,dH = GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref)
         # Correct dH for change in basis states with displacement
         dH = CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,kpoint)
         # Downfold matrices to the subspace of the device atoms
@@ -432,7 +437,7 @@ def GetOnlyS(onlySdir,nao,displacement,kpoint):
     return S0,dSx,dSy,dSz
 
 
-def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint):
+def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref):
     dH = []
     for i in range(len(tree)):
         # Go through each subdirectory
@@ -464,10 +469,11 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint):
                 TSHSm.setkpoint(kpoint) # Here eF is moved to zero of HSm
                 TSHSp = SIO.HS(HSfiles[2*j+2])
                 TSHSp.setkpoint(kpoint) # Here eF is moved to zero of HSp
-                for iSpin in range(len(TSHS0.H)):
-                    # Measure energies wrt. TSHS0.ef
-                    TSHSm.H[iSpin,:,:] -= (TSHSm.ef-TSHS0.ef)*TSHSm.S 
-                    TSHSp.H[iSpin,:,:] -= (TSHSp.ef-TSHS0.ef)*TSHSp.S
+                if AbsEref:
+                    # Measure energies wrt. TSHS0.ef (absolute energy ref).
+                    for iSpin in range(len(TSHS0.H)):
+                        TSHSm.H[iSpin,:,:] += (TSHSm.ef-TSHS0.ef)*TSHSm.S 
+                        TSHSp.H[iSpin,:,:] += (TSHSp.ef-TSHS0.ef)*TSHSp.S
                 dH.append((TSHSp.H-TSHSm.H)/(2*displacement))
     return TSHS0.ef,TSHS0.H,TSHS0.S,N.array(dH)
 
@@ -759,7 +765,7 @@ def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
 
 
 def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,
-                      AuxNCfile,displacement,kpoint,SinglePrec):
+                      AuxNCfile,displacement,kpoint,SinglePrec,AbsEref):
     if SinglePrec: precision = 'f'
     else: precision = 'd'
     SIO.HS.setkpoint2=SIO.HS.setkpoint
@@ -796,10 +802,11 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                 TSHSm.setkpoint(kpoint) # Here eF is moved to zero of HSm
                 TSHSp = SIO.HS(HSfiles[2*j+2])
                 TSHSp.setkpoint(kpoint) # Here eF is moved to zero of HSp
-                # Measure energies wrt. TSHS0.ef                                                                                                                               
-                for iSpin in range(len(TSHS0.H)):
-                    TSHSm.H[iSpin,:,:] -= (TSHSm.ef-TSHS0.ef)*TSHSm.S
-                    TSHSp.H[iSpin,:,:] -= (TSHSp.ef-TSHS0.ef)*TSHSp.S
+                if AbsEref:
+                    # Measure energies wrt. TSHS0.ef (absolute energy ref).
+                    for iSpin in range(len(TSHS0.H)):
+                        TSHSm.H[iSpin,:,:] += (TSHSm.ef-TSHS0.ef)*TSHSm.S
+                        TSHSp.H[iSpin,:,:] += (TSHSp.ef-TSHS0.ef)*TSHSp.S
                 # Calculate differences
                 tmpdH = (TSHSp.H-TSHSm.H)/(2*displacement)
                 try:
