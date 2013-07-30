@@ -57,8 +57,8 @@ For help use --help!
                       help="Gaussian quadrature k-point sampling a1 dir gives N*(N+1) points [%default]")
     parser.add_option("-b","--Gk2", dest='Gk2', default=0,type='int',
                       help="Gaussian quadrature k-point sampling a2 dir gives N*(N+1) points [%default]")
-    parser.add_option("-s", "--sym", dest='symmetry',default=False,action='store_true',
-                      help="Use time reversal symmetry to reduce number of k-points. Only usefull with Nk1=Nk2 or Gk1=Gk2 [%default]")
+    parser.add_option("-s", "--skipsym", dest='skipsymmetry',default=False,action='store_true',
+                      help="Skip inversion (time-reversal) symmetry (i.e., k=-k) that reduces the number of k-point evaluations [%default]")
     parser.add_option("-g", "--avoid-gamma", dest='skipgamma',default=False,action='store_true',
                       help="Avoid gamma point in k-point sampling [%default]")
     parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
@@ -79,10 +79,6 @@ For help use --help!
         print '\npyTBT: Creating folder %s' %general.DestDir
         os.mkdir(general.DestDir)
 
-    # Make sure to avoid Gamma point if time-reversal symmetry is used
-    if general.symmetry:
-        print 'pyTBT: Applying time-reversal symmetry (Nk2=%i sampling in the range [0,0.5])'%general.Nk2
-    
     # Read options from fdf files
     ##############################################################################
     
@@ -368,8 +364,19 @@ def getKpoints(general):
                 TDkwle2[jj]=kwl1[i1]*kwle2[i2]
             jj+=1
 
-    # Remove duplicates for time-inversion symmetry
-    if general.symmetry:
+    # Remove duplicates for symmetry
+    # INVERSION SYMMETRY:
+    # If the Bloch function
+    #    \psi(k) = exp(ikr)u(k),
+    # with crystal momentum k, is an eigenstate of the Schroedinger equation then also
+    #    \psi^\dagger(k) = exp(-ikr)u^\dagger(k)
+    # with crystal momentum -k, is an eigenstate with same eigenvalue.
+    # Hence E(k) = E(-k).
+    # TIME REVERSAL SYMMETRY:
+    # t,\psi(r,t) --> -t,\psi^\dagger(r,-t). T(k) = T(-k).
+    # (Elastic) propagation from L to R is always identical to propagation from R to L.
+    if not general.skipsymmetry:
+        print 'pyTBT: Applying inversion (time-reversal) symmetry reduction to list of k-points'
         indx = []
         for i1 in range(len(kl)):
             for i2 in range(len(indx)):
@@ -382,11 +389,16 @@ def getKpoints(general):
         kl, kwl = kl[indx], kwl[indx]*weight
         if GaussKronrod:
             TDkwle1, TDkwle2 = TDkwle1[indx]*weight, TDkwle2[indx]*weight
-
-    print kl
-    print kwl
-    print TDkwle1
-    print TDkwle2
+    
+    s = 'pyTBT.getKpoints: i, k1[i], k2[i], kwl[i]'
+    if GaussKronrod: s += ', TDkwle1[i], TDkwle2[i]'
+    print s
+    for i in range(len(kl)):
+        s = '... %i   %.8f %.8f   %.8f'%(i,kl[i,0],kl[i,1],kwl[i])
+        if GaussKronrod:
+            s += '   %.8e %.8e'%(TDkwle1[i],TDkwle2[i])
+        print s
+    print 'Nk = %i, Sum(kw) = %.4f\n'%(len(kl),N.sum(kwl))
     
     if GaussKronrod:
         return kl, [kwl, TDkwle1, TDkwle2], len(kl), general.Gk1, general.Gk1, GaussKronrod
