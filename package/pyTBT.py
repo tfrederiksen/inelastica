@@ -50,13 +50,13 @@ For help use --help!
     parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
                       type='float', default=0.0)
     parser.add_option("-x","--Nk1", dest='Nk1', default=1,type='int',
-                      help="k-points Nk1 [%default]")
+                      help="k-points Nk1 along a1 [%default]")
     parser.add_option("-y","--Nk2", dest='Nk2', default=1,type='int',
-                      help="k-points Nk2 [%default]")
+                      help="k-points Nk2 along a2 [%default]")
     parser.add_option("-a","--Gk1", dest='Gk1', default=0,type='int',
-                      help="Gaussian quadrature k-point sampling a1 dir gives N*(N+1) points [%default]")
+                      help="Gaussian quadrature k-point sampling for a1 direction (2*GK1+1 points) [%default]")
     parser.add_option("-b","--Gk2", dest='Gk2', default=0,type='int',
-                      help="Gaussian quadrature k-point sampling a2 dir gives N*(N+1) points [%default]")
+                      help="Gaussian quadrature k-point sampling for a2 direction (2*GK2+1 points) [%default]")
     parser.add_option("-s", "--skipsym", dest='skipsymmetry',default=False,action='store_true',
                       help="Skip inversion (time-reversal) symmetry (i.e., k=-k) that reduces the number of k-point evaluations [%default]")
     parser.add_option("-g", "--avoid-gamma", dest='skipgamma',default=False,action='store_true',
@@ -333,7 +333,7 @@ def xmladd(doc,parent,name,values):
 
 def getKpoints(general):
     # Do 1-D k-points
-    if general.Gk1!=0 or general.Gk2!=0:
+    if general.Gk1>1 and general.Gk2>1: # Method fails with fewer points
         GaussKronrod=True
         kl1, kwl1, kwle1 = MM.GaussKronrod(general.Gk1)
         kl2, kwl2, kwle2 = MM.GaussKronrod(general.Gk2)        
