@@ -1,4 +1,0 @@
-#! /usr/bin/env python
-
-import Inelastica.pyTBT as pyTBT
-pyTBT.main()
