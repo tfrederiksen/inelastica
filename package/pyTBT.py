@@ -35,16 +35,16 @@ except:
     hasSciPy = False 
         
 
-def calc(general):
-    kPointList, kWeights, NNk, Nk1, Nk2, GaussKronrod = getKpoints(general)
-    elecL = NEGF.ElectrodeSelfEnergy(general.fnL,general.NA1L,general.NA2L,general.voltage/2.)
-    elecR = NEGF.ElectrodeSelfEnergy(general.fnR,general.NA1R,general.NA2R,-general.voltage/2.)
-    myGF = NEGF.GF(general.fnTSHS,elecL,elecR,Bulk=general.UseBulk,DeviceAtoms=[general.devSt, general.devEnd])
+def calc(options):
+    kPointList, kWeights, NNk, Nk1, Nk2, GaussKronrod = getKpoints(options)
+    elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
+    elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
+    myGF = NEGF.GF(options.fnTSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=[options.devSt, options.devEnd])
     nspin = myGF.HS.nspin
-    if general.devSt==0:
-        general.devSt=GF.DeviceAtoms[0]
-    if general.devEnd==0:
-        general.devEnd=GF.DeviceAtoms[1]
+    if options.devSt==0:
+        options.devSt=GF.DeviceAtoms[0]
+    if options.devEnd==0:
+        options.devEnd=GF.DeviceAtoms[1]
 
     print """
 ##############################################################
@@ -60,37 +60,37 @@ SpinPolarization                : %i
 Voltage                         : %f
 ##############################################################
 
-"""%(general.minE,general.dE,general.maxE,Nk1,Nk2,general.eta,general.etaLead,general.devSt,general.devEnd,general.UseBulk,nspin,general.voltage)
+"""%(options.minE,options.dE,options.maxE,Nk1,Nk2,options.eta,options.etaLead,options.devSt,options.devEnd,options.UseBulk,nspin,options.voltage)
         
-    if general.dos:
-        DOSL=N.zeros((nspin,len(general.Elist),myGF.nuo),N.float)
-        DOSR=N.zeros((nspin,len(general.Elist),myGF.nuo),N.float)
+    if options.dos:
+        DOSL=N.zeros((nspin,len(options.Elist),myGF.nuo),N.float)
+        DOSR=N.zeros((nspin,len(options.Elist),myGF.nuo),N.float)
     # Loop over spin
     for iSpin in range(nspin):
-        Tkpt=N.zeros((len(general.Elist),NNk,general.numchan+1),N.float)
-        outFile = general.DestDir+'/%s.%ix%i'%(general.systemlabel,Nk1,Nk2)
+        Tkpt=N.zeros((len(options.Elist),NNk,options.numchan+1),N.float)
+        outFile = options.DestDir+'/%s.%ix%i'%(options.systemlabel,Nk1,Nk2)
         if nspin<2: thisspinlabel = outFile
         else: thisspinlabel = outFile+['.UP','.DOWN'][iSpin]
         fo=open(thisspinlabel+'.AVTRANS','write')
-        fo.write('# Nk1=%i Nk2=%i eta=%.2e etaLead=%.2e\n'%(Nk1,Nk2,general.eta,general.etaLead))
+        fo.write('# Nk1=%i Nk2=%i eta=%.2e etaLead=%.2e\n'%(Nk1,Nk2,options.eta,options.etaLead))
         if GaussKronrod: fo.write('# E   Ttot(E)   Ti(E) (i=1-10) T_error(E)\n')
         else: fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
         # Loop over energy
-        for ie, ee in enumerate(general.Elist):
-            Tavg = N.zeros((general.numchan+1,len(kWeights)),N.float)
+        for ie, ee in enumerate(options.Elist):
+            Tavg = N.zeros((options.numchan+1,len(kWeights)),N.float)
             AavL = N.zeros((myGF.nuo,myGF.nuo),N.complex)
             AavR = N.zeros((myGF.nuo,myGF.nuo),N.complex)
             # Loops over k-points
             for ik in range(NNk):
                 kpt=N.array(kPointList[ik],N.float)
-                myGF.calcGF(ee+general.eta*1.0j,kpt,ispin=iSpin,etaLead=general.etaLead,useSigNCfiles=general.signc)
+                myGF.calcGF(ee+options.eta*1.0j,kpt,ispin=iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
                 # Transmission:
-                T = myGF.calcT(general.numchan)
+                T = myGF.calcT(options.numchan)
                 for iw in range(len(kWeights)):
                     Tavg[:,iw] += T*kWeights[iw][ik]
                 Tkpt[ie,ik] = T
                 # DOS calculation:
-                if general.dos:
+                if options.dos:
                     GamL, GamR, Gr = myGF.GamL, myGF.GamR, myGF.Gr
                     nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
                     AL = MM.mm(Gr[:,0:nuoL],GamL,MM.dagger(Gr)[0:nuoL,:])
@@ -105,7 +105,7 @@ Voltage                         : %f
                 print ee, Tavg[:,0]
             
             transline = '\n%.10f '%ee
-            for ichan in range(general.numchan+1):
+            for ichan in range(options.numchan+1):
                 if ichan==0:
                     transline += '%.8e '%Tavg[ichan,0]
                 else:
@@ -113,7 +113,7 @@ Voltage                         : %f
             if GaussKronrod: transline += '%.4e '%err
             fo.write(transline)
             # Partial density of states:
-            if general.dos:
+            if options.dos:
                 DOSL[iSpin,ie,:] += N.diag(AavL).real/(2*N.pi)
                 DOSR[iSpin,ie,:] += N.diag(AavR).real/(2*N.pi)
                 print 'ispin= %i, e= %.4f, DOSL= %.4f, DOSR= %.4f'%(iSpin,ee,N.sum(DOSL[iSpin,ie,:]),N.sum(DOSR[iSpin,ie,:]))
@@ -124,9 +124,9 @@ Voltage                         : %f
         for ik in range(NNk):
             kpt=kPointList[ik]
             fo.write('\n\n# k = %f, %f '%(kpt[0],kpt[1]))
-            for ie, ee in enumerate(general.Elist):
+            for ie, ee in enumerate(options.Elist):
                 transline = '\n%.10f '%ee
-                for ichan in range(general.numchan+1):
+                for ichan in range(options.numchan+1):
                     if ichan==0:
                         transline += '%.8e '%Tkpt[ie,ik,ichan]
                     else:
@@ -136,13 +136,13 @@ Voltage                         : %f
     # End loop over spin
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
 
-    if general.dos:
-        WritePDOS(outFile+'.PDOS.gz',general,myGF,DOSL+DOSR)
-        WritePDOS(outFile+'.PDOSL.gz',general,myGF,DOSL)
-        WritePDOS(outFile+'.PDOSR.gz',general,myGF,DOSR)
+    if options.dos:
+        WritePDOS(outFile+'.PDOS.gz',options,myGF,DOSL+DOSR)
+        WritePDOS(outFile+'.PDOSL.gz',options,myGF,DOSL)
+        WritePDOS(outFile+'.PDOSR.gz',options,myGF,DOSR)
     
 
-def WritePDOS(fn,general,myGF,DOS):
+def WritePDOS(fn,options,myGF,DOS):
     """
     PDOS from the surface Green's function from electrode calculations
     
@@ -156,20 +156,20 @@ def WritePDOS(fn,general,myGF,DOS):
     import gzip
 
     # Read basis
-    basis=SIO.BuildBasis(general.systemlabel+'.XV',1,myGF.HS.nua,myGF.HS.lasto)
+    basis=SIO.BuildBasis(options.systemlabel+'.XV',1,myGF.HS.nua,myGF.HS.lasto)
     
     # First, last orbital in full space and pyTBT folded space.
-    devOrbSt = myGF.HS.lasto[general.devSt-1]
-    pyTBTdevOrbSt = devOrbSt-myGF.HS.lasto[general.devSt-1]
-    devOrbEnd = myGF.HS.lasto[general.devEnd]-1
-    pyTBTdevOrbEnd = devOrbEnd-myGF.HS.lasto[general.devSt-1]
+    devOrbSt = myGF.HS.lasto[options.devSt-1]
+    pyTBTdevOrbSt = devOrbSt-myGF.HS.lasto[options.devSt-1]
+    devOrbEnd = myGF.HS.lasto[options.devEnd]-1
+    pyTBTdevOrbEnd = devOrbEnd-myGF.HS.lasto[options.devSt-1]
 
     doc = xml.Document()
     pdos = doc.createElement('pdos')
     doc.appendChild(pdos)
     xmladd(doc,pdos,'nspin','%i'%myGF.HS.nspin)
     xmladd(doc,pdos,'norbitals','%i'%(myGF.nuo))
-    xmladd(doc,pdos,'energy_values',myprint(general.Elist+myGF.HS.ef))
+    xmladd(doc,pdos,'energy_values',myprint(options.Elist+myGF.HS.ef))
     xmladd(doc,pdos,'E_Fermi','%.8f'%myGF.HS.ef)
     for ii in range(myGF.nuo):
         orb = doc.createElement('orbital')
@@ -237,24 +237,24 @@ def xmladd(doc,parent,name,values):
     txt=doc.createTextNode(values)
     elem.appendChild(txt)
 
-def getKpoints(general):
+def getKpoints(options):
     # Do 1-D k-points
-    if general.Gk1>1 and general.Gk2>1: # Method fails with fewer points
+    if options.Gk1>1 and options.Gk2>1: # Method fails with fewer points
         GaussKronrod=True
-        kl1, kwl1, kwle1 = MM.GaussKronrod(general.Gk1)
-        kl2, kwl2, kwle2 = MM.GaussKronrod(general.Gk2)        
+        kl1, kwl1, kwle1 = MM.GaussKronrod(options.Gk1)
+        kl2, kwl2, kwle2 = MM.GaussKronrod(options.Gk2)        
     else:
         GaussKronrod=False
-        kl1 = [(ii*1.0)/general.Nk1-0.5+0.5/general.Nk1 for ii in range(general.Nk1)]
-        kwl1 = [1.0/general.Nk1 for ii in range(general.Nk1)]
-        kl2 = [(ii*1.0)/general.Nk2-0.5+0.5/general.Nk2 for ii in range(general.Nk2)]
-        kwl2 = [1.0/general.Nk2 for ii in range(general.Nk2)]
+        kl1 = [(ii*1.0)/options.Nk1-0.5+0.5/options.Nk1 for ii in range(options.Nk1)]
+        kwl1 = [1.0/options.Nk1 for ii in range(options.Nk1)]
+        kl2 = [(ii*1.0)/options.Nk2-0.5+0.5/options.Nk2 for ii in range(options.Nk2)]
+        kwl2 = [1.0/options.Nk2 for ii in range(options.Nk2)]
         kl1, kwl1, kl2, kwl2 = N.array(kl1), N.array(kwl1), N.array(kl2), N.array(kwl2)
 
     # Shift away from gamma for normal k-points
-    if general.skipgamma and not GaussKronrod:
-        if general.Nk1%2==1: kl1 += 0.5/general.Nk1
-        if general.Nk2%2==1: kl2 += 0.5/general.Nk2
+    if options.skipgamma and not GaussKronrod:
+        if options.Nk1%2==1: kl1 += 0.5/options.Nk1
+        if options.Nk2%2==1: kl2 += 0.5/options.Nk2
 
     # Repeat out for 2D
     kl, kwl = N.zeros((len(kl1)*len(kl2),2)), N.zeros((len(kl1)*len(kl2),))
@@ -281,7 +281,7 @@ def getKpoints(general):
     # TIME REVERSAL SYMMETRY:
     # t,\psi(r,t) --> -t,\psi^\dagger(r,-t). T(k) = T(-k).
     # (Elastic) propagation from L to R is always identical to propagation from R to L.
-    if not general.skipsymmetry:
+    if not options.skipsymmetry:
         print 'pyTBT: Applying inversion (time-reversal) symmetry reduction to list of k-points'
         indx = []
         for i1 in range(len(kl)):
@@ -307,8 +307,8 @@ def getKpoints(general):
     print 'Nk = %i, Sum(kw) = %.4f\n'%(len(kl),N.sum(kwl))
     
     if GaussKronrod:
-        return kl, [kwl, TDkwle1, TDkwle2], len(kl), general.Gk1, general.Gk1, GaussKronrod
+        return kl, [kwl, TDkwle1, TDkwle2], len(kl), options.Gk1, options.Gk1, GaussKronrod
     else:
-        return kl, [kwl], len(kl), general.Nk1, general.Nk1, GaussKronrod
+        return kl, [kwl], len(kl), options.Nk1, options.Nk1, GaussKronrod
 
 
