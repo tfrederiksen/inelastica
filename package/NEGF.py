@@ -8,6 +8,12 @@ import sys, string
 import pickle, hashlib, glob, time, os 
 import Scientific.IO.NetCDF as NC
 
+#try:
+#    import scipy.linalg as SLA
+#    hasSciPy = True
+#except:
+#    hasSciPy = False
+
 def myHash(data):
     return hashlib.md5(pickle.dumps(data)).hexdigest()
 def hash2dec(hash):

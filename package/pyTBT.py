@@ -25,15 +25,11 @@ import SiestaIO as SIO
 import MiscMath as MM
 import NEGF
 import numpy as N
-import numpy.linalg as LA
-import sys, string, os
-from optparse import OptionParser, OptionGroup
-try:
-    import scipy.linalg as SLA 
-    hasSciPy = True
-except:
-    hasSciPy = False 
-        
+#try:
+#    import scipy.linalg as SLA 
+#    hasSciPy = True
+#except:
+#    hasSciPy = False      
 
 def calc(options):
     kPointList, kWeights, NNk, Nk1, Nk2, GaussKronrod = getKpoints(options)
