@@ -15,15 +15,13 @@ import numpy as N
 import numpy.linalg as LA
 import Scientific.IO.NetCDF as NC
 import sys, string, struct, glob,  os
-from optparse import OptionParser, OptionGroup
 import PhysicalConstants as PC
 
 
 ########################################################
 ##################### Main routine #####################
 ########################################################
-def main():
-    general = setupParameters()
+def main(general):
     geom = readxv()
     myGF = readHS(general)
     general.nspin = myGF.HS.nspin
@@ -482,83 +480,7 @@ def writeWavefunction(general,geom,basis,Y,fn=None):
     if general.format.lower() == 'nc':
         writenetcdf(geom,fn+'.nc',YY,nx,ny,nz,origo,dstep)
 
-
-###########################################################
-def setupParameters():
-    # Note: can be called from Inelastica as well!
-    usage = "usage: %prog [options] DestinationDirectory"
-    description = """
-Eigenchannels script that calculates:
-1) Eigenchannels, Paulsson et al. PRB 76, 115117 (2007).
-2) Fermi golden rule scattering rates, Paulsson et al. PRL 100, 226604 (2008).
-3) Bond currents.
-
-For help use --help!
-"""
-    parser = OptionParser(usage,description=description)
-    parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]", 
-                  type='int', default=4)
-    parser.add_option("-B", "--BothSides", dest='bothsides', default=False,action='store_true',
-                  help="Calculate eigenchannels from both sides [%default]")
-    parser.add_option("-M", "--MolecularStates", dest='MolStates', default=0.0, type='float',
-                  help="Calculate eigenstates of device Hamiltonian within [%default] eV from Ef")
-    parser.add_option("-r", "--Res", dest='res', default=0.4,type='float',
-                  help="Resolution [%default Ang]")
-    parser.add_option("-w", "--format", dest='format', default='macu',type='string',
-                  help="Wavefunction format (macu, cube, XSF, or nc) [%default]")
-    parser.add_option("-N", "--NumPhCurr", dest='NumPhCurr', default=10,type='int',
-                  help="Max number of changes in bond currents from inelastic scattering  [%default]")
-    parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
-                  help="Energy where eigenchannel scattering states are evaluated [%default eV]")
-    parser.add_option("--eta", dest='eta', default=0.000001,type='float',
-                  help="Tiny imag. part in Green's functions etc. [%default eV]")
-    parser.add_option("-f", "--fdf", dest='fdfFile', default='./RUN.fdf',type='string',
-                  help="fdf file used for transiesta calculation [%default]")
-    parser.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
-                  help="Spin channel [%default]")
-    parser.add_option("-k", "--kPoint", dest='kPoint', default='[0.0,0.0]',type='string',
-                  help="2D k-point in range [0,1[ given as string, default=%default")
-
-    (general, args) = parser.parse_args()
-    print description
-    
-    # Sanity checks
-
-    # Check k-point input
-    if general.kPoint[0]!='[' or general.kPoint[-1]!=']':
-        parser.error("ERROR: please specify --kPoint='[x.x,y.y]' not --kPoint=%s"%general.kPoint)
-    else:
-        try:
-            tmp=string.split(general.kPoint[1:-1],',')
-            general.kPoint = N.array([float(tmp[0]),float(tmp[1]),0],N.float)
-        except:
-            parser.error("ERROR: please specify --kPoint='[x.x,y.y]' not --kPoint=%s"%general.kPoint)
-
-    # Check for Siesta input file
-    if not os.path.exists(general.fdfFile):
-        parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
-
-    # Find Systemlabel keyword
-    general.systemlabel = SIO.GetFDFlineWithDefault(general.fdfFile,'SystemLabel', str, 'Systemlabel', 'Error Eigenchannels')
-        
-    # Find TS.TBT.PDOSTo/From keywords
-    try:
-        general.from_atom = SIO.GetFDFlineWithDefault(
-            general.fdfFile,'TS.TBT.PDOSFrom', int, None, 'Eigenchannels')
-        general.to_atom = SIO.GetFDFlineWithDefault(
-            general.fdfFile,'TS.TBT.PDOSTo', int, None, 'Eigenchannels')
-    except:
-        parser.error("Specify device region with TS.TBT.PDOS[To/From] keyword.")
-
-    if len(args)!=1:
-        parser.error('ERROR: You need to specify destination directory')
-    general.DestDir = args[0]
-    if not os.path.isdir(general.DestDir):
-        print '\nEigenchannels : Creating folder %s' %general.DestDir
-        os.mkdir(general.DestDir)
-#    else:
-#        parser.error('ERROR: destination directory %s already exist!'%general.DestDir)
-    return general
+def oldmyopen():
 
     def myprint(arg,file):
         # Save in parameter file

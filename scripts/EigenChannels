@@ -1,5 +1,78 @@
 #! /usr/bin/env python
 
-import Inelastica.EigenChannels as IE
-IE.main()
+from Inelastica import EigenChannels
+from Inelastica import SiestaIO as SIO
+import numpy as N
+import os
+from optparse import OptionParser, OptionGroup
 
+usage = "usage: %prog [options] DestinationDirectory"
+description = """
+Eigenchannels script that calculates:
+1) Eigenchannels, Paulsson et al. PRB 76, 115117 (2007).
+2) Fermi golden rule scattering rates, Paulsson et al. PRL 100, 226604 (2008).
+3) Bond currents.
+
+For help use --help!
+"""
+
+parser = OptionParser(usage,description=description)
+parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]", 
+                  type='int', default=4)
+parser.add_option("-B", "--BothSides", dest='bothsides', default=False,action='store_true',
+                  help="Calculate eigenchannels from both sides [%default]")
+parser.add_option("-M", "--MolecularStates", dest='MolStates', default=0.0, type='float',
+                  help="Calculate eigenstates of device Hamiltonian within [%default] eV from Ef")
+parser.add_option("-r", "--Res", dest='res', default=0.4,type='float',
+                  help="Resolution [%default Ang]")
+parser.add_option("-w", "--format", dest='format', default='macu',type='string',
+                  help="Wavefunction format (macu, cube, XSF, or nc) [%default]")
+parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
+                  help="Energy where eigenchannel scattering states are evaluated [%default eV]")
+parser.add_option("--eta", dest='eta', default=0.000001,type='float',
+                  help="Tiny imag. part in Green's functions etc. [%default eV]")
+parser.add_option("-f", "--fdf", dest='fdfFile', default='./RUN.fdf',type='string',
+                  help="fdf file used for transiesta calculation [%default]")
+parser.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
+                  help="Spin channel [%default]")
+parser.add_option("-x","--k1", dest='k1', default=0.0,type='float',
+                  help="k-point along a1 [%default]")
+parser.add_option("-y","--k2", dest='k2', default=0.0,type='float',
+                  help="k-point along a2 [%default]")
+
+(general, args) = parser.parse_args()
+print description
+    
+# Sanity checks
+
+
+# Check k-point input
+general.kPoint = N.array([general.k1,general.k2,0],N.float)
+
+# Check for Siesta input file
+if not os.path.exists(general.fdfFile):
+    parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
+
+# Find Systemlabel keyword
+general.systemlabel = SIO.GetFDFlineWithDefault(general.fdfFile,'SystemLabel', str, 'Systemlabel', 'Error Eigenchannels')
+        
+# Find TS.TBT.PDOSTo/From keywords
+try:
+    general.from_atom = SIO.GetFDFlineWithDefault(
+        general.fdfFile,'TS.TBT.PDOSFrom', int, None, 'Eigenchannels')
+    general.to_atom = SIO.GetFDFlineWithDefault(
+        general.fdfFile,'TS.TBT.PDOSTo', int, None, 'Eigenchannels')
+except:
+    parser.error("Specify device region with TS.TBT.PDOS[To/From] keyword.")
+
+if len(args)!=1:
+    parser.error('ERROR: You need to specify destination directory')
+
+general.DestDir = args[0]
+if not os.path.isdir(general.DestDir):
+    print '\nEigenchannels : Creating folder %s' %general.DestDir
+    os.mkdir(general.DestDir)
+#    else:
+#        parser.error('ERROR: destination directory %s already exist!'%general.DestDir)
+
+EigenChannels.main(general)
