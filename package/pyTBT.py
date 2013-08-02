@@ -34,110 +34,18 @@ try:
 except:
     hasSciPy = False 
         
-################### Main program ############################
-def main():
-    usage = "usage: %prog [options] DestinationDirectory"
-    description = """pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge.
-For help use --help!
- """
-    parser = OptionParser(usage,description=description)
 
-    # Determine keywords provided
-    parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]",
-                      type='int', default=10)
-    parser.add_option("-e","--eta", dest="eta", help="Imaginary part added to all energies (device and leads) [%default eV]",
-                      type='float', default=0.000001)
-    parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
-                      type='float', default=0.0)
-    parser.add_option("-x","--Nk1", dest='Nk1', default=1,type='int',
-                      help="k-points Nk1 along a1 [%default]")
-    parser.add_option("-y","--Nk2", dest='Nk2', default=1,type='int',
-                      help="k-points Nk2 along a2 [%default]")
-    parser.add_option("-a","--Gk1", dest='Gk1', default=0,type='int',
-                      help="Gaussian quadrature k-point sampling for a1 direction (2*GK1+1 points) [%default]")
-    parser.add_option("-b","--Gk2", dest='Gk2', default=0,type='int',
-                      help="Gaussian quadrature k-point sampling for a2 direction (2*GK2+1 points) [%default]")
-    parser.add_option("-s", "--skipsym", dest='skipsymmetry',default=False,action='store_true',
-                      help="Skip inversion (time-reversal) symmetry (i.e., k=-k) that reduces the number of k-point evaluations [%default]")
-    parser.add_option("-g", "--avoid-gamma", dest='skipgamma',default=False,action='store_true',
-                      help="Avoid gamma point in k-point sampling [%default]")
-    parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
-                      help="Input fdf-file for TranSIESTA calculations [%default]")
-    parser.add_option("-d", "--skipDOS", dest='dos',default=True,action='store_false',
-                      help="Skip calculation of PDOS [%default]")
-    parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
-                      help="Use SigNCfiles [%default]")
-
-    (general, args) = parser.parse_args()
-    print description
-
-    if len(args)!=1:
-        parser.error('ERROR: You need to specify destination directory')
-    general.DestDir = args[0]
-
-    if not os.path.isdir(general.DestDir):
-        print '\npyTBT: Creating folder %s' %general.DestDir
-        os.mkdir(general.DestDir)
-
-    # Read options from fdf files
-    ##############################################################################
-    
-    fn = general.fn
-    head,tail = os.path.split(fn)
-    print "pyTBT: Reading keywords from %s \n"%fn
-    
-    # Electrodes
-    fnL  =head+'/'+SIO.GetFDFlineWithDefault(fn,'TS.HSFileLeft', str, None, 'pyTBT')
-    NA1L =SIO.GetFDFlineWithDefault(fn,'TS.ReplicateA1Left', int, 1, 'pyTBT')
-    NA2L =SIO.GetFDFlineWithDefault(fn,'TS.ReplicateA2Left', int, 1, 'pyTBT')
-    fnR  =head+'/'+SIO.GetFDFlineWithDefault(fn,'TS.HSFileRight', str, None, 'pyTBT')
-    NA1R =SIO.GetFDFlineWithDefault(fn,'TS.ReplicateA1Right', int, 1, 'pyTBT')
-    NA2R =SIO.GetFDFlineWithDefault(fn,'TS.ReplicateA2Right', int, 1, 'pyTBT')
-
-    # Device region
-    devSt =SIO.GetFDFlineWithDefault(fn,'TS.TBT.PDOSFrom', int, 0, 'pyTBT')
-    devEnd=SIO.GetFDFlineWithDefault(fn,'TS.TBT.PDOSTo', int, 0, 'pyTBT')
-    
-    # Voltage
-    voltage  =SIO.GetFDFlineWithDefault(fn,'TS.Voltage', float, 0.0, 'pyTBT')
-
-    # Energy range
-    nE  =SIO.GetFDFlineWithDefault(fn,'TS.TBT.NPoints', int, 21, 'pyTBT')
-    minE=SIO.GetFDFlineWithDefault(fn,'TS.TBT.Emin', float, -1.0, 'pyTBT')
-    maxE=SIO.GetFDFlineWithDefault(fn,'TS.TBT.Emax', float, 1.0, 'pyTBT')
-    if nE>1:
-        dE = (maxE-minE)/float(nE-1)
-        Elist = N.array(range(int((maxE-minE+1e-9)/dE)+1),N.float)*dE+minE
-    else:
-        dE=0.0
-        Elist=N.array((minE,),N.float)
-
-    UseBulk=SIO.GetFDFlineWithDefault(fn,'TS.UseBulkInElectrodes', bool, True, 'pyTBT')
-
-    #eta=SIO.GetFDFlineWithDefault(fn,'pyTBT.eta', float, 0.000001, 'pyTBT')
-    #Nk1=SIO.GetFDFlineWithDefault(fn,'pyTBT.K_A1', int, 1, 'pyTBT')
-    #Nk2=SIO.GetFDFlineWithDefault(fn,'pyTBT.K_A2', int, 1, 'pyTBT')
-    eta = general.eta
-    etaLead = general.etaLead
-
+def calc(general):
     kPointList, kWeights, NNk, Nk1, Nk2, GaussKronrod = getKpoints(general)
-    
-    general.systemlabel = SIO.GetFDFlineWithDefault(fn,'SystemLabel', str, 'Systemlabel', 'pyTBT')
-
-    outFile=general.DestDir+'/'+general.systemlabel + '.%ix%i'%(Nk1,Nk2)
-
-    ##############################################################################
-    # Define electrodes and device
-
-    elecL = NEGF.ElectrodeSelfEnergy(fnL,NA1L,NA2L,voltage/2.)
-    elecR = NEGF.ElectrodeSelfEnergy(fnR,NA1R,NA2R,-voltage/2.)
-    myGF = NEGF.GF(head+'/%s.TSHS'%general.systemlabel,elecL,elecR,Bulk=UseBulk,DeviceAtoms=[devSt, devEnd])
+    elecL = NEGF.ElectrodeSelfEnergy(general.fnL,general.NA1L,general.NA2L,general.voltage/2.)
+    elecR = NEGF.ElectrodeSelfEnergy(general.fnR,general.NA1R,general.NA2R,-general.voltage/2.)
+    myGF = NEGF.GF(general.fnTSHS,elecL,elecR,Bulk=general.UseBulk,DeviceAtoms=[general.devSt, general.devEnd])
     nspin = myGF.HS.nspin
-    if devSt==0:
-        devSt=GF.DeviceAtoms[0]
-    if devEnd==0:
-        devEnd=GF.DeviceAtoms[1]
-        
+    if general.devSt==0:
+        general.devSt=GF.DeviceAtoms[0]
+    if general.devEnd==0:
+        general.devEnd=GF.DeviceAtoms[1]
+
     print """
 ##############################################################
 pyTBT
@@ -152,32 +60,32 @@ SpinPolarization                : %i
 Voltage                         : %f
 ##############################################################
 
-"""%(minE,dE,maxE,Nk1,Nk2,eta,etaLead,devSt,devEnd,UseBulk,nspin,voltage)
-    
-    channels = general.numchan
+"""%(general.minE,general.dE,general.maxE,Nk1,Nk2,general.eta,general.etaLead,general.devSt,general.devEnd,general.UseBulk,nspin,general.voltage)
+        
     if general.dos:
-        DOSL=N.zeros((nspin,len(Elist),myGF.nuo),N.float)
-        DOSR=N.zeros((nspin,len(Elist),myGF.nuo),N.float)
+        DOSL=N.zeros((nspin,len(general.Elist),myGF.nuo),N.float)
+        DOSR=N.zeros((nspin,len(general.Elist),myGF.nuo),N.float)
     # Loop over spin
     for iSpin in range(nspin):
-        Tkpt=N.zeros((len(Elist),NNk,channels+1),N.float)
+        Tkpt=N.zeros((len(general.Elist),NNk,general.numchan+1),N.float)
+        outFile = general.DestDir+'/%s.%ix%i'%(general.systemlabel,Nk1,Nk2)
         if nspin<2: thisspinlabel = outFile
         else: thisspinlabel = outFile+['.UP','.DOWN'][iSpin]
         fo=open(thisspinlabel+'.AVTRANS','write')
-        fo.write('# Nk1=%i Nk2=%i eta=%.2e etaLead=%.2e\n'%(Nk1,Nk2,eta,etaLead))
+        fo.write('# Nk1=%i Nk2=%i eta=%.2e etaLead=%.2e\n'%(Nk1,Nk2,general.eta,general.etaLead))
         if GaussKronrod: fo.write('# E   Ttot(E)   Ti(E) (i=1-10) T_error(E)\n')
         else: fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
         # Loop over energy
-        for ie, ee in enumerate(Elist):
-            Tavg = N.zeros((channels+1,len(kWeights)),N.float)
+        for ie, ee in enumerate(general.Elist):
+            Tavg = N.zeros((general.numchan+1,len(kWeights)),N.float)
             AavL = N.zeros((myGF.nuo,myGF.nuo),N.complex)
             AavR = N.zeros((myGF.nuo,myGF.nuo),N.complex)
             # Loops over k-points
             for ik in range(NNk):
                 kpt=N.array(kPointList[ik],N.float)
-                myGF.calcGF(ee+eta*1.0j,kpt,ispin=iSpin,etaLead=etaLead,useSigNCfiles=general.signc)
+                myGF.calcGF(ee+general.eta*1.0j,kpt,ispin=iSpin,etaLead=general.etaLead,useSigNCfiles=general.signc)
                 # Transmission:
-                T = myGF.calcT(channels)
+                T = myGF.calcT(general.numchan)
                 for iw in range(len(kWeights)):
                     Tavg[:,iw] += T*kWeights[iw][ik]
                 Tkpt[ie,ik] = T
@@ -197,7 +105,7 @@ Voltage                         : %f
                 print ee, Tavg[:,0]
             
             transline = '\n%.10f '%ee
-            for ichan in range(channels+1):
+            for ichan in range(general.numchan+1):
                 if ichan==0:
                     transline += '%.8e '%Tavg[ichan,0]
                 else:
@@ -216,9 +124,9 @@ Voltage                         : %f
         for ik in range(NNk):
             kpt=kPointList[ik]
             fo.write('\n\n# k = %f, %f '%(kpt[0],kpt[1]))
-            for ie, ee in enumerate(Elist):
+            for ie, ee in enumerate(general.Elist):
                 transline = '\n%.10f '%ee
-                for ichan in range(channels+1):
+                for ichan in range(general.numchan+1):
                     if ichan==0:
                         transline += '%.8e '%Tkpt[ie,ik,ichan]
                     else:
@@ -227,9 +135,7 @@ Voltage                         : %f
         fo.close()
     # End loop over spin
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
-    general.devSt = devSt
-    general.devEnd = devEnd
-    general.Elist = Elist
+
     if general.dos:
         WritePDOS(outFile+'.PDOS.gz',general,myGF,DOSL+DOSR)
         WritePDOS(outFile+'.PDOSL.gz',general,myGF,DOSL)

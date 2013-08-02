@@ -1,4 +1,101 @@
 #! /usr/bin/env python
 
-import Inelastica.pyTBT as pyTBT
-pyTBT.main()
+#print "SVN $Id: pyTBT.py 194 2013-07-31 12:30:54Z tfrederiksen $"
+
+
+from Inelastica import SiestaIO as SIO
+#import MiscMath as MM
+#import NEGF
+import numpy as N
+#import numpy.linalg as LA
+#import sys, string, os
+from Inelastica import pyTBT
+from optparse import OptionParser, OptionGroup
+import os 
+#try:
+#    import scipy.linalg as SLA 
+#    hasSciPy = True
+#except:
+#    hasSciPy = False 
+        
+usage = "usage: %prog [options] DestinationDirectory"
+
+description = """pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge.
+For help use --help!
+ """
+parser = OptionParser(usage,description=description)
+
+# Determine keywords provided
+parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]",
+                  type='int', default=10)
+parser.add_option("-e","--eta", dest="eta", help="Imaginary part added to all energies (device and leads) [%default eV]",
+                  type='float', default=0.000001)
+parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
+                  type='float', default=0.0)
+parser.add_option("-x","--Nk1", dest='Nk1', default=1,type='int',
+                  help="k-points Nk1 along a1 [%default]")
+parser.add_option("-y","--Nk2", dest='Nk2', default=1,type='int',
+                  help="k-points Nk2 along a2 [%default]")
+parser.add_option("-a","--Gk1", dest='Gk1', default=0,type='int',
+                  help="Gaussian quadrature k-point sampling for a1 direction (2*GK1+1 points) [%default]")
+parser.add_option("-b","--Gk2", dest='Gk2', default=0,type='int',
+                  help="Gaussian quadrature k-point sampling for a2 direction (2*GK2+1 points) [%default]")
+parser.add_option("-s", "--skipsym", dest='skipsymmetry',default=False,action='store_true',
+                  help="Skip inversion (time-reversal) symmetry (i.e., k=-k) that reduces the number of k-point evaluations [%default]")
+parser.add_option("-g", "--avoid-gamma", dest='skipgamma',default=False,action='store_true',
+                  help="Avoid gamma point in k-point sampling [%default]")
+parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
+                  help="Input fdf-file for TranSIESTA calculations [%default]")
+parser.add_option("-d", "--skipDOS", dest='dos',default=True,action='store_false',
+                  help="Skip calculation of PDOS [%default]")
+parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
+                  help="Use SigNCfiles [%default]")
+
+(options, args) = parser.parse_args()
+
+if len(args)!=1:
+    parser.error('ERROR: You need to specify destination directory')
+else:
+    options.DestDir = args[0]
+
+if not os.path.isdir(options.DestDir):
+    print '\npyTBT: Creating folder %s' %options.DestDir
+    os.mkdir(options.DestDir)
+        
+# Read options from fdf files
+##############################################################################
+    
+options.head,tail = os.path.split(options.fn)
+print "pyTBT: Reading keywords from %s \n"%options.fn
+
+# Electrodes
+options.fnL  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileLeft', str, None, 'pyTBT')
+options.NA1L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Left', int, 1, 'pyTBT')
+options.NA2L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Left', int, 1, 'pyTBT')
+options.fnR  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileRight', str, None, 'pyTBT')
+options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 1, 'pyTBT')
+options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'pyTBT')
+
+# Device region
+options.devSt  = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom', int, 0, 'pyTBT')
+options.devEnd = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo', int, 0, 'pyTBT')
+
+# Voltage
+options.voltage = SIO.GetFDFlineWithDefault(options.fn,'TS.Voltage', float, 0.0, 'pyTBT')
+
+# Energy range
+options.nE   = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.NPoints', int, 21, 'pyTBT')
+options.minE = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.Emin', float, -1.0, 'pyTBT')
+options.maxE = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.Emax', float, 1.0, 'pyTBT')
+if options.nE>1:
+    options.dE = (options.maxE-options.minE)/float(options.nE-1)
+    options.Elist = N.array(range(int((options.maxE-options.minE+1e-9)/options.dE)+1),N.float)*options.dE+options.minE
+else:
+    options.dE = 0.0
+    options.Elist = N.array((options.minE,),N.float)
+    
+options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'pyTBT')
+options.systemlabel = SIO.GetFDFlineWithDefault(options.fn,'SystemLabel', str, 'Systemlabel', 'pyTBT')
+options.fnTSHS = options.head+'/%s.TSHS'%options.systemlabel
+
+pyTBT.calc(options)
