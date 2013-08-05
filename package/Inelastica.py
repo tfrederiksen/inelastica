@@ -24,8 +24,7 @@ import time
 ########################################################
 ##################### Main routine #####################
 ########################################################
-def main():
-    general = setupParameters()
+def main(general):
     geom = readxv()
     myGF = readHS(general)
     basis = readbasis(general,myGF.HS)
@@ -390,78 +389,6 @@ def writeFGRrates():
         outFile.close()
         NCfile.close()
                         
-    
-    
-
-
-###########################################################
-def setupParameters():
-    # Note: can be called from Inelastica as well!
-    usage = "usage: %prog [options]"
-    description = """
-Inelastica script calculates and writes LOE quantities in ascii (Systemlabel.IN) and NetCDF (Systemlabel.IN.nc) 
-
-For help use --help!
-"""
-    parser = OptionParser(usage,description=description)
-    parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]",
-                      type='int', default=4)
-    parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
-                      help="Energy where eigenchannel scattering states are evaluated [%default eV]")
-    parser.add_option("--eta", dest='eta', default=0.000001,type='float',
-                      help="Tiny imag. part in Green's functions etc. [%default eV]")
-    parser.add_option("-f", "--fdf", dest='fdfFile', default='./RUN.fdf',type='string',
-                      help="fdf file used for transiesta calculation [%default]")
-    parser.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
-                      help="Spin channel [%default]")
-    parser.add_option("-k", "--kPoint", dest='kPoint', default='[0.0,0.0]',type='string',
-                      help="2D k-point in range [0,1[ given as string, default=%default")
-    parser.add_option("-p", "--PhononNetCDF", dest='PhononNetCDF', default=None,type='string',
-                      help="Electron-phonon coupling NetCDF [%default]")
-    parser.add_option("-t", "--Temp", dest='Temp', default=4.2,type='float',
-                  help="Temperature [%default K]")
-    parser.add_option("-b", "--BiasPoints", dest='biasPoints', default=801,type='int',
-                  help="Number of bias points [%default]")
-    parser.add_option("-v", "--MinMaxVoltage", dest='MinMaxVoltage', default='-0.4:0.4',type='string',
-                  help="Voltage range ['%default' V]")
-    parser.add_option("-c", "--ModeCutoff", dest='modeCutoff', default='0.0025',type='float',
-                  help="Ignore phonon modes with lower hw [%default eV]")
-    parser.add_option("-V", "--Vrms", dest='Vrms', default='0.005',type='float',
-                  help="Lock in amplifier broadening [%default V]")
-    parser.add_option("-H", "--Heating", dest='PhHeating', default=False,action='store_true',
-                  help="Include heating of vibrational modes [%default]")
-    parser.add_option("-x", "--PhExtDamp", dest='PhExtDamp', default=1e-15,type='float',
-                  help="External damping [%default (?) TODO check unit!]")
-    (general, args) = parser.parse_args()
-    print description
-    
-    if general.kPoint[0]!='[' or general.kPoint[-1]!=']':
-        parser.error("ERROR: please specify --kPoint='[x.x,y.y]' not --kPoint=%s"%general.kPoint)
-    else:
-        try:
-            tmp=string.split(general.kPoint[1:-1],',')
-            general.kPoint = N.array([float(tmp[0]),float(tmp[1]),0],N.float)
-        except:
-            parser.error("ERROR: please specify --kPoint='[x.x,y.y]' not --kPoint=%s"%general.kPoint)
-
-    if not os.path.exists(general.fdfFile):
-        parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
-
-    try:
-        general.from_atom = SIO.GetFDFlineWithDefault(
-            general.fdfFile,'TS.TBT.PDOSFrom', int, None, 'Eigenchannels')
-        general.to_atom = SIO.GetFDFlineWithDefault(
-            general.fdfFile,'TS.TBT.PDOSTo', int, None, 'Eigenchannels')
-    except:
-        parser.error("Specify device region with TS.TBT.PDOS[To/From] keyword.")
-    try:
-        tmp=string.split(general.MinMaxVoltage,':')
-        general.minBias = float(tmp[0])
-        general.maxBias = float(tmp[1])
-    except:
-        parser.error("ERROR: Inelastica failed to parse bias voltage!")
-
-    return general
 
 
 ################################################################
