@@ -10,8 +10,7 @@ usage = "usage: %prog [options] DestinationDirectory"
 description = """
 Eigenchannels script that calculates:
 1) Eigenchannels, Paulsson et al. PRB 76, 115117 (2007).
-2) Fermi golden rule scattering rates, Paulsson et al. PRL 100, 226604 (2008).
-3) Bond currents.
+2) Bond currents.
 
 For help use --help!
 """
@@ -29,50 +28,62 @@ parser.add_option("-w", "--format", dest='format', default='macu',type='string',
                   help="Wavefunction format (macu, cube, XSF, or nc) [%default]")
 parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
                   help="Energy where eigenchannel scattering states are evaluated [%default eV]")
-parser.add_option("--eta", dest='eta', default=0.000001,type='float',
-                  help="Tiny imag. part in Green's functions etc. [%default eV]")
-parser.add_option("-f", "--fdf", dest='fdfFile', default='./RUN.fdf',type='string',
-                  help="fdf file used for transiesta calculation [%default]")
+parser.add_option("--eta", dest="eta", help="Imaginary part added to all energies (device and leads) [%default eV]",
+                  type='float', default=0.000001)
+parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
+                  type='float', default=0.0)
+parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
+                  help="Input fdf-file for TranSIESTA calculations [%default]")
 parser.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
                   help="Spin channel [%default]")
 parser.add_option("-x","--k1", dest='k1', default=0.0,type='float',
                   help="k-point along a1 [%default]")
 parser.add_option("-y","--k2", dest='k2', default=0.0,type='float',
                   help="k-point along a2 [%default]")
+parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
+                  help="Use SigNCfiles [%default]")
 
-(general, args) = parser.parse_args()
+(options, args) = parser.parse_args()
 print description
     
 # Sanity checks
-
-
-# Check k-point input
-general.kPoint = N.array([general.k1,general.k2,0],N.float)
-
-# Check for Siesta input file
-if not os.path.exists(general.fdfFile):
-    parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
+options.head,tail = os.path.split(options.fn)
+print "EigenChannels: Reading keywords from %s \n"%options.fn
 
 # Find Systemlabel keyword
-general.systemlabel = SIO.GetFDFlineWithDefault(general.fdfFile,'SystemLabel', str, 'Systemlabel', 'Error Eigenchannels')
-        
-# Find TS.TBT.PDOSTo/From keywords
-try:
-    general.from_atom = SIO.GetFDFlineWithDefault(
-        general.fdfFile,'TS.TBT.PDOSFrom', int, None, 'Eigenchannels')
-    general.to_atom = SIO.GetFDFlineWithDefault(
-        general.fdfFile,'TS.TBT.PDOSTo', int, None, 'Eigenchannels')
-except:
-    parser.error("Specify device region with TS.TBT.PDOS[To/From] keyword.")
+options.systemlabel = SIO.GetFDFlineWithDefault(options.fn,'SystemLabel', str, 'Systemlabel', 'Eigenchannels')       
+
+# Electrodes
+options.fnL  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileLeft', str, None, 'EigenChannels')
+options.NA1L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Left', int, 1, 'EigenChannels')
+options.NA2L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Left', int, 1, 'EigenChannels')
+options.fnR  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileRight', str, None, 'EigenChannels')
+options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 1, 'EigenChannels')
+options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'EigenChannels')
+
+# Device region
+options.devSt  = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom', int, 0, 'EigenChannels')
+options.devEnd = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo', int, 0, 'EigenChannels')
+
+# Voltage
+options.voltage = SIO.GetFDFlineWithDefault(options.fn,'TS.Voltage', float, 0.0, 'EigenChannels')
+
+# Check k-point input
+options.kPoint = N.array([options.k1,options.k2,0.0],N.float)
+
+# Check for Siesta input file
+if not os.path.exists(options.fn):
+    parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
+
 
 if len(args)!=1:
     parser.error('ERROR: You need to specify destination directory')
 
-general.DestDir = args[0]
-if not os.path.isdir(general.DestDir):
-    print '\nEigenchannels : Creating folder %s' %general.DestDir
-    os.mkdir(general.DestDir)
+options.DestDir = args[0]
+if not os.path.isdir(options.DestDir):
+    print '\nEigenchannels : Creating folder %s' %options.DestDir
+    os.mkdir(options.DestDir)
 #    else:
-#        parser.error('ERROR: destination directory %s already exist!'%general.DestDir)
+#        parser.error('ERROR: destination directory %s already exist!'%options.DestDir)
 
-EigenChannels.main(general)
+EigenChannels.main(options)

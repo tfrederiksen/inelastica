@@ -1,22 +1,10 @@
 #! /usr/bin/env python
 
-#print "SVN $Id: pyTBT.py 194 2013-07-31 12:30:54Z tfrederiksen $"
-
-
 from Inelastica import SiestaIO as SIO
-#import MiscMath as MM
-#import NEGF
 import numpy as N
-#import numpy.linalg as LA
-#import sys, string, os
 from Inelastica import pyTBT
 from optparse import OptionParser, OptionGroup
 import os 
-#try:
-#    import scipy.linalg as SLA 
-#    hasSciPy = True
-#except:
-#    hasSciPy = False 
         
 usage = "usage: %prog [options] DestinationDirectory"
 

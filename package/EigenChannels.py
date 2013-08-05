@@ -3,8 +3,7 @@ print "SVN $Id$"
 """
 Eigenchannels:
 1: Eigenchannels, method from Paulsson and Brandbyge PRB 2007
-2: Analyze IETS spectra, Paulsson et al PRL 2008
-3: Calculate "bond" currents
+2: Calculate "bond" currents
 """
 
 import NEGF
@@ -21,12 +20,12 @@ import PhysicalConstants as PC
 ########################################################
 ##################### Main routine #####################
 ########################################################
-def main(general):
+def main(options):
     geom = readxv()
-    myGF = readHS(general)
-    general.nspin = myGF.HS.nspin
-    basis = readbasis(general,myGF.HS)
-    calcT(general,geom,myGF,basis)
+    myGF = readHS(options)
+    options.nspin = myGF.HS.nspin
+    basis = readbasis(options,myGF.HS)
+    calcT(options,geom,myGF,basis)
 
 ########################################################
 def readxv():
@@ -45,40 +44,30 @@ def readxv():
     return geom
 
 ########################################################
-def readbasis(param,GF):
+def readbasis(options,GF):
     fn=glob.glob('*.XV')
-    basis = SIO.BuildBasis(fn[0], param.from_atom, param.to_atom, GF.lasto)
+    basis = SIO.BuildBasis(fn[0], options.devSt, options.devEnd, GF.lasto)
     return basis
 
 ########################################################
-def readHS(general):
-    # Setup H, S and self-energies
-    fnL  = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.HSFileLeft', str, None, 'Error Eigenchannels')
-    NA1L = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA1Left', int, 1, 'Error Eigenchannels')
-    NA2L = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA2Left', int, 1, 'Error Eigenchannels')
-    fnR  = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.HSFileRight', str, None, 'Error Eigenchannels')
-    NA1R = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA1Right', int, 1, 'Error Eigenchannels')
-    NA2R = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA2Right', int, 1, 'Error Eigenchannels')
-    voltage  =SIO.GetFDFlineWithDefault(general.fdfFile,'TS.Voltage', float, 0.0, 'Error Eigenchannels')
+def readHS(options):
 
-    elecL = NEGF.ElectrodeSelfEnergy(fnL,NA1L,NA2L,voltage/2.)
-    elecR = NEGF.ElectrodeSelfEnergy(fnR,NA1R,NA2R,-voltage/2.)
-
-    myGF = NEGF.GF(general.systemlabel+'.TSHS',elecL,elecR,Bulk=True,DeviceAtoms=[general.from_atom, general.to_atom])
-
-    myGF.calcGF(general.energy+general.eta*1j, general.kPoint[0:2], ispin=general.iSpin)
+    elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
+    elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
+    myGF = NEGF.GF(options.systemlabel+'.TSHS',elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
+    myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
 
     return myGF
 
 ########################################################
-def calcT(general,geom,myGF,basis):
+def calcT(options,geom,myGF,basis):
     # Matrix to save total and eigenchannel transmissions
     # BEFORE ORTHOGO
-    T = myGF.calcT(general.numchan)
+    T = myGF.calcT(options.numchan)
 
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
 
-    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%general.energy
+    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
     for t in T:
         print '%.9f '%t,
     print
@@ -87,61 +76,61 @@ def calcT(general,geom,myGF,basis):
     myGF.orthogonalize()
 
     # Check that we get the same transmission:
-    T = myGF.calcT(general.numchan)
-    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%general.energy
+    T = myGF.calcT(options.numchan)
+    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
     for t in T:
         print '%.9f '%t,
     print
 
     # Calculate Eigenchannels
-    myGF.calcEigChan(general.numchan)
+    myGF.calcEigChan(options.numchan)
 
     # Calculate Eigenchannels from left
     ECleft, EigT = myGF.ECleft, myGF.EigTleft
     print 'Left eigenchannel transmissions:',EigT
-    for jj in range(general.numchan):
+    for jj in range(options.numchan):
         T[jj+1]=EigT[len(EigT)-jj-1]
 
     # Write wave functions
-    for jj in range(general.numchan):
-        general.iSide, general.iChan = 0, jj+1
-        writeWavefunction(general,geom,basis,ECleft[jj])
-        Curr=calcCurrent(general,basis,myGF.HNO,ECleft[jj])
-        writeCurrent(general,geom,Curr)
+    for jj in range(options.numchan):
+        options.iSide, options.iChan = 0, jj+1
+        writeWavefunction(options,geom,basis,ECleft[jj])
+        Curr=calcCurrent(options,basis,myGF.HNO,ECleft[jj])
+        writeCurrent(options,geom,Curr)
                     
     # Calculate eigenchannels from right
-    if general.bothsides:
+    if options.bothsides:
         ECright, EigT = myGF.ECright, myGF.EigTright
         print 'Right eigenchannel transmissions:',EigT
-        for jj in range(general.numchan):
-            general.iSide, general.iChan = 1, jj+1
-            writeWavefunction(general,geom,basis,ECright[jj])
-            Curr=calcCurrent(general,basis,myGF.HNO,ECright[jj])
-            writeCurrent(general,geom,Curr)
+        for jj in range(options.numchan):
+            options.iSide, options.iChan = 1, jj+1
+            writeWavefunction(options,geom,basis,ECright[jj])
+            Curr=calcCurrent(options,basis,myGF.HNO,ECright[jj])
+            writeCurrent(options,geom,Curr)
             
     # Calculate total "bond currents"
     A1NO = mm(myGF.Us,myGF.A1,myGF.Us)
     A2NO = mm(myGF.Us,myGF.A2,myGF.Us)
-    Curr=-calcCurrent(general,basis,myGF.HNO,A1NO)
-    general.iChan, general.iSide = 0, 0
-    writeCurrent(general,geom,Curr)
-    Curr=-calcCurrent(general,basis,myGF.HNO,A2NO)
-    general.iSide = 1
-    writeCurrent(general,geom,Curr)
+    Curr=-calcCurrent(options,basis,myGF.HNO,A1NO)
+    options.iChan, options.iSide = 0, 0
+    writeCurrent(options,geom,Curr)
+    Curr=-calcCurrent(options,basis,myGF.HNO,A2NO)
+    options.iSide = 1
+    writeCurrent(options,geom,Curr)
 
     # Calculate eigenstates of device Hamiltonian
-    if general.MolStates>0.0:
+    if options.MolStates>0.0:
         print 'calculating molecular eigenstates of folded, orthogonalized device hamiltonian'
         ev, es = LA.eigh(myGF.H)
         for ii in range(len(ev)):
-            if N.abs(ev[ii])<general.MolStates:
-                fn=general.DestDir+'/'+general.systemlabel+'.S%.3i.E%.3f'%(ii,ev[ii])
-                writeWavefunction(general,geom,basis,mm(myGF.Us,es[:,ii]),fn=fn)
+            if N.abs(ev[ii])<options.MolStates:
+                fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii,ev[ii])
+                writeWavefunction(options,geom,basis,mm(myGF.Us,es[:,ii]),fn=fn)
 
 
 
 ########################################################
-def calcWF(general,geom,basis,Y):
+def calcWF(options,geom,basis,Y):
     """
     Calculate wavefunction, returns:
     YY : complex wavefunction on regular grid
@@ -150,15 +139,15 @@ def calcWF(general,geom,basis,Y):
     nx, ny, nz : number of grid points
     """
 
-    xyz=N.array(geom.xyz[general.from_atom-1:general.to_atom])
-    atomnum=geom.anr[general.from_atom-1:general.to_atom]
+    xyz=N.array(geom.xyz[options.devSt-1:options.devEnd])
+    atomnum=geom.anr[options.devSt-1:options.devEnd]
 
     # Size of cube
     xmin, xmax = min(xyz[:,0])-5.0, max(xyz[:,0])+5.0
     ymin, ymax = min(xyz[:,1])-5.0, max(xyz[:,1])+5.0
     zmin, zmax = min(xyz[:,2])-5.0, max(xyz[:,2])+5.0
     xl, yl, zl = xmax-xmin, ymax-ymin, zmax-zmin
-    dx, dy, dz = general.res, general.res, general.res
+    dx, dy, dz = options.res, options.res, options.res
     nx, ny, nz = int(xl/dx)+1, int(yl/dy)+1, int(zl/dz)+1
 
     origo = N.array([xmin,ymin,zmin],N.float)
@@ -208,11 +197,11 @@ def calcWF(general,geom,basis,Y):
         YY[ixmin:ixmax,iymin:iymax,izmin:izmax]=YY[ixmin:ixmax,iymin:iymax,izmin:izmax]+\
                                                  RR*thisSphHar*Y[ii]
 
-    return YY, general.res, origo, nx, ny, nz
+    return YY, options.res, origo, nx, ny, nz
 
 ###################### Current densities #########################
 
-def calcCurrent(general,basis,H,Y):
+def calcCurrent(options,basis,H,Y):
     """
     Calculate current density in atomic bonds
     Y : complex scattering state or
@@ -220,39 +209,39 @@ def calcCurrent(general,basis,H,Y):
     """
     
     NN=len(H)
-    NN2=general.to_atom-general.from_atom+1
+    NN2=options.devEnd-options.devSt+1
     Curr=N.zeros((NN2,NN2),N.float)
     
     if len(Y.shape)==2:
         for ii in range(NN):
-            a1=basis.ii[ii]-general.from_atom
+            a1=basis.ii[ii]-options.devSt
             for jj in range(NN):
-                a2=basis.ii[jj]-general.from_atom
+                a2=basis.ii[jj]-options.devSt
                 tmp=H[jj,ii]*Y[ii,jj]/2/N.pi
                 Curr[a1,a2]=Curr[a1,a2]+4*N.pi*tmp.imag
     else:
         for ii in range(NN):
-            a1=basis.ii[ii]-general.from_atom
+            a1=basis.ii[ii]-options.devSt
             for jj in range(NN):
-                a2=basis.ii[jj]-general.from_atom
+                a2=basis.ii[jj]-options.devSt
                 tmp=H[ii,jj]*N.conjugate(Y[ii])*Y[jj]
                 Curr[a1,a2]=Curr[a1,a2]+4*N.pi*tmp.imag
     
     return Curr
 
 ########################################################
-def writeCurrent(general,geom,Curr):
+def writeCurrent(options,geom,Curr):
     """
     Write bond currents to file
     fn : Filename
     Curr : Bond current matrix
     """
-    fn=fileName(general)
-    xyz=N.array(geom.xyz[general.from_atom-1:general.to_atom])
-    atomnum=geom.anr[general.from_atom-1:general.to_atom]
+    fn=fileName(options)
+    xyz=N.array(geom.xyz[options.devSt-1:options.devEnd])
+    atomnum=geom.anr[options.devSt-1:options.devEnd]
 
     foC=file(fn+'.curr','w')
-    foC.write('%i\n'%(general.to_atom-general.from_atom+1))
+    foC.write('%i\n'%(options.devEnd-options.devSt+1))
 
     for ii in range(len(xyz)):
         foC.write('%i %e %e %e\n'%(atomnum[ii],xyz[ii,0],xyz[ii,1],xyz[ii,2]))
@@ -438,13 +427,13 @@ def writeXSF(geom,fn,YY,nx,ny,nz,origo,dstep):
 
 
 ########################################################
-def writeWavefunction(general,geom,basis,Y,fn=None):
+def writeWavefunction(options,geom,basis,Y,fn=None):
     """
     Writes wave function to the specified output type
     Y: vector for wavefunction
                 
     """
-    if fn==None: fn = fileName(general)
+    if fn==None: fn = fileName(options)
     print 'Eigenchannels.writeWavefunction: Writing',fn
     # Rotate in complex space
     max_amp=-1.0
@@ -463,21 +452,21 @@ def writeWavefunction(general,geom,basis,Y,fn=None):
         (basis.ii[ii],basis.atomnum[ii],basis.M[ii],basis.L[ii],abs(Y[ii])))
     foT.close()
 
-    YY, dstep, origo, nx, ny, nz = calcWF(general,geom,basis,Y)
+    YY, dstep, origo, nx, ny, nz = calcWF(options,geom,basis,Y)
 
     # Write wave function in specified file format
-    if general.format.lower() == 'macu':
+    if options.format.lower() == 'macu':
         writemacubin(fn+'.Re.macu',YY.real,nx,ny,nz,origo,dstep)
         writemacubin(fn+'.Im.macu',YY.imag,nx,ny,nz,origo,dstep)
 
-    if general.format.lower() == 'cube':
+    if options.format.lower() == 'cube':
         writecube(geom,fn+'.Re.cube',YY.real,nx,ny,nz,origo,dstep)
         writecube(geom,fn+'.Im.cube',YY.imag,nx,ny,nz,origo,dstep)
         
-    if general.format.lower() == 'xsf':
+    if options.format.lower() == 'xsf':
         writeXSF(geom,fn+'.XSF',YY,nx,ny,nz,origo,dstep)
 
-    if general.format.lower() == 'nc':
+    if options.format.lower() == 'nc':
         writenetcdf(geom,fn+'.nc',YY,nx,ny,nz,origo,dstep)
 
 def oldmyopen():
@@ -494,64 +483,46 @@ def oldmyopen():
             self.file.write(x)
 
     fo = myopen()
-    fo.stdout, fo.file = sys.stdout, open(general.DestDir+'/RUN.out','w',0)
+    fo.stdout, fo.file = sys.stdout, open(options.DestDir+'/RUN.out','w',0)
     sys.stdout = fo
 
-    file = open(general.DestDir+'/Parameters','w')    
+    file = open(options.DestDir+'/Parameters','w')    
     argv=""
     for ii in sys.argv: argv+=" "+ii
     myprint(argv,file)
     myprint('##################################################################################',file)
     myprint('## Eigenchannel options',file)
-    myprint('fdfFile          : %s'%general.fdfFile,file)
-    myprint('Ef [eV]          : %f'%general.energy,file)
-    myprint('NumChan          : %i'%general.numchan,file)
-    myprint('Res [Ang]        : %f'%general.res,file)
-    myprint('PhononNetCDF     : %s'%general.PhononNetCDF,file)
-    myprint('iSpin            : %i'%(general.iSpin),file)
-    myprint('kPoint           : [%f,%f]'%(general.kPoint[0],general.kPoint[1]),file)
-    myprint('BothSides        : %s'%general.bothsides,file)
-    myprint('Device [from,to] : [%i,%i]'%(general.from_atom, general.to_atom),file)
-    myprint('DestDir          : %s'%general.DestDir,file)
+    myprint('fdfFile          : %s'%options.fdfFile,file)
+    myprint('Ef [eV]          : %f'%options.energy,file)
+    myprint('NumChan          : %i'%options.numchan,file)
+    myprint('Res [Ang]        : %f'%options.res,file)
+    myprint('PhononNetCDF     : %s'%options.PhononNetCDF,file)
+    myprint('iSpin            : %i'%(options.iSpin),file)
+    myprint('kPoint           : [%f,%f]'%(options.kPoint[0],options.kPoint[1]),file)
+    myprint('BothSides        : %s'%options.bothsides,file)
+    myprint('Device [from,to] : [%i,%i]'%(options.devSt, options.devEnd),file)
+    myprint('DestDir          : %s'%options.DestDir,file)
     myprint('##################################################################################',file)
-    if calledFromInelastica:
-        myprint('## Inelastica options',file)
-        myprint('PhononNetCDF     : %s'%general.PhononNetCDF,file)
-        myprint('Ef [eV]          : %f'%general.energy,file)
-        myprint('Vrms [V]         : %f'%general.Vrms,file)
-        myprint('PhHeating        : %s'%general.PhHeating,file)
-        myprint('External damp [?]: %f'%general.PhExtDamp,file)
-        myprint('mode cutoff [eV] : %f'%general.modeCutoff,file)
-        myprint('Temperature [K]  : %f'%general.Temp,file)
-        myprint('Bias points      : %i'%general.biasPoints,file)
-        myprint('Min bias [V]     : %f'%general.minBias,file)
-        myprint('Max bias [V]     : %f'%general.maxBias,file)
-        myprint('##################################################################################',file)
     file.close()
 
 ################# File names ##################################
-def fileName(general):
-    systemlabel = general.systemlabel
+def fileName(options):
+    systemlabel = options.systemlabel
     # Generate filename '.EC.{1,Tot}{L,R,,In,Out}[UP][Ef=1.0].'
-    if general.iChan==0:
-        fn=systemlabel+'.EC.Tot%s'%(['L','R','','In','Out'][general.iSide])
+    if options.iChan==0:
+        fn=systemlabel+'.EC.Tot%s'%(['L','R','','In','Out'][options.iSide])
     else:
-        fn=systemlabel+'.EC.%i%s'%(general.iChan,['L','R','','In','Out'][general.iSide])
-    if general.nspin==2:
-        fn += ['UP','DOWN'][general.iSpin]
-    if general.energy!=0.0:
-        fn += '_E%.3f'%general.energy
-    if general.kPoint[0]!=0.0 or general.kPoint[1]!=0.0:
-        fn += '_kx%.3f_ky%.3f'%(general.kPoint[0],general.kPoint[1])
-    return general.DestDir+'/'+fn
+        fn=systemlabel+'.EC.%i%s'%(options.iChan,['L','R','','In','Out'][options.iSide])
+    if options.nspin==2:
+        fn += ['UP','DOWN'][options.iSpin]
+    if options.energy!=0.0:
+        fn += '_E%.3f'%options.energy
+    if options.kPoint[0]!=0.0 or options.kPoint[1]!=0.0:
+        fn += '_kx%.3f_ky%.3f'%(options.kPoint[0],options.kPoint[1])
+    return options.DestDir+'/'+fn
 
 ################# Math helpers ################################
 mm = MM.mm
 outerAdd = MM.outerAdd
 dagger = MM.dagger
-    
-##################### Start main routine #####################
-
-if __name__ == '__main__':
-    main()
 
