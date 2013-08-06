@@ -3,7 +3,7 @@
 from Inelastica import EigenChannels
 from Inelastica import SiestaIO as SIO
 import numpy as N
-import os
+import os, sys, subprocess
 from optparse import OptionParser, OptionGroup
 
 usage = "usage: %prog [options] DestinationDirectory"
@@ -44,14 +44,28 @@ parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_t
                   help="Use SigNCfiles [%default]")
 
 (options, args) = parser.parse_args()
-print description
+
+# Destination directory
+if len(args)!=1:
+    parser.error('ERROR: You need to specify a destination directory')
+else:
+    options.DestDir = args[0]
+if not os.path.isdir(options.DestDir):
+    print '\nEigenChannels: Creating folder %s' %options.DestDir
+    os.mkdir(options.DestDir)
+
+# Log output to file                                                                                                                                                                                                
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+tee = subprocess.Popen(["tee", options.DestDir+"/Output.log"], stdin=subprocess.PIPE)
+os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
+os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
     
-# Sanity checks
+# Read SIESTA files
 options.head,tail = os.path.split(options.fn)
 print "EigenChannels: Reading keywords from %s \n"%options.fn
 
-# Find Systemlabel keyword
 options.systemlabel = SIO.GetFDFlineWithDefault(options.fn,'SystemLabel', str, 'Systemlabel', 'Eigenchannels')       
+options.TSHS = '%s/%s.TSHS'%(options.head,options.systemlabel)
 
 # Electrodes
 options.fnL  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileLeft', str, None, 'EigenChannels')
@@ -74,16 +88,5 @@ options.kPoint = N.array([options.k1,options.k2,0.0],N.float)
 # Check for Siesta input file
 if not os.path.exists(options.fn):
     parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
-
-
-if len(args)!=1:
-    parser.error('ERROR: You need to specify destination directory')
-
-options.DestDir = args[0]
-if not os.path.isdir(options.DestDir):
-    print '\nEigenchannels : Creating folder %s' %options.DestDir
-    os.mkdir(options.DestDir)
-#    else:
-#        parser.error('ERROR: destination directory %s already exist!'%options.DestDir)
 
 EigenChannels.main(options)

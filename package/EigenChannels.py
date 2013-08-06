@@ -21,42 +21,20 @@ import PhysicalConstants as PC
 ##################### Main routine #####################
 ########################################################
 def main(options):
-    geom = readxv()
+    XV = '%s/%s.XV'%(options.head,options.systemlabel)
+    geom = MG.Geom(XV)
     myGF = readHS(options)
     options.nspin = myGF.HS.nspin
-    basis = readbasis(options,myGF.HS)
+    basis = SIO.BuildBasis(XV,options.devSt,options.devEnd,myGF.HS.lasto)
     calcT(options,geom,myGF,basis)
 
-########################################################
-def readxv():
-    # Read geometry from first .XV file found in dir
-    fns=glob.glob('*.XV')
-
-    if len(fns)>1:
-        print "ERROR: Eigenchannels: More than one .XV file ... which geometry to choose???"
-        sys.exit(1)
-    elif len(fns)<1:
-        print "ERROR: Eigenchannels: Error ... No .XV file found!"
-        sys.exit(1)
-
-    print('Reading geometry from "%s" file' % fns[0])
-    geom = MG.Geom(fns[0])
-    return geom
-
-########################################################
-def readbasis(options,GF):
-    fn=glob.glob('*.XV')
-    basis = SIO.BuildBasis(fn[0], options.devSt, options.devEnd, GF.lasto)
-    return basis
 
 ########################################################
 def readHS(options):
-
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
-    myGF = NEGF.GF(options.systemlabel+'.TSHS',elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
+    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
     myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-
     return myGF
 
 ########################################################

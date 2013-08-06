@@ -4,9 +4,9 @@ from optparse import OptionParser, OptionGroup
 from Inelastica import Inelastica
 from Inelastica import SiestaIO as SIO
 import numpy as N
-import os,string
+import os, sys, subprocess
 
-usage = "usage: %prog [options]"
+usage = "usage: %prog [options] DestinationDirectory"
 description = """
 Inelastica script calculates and writes LOE quantities in ascii (Systemlabel.IN) and NetCDF (Systemlabel.IN.nc) 
 
@@ -19,27 +19,22 @@ parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
                   help="Energy where eigenchannel scattering states are evaluated [%default eV]")
 parser.add_option("--eta", dest='eta', default=0.000001,type='float',
                   help="Tiny imag. part in Green's functions etc. [%default eV]")
-parser.add_option("-f", "--fdf", dest='fdfFile', default='./RUN.fdf',type='string',
-                  help="fdf file used for transiesta calculation [%default]")
+parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
+                  help="Input fdf-file for TranSIESTA calculations [%default]")
 parser.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
                  help="Spin channel [%default]")
-
 parser.add_option("-x","--k1", dest='k1', default=0.0,type='float',
                   help="k-point along a1 [%default]")
 parser.add_option("-y","--k2", dest='k2', default=0.0,type='float',
                   help="k-point along a2 [%default]")
-
-#parser.add_option("-k", "--kPoint", dest='kPoint', default='[0.0,0.0]',type='string',
-#                  help="2D k-point in range [0,1[ given as string, default=%default")
-
 parser.add_option("-p", "--PhononNetCDF", dest='PhononNetCDF', default=None,type='string',
                   help="Electron-phonon coupling NetCDF [%default]")
 parser.add_option("-t", "--Temp", dest='Temp', default=4.2,type='float',
                   help="Temperature [%default K]")
 parser.add_option("-b", "--BiasPoints", dest='biasPoints', default=801,type='int',
                   help="Number of bias points [%default]")
-parser.add_option("-v", "--MinMaxVoltage", dest='MinMaxVoltage', default='-0.4:0.4',type='string',
-                  help="Voltage range ['%default' V]")
+parser.add_option("-v", "--MaxBias", dest='MaxBias', default=0.4,type='float',
+                  help="Sets the IETS bias range (-MaxBias to MaxBias) [%default V]")
 parser.add_option("-c", "--ModeCutoff", dest='modeCutoff', default='0.0025',type='float',
                   help="Ignore phonon modes with lower hw [%default eV]")
 parser.add_option("-V", "--Vrms", dest='Vrms', default='0.005',type='float',
@@ -48,31 +43,58 @@ parser.add_option("-H", "--Heating", dest='PhHeating', default=False,action='sto
                   help="Include heating of vibrational modes [%default]")
 parser.add_option("-d", "--PhExtDamp", dest='PhExtDamp', default=1e-15,type='float',
                   help="External damping [%default (?) TODO check unit!]")
-(general, args) = parser.parse_args()
+parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
+                  help="Use SigNCfiles [%default]")
+parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
+                  type='float', default=0.0)
 
-print description
+(options, args) = parser.parse_args()
 
-# Check k-point input
-general.kPoint = N.array([general.k1,general.k2,0],N.float)
-        
-if not os.path.exists(general.fdfFile):
-    parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
+# Destination directory
+if len(args)!=1:
+    parser.error('ERROR: You need to specify a destination directory')
+else:
+    options.DestDir = args[0]
+if not os.path.isdir(options.DestDir):
+    print '\nInelastica: Creating folder %s' %options.DestDir
+    os.mkdir(options.DestDir)
 
-try:
-    general.from_atom = SIO.GetFDFlineWithDefault(
-        general.fdfFile,'TS.TBT.PDOSFrom', int, None, 'Inelastica')
-    general.to_atom = SIO.GetFDFlineWithDefault(
-        general.fdfFile,'TS.TBT.PDOSTo', int, None, 'Inelastica')
-except:
-    parser.error("Specify device region with TS.TBT.PDOS[To/From] keyword.")
+# Log output to file                                                                                                                                                                                                
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+tee = subprocess.Popen(["tee", options.DestDir+"/Output.log"], stdin=subprocess.PIPE)
+os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
+os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
 
-print general.MinMaxVoltage
-print string.split(general.MinMaxVoltage,':')
-try:
-    tmp=string.split(general.MinMaxVoltage,':')
-    general.minBias = float(tmp[0])
-    general.maxBias = float(tmp[1])
-except:
-    parser.error("ERROR: Inelastica failed to parse bias voltage!")
+# Read SIESTA files
+options.head,tail = os.path.split(options.fn)
+print "Inelastica: Reading keywords from %s \n"%options.fn
 
-Inelastica.main(general)
+options.systemlabel = SIO.GetFDFlineWithDefault(options.fn,'SystemLabel', str, 'Systemlabel', 'Inelastica')
+options.TSHS = '%s/%s.TSHS'%(options.head,options.systemlabel)
+
+# Electrodes
+options.fnL  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileLeft', str, None, 'Inelastica')
+options.NA1L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Left', int, 1, 'Inelastica')
+options.NA2L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Left', int, 1, 'Inelastica')
+options.fnR  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileRight', str, None, 'Inelastica')
+options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 1, 'Inelastica')
+options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'Inelastica')
+
+options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'Inelastica')
+
+# Device region
+options.devSt  = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom', int, 0, 'Inelastica')
+options.devEnd = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo', int, 0, 'Inelastica')
+
+# Voltage
+options.voltage = SIO.GetFDFlineWithDefault(options.fn,'TS.Voltage', float, 0.0, 'Inelastica')
+
+# Bias range
+options.minBias = -1.0*abs(options.MaxBias)
+options.maxBias = abs(options.MaxBias)
+
+# k-point
+options.kPoint = N.array([options.k1,options.k2,0.0],N.float)
+
+Inelastica.main(options)
+

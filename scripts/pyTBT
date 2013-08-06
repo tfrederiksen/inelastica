@@ -4,7 +4,7 @@ from Inelastica import SiestaIO as SIO
 import numpy as N
 from Inelastica import pyTBT
 from optparse import OptionParser, OptionGroup
-import os 
+import os, sys, subprocess
         
 usage = "usage: %prog [options] DestinationDirectory"
 
@@ -41,20 +41,27 @@ parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_t
 
 (options, args) = parser.parse_args()
 
+# Destination directory
 if len(args)!=1:
-    parser.error('ERROR: You need to specify destination directory')
+    parser.error('ERROR: You need to specify a destination directory')
 else:
     options.DestDir = args[0]
-
 if not os.path.isdir(options.DestDir):
     print '\npyTBT: Creating folder %s' %options.DestDir
     os.mkdir(options.DestDir)
-        
-# Read options from fdf files
-##############################################################################
-    
+
+# Log output to file                                                                                                                                                                                                
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+tee = subprocess.Popen(["tee", options.DestDir+"/Output.log"], stdin=subprocess.PIPE)
+os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
+os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
+
+# Read SIESTA files
 options.head,tail = os.path.split(options.fn)
 print "pyTBT: Reading keywords from %s \n"%options.fn
+
+options.systemlabel = SIO.GetFDFlineWithDefault(options.fn,'SystemLabel', str, 'Systemlabel', 'Eigenchannels')       
+options.TSHS = '%s/%s.TSHS'%(options.head,options.systemlabel)
 
 # Electrodes
 options.fnL  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileLeft', str, None, 'pyTBT')
@@ -63,6 +70,7 @@ options.NA2L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Left', int, 1
 options.fnR  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileRight', str, None, 'pyTBT')
 options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 1, 'pyTBT')
 options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'pyTBT')
+options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'pyTBT')
 
 # Device region
 options.devSt  = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom', int, 0, 'pyTBT')
@@ -81,9 +89,5 @@ if options.nE>1:
 else:
     options.dE = 0.0
     options.Elist = N.array((options.minE,),N.float)
-    
-options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'pyTBT')
-options.systemlabel = SIO.GetFDFlineWithDefault(options.fn,'SystemLabel', str, 'Systemlabel', 'pyTBT')
-options.fnTSHS = options.head+'/%s.TSHS'%options.systemlabel
 
 pyTBT.calc(options)

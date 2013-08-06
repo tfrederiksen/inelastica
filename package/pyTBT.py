@@ -35,7 +35,7 @@ def calc(options):
     kPointList, kWeights, NNk, Nk1, Nk2, GaussKronrod = getKpoints(options)
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
-    myGF = NEGF.GF(options.fnTSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=[options.devSt, options.devEnd])
+    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=[options.devSt, options.devEnd])
     nspin = myGF.HS.nspin
     if options.devSt==0:
         options.devSt=GF.DeviceAtoms[0]
@@ -133,12 +133,14 @@ Voltage                         : %f
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
 
     if options.dos:
-        WritePDOS(outFile+'.PDOS.gz',options,myGF,DOSL+DOSR)
-        WritePDOS(outFile+'.PDOSL.gz',options,myGF,DOSL)
-        WritePDOS(outFile+'.PDOSR.gz',options,myGF,DOSR)
+        # Read basis
+        basis = SIO.BuildBasis('%s/%s.XV'%(options.head,options.systemlabel),1,myGF.HS.nua,myGF.HS.lasto)
+        WritePDOS(outFile+'.PDOS.gz',options,myGF,DOSL+DOSR,basis)
+        WritePDOS(outFile+'.PDOSL.gz',options,myGF,DOSL,basis)
+        WritePDOS(outFile+'.PDOSR.gz',options,myGF,DOSR,basis)
     
 
-def WritePDOS(fn,options,myGF,DOS):
+def WritePDOS(fn,options,myGF,DOS,basis):
     """
     PDOS from the surface Green's function from electrode calculations
     
@@ -151,9 +153,6 @@ def WritePDOS(fn,options,myGF,DOS):
     import xml.dom.minidom as xml
     import gzip
 
-    # Read basis
-    basis=SIO.BuildBasis(options.systemlabel+'.XV',1,myGF.HS.nua,myGF.HS.lasto)
-    
     # First, last orbital in full space and pyTBT folded space.
     devOrbSt = myGF.HS.lasto[options.devSt-1]
     pyTBTdevOrbSt = devOrbSt-myGF.HS.lasto[options.devSt-1]

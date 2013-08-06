@@ -24,66 +24,32 @@ import time
 ########################################################
 ##################### Main routine #####################
 ########################################################
-def main(general):
-    geom = readxv()
-    myGF = readHS(general)
-    basis = readbasis(general,myGF.HS)
-    calcTeig(general,myGF)
-    calcIETS(general,myGF,basis)
+def main(options):
+    XV = '%s/%s.XV'%(options.head,options.systemlabel)
+    geom = MG.Geom(XV)
+    myGF = readHS(options)
+    #options.nspin = myGF.HS.nspin
+    basis = SIO.BuildBasis(XV,options.devSt,options.devEnd,myGF.HS.lasto)
+    calcTeig(options,myGF)
+    calcIETS(options,myGF,basis)
 
 ########################################################
-def readxv():
-    # Read geometry from first .XV file found in dir
-    fns=glob.glob('*.XV')
-
-    if len(fns)>1:
-        print "ERROR: Eigenchannels: More than one .XV file ... which geometry to choose???"
-        sys.exit(1)
-    elif len(fns)<1:
-        print "ERROR: Eigenchannels: Error ... No .XV file found!"
-        sys.exit(1)
-
-    print('Reading geometry from "%s" file' % fns[0])
-    geom = MG.Geom(fns[0])
-    return geom
-
-########################################################
-def readbasis(param,GF):
-    fn=glob.glob('*.XV')
-    basis = SIO.BuildBasis(fn[0], param.from_atom, param.to_atom, GF.lasto)
-    return basis
-
-########################################################
-def readHS(general):
-    # Setup H, S and self-energies
-    fnL  = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.HSFileLeft', str, None, 'Error Eigenchannels')
-    NA1L = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA1Left', int, 1, 'Error Eigenchannels')
-    NA2L = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA2Left', int, 1, 'Error Eigenchannels')
-    fnR  = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.HSFileRight', str, None, 'Error Eigenchannels')
-    NA1R = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA1Right', int, 1, 'Error Eigenchannels')
-    NA2R = SIO.GetFDFlineWithDefault(general.fdfFile,'TS.ReplicateA2Right', int, 1, 'Error Eigenchannels')
-    voltage  =SIO.GetFDFlineWithDefault(general.fdfFile,'TS.Voltage', float, 0.0, 'Error Eigenchannels')
-
-    elecL = NEGF.ElectrodeSelfEnergy(fnL,NA1L,NA2L,voltage/2.)
-    elecR = NEGF.ElectrodeSelfEnergy(fnR,NA1R,NA2R,-voltage/2.)
-
-    general.systemlabel = SIO.GetFDFlineWithDefault(general.fdfFile,'SystemLabel', str, None, 'pyTBT')
-
-    myGF = NEGF.GF(general.systemlabel+'.TSHS',elecL,elecR,Bulk=True,DeviceAtoms=[general.from_atom, general.to_atom])
-
-    myGF.calcGF(general.energy+general.eta*1j, general.kPoint[0:2], ispin=general.iSpin)
-
+def readHS(options):
+    elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
+    elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
+    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
+    myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
     return myGF
 
 ########################################################
-def calcTeig(general,myGF):
+def calcTeig(options,myGF):
     # Matrix to save total and eigenchannel transmissions
     # BEFORE ORTHOGO
-    T = myGF.calcT(general.numchan)
+    T = myGF.calcT(options.numchan)
 
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
 
-    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%general.energy
+    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
     for t in T:
         print '%.9f '%t,
     print
@@ -93,29 +59,29 @@ def calcTeig(general,myGF):
     myGF.orthogonalize()
 
     # Check that we get the same transmission:
-    T = myGF.calcT(general.numchan)
-    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%general.energy
+    T = myGF.calcT(options.numchan)
+    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
     for t in T:
         print '%.9f '%t,
     print
 
     # Calculate Eigenchannels
-    myGF.calcEigChan(general.numchan)
+    myGF.calcEigChan(options.numchan)
     print 'Left eigenchannel transmissions:',myGF.EigTleft
     print 'Right eigenchannel transmissions:',myGF.EigTright
     myGF.trans0 = T[0]
 
 ########################################################
-def calcIETS(general,myGF,basis):
+def calcIETS(options,myGF,basis):
     # Calculate inelastic scattering rates, total and per eigenchannel
 
-    NCfile = NC.NetCDFFile(general.PhononNetCDF,'r')
-    print 'Reading ',general.PhononNetCDF
+    NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
+    print 'Reading ',options.PhononNetCDF
     hw = N.array(NCfile.variables['hw'][:]) 
     # Write matrices to file?
     WriteOrtho = False
     if WriteOrtho:
-        ncdf = NCDF.NCfile(general.DestDir+'/ortho.nc')
+        ncdf = NCDF.NCfile(options.DestDir+'/ortho.nc')
         ncdf.write(hw,'hw')
     G = myGF.Gr
     G1 = myGF.GamL
@@ -137,7 +103,7 @@ def calcIETS(general,myGF,basis):
     
     for ihw in range(len(hw)):
         SIO.printDone(ihw,len(hw),'IETS FGR')
-        M = N.array(NCfile.variables['He_ph'][ihw,general.iSpin,:,:])
+        M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
         H1=mm(Us,M,Us)
         MA1M, MA2M = mm(H1,A1,H1), mm(H1,A2,H1)
         MAM, MA2mA1M = MA1M+MA2M, MA2M-MA1M
@@ -150,8 +116,8 @@ def calcIETS(general,myGF,basis):
         # Cryptic? Changes in G^lesser due to e-ph interaction at high and low energies, i.e.,
         # the changes in occupation due to out(in)-scattering
         tmp1, tmp2 = mm(G,MA2M,A1), mm(G,MA1M,A1)
-        dGnout.append(EC.calcCurrent(general,basis,myGF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
-        dGnin.append(EC.calcCurrent(general,basis,myGF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
+        dGnout.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
+        dGnin.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
         # NB: TF Should one use myGF.HNO or myGF.H above?
 
         # Power, damping and current rates
@@ -183,12 +149,12 @@ def calcIETS(general,myGF,basis):
     print 'checking: HT',N.array(myGF.HT) # OK
     
     # Set up grid and Hilbert term
-    kT = general.Temp/11604.0 # (eV)
+    kT = options.Temp/11604.0 # (eV)
 
     # Generate grid for numerical integration of Hilbert term    
     max_hw=max(hw)
-    max_win=max(-general.minBias,max_hw)+20*kT+4*general.Vrms
-    min_win=min(-general.maxBias,-max_hw)-20*kT-4*general.Vrms
+    max_win=max(-options.minBias,max_hw)+20*kT+4*options.Vrms
+    min_win=min(-options.maxBias,-max_hw)-20*kT-4*options.Vrms
     pts=int(N.floor((max_win-min_win)/kT*3))
     Egrid=N.array(range(pts),N.float)/pts*(max_win-min_win)+min_win
     print "LOE: Hilbert integration grid : %i pts [%f,%f]" % (pts,min(Egrid),max(Egrid))
@@ -204,15 +170,15 @@ def calcIETS(general,myGF,basis):
         hilb.append(tmp2)
         SIO.printDone(ii,len(hw),'LOE : Hilbert transform')
     
-    NN = general.biasPoints
+    NN = options.biasPoints
     print 'biaspoints',NN
 
     # Add some points for the Lock in broadening
-    approxdV=(general.maxBias-general.minBias)/NN
-    NN+=int(((8*general.Vrms)/approxdV)+.5)
+    approxdV=(options.maxBias-options.minBias)/NN
+    NN+=int(((8*options.Vrms)/approxdV)+.5)
     
-    Vl=general.minBias-4*general.Vrms+ \
-        (general.maxBias-general.minBias+8*general.Vrms)/NN*N.array(range(NN),N.float)
+    Vl=options.minBias-4*options.Vrms+ \
+        (options.maxBias-options.minBias+8*options.Vrms)/NN*N.array(range(NN),N.float)
     
     InH=N.zeros((NN,),N.complex) # Non-Hilb-term current
     IH=N.zeros((NN,),N.complex) # Hilb-term current
@@ -231,7 +197,7 @@ def calcIETS(general,myGF,basis):
 
         for iOmega in range(len(hw)):
             ihw = hw[iOmega]
-            if ihw>general.modeCutoff:
+            if ihw>options.modeCutoff:
                 PV=abs(V)
                 
                 # Power
@@ -261,8 +227,8 @@ def calcIETS(general,myGF,basis):
                         
                 heat=tmpheat*myGF.P2T[iOmega]/N.pi # Heating term / (hbar hw)
                 
-                if general.PhHeating: # Heating?
-                    nPh[iOmega]=heat/(ihw*myGF.P1T[iOmega]/N.pi+general.PhExtDamp)+1.0/(exphw-1.0)
+                if options.PhHeating: # Heating?
+                    nPh[iOmega]=heat/(ihw*myGF.P1T[iOmega]/N.pi+options.PhExtDamp)+1.0/(exphw-1.0)
                 nPhvsBias[iV,iOmega]=nPh[iOmega]
                     
                 # Damping term /(hbar hw)
@@ -302,22 +268,15 @@ def calcIETS(general,myGF,basis):
     print 'checking: gamma_heat',gamma_heat # OK
 
     #hw, T, nHT, HT, lLOE, nPhtot, nPh, = hw, myGF.trans0, myGF.nHT, myGF.HT, [Vl, InH, IH], nPhtot, nPhvsBias
-    V, I, dI, ddI, BdI, BddI, NnPhtot,NnPh = Broaden(general,Vl,InH+IH,nPhtot,nPhvsBias)
+    V, I, dI, ddI, BdI, BddI, NnPhtot,NnPh = Broaden(options,Vl,InH+IH,nPhtot,nPhvsBias)
 
     print 'checking: BddI',BddI[:10] # OK
 
-
-    datafile=general.systemlabel+'.IN'
+    datafile = '%s/%s.IN'%(options.DestDir,options.systemlabel)
     initncfile(datafile,hw)
     writeLOEData2Datafile(datafile,hw,myGF.trans0,nHT,HT)
     writeLOE2ncfile(datafile,hw,nHT,HT,V,I,NnPhtot,NnPh,\
-                    dI,ddI,BdI,BddI,gamma_eh,gamma_heat)
-                            
-
-#    return hw, myGF.trans0, myGF.nHT, myGF.HT, [Vl, InH, IH], nPhtot, \
-#           nPhvsBias, gamma_eh, gamma_heat
-    
-
+                        dI,ddI,BdI,BddI,gamma_eh,gamma_heat)
 
     
 ########################################################
@@ -332,19 +291,19 @@ def writeFGRrates():
     # This does not work at the moment....
     unitConv=1.602177e-19/N.pi/1.054572e-34
 
-    NCfile = NC.NetCDFFile(general.PhononNetCDF,'r')
-    print 'Reading ',general.PhononNetCDF
+    NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
+    print 'Reading ',options.PhononNetCDF
 
-    general.iChan, general.iSide = 0, 2
-    outFile = file(general.systemlabel+'.IN.FGR','w')
+    options.iChan, options.iSide = 0, 2
+    outFile = file('%s/%s.IN.FGR'%(options.DestDir,options.systemlabel,'w'))
     outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (unitConv*myGF.totTrans.real,))
 
     tmp=N.sort(abs(N.array(myGF.nHT[:])))
-    SelectionMin=tmp[-general.NumPhCurr]        
+    SelectionMin=tmp[-options.NumPhCurr]        
     
     for ihw in range(len(myGF.hw)):
         SIO.printDone(ihw,len(myGF.hw),'Golden Rate') 
-        M = N.array(NCfile.variables['He_ph'][ihw,general.iSpin,:,:])
+        M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
         rate=N.zeros((len(myGF.ECleft),len(myGF.ECright)),N.float)
         totrate=0.0
         inter,intra = 0.0, 0.0 # splitting total rate in two
@@ -357,11 +316,11 @@ def writeFGRrates():
                 else: inter += rate[iL,iR]
 
         if abs(myGF.nHT[ihw])>=SelectionMin:
-            general.iChan = ihw
+            options.iChan = ihw
             currOut, currIn = IETS.dGnout[ihw], IETS.dGnin[ihw]
-            general.iSide = 3
+            options.iSide = 3
             writeCurrent(currIn)
-            general.iSide = 4
+            options.iSide = 4
             writeCurrent(currOut)
             
         outFile.write('\nPhonon mode %i : %f eV [Rates in units of (1/s/eV)]\n' % (ihw,IETS.hw[ihw]))
@@ -395,7 +354,7 @@ def writeFGRrates():
 # Broadening due to Vrms
 ################################################################
 
-def Broaden(general,VV,II,nPhtot,nPh):
+def Broaden(options,VV,II,nPhtot,nPh):
     """
     Broadening corresponding to Lock in measurements for the
     conductance and IETS spectra. Also resample II, nPh and nPhtot
@@ -413,7 +372,7 @@ def Broaden(general,VV,II,nPhtot,nPh):
     ddV=(dV[1:len(dV)]+dV[:-1])/2
 
     # Modulation amplitude
-    VA=N.sqrt(2.0)*general.Vrms 
+    VA=N.sqrt(2.0)*options.Vrms 
 
     # New bias ranges for broadening
     tmp=int(N.floor(VA/(dV[1]-dV[0]))+1)
@@ -439,8 +398,8 @@ def Broaden(general,VV,II,nPhtot,nPh):
         BddI[iV]=8.0/3.0/N.pi*N.sum(ddIL*(N.cos(wt)**4))*(wt[1]-wt[0])
 
     # Reduce to one voltage grid
-    NN=general.biasPoints 
-    V=general.minBias+(general.maxBias-general.minBias)/NN*N.array(range(NN)) 
+    NN=options.biasPoints 
+    V=options.minBias+(options.maxBias-options.minBias)/NN*N.array(range(NN)) 
 
     NI=MM.interpolate(V,VV,II)
     NdI=MM.interpolate(V,dV,dI)

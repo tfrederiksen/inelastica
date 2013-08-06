@@ -3,6 +3,7 @@
 from Inelastica import Phonons
 from optparse import OptionParser
 import os, sys, subprocess
+import numpy as N
 
 usage = "usage: %prog [options] DestinationDirectory"
 
@@ -62,25 +63,32 @@ parser.add_option("-i", "--Isotopes",dest="Isotopes",
                   help="List of substitutions [[i1, anr1],...], where atom index i1 (SIESTA numbering) is set to be of type anr1 [default=%default]",
                   default='[]')
 
-parser.add_option("-k", "--kpoint",dest="kpoint",
-                  help="Electronic k-point where e-ph couplings are evaluated [default=%default]",
-                  default='[0,0,0]')
+parser.add_option("-x","--k1", dest='k1', default=0.0,type='float',
+                  help="k-point along a1 where e-ph couplings are evaluated [%default]")
+parser.add_option("-y","--k2", dest='k2', default=0.0,type='float',
+                  help="k-point along a2 where e-ph couplings are evaluated [%default]")
+parser.add_option("-z","--k3", dest='k3', default=0.0,type='float',
+                  help="k-point along a3 where e-ph couplings are evaluated [%default]")
 
 (options, args) = parser.parse_args()
 
+# Destination directory
 if len(args)!=1:
     parser.error('ERROR: You need to specify a destination directory')
+else:
+    options.DestDir = args[0]
+if not os.path.isdir(options.DestDir):
+    print '\nInelastica: Creating folder %s' %options.DestDir
+    os.mkdir(options.DestDir)
 
-# Make destination directory
-newdir = args[0]
-if not os.path.exists(newdir):
-    os.mkdir(newdir)
-
-# Log output to file
+# Log output to file                                                                                                                                                                                                
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
-tee = subprocess.Popen(["tee", newdir+"/%s.log"%options.label], stdin=subprocess.PIPE)
+tee = subprocess.Popen(["tee", options.DestDir+"/%s.log"%options.label], stdin=subprocess.PIPE)
 os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
 os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
+
+# k-point
+options.kPoint = N.array([options.k1,options.k2,options.k3],N.float)
 
 # Calculate Phonons using specified inputs
 Phonons.Analyze(FCwildcard=options.FCwildcard,onlySdir=options.onlySdir,
@@ -88,10 +96,10 @@ Phonons.Analyze(FCwildcard=options.FCwildcard,onlySdir=options.onlySdir,
                 FCfirst=options.FCfirst,FClast=options.FClast,
                 PerBoundCorrFirst=options.PerBoundCorrFirst,
                 PerBoundCorrLast=options.PerBoundCorrLast,
-                outlabel=newdir+'/'+options.label,
+                outlabel=options.DestDir+'/'+options.label,
                 CalcCoupl=options.CalcCoupl,
                 PrintSOrbitals=options.PrintSOrbitals,
                 AbsEref=options.AbsEref,
                 AuxNCfile=options.AuxNCfile,
                 Isotopes=eval(options.Isotopes),
-                kpoint=eval(options.kpoint))
+                kpoint=options.kPoint)
