@@ -123,7 +123,7 @@ def Analyze(FCwildcard,
     FCmean = (FCm+FCp)/2
 
     ### Write FC-matrix to file
-    OutputFC(FCmean,filename='./%s.FC'%outlabel)
+    OutputFC(FCmean,filename='%s.FC'%outlabel)
     
     ### Calculate phonon bandstructure
     if PhBandStruct!="None":
@@ -135,7 +135,7 @@ def Analyze(FCwildcard,
     print '\nPhonons.Analyze: Calculating phonons from FCmean, FCm, FCp:'
     # Mean
     FC2 = ReduceAndSymmetrizeFC(FCmean,FCfirstMIN,FClastMAX,FCfirst,FClast)
-    OutputFC(FC2,filename='./%s.reduced.FC'%outlabel)
+    OutputFC(FC2,filename='%s.reduced.FC'%outlabel)
     hw,U = CalcPhonons(FC2,atomnumber,FCfirst,FClast)
     # FCm
     FC2 = ReduceAndSymmetrizeFC(FCm,FCfirstMIN,FClastMAX,FCfirst,FClast)
@@ -146,12 +146,12 @@ def Analyze(FCwildcard,
 
     ### Write MKL- and xyz-files
     print '\nPhonons.Analyze: Writing geometry and phonons to files.'
-    SIO.WriteMKLFile('./%s_FC%i-%i.mkl'%(outlabel,FCfirst,FClast),
+    SIO.WriteMKLFile('%s_FC%i-%i.mkl'%(outlabel,FCfirst,FClast),
                      atomnumber,xyz,hw,U,FCfirst,FClast)
-    SIO.WriteXYZFile('./%s.xyz'%outlabel,atomnumber,xyz)
-    WriteFreqFile('./%s.freq'%outlabel,hw)
-    WriteVibDOSFile('./%s.fdos'%outlabel,hw)
-    WriteAXSFFiles('./%s.axsf'%outlabel,xyz,atomnumber,hw,U,FCfirst, FClast)
+    SIO.WriteXYZFile('%s.xyz'%outlabel,atomnumber,xyz)
+    WriteFreqFile('%s.freq'%outlabel,hw)
+    WriteVibDOSFile('%s.fdos'%outlabel,hw)
+    WriteAXSFFiles('%s.axsf'%outlabel,xyz,atomnumber,hw,U,FCfirst, FClast)
     
     ### Write data to NC-file
     print '\nPhonons.Analyze: Writing results to netCDF-file'
@@ -160,7 +160,7 @@ def Analyze(FCwildcard,
         tmp1.append(orbitalIndices[ii,0]-orbitalIndices[DeviceFirst-1,0])
         tmp2.append(orbitalIndices[ii,1]-orbitalIndices[DeviceFirst-1,0])
     naoDev = orbitalIndices[DeviceLast-1][1]-orbitalIndices[DeviceFirst-1][0]+1
-    NCfile = OpenNetCDFFile('./%s.nc'%outlabel,
+    NCfile = OpenNetCDFFile('%s.nc'%outlabel,
                             naoDev,xyz,DeviceFirst,DeviceLast,FCfirst,FClast)
     Write2NetCDFFile(NCfile,tmp1,'FirstOrbital',('NumDevAtoms',),
                      description='Orbital index for the first orbital on the atoms (counting from 0)')
