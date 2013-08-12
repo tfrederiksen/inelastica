@@ -13,13 +13,21 @@ For help use --help!
  """
 parser = OptionParser(usage,description=description)
 
-# Determine keywords provided
-parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]",
-                  type='int', default=10)
-parser.add_option("-e","--eta", dest="eta", help="Imaginary part added to all energies (device and leads) [%default eV]",
-                  type='float', default=0.000001)
-parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
-                  type='float', default=0.0)
+# keywords with defaults from fdf-file:
+parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
+                  help="Input fdf-file for TranSIESTA calculation [%default]")
+parser.add_option("-F","--DeviceFirst", dest='devSt',default=0,type='int',
+                  help="First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]")
+parser.add_option("-L","--DeviceLast", dest='devEnd',default=0,type='int',
+                  help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
+parser.add_option("-N","--NPoints", dest='NPoints',default=0,type='int',
+                  help="Energy points [TS.TBT.NPoints]")
+parser.add_option("--Emin", dest='Emin',default=1e10,type='float',
+                  help="First energy point [TS.TBT.Emin]")
+parser.add_option("--Emax", dest='Emax',default=1e10,type='float',
+                  help="Last energy point [TS.TBT.Emax]")
+
+# k-points related
 parser.add_option("-x","--Nk1", dest='Nk1', default=1,type='int',
                   help="k-points Nk1 along a1 [%default]")
 parser.add_option("-y","--Nk2", dest='Nk2', default=1,type='int',
@@ -29,13 +37,20 @@ parser.add_option("-a","--Gk1", dest='Gk1', default=0,type='int',
 parser.add_option("-b","--Gk2", dest='Gk2', default=0,type='int',
                   help="Gaussian quadrature k-point sampling for a2 direction (2*GK2+1 points) [%default]")
 parser.add_option("-s", "--skipsym", dest='skipsymmetry',default=False,action='store_true',
-                  help="Skip inversion (time-reversal) symmetry (i.e., k=-k) that reduces the number of k-point evaluations [%default]")
-parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
-                  help="Input fdf-file for TranSIESTA calculations [%default]")
+                  help="Skip inversion (time-reversal) symmetry (i.e., k=-k) that reduces the number of k-point evaluations")
+
+# Imaginary part to Greens functions
+parser.add_option("-e","--eta", dest="eta", help="Imaginary part added to all energies (device and leads) [%default eV]",
+                  type='float', default=1e-6)
+parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
+                  type='float', default=0.0)
+# Other options
 parser.add_option("-d", "--skipDOS", dest='dos',default=True,action='store_false',
-                  help="Skip calculation of PDOS [%default]")
-parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
-                  help="Use SigNCfiles [%default]")
+                  help="Skip calculation of PDOS")
+parser.add_option("--useSigNC", dest='signc',default=False,action='store_true',
+                  help="Use SigNCfiles")
+parser.add_option("--NumChan", dest="numchan", help="Number of eigenchannels [%default]",
+                  type='int', default=10)
 
 (options, args) = parser.parse_args()
 
@@ -71,21 +86,29 @@ options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 
 options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'pyTBT')
 
 # Device region
-options.devSt  = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom', int, 0, 'pyTBT')
-options.devEnd = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo', int, 0, 'pyTBT')
+if options.devSt<=0:
+    options.devSt  = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom', int, 0, 'pyTBT')
+if options.devEnd<=0:
+    options.devEnd = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo', int, 0, 'pyTBT')
 
 # Voltage
 options.voltage = SIO.GetFDFlineWithDefault(options.fn,'TS.Voltage', float, 0.0, 'pyTBT')
 
 # Energy range
-options.nE   = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.NPoints', int, 21, 'pyTBT')
-options.minE = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.Emin', float, -1.0, 'pyTBT')
-options.maxE = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.Emax', float, 1.0, 'pyTBT')
-if options.nE>1:
-    options.dE = (options.maxE-options.minE)/float(options.nE-1)
-    options.Elist = N.array(range(int((options.maxE-options.minE+1e-9)/options.dE)+1),N.float)*options.dE+options.minE
+if options.NPoints <= 0:
+    options.NPoints = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.NPoints', int, 1, 'pyTBT')
+if options.Emin == 1e10:
+    options.Emin = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.Emin', float, 0.0, 'pyTBT')
+if options.Emax == 1e10:
+    options.Emax = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.Emax', float, 1.0, 'pyTBT')
+
+if options.NPoints>1:
+    options.dE = (options.Emax-options.Emin)/float(options.NPoints-1)
+    options.Elist = N.array(range(int((options.Emax-options.Emin)/options.dE)+1),N.float)*options.dE+options.Emin
 else:
     options.dE = 0.0
-    options.Elist = N.array((options.minE,),N.float)
+    options.Elist = N.array((options.Emin,),N.float)
+
+print '\pyTBT: options.Elist =\n',options.Elist
 
 pyTBT.calc(options)

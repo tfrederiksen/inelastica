@@ -51,7 +51,7 @@ SpinPolarization                : %i
 Voltage                         : %f
 ##############################################################
 
-"""%(options.minE,options.dE,options.maxE,Nk1,Nk2,options.eta,options.etaLead,options.devSt,options.devEnd,options.UseBulk,nspin,options.voltage)
+"""%(options.Emin,options.dE,options.Emax,Nk1,Nk2,options.eta,options.etaLead,options.devSt,options.devEnd,options.UseBulk,nspin,options.voltage)
         
     if options.dos:
         DOSL=N.zeros((nspin,len(options.Elist),myGF.nuo),N.float)
