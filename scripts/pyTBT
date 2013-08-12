@@ -30,8 +30,6 @@ parser.add_option("-b","--Gk2", dest='Gk2', default=0,type='int',
                   help="Gaussian quadrature k-point sampling for a2 direction (2*GK2+1 points) [%default]")
 parser.add_option("-s", "--skipsym", dest='skipsymmetry',default=False,action='store_true',
                   help="Skip inversion (time-reversal) symmetry (i.e., k=-k) that reduces the number of k-point evaluations [%default]")
-parser.add_option("-g", "--avoid-gamma", dest='skipgamma',default=False,action='store_true',
-                  help="Avoid gamma point in k-point sampling [%default]")
 parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
                   help="Input fdf-file for TranSIESTA calculations [%default]")
 parser.add_option("-d", "--skipDOS", dest='dos',default=True,action='store_false',

@@ -25,11 +25,6 @@ import SiestaIO as SIO
 import MiscMath as MM
 import NEGF
 import numpy as N
-#try:
-#    import scipy.linalg as SLA 
-#    hasSciPy = True
-#except:
-#    hasSciPy = False      
 
 def calc(options):
     kPointList, kWeights, NNk, Nk1, Nk2, GaussKronrod = getKpoints(options)
@@ -233,23 +228,19 @@ def xmladd(doc,parent,name,values):
     elem.appendChild(txt)
 
 def getKpoints(options):
-    # Do 1-D k-points
-    if options.Gk1>1 and options.Gk2>1: # Method fails with fewer points
+    if options.Gk1>1 and options.Gk2>1: # GK-method fails with fewer points
+        # Generate Gauss-Kronrod k-grid
         GaussKronrod=True
         kl1, kwl1, kwle1 = MM.GaussKronrod(options.Gk1)
         kl2, kwl2, kwle2 = MM.GaussKronrod(options.Gk2)        
     else:
+        # Generate linearly spaced k-grid
         GaussKronrod=False
         kl1 = [(ii*1.0)/options.Nk1-0.5+0.5/options.Nk1 for ii in range(options.Nk1)]
         kwl1 = [1.0/options.Nk1 for ii in range(options.Nk1)]
         kl2 = [(ii*1.0)/options.Nk2-0.5+0.5/options.Nk2 for ii in range(options.Nk2)]
         kwl2 = [1.0/options.Nk2 for ii in range(options.Nk2)]
         kl1, kwl1, kl2, kwl2 = N.array(kl1), N.array(kwl1), N.array(kl2), N.array(kwl2)
-
-    # Shift away from gamma for normal k-points
-    if options.skipgamma and not GaussKronrod:
-        if options.Nk1%2==1: kl1 += 0.5/options.Nk1
-        if options.Nk2%2==1: kl2 += 0.5/options.Nk2
 
     # Repeat out for 2D
     kl, kwl = N.zeros((len(kl1)*len(kl2),2)), N.zeros((len(kl1)*len(kl2),))
@@ -277,7 +268,7 @@ def getKpoints(options):
     # t,\psi(r,t) --> -t,\psi^\dagger(r,-t). T(k) = T(-k).
     # (Elastic) propagation from L to R is always identical to propagation from R to L.
     if not options.skipsymmetry:
-        print 'pyTBT: Applying inversion (time-reversal) symmetry reduction to list of k-points'
+        print 'pyTBT.getKpoints: Applying inversion (time-reversal) symmetry reduction to list of k-points'
         indx = []
         for i1 in range(len(kl)):
             for i2 in range(len(indx)):
@@ -291,6 +282,7 @@ def getKpoints(options):
         if GaussKronrod:
             TDkwle1, TDkwle2 = TDkwle1[indx]*weight, TDkwle2[indx]*weight
     
+    # Print selected k-points
     s = 'pyTBT.getKpoints: i, k1[i], k2[i], kwl[i]'
     if GaussKronrod: s += ', TDkwle1[i], TDkwle2[i]'
     print s
