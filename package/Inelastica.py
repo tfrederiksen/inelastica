@@ -25,11 +25,11 @@ import time
 ##################### Main routine #####################
 ########################################################
 def main(options):
-    XV = '%s/%s.XV'%(options.head,options.systemlabel)
-    geom = MG.Geom(XV)
+    options.XV = '%s/%s.XV'%(options.head,options.systemlabel)
+    options.geom = MG.Geom(options.XV)
     myGF = readHS(options)
     #options.nspin = myGF.HS.nspin
-    basis = SIO.BuildBasis(XV,options.devSt,options.devEnd,myGF.HS.lasto)
+    basis = SIO.BuildBasis(options.XV,options.devSt,options.devEnd,myGF.HS.lasto)
     calcTeig(options,myGF)
     calcIETS(options,myGF,basis)
 
@@ -75,6 +75,68 @@ def calcIETS(options,myGF,basis):
 
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Reading ',options.PhononNetCDF
+    
+    # Compare coordinates and atomic numbers
+    PH_dev = N.array(NCfile.variables['DeviceAtoms'][:])
+    PH_xyz = N.array(NCfile.variables['GeometryXYZ'][:])
+    PH_anr = N.array(NCfile.variables['AtomNumbers'][:])
+    TS_anr = options.geom.anr
+    TS_xyz = options.geom.xyz
+    print '\nA = %s'%options.PhononNetCDF
+    print 'B = %s'%options.XV
+    print ' idxA    xA       yA       zA   anrA   ',
+    print ' idxB    xB       yB       zB   anrB'
+    for i in range(len(PH_dev)):
+        s = ('%i'%(PH_dev[0]+i)).rjust(5)
+        for j in range(3):
+            s += ('%.4f'%(PH_xyz[PH_dev[0]+i,j])).rjust(9)
+        s += ('%i'%PH_anr[PH_dev[0]+i]).rjust(4)
+        s += '  vs'
+        s += ('%i'%(options.devSt+i)).rjust(5)
+        for j in range(3):
+            s += ('%.4f'%(TS_xyz[options.devSt+i,j])).rjust(9)
+        s += ('%i'%TS_anr[options.devSt+i]).rjust(4)
+        print s
+
+    # Perform consistency checks for device region in 
+    # PH and TS calculations
+    print 'Inelastica.calcIETS: Integrity check'
+    # - check 1: Matrix sizes
+    PH_H0 = N.array(NCfile.variables['H0'][:])
+    if N.shape(PH_H0[0])==N.shape(myGF.Gr):
+        print '... Check 1 passed: Device orb. space matches'
+        check1 = True
+    else:
+        print '... Check 1 failed: Device orb. space do not match!!!'
+        check1 = False
+    # - check 2&3: Geometry and atom number
+    dist_xyz = 0.0
+    dist_anr = 0.0
+    for i in range(len(PH_dev)):
+        # Geometric distance between atoms
+        if i==0:
+            # Allow for a global offset of coordinates R
+            R = PH_xyz[PH_dev[0]+i]-TS_xyz[options.devSt+i]
+        d = PH_xyz[PH_dev[0]+i]-TS_xyz[options.devSt+i] - R
+        dist_xyz += N.dot(d,d)**.5
+        # Difference between atom numbers
+        a = PH_anr[PH_dev[0]+i]-TS_anr[options.devSt+i]
+        dist_anr += abs(a)
+    if dist_xyz<1e-3:
+        print '... Check 2 passed: Atomic coordinates consistent'
+        check2 = True
+    else:
+        print '... Check 2 failed: Atomic coordinates deviate by %.3f Ang!!!'%dist_xyz
+        check2 = False
+    if dist_anr<1e-3:
+        print '... Check 3 passed: Atomic numbers consistent'
+        check3 = True
+    else:
+        print '... Check 3 failed: Atomic numbers inconsistent!!!'
+        check3 = False
+    if (not check1) or (not check2) or (not check3):
+        sys.exit('Inelastica: Error - inconsistency detected for device region.\n')
+    
     hw = N.array(NCfile.variables['hw'][:]) 
     # Write matrices to file?
     WriteOrtho = False
