@@ -80,22 +80,31 @@ def calcIETS(options,myGF,basis):
     PH_dev = N.array(NCfile.variables['DeviceAtoms'][:])
     PH_xyz = N.array(NCfile.variables['GeometryXYZ'][:])
     PH_anr = N.array(NCfile.variables['AtomNumbers'][:])
+    TS_dev = range(options.devSt,options.devEnd+1)
     TS_anr = options.geom.anr
     TS_xyz = options.geom.xyz
     print '\nA = %s'%options.PhononNetCDF
     print 'B = %s'%options.XV
     print ' idxA    xA       yA       zA   anrA   ',
     print ' idxB    xB       yB       zB   anrB'
-    for i in range(len(PH_dev)):
-        s = ('%i'%(PH_dev[0]+i)).rjust(5)
-        for j in range(3):
-            s += ('%.4f'%(PH_xyz[PH_dev[0]+i,j])).rjust(9)
-        s += ('%i'%PH_anr[PH_dev[0]+i]).rjust(4)
+    for i in range(max(len(PH_dev),len(TS_dev))):
+        # Geom A
+        if PH_dev[0]+i in PH_dev:
+            s = ('%i'%(PH_dev[0]+i)).rjust(5)
+            for j in range(3):
+                s += ('%.4f'%(PH_xyz[PH_dev[0]+i,j])).rjust(9)
+            s += ('%i'%PH_anr[PH_dev[0]+i]).rjust(4)
+        else:
+            s = ('---').center(36)
         s += '  vs'
-        s += ('%i'%(options.devSt+i)).rjust(5)
-        for j in range(3):
-            s += ('%.4f'%(TS_xyz[options.devSt+i,j])).rjust(9)
-        s += ('%i'%TS_anr[options.devSt+i]).rjust(4)
+        # Geom B
+        if options.devSt+i in TS_dev:
+            s += ('%i'%(options.devSt+i)).rjust(5)
+            for j in range(3):
+                s += ('%.4f'%(TS_xyz[options.devSt+i,j])).rjust(9)
+            s += ('%i'%TS_anr[options.devSt+i]).rjust(4)
+        else:
+            s += ('---').center(36)
         print s
 
     # Perform consistency checks for device region in 

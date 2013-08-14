@@ -15,6 +15,10 @@ For help use --help!
 parser = OptionParser(usage,description=description)
 parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [default=%default]",
                   type='int', default=4)
+parser.add_option("-F","--DeviceFirst", dest='devSt',default=0,type='int',
+                  help="First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]")
+parser.add_option("-L","--DeviceLast", dest='devEnd',default=0,type='int',
+                  help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
 parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
                   help="Energy where eigenchannel scattering states are evaluated [default=%default eV]")
 parser.add_option("--eta", dest='eta', default=0.000001,type='float',
@@ -83,8 +87,10 @@ options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 
 options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'Inelastica')
 
 # Device region
-options.devSt  = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom', int, 0, 'Inelastica')
-options.devEnd = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo', int, 0, 'Inelastica')
+if options.devSt<=0:
+    options.devSt  = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom', int, 0, 'pyTBT')
+if options.devEnd<=0:
+    options.devEnd = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo', int, 0, 'pyTBT')
 
 # Voltage
 options.voltage = SIO.GetFDFlineWithDefault(options.fn,'TS.Voltage', float, 0.0, 'Inelastica')
