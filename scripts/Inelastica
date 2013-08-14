@@ -13,46 +13,46 @@ Inelastica script calculates and writes LOE quantities in ascii (Systemlabel.IN)
 For help use --help!
 """
 parser = OptionParser(usage,description=description)
-parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]",
+parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [default=%default]",
                   type='int', default=4)
 parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
-                  help="Energy where eigenchannel scattering states are evaluated [%default eV]")
+                  help="Energy where eigenchannel scattering states are evaluated [default=%default eV]")
 parser.add_option("--eta", dest='eta', default=0.000001,type='float',
-                  help="Tiny imag. part in Green's functions etc. [%default eV]")
+                  help="Tiny imag. part in Green's functions etc. [default=%default eV]")
 parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
-                  help="Input fdf-file for TranSIESTA calculations [%default]")
+                  help="Input fdf-file for TranSIESTA calculations [default=%default]")
 parser.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
-                 help="Spin channel [%default]")
+                 help="Spin channel [default=%default]")
 parser.add_option("-x","--k1", dest='k1', default=0.0,type='float',
-                  help="k-point along a1 [%default]")
+                  help="k-point along a1 [default=%default]")
 parser.add_option("-y","--k2", dest='k2', default=0.0,type='float',
-                  help="k-point along a2 [%default]")
+                  help="k-point along a2 [default=%default]")
 parser.add_option("-p", "--PhononNetCDF", dest='PhononNetCDF', default=None,type='string',
-                  help="Electron-phonon coupling NetCDF [%default]")
+                  help="Electron-phonon coupling NetCDF [default=%default]")
 parser.add_option("-t", "--Temp", dest='Temp', default=4.2,type='float',
-                  help="Temperature [%default K]")
+                  help="Temperature [default=%default K]")
 parser.add_option("-b", "--BiasPoints", dest='biasPoints', default=801,type='int',
-                  help="Number of bias points [%default]")
+                  help="Number of bias points [default=%default]")
 parser.add_option("-v", "--MaxBias", dest='MaxBias', default=0.4,type='float',
-                  help="Sets the IETS bias range (-MaxBias to MaxBias) [%default V]")
+                  help="Sets the IETS bias range (-MaxBias to MaxBias) [default=%default V]")
 parser.add_option("-c", "--ModeCutoff", dest='modeCutoff', default='0.0025',type='float',
-                  help="Ignore phonon modes with lower hw [%default eV]")
+                  help="Ignore phonon modes with lower hw [default=%default eV]")
 parser.add_option("-V", "--Vrms", dest='Vrms', default='0.005',type='float',
-                  help="Lock in amplifier broadening [%default V]")
+                  help="Lock in amplifier broadening [default=%default V]")
 parser.add_option("-H", "--Heating", dest='PhHeating', default=False,action='store_true',
-                  help="Include heating of vibrational modes [%default]")
+                  help="Include heating of vibrational modes [default=%default]")
 parser.add_option("-d", "--PhExtDamp", dest='PhExtDamp', default=1e-15,type='float',
-                  help="External damping [%default (?) TODO check unit!]")
+                  help="External damping [default=%default (?) TODO check unit!]")
 parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
-                  help="Use SigNCfiles [%default]")
-parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
+                  help="Use SigNCfiles [default=%default]")
+parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [default=%default eV]",
                   type='float', default=0.0)
 
 (options, args) = parser.parse_args()
 
 # Destination directory
 if len(args)!=1:
-    parser.error('ERROR: You need to specify a destination directory')
+    parser.error('Input error: You need to specify a destination directory')
 else:
     options.DestDir = args[0]
 if not os.path.isdir(options.DestDir):

@@ -11,14 +11,6 @@ description = "Methods to calculate vibrations and e-ph couplings from SIESTA ou
 
 parser = OptionParser(description=description,usage=usage)
 
-parser.add_option("-F","--FCwildcard",dest="FCwildcard",
-                  help="Wildcard for FC directories [default=%default]",
-                  type="str",default="./FC*")
-
-parser.add_option("-O","--OSdir",dest="onlySdir",
-                  help="Location of OnlyS directory [default=%default]",
-                  type="str",default="./OSrun")
-
 parser.add_option("-c", "--CalcCoupl",dest="CalcCoupl",
                   help="Calculate e-ph couplings [default=%default]",
                   action="store_true",default=False)
@@ -27,26 +19,34 @@ parser.add_option("-l", "--label",dest="label",
                   help="Label for output files [default=%default]",
                   type="str",default="Output")
 
-parser.add_option("--DeviceFirst",dest="DeviceFirst",
+parser.add_option("-F","--DeviceFirst",dest="DeviceFirst",
                   help="First device atom index (in the electronic basis) [default=%default]",
                   type="int",default=1)
-parser.add_option("--DeviceLast",dest="DeviceLast",
+parser.add_option("-L","--DeviceLast",dest="DeviceLast",
                   help="Last device atom index (in the electronic basis) [default=%default]",
-                  type="int",default=1e3)
+                  type="int",default=1000)
 
 parser.add_option("--FCfirst",dest="FCfirst",
                   help="First FC atom index [default=%default]",
                   type="int",default=1)
 parser.add_option("--FClast", dest="FClast",
                   help="Last FC atom index [default=%default]" ,
-                  type="int",default=1e3)
+                  type="int",default=1000)
 
 parser.add_option("--PBCfirst", dest="PerBoundCorrFirst",\
                   help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
                   type="int",default=1)
 parser.add_option("--PBClast", dest="PerBoundCorrLast",\
                   help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
-                  type="int",default=1e3)
+                  type="int",default=1000)
+
+parser.add_option("--FCwildcard",dest="FCwildcard",
+                  help="Wildcard for FC directories [default=%default]",
+                  type="str",default="./FC*")
+
+parser.add_option("--OSdir",dest="onlySdir",
+                  help="Location of OnlyS directory [default=%default]",
+                  type="str",default="./OSrun")
 
 parser.add_option("-s", "--PrintSOrbitals",dest="PrintSOrbitals",
                   help="Print s-orbital part of device matrices [default=%default]",

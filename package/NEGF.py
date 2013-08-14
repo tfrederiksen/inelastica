@@ -666,12 +666,15 @@ class GF:
         # Calculate Eigenchannels from left
         self.A1 = MM.mm(self.Gr,self.GamL,self.Ga)
         self.ECleft, self.EigTleft = self.__calcEigChan(self.A1,self.GamR,channels)
-        print 'Left eigenchannel transmissions:',self.EigTleft
+        teig = list(self.EigTleft)
+        teig.reverse()
+        print 'NEGF.calcEigChan: Left eigenchannel transmissions [T1, ..., Tn]:\n',teig[:channels]
         # Calculate Eigenchannels from right
         self.A2 = MM.mm(self.Gr,self.GamR,self.Ga)
         self.ECright, self.EigTright = self.__calcEigChan(self.A2,self.GamL,channels)
-        print 'Right eigenchannel transmissions:',self.EigTright
-
+        teig = list(self.EigTright)
+        teig.reverse()
+        print 'NEGF.calcEigChan: Right eigenchannel transmissions [T1, ..., Tn]:\n',teig[:channels]
 
 
 #############################################################################            

@@ -67,8 +67,6 @@ def calcTeig(options,myGF):
 
     # Calculate Eigenchannels
     myGF.calcEigChan(options.numchan)
-    print 'Left eigenchannel transmissions:',myGF.EigTleft
-    print 'Right eigenchannel transmissions:',myGF.EigTright
     myGF.trans0 = T[0]
 
 ########################################################
