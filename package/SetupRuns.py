@@ -75,7 +75,7 @@ def SetupCGrun(templateCGrun,newCGrun,NewContactSeparation,AtomsPerLayer,
         print '\nSetupRuns.SetupCGrun: %s already exists. OVERWRITING FILES!!!'\
               %newCGrun
     # Copy template files
-    CopyInputFiles(templateCGrun,newCGrun,['.fdf','.vps','.psf'])
+    CopyInputFiles(templateCGrun,newCGrun,['.fdf','.vps','.psf','pbs'])
     # Read relaxed geometry
     XVfiles = glob.glob(templateCGrun+'/*.XV*')
     if len(XVfiles)==1:
@@ -126,7 +126,7 @@ def SetupCGrun(templateCGrun,newCGrun,NewContactSeparation,AtomsPerLayer,
 #                                          SetupFCrun
 # -----------------------------------------------------------------------------------------------------
 
-def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.04*PC.Bohr2Ang,
+def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.02,
                overwrite=False,PBStemplate=None,PBSsubs=None,submitJob=False):
     """
     CGrun                : Path+foldername to a relaxed structure CGrun folder on
@@ -201,7 +201,7 @@ def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.04*PC.Bohr2Ang,
 #                                          SetupOSrun
 # -----------------------------------------------------------------------------------------------------
 
-def SetupOSrun(CGrun,newOSrun,displacement=0.04*PC.Bohr2Ang,
+def SetupOSrun(CGrun,newOSrun,displacement=0.02,
                overwrite=False,PBStemplate=None,PBSsubs=None,submitJob=False):
     """
     CGrun                : Path+foldername to a relaxed structure CGrun folder on
