@@ -126,6 +126,7 @@ def calcIETS(options,myGF,basis):
         if i==0:
             # Allow for a global offset of coordinates R
             R = PH_xyz[PH_dev[0]+i]-TS_xyz[options.devSt+i]
+            print 'Global offset = ',R
         d = PH_xyz[PH_dev[0]+i]-TS_xyz[options.devSt+i] - R
         dist_xyz += N.dot(d,d)**.5
         # Difference between atom numbers
@@ -494,16 +495,6 @@ def initncfile(filename,hw):
     ncfile.version = 1
     ncfile.createDimension('Nph',len(hw))
     ncfile.createDimension('Bias',None)
-    tmp = ncfile.createVariable('IelasticL','d',('Bias',))
-    tmp.units = 'Conductance quantum'
-    tmp1 = ncfile.createVariable('IelasticR','d',('Bias',))
-    tmp1.units = 'Conductance quantum'
-    tmp2 = ncfile.createVariable('IinelasticL','d',('Bias',))
-    tmp2.units = 'Conductance quantum'
-    tmp3 = ncfile.createVariable('IinelasticR','d',('Bias',))
-    tmp3.units = 'Conductance quantum'
-    tmp4 = ncfile.createVariable('Bias','d',('Bias',))
-    tmp4.units = 'V'
     nchw = ncfile.createVariable('hw','d',('Nph',))
     nchw[:] = N.array(hw)
     nchw.units = 'eV'
@@ -567,56 +558,6 @@ def writeLOEData2Datafile(file,hw,T,nHT,HT):
         f.write("## %e %e %e %e\n" % (hw[ii],T,nHT[ii],HT[ii]))
     f.write("\n")
     f.close()
-
-def writeData2ncfile(filename,dict,ibias):
-    'Append data to netCDF file'
-    print 'Inelastica: Writing SCBA data to nc-file'
-    bias = dict['bias']
-    IelasticL = dict['NCL'] # Elastic current [Units, e/Pi/hbar, i.e.,
-    #                         energy in eV, bias in V -> Current * 77 muA]
-    IelasticR = (-dict['NCR'])
-    IinelasticL = (dict['ICL']) # Left Current
-    IinelasticR = (-dict['ICR']) # Right Current
-    Nph=dict['nPh'] # Number of phonons
-    # Add new data (some nicer way should exist)
-    
-    ncfile = NC.NetCDFFile(filename+'.nc','a')
-    ncIelasticL = ncfile.variables['IelasticL']
-    ncIelasticR = ncfile.variables['IelasticR']
-    ncIinelasticL = ncfile.variables['IinelasticL']
-    ncIinelasticR = ncfile.variables['IinelasticR']
-    ncBias = ncfile.variables['Bias']
-    ncNph = ncfile.variables['SCBA_nPh']
-
-    tmp = ncBias[:]
-    ncBias[len(tmp)] = bias
-
-    tmp = ncIelasticL[:]
-    ncIelasticL[len(tmp)]=IelasticL
-    ncIelasticR[len(tmp)]=IelasticR
-    ncIinelasticL[len(tmp)]=IinelasticL
-    ncIinelasticR[len(tmp)]=IinelasticR
-    ncNph[len(tmp),:]=Nph
-    ncfile.close()
-
-def writeData2Datafile(file,dict,hw):
-    c1 = dict['bias']
-    c2 = dict['NCL'] # Currents in units of e/pi/hbar*energy, i.e.,
-    #                  G=77 muA/V * dI/dV if energy [eV], bias [V]
-    c3 = (dict['ICL']-dict['ICR'])/2 # Average of left and right
-    c4 = dict['NPL']+dict['NPR']
-    c5 = dict['IPL']+dict['IPR']
-    data = [c1,c2,c3,c4,c5]
-    form = '%e   %e   %e   %e   %e   '
-    for i in range(len(hw)):
-        data.append(dict['nPh'][i])
-        form += '%f   '
-    form += '\n'
-    data = tuple(data)
-    f = open(file,'a')
-    f.write(form %data)
-    f.close()
-
 
 
 
