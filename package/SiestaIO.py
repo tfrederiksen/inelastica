@@ -307,7 +307,9 @@ def printDone(i,n,mess):
     # Print progress report
     if n>10:
         if i%(int(n/10)+1)==0:
-            print mess," : %2.0f %%" % ((10.0*int(10.0*float(i+1)/n)),)," done."
+            print mess,": %3.0f %% done" %(10.0*int(10.0*float(i+1)/n))
+        if i+1==n:
+            print mess,": 100 % done"
 
 #--------------------------------------------------------------------------------
 # MKL-format IO
@@ -1456,6 +1458,7 @@ class HS:
         gamma: xij is set to 0 and indxuo set manually to 1:nou and -1 for nou+1:no to catch errors!
     """
     def __init__(self,fn,UseF90helpers=True):
+        self.fn = fn
         if UseF90helpers and fn.endswith('.gz'):
             sys.exit('SiestaIO.HS.__init__: F90helpers do not support reading of gzipped TSHS-files. Please unzip and try again.\n')
         
@@ -1632,7 +1635,7 @@ class HS:
             print "ERROR: Trying to set non-zero k-point for Gamma point calculation"
             kuk
         if N.max(abs(self.kpoint-kpoint))>1e-10:
-            print "SiestaIO.HS.setkpoint: Setting k-point to",kpoint
+            print "SiestaIO.HS.setkpoint: %s k ="%self.fn,kpoint
             self.kpoint=kpoint.copy()
             self.S=self.setkpointhelper(self.Ssparse,kpoint,UseF90helpers)
             if not self.onlyS:    

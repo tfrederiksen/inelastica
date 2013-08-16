@@ -16,6 +16,10 @@ For help use --help!
 """
 
 parser = OptionParser(usage,description=description)
+parser.add_option("-F","--DeviceFirst", dest='devSt',default=0,type='int',
+                  help="First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]")
+parser.add_option("-L","--DeviceLast", dest='devEnd',default=0,type='int',
+                  help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
 parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]", 
                   type='int', default=4)
 parser.add_option("-B", "--BothSides", dest='bothsides', default=False,action='store_true',
@@ -76,8 +80,10 @@ options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 
 options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'EigenChannels')
 
 # Device region
-options.devSt  = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom', int, 0, 'EigenChannels')
-options.devEnd = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo', int, 0, 'EigenChannels')
+if options.devSt<=0:
+    options.devSt  = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom', int, 0, 'pyTBT')
+if options.devEnd<=0:
+    options.devEnd = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo', int, 0, 'pyTBT')
 
 # Voltage
 options.voltage = SIO.GetFDFlineWithDefault(options.fn,'TS.Voltage', float, 0.0, 'EigenChannels')

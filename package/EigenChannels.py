@@ -65,7 +65,6 @@ def calcT(options,geom,myGF,basis):
 
     # Calculate Eigenchannels from left
     ECleft, EigT = myGF.ECleft, myGF.EigTleft
-    print 'Left eigenchannel transmissions:',EigT
     for jj in range(options.numchan):
         T[jj+1]=EigT[len(EigT)-jj-1]
 
@@ -79,7 +78,6 @@ def calcT(options,geom,myGF,basis):
     # Calculate eigenchannels from right
     if options.bothsides:
         ECright, EigT = myGF.ECright, myGF.EigTright
-        print 'Right eigenchannel transmissions:',EigT
         for jj in range(options.numchan):
             options.iSide, options.iChan = 1, jj+1
             writeWavefunction(options,geom,basis,ECright[jj])
@@ -137,7 +135,7 @@ def calcWF(options,geom,basis,Y):
     rz=N.array(range(nz),N.float)*dz+origo[2]
 
     for ii in range(len(Y)):
-        if ii>0 and ii%(int(len(Y)/10))==0:
+        if ii>0:# and ii%(int(len(Y)/10))==0:
             SIO.printDone(ii,len(Y),'Wavefunction')  
 
         rax,ray,raz=basis.xyz[ii,0],basis.xyz[ii,1],basis.xyz[ii,2]
