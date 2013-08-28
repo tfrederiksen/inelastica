@@ -525,24 +525,19 @@ def CalcPhonons(FC,atomnumber,FCfirst,FClast):
     for i in range(DynamicAtoms*3):
         U[i] = U[i]/(N.dot(U[i],U[i])**0.5)
     # Sort in order descending mode energies
-    tmp = []
-    for i in range(len(hw)):
-        tmp.append((hw[i],U[i].copy()))
-    tmp.sort()
-    tmp.reverse()
+    hwrev = hw[::-1] # reversed array
+    Urev = U[::-1] # reversed array
     print 'Phonons.CalcPhonons: Frequencies in meV:'
     for i in range(DynamicAtoms*3):
-        hw[i],U[i] = tmp[i]
-        print string.rjust('%.3f'%(1000*hw[i]),9),
+        print string.rjust('%.3f'%(1000*hwrev[i]),9),
         if (i-5)%6==0: print
     if (i-5)%6!=0: print
     print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
     for i in range(DynamicAtoms*3):
-        hw[i],U[i] = tmp[i]
-        print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
+        print string.rjust('%.3f'%(hwrev[i]/PC.invcm2eV),9),
         if (i-5)%6==0: print
     if (i-5)%6!=0: print
-    return hw,U
+    return hwrev,Urev
 
 
 def GetFCMatrices(tree,FCfirst,FClast,NumberOfAtoms):
