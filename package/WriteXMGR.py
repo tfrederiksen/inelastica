@@ -318,6 +318,21 @@ class XYDXDYset(XYset):
             string += '   %.8f  %.8f  %.8f  %.8f \n'%(self.x[i],self.y[i],self.dx[i],self.dy[i])
         return string
 
+class XYSIZEset(XYset):
+   
+    def __init__(self,x,y,size,**keywords):
+        "Returning instance of class."
+        XYset.__init__(self,x,y,**keywords)
+        self.size = N.array(size)
+
+    def GetXMGRstring(self,graphnr,setnr):
+        "Returns a string containing the GRACE commands that describe the data set."
+        string = '# ------------------ Dataset %i.%i ----------------- \n'%(graphnr,setnr)
+        string += '@ target g%i.s%i \n@ type xysize \n'%(graphnr,setnr)
+        string += self.__GetXMGRstring__(graphnr,setnr)
+        for i in range(len(self.x)):
+            string += '   %.8f  %.8f  %.8f \n'%(self.x[i],self.y[i],self.size[i])
+        return string
 
 
 class Graph:
