@@ -825,8 +825,8 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                     kpointtmp[:] = kpoint
                     # Write real part of matrices
                     ReH = NCfile2.createVariable('H0',precision,('NSpin','AtomicOrbitals','AtomicOrbitals',))
-                    print precision
-                    print TSHS0.H.dtype
+                    print 'Phonons.GenerateAuxNETCDF: Precision=', precision
+                    print 'Phonons.GenerateAuxNETCDF: TSHS0.H.dtype=', TSHS0.H.dtype
                     ReH[:] = TSHS0.H.real
                     ReS = NCfile2.createVariable('S0',precision,('AtomicOrbitals','AtomicOrbitals',))
                     ReS[:] = TSHS0.S.real
