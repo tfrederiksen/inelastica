@@ -92,8 +92,8 @@ def calcIETS(options,myGF,basis):
         if PH_dev[0]+i in PH_dev:
             s = ('%i'%(PH_dev[0]+i)).rjust(5)
             for j in range(3):
-                s += ('%.4f'%(PH_xyz[PH_dev[0]+i,j])).rjust(9)
-            s += ('%i'%PH_anr[PH_dev[0]+i]).rjust(4)
+                s += ('%.4f'%(PH_xyz[PH_dev[0]-1+i,j])).rjust(9)
+            s += ('%i'%PH_anr[PH_dev[0]-1+i]).rjust(4)
         else:
             s = ('---').center(36)
         s += '  vs'
@@ -101,8 +101,8 @@ def calcIETS(options,myGF,basis):
         if options.devSt+i in TS_dev:
             s += ('%i'%(options.devSt+i)).rjust(5)
             for j in range(3):
-                s += ('%.4f'%(TS_xyz[options.devSt+i,j])).rjust(9)
-            s += ('%i'%TS_anr[options.devSt+i]).rjust(4)
+                s += ('%.4f'%(TS_xyz[options.devSt-1+i,j])).rjust(9)
+            s += ('%i'%TS_anr[options.devSt-1+i]).rjust(4)
         else:
             s += ('---').center(36)
         print s
@@ -125,15 +125,18 @@ def calcIETS(options,myGF,basis):
         # Geometric distance between atoms
         if i==0:
             # Allow for a global offset of coordinates R
-            R = PH_xyz[PH_dev[0]+i]-TS_xyz[options.devSt+i]
-            print 'Global offset = ',R
-        d = PH_xyz[PH_dev[0]+i]-TS_xyz[options.devSt+i] - R
+            R = PH_xyz[PH_dev[0]-1+i]-TS_xyz[options.devSt-1+i]
+            print 'Global offset R = [%.3f %.3f %.3f]'%(R[0],R[1],R[2])
+        d = PH_xyz[PH_dev[0]-1+i]-TS_xyz[options.devSt-1+i] - R
         dist_xyz += N.dot(d,d)**.5
         # Difference between atom numbers
-        a = PH_anr[PH_dev[0]+i]-TS_anr[options.devSt+i]
+        a = PH_anr[PH_dev[0]-1+i]-TS_anr[options.devSt-1+i]
         dist_anr += abs(a)
     if dist_xyz<1e-3:
         print '... Check 2 passed: Atomic coordinates consistent'
+        check2 = True
+    elif dist_xyz<0.1:
+        print '... Check 2 WARNING: Atomic coordinates deviate by %.3f Ang!!!'%dist_xyz
         check2 = True
     else:
         print '... Check 2 failed: Atomic coordinates deviate by %.3f Ang!!!'%dist_xyz
