@@ -27,55 +27,41 @@ import time
 def main(options):
     options.XV = '%s/%s.XV'%(options.head,options.systemlabel)
     options.geom = MG.Geom(options.XV)
-    myGF = readHS(options)
-    #options.nspin = myGF.HS.nspin
-    basis = SIO.BuildBasis(options.XV,options.devSt,options.devEnd,myGF.HS.lasto)
-    calcTeig(options,myGF)
-    calcIETS(options,myGF,basis)
 
-########################################################
-def readHS(options):
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
-    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
-    myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-    return myGF
-
-########################################################
-def calcTeig(options,myGF):
-    # Matrix to save total and eigenchannel transmissions
-    # BEFORE ORTHOGO
-    T = myGF.calcT(options.numchan)
-
-    NEGF.SavedSig.close() # Make sure saved Sigma is written to file
-
-    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
-    for t in T:
-        print '%.9f '%t,
-    print
-
-    # Now orthogonalize in device region
-    #HNO = myGF.H.copy() # nonorthogonal device Hamiltonian (needed later)
-    myGF.orthogonalize()
-
-    # Check that we get the same transmission:
-    T = myGF.calcT(options.numchan)
-    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
-    for t in T:
-        print '%.9f '%t,
-    print
-
-    # Calculate Eigenchannels
-    myGF.calcEigChan(options.numchan)
-    myGF.trans0 = T[0]
-
-########################################################
-def calcIETS(options,myGF,basis):
-    # Calculate inelastic scattering rates, total and per eigenchannel
 
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Reading ',options.PhononNetCDF
-    
+    hw = N.array(NCfile.variables['hw'][:])
+    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
+    #myGF.dGnout = []
+    #myGF.dGnin = []
+    myGF.P1T = []
+    myGF.P2T = []
+    myGF.ehDamp1 = []
+    myGF.ehDamp2 = []
+    myGF.nHT = []
+    myGF.nHTin = []
+    myGF.nHTel = []
+    myGF.HT = []
+    # calculate traces one mode at a time
+    for ihw in range(len(hw)):
+        myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+        if ihw==0:
+            print 'first mode'
+            basis = SIO.BuildBasis(options.XV,options.devSt,options.devEnd,myGF.HS.lasto)
+            T = myGF.calcT(options.numchan)
+            myGF.trans0 = T[0]
+            checkIETS(options,myGF,basis,NCfile)
+        calcTraces(options,myGF,basis,NCfile,ihw)
+    # multiply with universal functions
+    calcIETS(options,myGF,basis,hw)
+    NCfile.close()
+
+
+########################################################
+def checkIETS(options,myGF,basis,NCfile):
     # Compare coordinates and atomic numbers
     PH_dev = N.array(NCfile.variables['DeviceAtoms'][:])
     PH_xyz = N.array(NCfile.variables['GeometryXYZ'][:])
@@ -149,74 +135,46 @@ def calcIETS(options,myGF,basis):
         check3 = False
     if (not check1) or (not check2) or (not check3):
         sys.exit('Inelastica: Error - inconsistency detected for device region.\n')
-    
-    hw = N.array(NCfile.variables['hw'][:]) 
-    # Write matrices to file?
-    WriteOrtho = False
-    if WriteOrtho:
-        ncdf = NCDF.NCfile(options.DestDir+'/ortho.nc')
-        ncdf.write(hw,'hw')
+
+def calcTraces(options,myGF,basis,NCfile,ihw):
+    # Calculate various traces over the electronic structure
     G = myGF.Gr
+    Gd = MM.dagger(G)
+    nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
     G1 = myGF.GamL
     G2 = myGF.GamR
-    Gd = dagger(G)
-    A1 = myGF.A1
-    A2 = myGF.A2
-    Us = myGF.Us
-    
-    bA1 = mm(Gd,G1,G) 
+    A1 = MM.mm(G[:,0:nuoL],G1,Gd[0:nuoL,:])
+    A2 = MM.mm(G[:,nuo-nuoR:nuo],G2,Gd[nuo-nuoR:nuo,:])
+    bA1 = MM.mm(Gd[:,0:nuoL],G1,G[0:nuoL,:])
+    GG2bA1 = MM.mm(G[:,nuo-nuoR:nuo],G2,bA1[nuo-nuoR:nuo,:])
+    bA1G2Gd = MM.mm(bA1[:,nuo-nuoR:nuo],G2,Gd[nuo-nuoR:nuo,:])
 
-    # Structures to save Power, e-h damping, (non-)Hilbert term
-    P1T,P2T = [],[]
-    ehDamp1, ehDamp2 = [], []
-    nHT,nHTin,nHTel,HT = [],[],[],[]
-    
     # Save bond current changes due to inelastic scattering 
-    dGnout, dGnin = [], []
+    M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
+    MA1M, MA2M = MM.mm(M,A1,M), MM.mm(M,A2,M)
+    MAM, MA2mA1M = MA1M+MA2M, MA2M-MA1M
+
+    # Cryptic? Changes in G^lesser due to e-ph interaction at high and low energies, i.e.,
+    # the changes in occupation due to out(in)-scattering
+    #tmp1, tmp2 = MM.mm(G,MA2M,A1), MM.mm(G,MA1M,A1)
+    #myGF.dGnout.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
+    #myGF.dGnin.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
+    # NB: TF Should one use myGF.HNO or myGF.H above?
     
-    for ihw in range(len(hw)):
-        SIO.printDone(ihw,len(hw),'IETS FGR')
-        M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
-        H1=mm(Us,M,Us)
-        MA1M, MA2M = mm(H1,A1,H1), mm(H1,A2,H1)
-        MAM, MA2mA1M = MA1M+MA2M, MA2M-MA1M
-        
-        # Write matrices to file?
-        if WriteOrtho:
-            ncdf.write(H1.real,'ReM%.3i'%ihw)
-            ncdf.write(H1.imag,'ImM%.3i'%ihw)
-        
-        # Cryptic? Changes in G^lesser due to e-ph interaction at high and low energies, i.e.,
-        # the changes in occupation due to out(in)-scattering
-        tmp1, tmp2 = mm(G,MA2M,A1), mm(G,MA1M,A1)
-        dGnout.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
-        dGnin.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
-        # NB: TF Should one use myGF.HNO or myGF.H above?
+    # Power, damping and current rates
+    myGF.P1T.append(checkImPart(N.trace(MM.mm(MAM,A1+A2))))
+    myGF.P2T.append(checkImPart(N.trace(MM.mm(MA1M,A2))))
+    myGF.ehDamp1.append(checkImPart(N.trace(MM.mm(MA1M,A1))))
+    myGF.ehDamp2.append(checkImPart(N.trace(MM.mm(MA2M,A2))))
+    tmp1 = -1.0*N.trace(MM.mm(MA2M,bA1))
+    myGF.nHTin.append(checkImPart(tmp1))
+    tmp2 = 0.5j*(N.trace(MM.mm(MAM,GG2bA1))-N.trace(MM.mm(bA1G2Gd,MAM)))
+    myGF.nHTel.append(checkImPart(tmp2))
+    myGF.nHT.append(checkImPart(tmp1+tmp2))
+    myGF.HT.append(checkImPart(N.trace(MM.mm(bA1G2Gd,MA2mA1M))+N.trace(MM.mm(MA2mA1M,GG2bA1))))
 
-        # Power, damping and current rates
-        P1T.append(checkImPart(N.trace(mm(MAM,A1+A2))))
-        P2T.append(checkImPart(N.trace(mm(MA1M,A2))))        
-        ehDamp1.append(checkImPart(N.trace(mm(MA1M,A1))))
-        ehDamp2.append(checkImPart(N.trace(mm(MA2M,A2))))
-        nHT.append(checkImPart(N.trace(mm(-2*MA2M+1.0j*(mm(MAM,G,G2)-mm(G2,Gd,MAM)),bA1))/2.0))
-        nHTin.append(checkImPart(N.trace(mm(-2*MA2M,bA1))/2.0))
-        nHTel.append(checkImPart(N.trace(mm(1.0j*(mm(MAM,G,G2)-mm(G2,Gd,MAM)),bA1))/2.0))
-        HT.append(checkImPart(N.trace(mm((mm(G2,Gd,MA2mA1M)+mm(MA2mA1M,G,G2)),bA1))))
-    # Write matrices to file?
-    if WriteOrtho:
-        ncdf.write(-1.0*N.array(nHT),'SymTrace')
-        ncdf.write(HT,'AsymTrace')
-        ncdf.close()
-    
-    NCfile.close()
-
-    myGF.dGnin, myGF.dGnout = dGnin, dGnout
-    myGF.P1T, myGF.P2T = P1T, P2T
-    myGF.ehDamp1, myGF.ehDamp2 = ehDamp1, ehDamp2
-    myGF.nHT, myGF.HT = nHT, HT
-    myGF.nHTin, myGF.nHTel = nHTin, nHTel
-    myGF.hw = hw
-
+def calcIETS(options,myGF,basis,hw):
+    # Calculate product of electronic traces and voltage functions
     unitConv=1.602177e-19/N.pi/1.054572e-34
     print 'checking: nHT',N.array(myGF.nHT)*unitConv # OK
     print 'checking: HT',N.array(myGF.HT) # OK
@@ -347,9 +305,9 @@ def calcIETS(options,myGF,basis):
 
     datafile = '%s/%s.IN'%(options.DestDir,options.systemlabel)
     initncfile(datafile,hw)
-    writeLOEData2Datafile(datafile,hw,myGF.trans0,nHT,HT)
-    writeLOE2ncfile(datafile,hw,nHT,HT,V,I,NnPhtot,NnPh,\
-                        dI,ddI,BdI,BddI,gamma_eh,gamma_heat)
+    writeLOEData2Datafile(datafile,hw,myGF.trans0,myGF.nHT,myGF.HT)
+    writeLOE2ncfile(datafile,hw,myGF.nHT,myGF.HT,V,I,NnPhtot,NnPh,\
+                    dI,ddI,BdI,BddI,gamma_eh,gamma_heat)
 
     
 ########################################################
@@ -562,12 +520,6 @@ def writeLOEData2Datafile(file,hw,T,nHT,HT):
     f.write("\n")
     f.close()
 
-
-
-################# Math helpers ################################
-mm = MM.mm
-outerAdd = MM.outerAdd
-dagger = MM.dagger
     
 ##################### Start main routine #####################
 
