@@ -717,6 +717,19 @@ class Plot:
         if string[-1]!='\n': string += '\n'
         self.string += string
 
+    def PutText(self,string,posx,posy,color=1,rot=0,font=0,just=0,charsize=1.0):
+        "Inserts text in plot at specified position"
+        self.string += '@with string\n'
+        self.string += '@    string on\n'
+        self.string += '@    string loctype view\n'
+        self.string += '@    string %.6f, %.6f\n'%(posx,posy)
+        self.string += '@    string color %i\n'%color
+        self.string += '@    string rot %i\n'%rot
+        self.string += '@    string font %i\n'%font
+        self.string += '@    string just %i\n'%just
+        self.string += '@    string char size %.6f\n'%charsize
+        self.string += '@    string def "%s"\n'%string
+
     def ShowTimestamp(self,xpos=0.03,ypos=0.03,color=1,rot=0,font=0,charsize=0.75):
         "Inserts a timestamp into the plot."
         self.string += '@ timestamp on\n'
