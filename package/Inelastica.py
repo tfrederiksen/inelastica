@@ -45,15 +45,16 @@ def main(options):
     myGF.nHTin = []
     myGF.nHTel = []
     myGF.HT = []
+    # Calculate transmission at Fermi level
+    myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+    basis = SIO.BuildBasis(options.XV,options.devSt,options.devEnd,myGF.HS.lasto)
+    myGF.trans0 = myGF.calcT(options.numchan)[0]
+    # Check consistency of PHrun vs TSrun inputs
+    checkIETS(options,myGF,basis,NCfile)
+    
     # calculate traces one mode at a time
     for ihw in range(len(hw)):
         myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-        if ihw==0:
-            print 'first mode'
-            basis = SIO.BuildBasis(options.XV,options.devSt,options.devEnd,myGF.HS.lasto)
-            T = myGF.calcT(options.numchan)
-            myGF.trans0 = T[0]
-            checkIETS(options,myGF,basis,NCfile)
         calcTraces(options,myGF,basis,NCfile,ihw)
     # multiply with universal functions
     calcIETS(options,myGF,basis,hw)
@@ -136,7 +137,7 @@ def checkIETS(options,myGF,basis,NCfile):
     if (not check1) or (not check2) or (not check3):
         sys.exit('Inelastica: Error - inconsistency detected for device region.\n')
 
-def calcTraces(options,myGF,basis,NCfile,ihw):
+def calcTracesOld(options,myGF,basis,NCfile,ihw):
     # Calculate various traces over the electronic structure
     G = myGF.Gr
     Gd = MM.dagger(G)
@@ -172,6 +173,39 @@ def calcTraces(options,myGF,basis,NCfile,ihw):
     myGF.nHTel.append(checkImPart(tmp2))
     myGF.nHT.append(checkImPart(tmp1+tmp2))
     myGF.HT.append(checkImPart(N.trace(MM.mm(bA1G2Gd,MA2mA1M))+N.trace(MM.mm(MA2mA1M,GG2bA1))))
+
+def calcTraces(options,myGF,basis,NCfile,ihw):
+    # Calculate various traces over the electronic structure
+    G = myGF.Gr
+    Gd = MM.dagger(G)
+    nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
+    GL = myGF.GamL
+    GR = myGF.GamR
+    # Spectral functions
+    AL = MM.mm(G[:,0:nuoL],GL,Gd[0:nuoL,:])
+    AR = MM.mm(G[:,nuo-nuoR:nuo],GR,Gd[nuo-nuoR:nuo,:])
+    A = AL + AR
+    ALT = MM.mm(Gd[:,0:nuoL],GL,G[0:nuoL,:])
+    # Electron-phonon couplings
+    M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
+    MARGLGM = MM.mm(M,AR[:,0:nuoL],GL,G[0:nuoL,:],M)
+    # LOE expressions in compact form
+    t1 = MM.mm(MARGLGM,AR)
+    t2 = MM.mm(MARGLGM,AL)
+    K23 = N.trace(t1+t2).imag
+    K4 = N.trace(MM.mm(M,ALT,M,AR))
+    aK23 = 2*N.trace(t1-t2).real # asymmetric part
+    # Non-Hilbert term defined here with a minus sign
+    myGF.nHTin.append(-1.0*checkImPart(K4))
+    myGF.nHTel.append(-1.0*checkImPart(K23))
+    myGF.nHT.append(-1.0*checkImPart(K23+K4))
+    myGF.HT.append(checkImPart(aK23))
+
+    # Power, damping and current rates
+    myGF.P1T.append(checkImPart(N.trace(MM.mm(M,A,M,A))))
+    myGF.P2T.append(checkImPart(N.trace(MM.mm(M,AL,M,AR))))
+    myGF.ehDamp1.append(checkImPart(N.trace(MM.mm(M,AL,M,AL))))
+    myGF.ehDamp2.append(checkImPart(N.trace(MM.mm(M,AR,M,AR))))
 
 def calcIETS(options,myGF,basis,hw):
     # Calculate product of electronic traces and voltage functions
@@ -356,22 +390,22 @@ def writeFGRrates():
             
         outFile.write('\nPhonon mode %i : %f eV [Rates in units of (1/s/eV)]\n' % (ihw,IETS.hw[ihw]))
         outFile.write('eh-damp : %e (1/s) , heating %e (1/(sV)))\n' % (IETS.P1T[ihw]*unitConv*IETS.hw[ihw],IETS.P2T[ihw]*unitConv))
-        outFile.write('eh-damp 1, 2 (MA1MA1, MA2MA2): %e (1/s) , %e (1/(s)))\n' % (IETS.ehDamp1[ihw]*unitConv*IETS.hw[ihw],IETS.ehDamp2[ihw]*unitConv*IETS.hw[ihw]))
+        outFile.write('eh-damp 1, 2 (MALMAL, MARMAR): %e (1/s) , %e (1/(s)))\n' % (IETS.ehDamp1[ihw]*unitConv*IETS.hw[ihw],IETS.ehDamp2[ihw]*unitConv*IETS.hw[ihw]))
         outFile.write('SymI : %e (1/(sV)) , AsymI %e (?))\n' % (IETS.nHT[ihw]*unitConv,IETS.HT[ihw]*unitConv))
         outFile.write('Elast : %e (1/(sV)) , Inelast %e (1/(sV)))\n' % (IETS.nHTel[ihw]*unitConv,IETS.nHTin[ihw]*unitConv))
         outFile.write('down=left EC, right=right EC\n')
         if IETS.P2T[ihw]>0.0:
             if abs(totrate/(IETS.P2T[ihw])-1)<0.05:
-                outFile.write('Sum/Tr[MA1MA2] , Tr: %1.3f  %e\n'%(totrate/(IETS.P2T[ihw]),unitConv*IETS.P2T[ihw]))
+                outFile.write('Sum/Tr[MALMAR] , Tr: %1.3f  %e\n'%(totrate/(IETS.P2T[ihw]),unitConv*IETS.P2T[ihw]))
             else:
-                outFile.write('WARNING: !!!! Sum/Tr[MA1MA2] , Tr: %2.2e  %e\n'%(totrate/(IETS.P2T[ihw]),unitConv*IETS.P2T[ihw]))
+                outFile.write('WARNING: !!!! Sum/Tr[MALMAR] , Tr: %2.2e  %e\n'%(totrate/(IETS.P2T[ihw]),unitConv*IETS.P2T[ihw]))
         else:
             outFile.write(' Tr:  %e\n'%(unitConv*IETS.P2T[ihw]))
         inter = inter/IETS.P2T[ihw]
         intra = intra/IETS.P2T[ihw]
-        outFile.write('Interchannel ratio: Sum(inter)/Tr[MA1MA2]      = %.4f \n'%inter)
-        outFile.write('Intrachannel ratio: Sum(intra)/Tr[MA1MA2]      = %.4f \n'%intra)
-        outFile.write('Inter+intra ratio: Sum(inter+intra)/Tr[MA1MA2] = %.4f \n'%(inter+intra))
+        outFile.write('Interchannel ratio: Sum(inter)/Tr[MALMAR]      = %.4f \n'%inter)
+        outFile.write('Intrachannel ratio: Sum(intra)/Tr[MALMAR]      = %.4f \n'%intra)
+        outFile.write('Inter+intra ratio: Sum(inter+intra)/Tr[MALMAR] = %.4f \n'%(inter+intra))
         for iL in range(len(IETS.ECleft)):
             for iR in range(len(IETS.ECright)):
                 outFile.write('%e ' % (unitConv*rate[iL,iR],))
