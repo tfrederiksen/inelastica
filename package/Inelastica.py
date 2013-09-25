@@ -27,38 +27,38 @@ def main(options):
     # Set up electrodes and device Greens function
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
-    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
+    GF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
     # Read phonons
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Inelastica: Reading ',options.PhononNetCDF
     hw = N.array(NCfile.variables['hw'][:])
     # Prepare lists for various trace factors
-    #myGF.dGnout = []
-    #myGF.dGnin = []
-    myGF.P1T = []     # M.A.M.A (total e-h damping)
-    myGF.P2T = []     # M.AL.M.AR (emission)
-    myGF.ehDampL = [] # M.AL.M.AL (L e-h damping)
-    myGF.ehDampR = [] # M.AR.M.AR (R e-h damping)
-    myGF.nHT = []     # non-Hilbert/Isym factor
-    myGF.nHTin = []
-    myGF.nHTel = []
-    myGF.HT = []      # Hilbert/Iasym factor
+    #GF.dGnout = []
+    #GF.dGnin = []
+    GF.P1T = []     # M.A.M.A (total e-h damping)
+    GF.P2T = []     # M.AL.M.AR (emission)
+    GF.ehDampL = [] # M.AL.M.AL (L e-h damping)
+    GF.ehDampR = [] # M.AR.M.AR (R e-h damping)
+    GF.nHT = []     # non-Hilbert/Isym factor
+    GF.nHTin = []
+    GF.nHTel = []
+    GF.HT = []      # Hilbert/Iasym factor
     # Calculate transmission at Fermi level
-    myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-    basis = SIO.BuildBasis(options.XV,options.devSt,options.devEnd,myGF.HS.lasto)
-    myGF.TeF = myGF.calcT(options.numchan)[0]
+    GF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+    basis = SIO.BuildBasis(options.XV,options.devSt,options.devEnd,GF.HS.lasto)
+    GF.TeF = GF.calcT(options.numchan)[0]
     # Check consistency of PHrun vs TSrun inputs
-    IntegrityCheck(options,myGF,basis,NCfile)   
+    IntegrityCheck(options,GF,basis,NCfile)   
     # Calculate trace factors one mode at a time
     for ihw in range(len(hw)):
-        calcTraces(options,myGF,basis,NCfile,ihw)
+        calcTraces(options,GF,basis,NCfile,ihw)
     # Multiply traces with voltage-dependent functions
-    calcIETS(options,myGF,basis,hw)
+    calcIETS(options,GF,basis,hw)
     NCfile.close()
 
 
 ########################################################
-def IntegrityCheck(options,myGF,basis,NCfile):
+def IntegrityCheck(options,GF,basis,NCfile):
     # Perform consistency checks for device region in 
     # PH and TS calculations by comparing coordinates
     # and atom numbers
@@ -94,7 +94,7 @@ def IntegrityCheck(options,myGF,basis,NCfile):
         print s
     # - check 1: Matrix sizes
     PH_H0 = N.array(NCfile.variables['H0'][:])
-    if N.shape(PH_H0[0])==N.shape(myGF.Gr):
+    if N.shape(PH_H0[0])==N.shape(GF.Gr):
         print '... Check 1 passed: Device orb. space matches'
         check1 = True
     else:
@@ -133,47 +133,37 @@ def IntegrityCheck(options,myGF,basis,NCfile):
         sys.exit('Inelastica: Error - inconsistency detected for device region.\n')
 
 
-def calcTraces(options,myGF,basis,NCfile,ihw):
+def calcTraces(options,GF,basis,NCfile,ihw):
     # Calculate various traces over the electronic structure
-    G = myGF.Gr
-    Gd = MM.dagger(G)
-    nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
-    GL = myGF.GamL
-    GR = myGF.GamR
-    # Spectral functions
-    AL = MM.mm(G[:,0:nuoL],GL,Gd[0:nuoL,:])
-    AR = MM.mm(G[:,nuo-nuoR:nuo],GR,Gd[nuo-nuoR:nuo,:])
-    A = AL + AR
-    ALT = MM.mm(Gd[:,0:nuoL],GL,G[0:nuoL,:])
     # Electron-phonon couplings
     M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
     # Calculation of intermediate quantity
-    MARGLGM = MM.mm(M,AR[:,0:nuoL],GL,G[0:nuoL,:],M)
+    MARGLGM = MM.mm(M,GF.ARGLG,M)
     # LOE expressions in compact form
-    t1 = MM.mm(MARGLGM,AR)
-    t2 = MM.mm(MARGLGM,AL)
+    t1 = MM.mm(MARGLGM,GF.AR)
+    t2 = MM.mm(MARGLGM,GF.AL)
     K23 = N.trace(t1+t2).imag
-    K4 = N.trace(MM.mm(M,ALT,M,AR))
+    K4 = N.trace(MM.mm(M,GF.ALT,M,GF.AR))
     aK23 = 2*N.trace(t1-t2).real # asymmetric part
     # Non-Hilbert term defined here with a minus sign
-    myGF.nHTin.append(-1.0*checkImPart(K4))
-    myGF.nHTel.append(-1.0*checkImPart(K23))
-    myGF.nHT.append(-1.0*checkImPart(K23+K4))
-    myGF.HT.append(checkImPart(aK23))
+    GF.nHTin.append(-1.0*checkImPart(K4))
+    GF.nHTel.append(-1.0*checkImPart(K23))
+    GF.nHT.append(-1.0*checkImPart(K23+K4))
+    GF.HT.append(checkImPart(aK23))
     # Power, damping and current rates
-    myGF.P1T.append(checkImPart(N.trace(MM.mm(M,A,M,A))))
-    myGF.P2T.append(checkImPart(N.trace(MM.mm(M,AL,M,AR))))
-    myGF.ehDampL.append(checkImPart(N.trace(MM.mm(M,AL,M,AL))))
-    myGF.ehDampR.append(checkImPart(N.trace(MM.mm(M,AR,M,AR))))
+    GF.P1T.append(checkImPart(N.trace(MM.mm(M,GF.A,M,GF.A))))
+    GF.P2T.append(checkImPart(N.trace(MM.mm(M,GF.AL,M,GF.AR))))
+    GF.ehDampL.append(checkImPart(N.trace(MM.mm(M,GF.AL,M,GF.AL))))
+    GF.ehDampR.append(checkImPart(N.trace(MM.mm(M,GF.AR,M,GF.AR))))
     # Remains from older version (see before rev. 219):
-    #myGF.dGnout.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
-    #myGF.dGnin.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
-    # NB: TF Should one use myGF.HNO (nonorthogonal) or myGF.H (orthogonalized) above?
+    #GF.dGnout.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
+    #GF.dGnin.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
+    # NB: TF Should one use GF.HNO (nonorthogonal) or GF.H (orthogonalized) above?
 
-def calcIETS(options,myGF,basis,hw):
+def calcIETS(options,GF,basis,hw):
     # Calculate product of electronic traces and voltage functions
-    print 'Inelastica.calcIETS: nHT =',N.array(myGF.nHT)*PC.unitConv # OK
-    print 'Inelastica.calcIETS: HT  =',N.array(myGF.HT) # OK
+    print 'Inelastica.calcIETS: nHT =',N.array(GF.nHT)*PC.unitConv # OK
+    print 'Inelastica.calcIETS: HT  =',N.array(GF.HT) # OK
     
     # Set up grid and Hilbert term
     kT = options.Temp/11604.0 # (eV)
@@ -252,14 +242,14 @@ def calcIETS(options,myGF,basis,hw):
                                  ((1+mexphw)*(1-mexpV)*ihw-(1-mexphw)*(1+mexpV)*PV)/ \
                                  (exphwmV+mexphw*mexpV-mexpV**2-1)
                         
-                heat=tmpheat*myGF.P2T[iOmega]/N.pi # Heating term / (hbar hw)
+                heat=tmpheat*GF.P2T[iOmega]/N.pi # Heating term / (hbar hw)
                 
                 if options.PhHeating: # Heating?
-                    nPh[iOmega]=heat/(ihw*myGF.P1T[iOmega]/N.pi+options.PhExtDamp)+1.0/(exphw-1.0)
+                    nPh[iOmega]=heat/(ihw*GF.P1T[iOmega]/N.pi+options.PhExtDamp)+1.0/(exphw-1.0)
                 nPhvsBias[iV,iOmega]=nPh[iOmega]
                     
                 # Damping term /(hbar hw)
-                damp = ihw*(1/(exphw-1)-nPh[iOmega])*myGF.P1T[iOmega]/N.pi
+                damp = ihw*(1/(exphw-1)-nPh[iOmega])*GF.P1T[iOmega]/N.pi
                 
                 # Power in units of 1/(hbar)
                 Pow[iV]=ihw*(heat+damp)
@@ -273,27 +263,27 @@ def calcIETS(options,myGF,basis,hw):
                     tmp+=kT
                 else:
                     tmp+=(V+ihw)/(N.exp(N.clip((ihw+V)/kT,-70.0,70.0))-1)
-                    InH[iV]+=(tmp-V*nPh[iOmega])*myGF.nHT[iOmega]
+                    InH[iV]+=(tmp-V*nPh[iOmega])*GF.nHT[iOmega]
 
                 # Finite temp Hilbert
-                IH[iV]-=myGF.HT[iOmega]*MM.trapez(Egrid,kasse*hilb[iOmega],\
+                IH[iV]-=GF.HT[iOmega]*MM.trapez(Egrid,kasse*hilb[iOmega],\
                                                      equidistant=True)/2
                 
-        InH[iV]+=V*myGF.TeF # Last to reduce cancelation errors
+        InH[iV]+=V*GF.TeF # Last to reduce cancelation errors
 
     # Get the right units for gamma_eh, gamma_heat
     gamma_eh=N.zeros((len(hw),),N.float)
     gamma_heat=N.zeros((len(hw),),N.float)
     for iOmega in range(len(hw)):
         # Units [Phonons per Second per dN where dN is number extra phonons]
-        gamma_eh[iOmega]=myGF.P1T[iOmega]*hw[iOmega]*PC.unitConv
+        gamma_eh[iOmega]=GF.P1T[iOmega]*hw[iOmega]*PC.unitConv
         # Units [Phonons per second per eV [eV-ihw]
-        gamma_heat[iOmega]=myGF.P2T[iOmega]*PC.unitConv
+        gamma_heat[iOmega]=GF.P2T[iOmega]*PC.unitConv
 
     print 'Inelastica.calcIETS: gamma_eh =',gamma_eh # OK
     print 'Inelastica.calcIETS: gamma_heat =',gamma_heat # OK
 
-    #hw, T, nHT, HT, lLOE, nPhtot, nPh, = hw, myGF.TeF, myGF.nHT, myGF.HT, [Vl, InH, IH], nPhtot, nPhvsBias
+    #hw, T, nHT, HT, lLOE, nPhtot, nPh, = hw, GF.TeF, GF.nHT, GF.HT, [Vl, InH, IH], nPhtot, nPhvsBias
     V, I, dI, ddI, BdI, BddI, NnPhtot,NnPh = Broaden(options,Vl,InH+IH,nPhtot,nPhvsBias)
 
     print 'Inelastica.calcIETS: BdI[:10] =',BdI[:10] # OK
@@ -301,8 +291,8 @@ def calcIETS(options,myGF,basis,hw):
 
     datafile = '%s/%s.IN'%(options.DestDir,options.systemlabel)
     initncfile(datafile,hw)
-    writeLOEData2Datafile(datafile,hw,myGF.TeF,myGF.nHT,myGF.HT)
-    writeLOE2ncfile(datafile,hw,myGF.nHT,myGF.HT,V,I,NnPhtot,NnPh,\
+    writeLOEData2Datafile(datafile,hw,GF.TeF,GF.nHT,GF.HT)
+    writeLOE2ncfile(datafile,hw,GF.nHT,GF.HT,V,I,NnPhtot,NnPh,\
                     dI,ddI,BdI,BddI,gamma_eh,gamma_heat)
 
     
@@ -321,26 +311,26 @@ def writeFGRrates():
 
     options.iChan, options.iSide = 0, 2
     outFile = file('%s/%s.IN.FGR'%(options.DestDir,options.systemlabel,'w'))
-    outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (PC.unitConv*myGF.totTrans.real,))
+    outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (PC.unitConv*GF.totTrans.real,))
 
-    tmp=N.sort(abs(N.array(myGF.nHT[:])))
+    tmp=N.sort(abs(N.array(GF.nHT[:])))
     SelectionMin=tmp[-options.NumPhCurr]        
     
-    for ihw in range(len(myGF.hw)):
-        SIO.printDone(ihw,len(myGF.hw),'Golden Rate') 
+    for ihw in range(len(GF.hw)):
+        SIO.printDone(ihw,len(GF.hw),'Golden Rate') 
         M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
-        rate=N.zeros((len(myGF.ECleft),len(myGF.ECright)),N.float)
+        rate=N.zeros((len(GF.ECleft),len(GF.ECright)),N.float)
         totrate=0.0
         inter,intra = 0.0, 0.0 # splitting total rate in two
-        for iL in range(len(myGF.ECleft)):
-            for iR in range(len(myGF.ECright)):
-                tmp=N.dot(N.conjugate(myGF.ECleft[iL]),mm(M,myGF.ECright[iR]))
+        for iL in range(len(GF.ECleft)):
+            for iR in range(len(GF.ECright)):
+                tmp=N.dot(N.conjugate(GF.ECleft[iL]),mm(M,GF.ECright[iR]))
                 rate[iL,iR]=(2*N.pi)**2*abs(tmp)**2
                 totrate+=rate[iL,iR]
                 if iL==iR: intra += rate[iL,iR]
                 else: inter += rate[iL,iR]
 
-        if abs(myGF.nHT[ihw])>=SelectionMin:
+        if abs(GF.nHT[ihw])>=SelectionMin:
             options.iChan = ihw
             currOut, currIn = IETS.dGnout[ihw], IETS.dGnin[ihw]
             options.iSide = 3

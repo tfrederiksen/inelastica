@@ -544,6 +544,12 @@ class GF:
                 eSmH[nuo-nuoR:nuo,nuo-nuoR:nuo]=eSmH[nuo-nuoR:nuo,nuo-nuoR:nuo]-self.SigR
         self.Gr = LA.inv(eSmH)
         self.Ga = MM.dagger(self.Gr)
+        # Calculate spectral functions
+        self.AL = MM.mm(self.Gr[:,0:nuoL],self.GamL,self.Ga[0:nuoL,:])
+        self.ALT = MM.mm(self.Ga[:,0:nuoL],self.GamL,self.Gr[0:nuoL,:])
+        self.AR = MM.mm(self.Gr[:,nuo-nuoR:nuo],self.GamR,self.Ga[nuo-nuoR:nuo,:])
+        self.ARGLG = MM.mm(self.AR[:,0:nuoL],self.GamL,self.Gr[0:nuoL,:])
+        self.A = self.AL + self.AR
         
     def setkpoint(self,kpoint,ispin=0):
         # Initiate H, S to correct kpoint
