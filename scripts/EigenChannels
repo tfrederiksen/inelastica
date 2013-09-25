@@ -1,7 +1,5 @@
 #! /usr/bin/env python
 
-from Inelastica import EigenChannels
-from Inelastica import SiestaIO as SIO
 import numpy as N
 import os, sys, subprocess
 from optparse import OptionParser, OptionGroup
@@ -63,6 +61,10 @@ sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 tee = subprocess.Popen(["tee", options.DestDir+"/Output.log"], stdin=subprocess.PIPE)
 os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
 os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
+
+# Load Inelastica stuff
+from Inelastica import EigenChannels
+from Inelastica import SiestaIO as SIO
     
 # Read SIESTA files
 options.head,tail = os.path.split(options.fn)

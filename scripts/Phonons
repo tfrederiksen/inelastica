@@ -1,6 +1,5 @@
 #!/scratch/thf/SOFTWARE/Python-2.6.5/bin/python
 
-from Inelastica import Phonons
 from optparse import OptionParser
 import os, sys, subprocess
 import numpy as N
@@ -86,6 +85,9 @@ sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 tee = subprocess.Popen(["tee", options.DestDir+"/%s.log"%options.label], stdin=subprocess.PIPE)
 os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
 os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
+
+# Load Inelastica stuff
+from Inelastica import Phonons
 
 # k-point
 options.kPoint = N.array([options.k1,options.k2,options.k3],N.float)
