@@ -1,10 +1,8 @@
 print "SVN $Id$"
 
 """
-Eigenchannels:
-1: Eigenchannels, method from Paulsson and Brandbyge PRB 2007
-2: Analyze IETS spectra, Paulsson et al PRL 2008
-3: Calculate "bond" currents
+Inelastica:
+1: Analyze IETS spectra, Paulsson et al PRL 2008
 """
 
 import EigenChannels as EC
@@ -16,8 +14,7 @@ import WriteNetCDF as NCDF
 import numpy as N
 import numpy.linalg as LA
 import Scientific.IO.NetCDF as NC
-import sys, string, struct, glob,  os
-from optparse import OptionParser, OptionGroup
+import sys
 import PhysicalConstants as PC
 import time
 
@@ -27,50 +24,52 @@ import time
 def main(options):
     options.XV = '%s/%s.XV'%(options.head,options.systemlabel)
     options.geom = MG.Geom(options.XV)
-
+    # Set up electrodes and device Greens function
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
-
-    NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
-    print 'Reading ',options.PhononNetCDF
-    hw = N.array(NCfile.variables['hw'][:])
     myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
+    # Read phonons
+    NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
+    print 'Inelastica: Reading ',options.PhononNetCDF
+    hw = N.array(NCfile.variables['hw'][:])
+    # Prepare lists for various trace factors
     #myGF.dGnout = []
     #myGF.dGnin = []
-    myGF.P1T = []
-    myGF.P2T = []
-    myGF.ehDamp1 = []
-    myGF.ehDamp2 = []
-    myGF.nHT = []
+    myGF.P1T = []     # M.A.M.A (total e-h damping)
+    myGF.P2T = []     # M.AL.M.AR (emission)
+    myGF.ehDampL = [] # M.AL.M.AL (L e-h damping)
+    myGF.ehDampR = [] # M.AR.M.AR (R e-h damping)
+    myGF.nHT = []     # non-Hilbert/Isym factor
     myGF.nHTin = []
     myGF.nHTel = []
-    myGF.HT = []
+    myGF.HT = []      # Hilbert/Iasym factor
     # Calculate transmission at Fermi level
     myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
     basis = SIO.BuildBasis(options.XV,options.devSt,options.devEnd,myGF.HS.lasto)
-    myGF.trans0 = myGF.calcT(options.numchan)[0]
+    myGF.TeF = myGF.calcT(options.numchan)[0]
     # Check consistency of PHrun vs TSrun inputs
-    checkIETS(options,myGF,basis,NCfile)
-    
-    # calculate traces one mode at a time
+    IntegrityCheck(options,myGF,basis,NCfile)   
+    # Calculate trace factors one mode at a time
     for ihw in range(len(hw)):
-        myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
         calcTraces(options,myGF,basis,NCfile,ihw)
-    # multiply with universal functions
+    # Multiply traces with voltage-dependent functions
     calcIETS(options,myGF,basis,hw)
     NCfile.close()
 
 
 ########################################################
-def checkIETS(options,myGF,basis,NCfile):
-    # Compare coordinates and atomic numbers
+def IntegrityCheck(options,myGF,basis,NCfile):
+    # Perform consistency checks for device region in 
+    # PH and TS calculations by comparing coordinates
+    # and atom numbers
     PH_dev = N.array(NCfile.variables['DeviceAtoms'][:])
     PH_xyz = N.array(NCfile.variables['GeometryXYZ'][:])
     PH_anr = N.array(NCfile.variables['AtomNumbers'][:])
     TS_dev = range(options.devSt,options.devEnd+1)
     TS_anr = options.geom.anr
     TS_xyz = options.geom.xyz
-    print '\nA = %s'%options.PhononNetCDF
+    print '\nInelastica.IntegrityCheck:'
+    print 'A = %s'%options.PhononNetCDF
     print 'B = %s'%options.XV
     print ' idxA    xA       yA       zA   anrA   ',
     print ' idxB    xB       yB       zB   anrB'
@@ -93,10 +92,6 @@ def checkIETS(options,myGF,basis,NCfile):
         else:
             s += ('---').center(36)
         print s
-
-    # Perform consistency checks for device region in 
-    # PH and TS calculations
-    print 'Inelastica.calcIETS: Integrity check'
     # - check 1: Matrix sizes
     PH_H0 = N.array(NCfile.variables['H0'][:])
     if N.shape(PH_H0[0])==N.shape(myGF.Gr):
@@ -137,42 +132,6 @@ def checkIETS(options,myGF,basis,NCfile):
     if (not check1) or (not check2) or (not check3):
         sys.exit('Inelastica: Error - inconsistency detected for device region.\n')
 
-def calcTracesOld(options,myGF,basis,NCfile,ihw):
-    # Calculate various traces over the electronic structure
-    G = myGF.Gr
-    Gd = MM.dagger(G)
-    nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
-    G1 = myGF.GamL
-    G2 = myGF.GamR
-    A1 = MM.mm(G[:,0:nuoL],G1,Gd[0:nuoL,:])
-    A2 = MM.mm(G[:,nuo-nuoR:nuo],G2,Gd[nuo-nuoR:nuo,:])
-    bA1 = MM.mm(Gd[:,0:nuoL],G1,G[0:nuoL,:])
-    GG2bA1 = MM.mm(G[:,nuo-nuoR:nuo],G2,bA1[nuo-nuoR:nuo,:])
-    bA1G2Gd = MM.mm(bA1[:,nuo-nuoR:nuo],G2,Gd[nuo-nuoR:nuo,:])
-
-    # Save bond current changes due to inelastic scattering 
-    M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
-    MA1M, MA2M = MM.mm(M,A1,M), MM.mm(M,A2,M)
-    MAM, MA2mA1M = MA1M+MA2M, MA2M-MA1M
-
-    # Cryptic? Changes in G^lesser due to e-ph interaction at high and low energies, i.e.,
-    # the changes in occupation due to out(in)-scattering
-    #tmp1, tmp2 = MM.mm(G,MA2M,A1), MM.mm(G,MA1M,A1)
-    #myGF.dGnout.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
-    #myGF.dGnin.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
-    # NB: TF Should one use myGF.HNO or myGF.H above?
-    
-    # Power, damping and current rates
-    myGF.P1T.append(checkImPart(N.trace(MM.mm(MAM,A1+A2))))
-    myGF.P2T.append(checkImPart(N.trace(MM.mm(MA1M,A2))))
-    myGF.ehDamp1.append(checkImPart(N.trace(MM.mm(MA1M,A1))))
-    myGF.ehDamp2.append(checkImPart(N.trace(MM.mm(MA2M,A2))))
-    tmp1 = -1.0*N.trace(MM.mm(MA2M,bA1))
-    myGF.nHTin.append(checkImPart(tmp1))
-    tmp2 = 0.5j*(N.trace(MM.mm(MAM,GG2bA1))-N.trace(MM.mm(bA1G2Gd,MAM)))
-    myGF.nHTel.append(checkImPart(tmp2))
-    myGF.nHT.append(checkImPart(tmp1+tmp2))
-    myGF.HT.append(checkImPart(N.trace(MM.mm(bA1G2Gd,MA2mA1M))+N.trace(MM.mm(MA2mA1M,GG2bA1))))
 
 def calcTraces(options,myGF,basis,NCfile,ihw):
     # Calculate various traces over the electronic structure
@@ -188,6 +147,7 @@ def calcTraces(options,myGF,basis,NCfile,ihw):
     ALT = MM.mm(Gd[:,0:nuoL],GL,G[0:nuoL,:])
     # Electron-phonon couplings
     M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
+    # Calculation of intermediate quantity
     MARGLGM = MM.mm(M,AR[:,0:nuoL],GL,G[0:nuoL,:],M)
     # LOE expressions in compact form
     t1 = MM.mm(MARGLGM,AR)
@@ -200,18 +160,20 @@ def calcTraces(options,myGF,basis,NCfile,ihw):
     myGF.nHTel.append(-1.0*checkImPart(K23))
     myGF.nHT.append(-1.0*checkImPart(K23+K4))
     myGF.HT.append(checkImPart(aK23))
-
     # Power, damping and current rates
     myGF.P1T.append(checkImPart(N.trace(MM.mm(M,A,M,A))))
     myGF.P2T.append(checkImPart(N.trace(MM.mm(M,AL,M,AR))))
-    myGF.ehDamp1.append(checkImPart(N.trace(MM.mm(M,AL,M,AL))))
-    myGF.ehDamp2.append(checkImPart(N.trace(MM.mm(M,AR,M,AR))))
+    myGF.ehDampL.append(checkImPart(N.trace(MM.mm(M,AL,M,AL))))
+    myGF.ehDampR.append(checkImPart(N.trace(MM.mm(M,AR,M,AR))))
+    # Remains from older version (see before rev. 219):
+    #myGF.dGnout.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
+    #myGF.dGnin.append(EC.calcCurrent(options,basis,myGF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
+    # NB: TF Should one use myGF.HNO (nonorthogonal) or myGF.H (orthogonalized) above?
 
 def calcIETS(options,myGF,basis,hw):
     # Calculate product of electronic traces and voltage functions
-    unitConv=1.602177e-19/N.pi/1.054572e-34
-    print 'checking: nHT',N.array(myGF.nHT)*unitConv # OK
-    print 'checking: HT',N.array(myGF.HT) # OK
+    print 'Inelastica.calcIETS: nHT =',N.array(myGF.nHT)*PC.unitConv # OK
+    print 'Inelastica.calcIETS: HT  =',N.array(myGF.HT) # OK
     
     # Set up grid and Hilbert term
     kT = options.Temp/11604.0 # (eV)
@@ -222,7 +184,7 @@ def calcIETS(options,myGF,basis,hw):
     min_win=min(-options.maxBias,-max_hw)-20*kT-4*options.Vrms
     pts=int(N.floor((max_win-min_win)/kT*3))
     Egrid=N.array(range(pts),N.float)/pts*(max_win-min_win)+min_win
-    print "LOE: Hilbert integration grid : %i pts [%f,%f]" % (pts,min(Egrid),max(Egrid))
+    print "Inelastica.calcIETS: Hilbert integration grid : %i pts [%f,%f]" % (pts,min(Egrid),max(Egrid))
     
     # Calculate the prefactors for the Hilbert and non-Hilbert terms
     # Also calculate the Hilbert transfer of the box on the grid for each mode
@@ -233,10 +195,10 @@ def calcIETS(options,myGF,basis,hw):
         tmp=MM.box(hwi,-hwi,Egrid,kT)
         tmp2, ker = MM.Hilbert(tmp,ker)
         hilb.append(tmp2)
-        SIO.printDone(ii,len(hw),'LOE : Hilbert transform')
+        SIO.printDone(ii,len(hw),'Inelastica.calcIETS: Hilbert transform')
     
     NN = options.biasPoints
-    print 'biaspoints',NN
+    print 'Inelastica.calcIETS: Biaspoints =',NN
 
     # Add some points for the Lock in broadening
     approxdV=(options.maxBias-options.minBias)/NN
@@ -253,7 +215,7 @@ def calcIETS(options,myGF,basis,hw):
     nPh=N.zeros((len(hw),),N.float)         # Number of phonons                                  
 
     for iV in range(len(Vl)):
-        SIO.printDone(iV,len(Vl),'LOE : Calc current')
+        SIO.printDone(iV,len(Vl),'Inelastica.calcIETS: Calculating voltage-dependent functions')
         
         InH[iV], IH[iV], Pow[iV] = 0.0, 0.0, 0.0
         V=Vl[iV]
@@ -317,29 +279,29 @@ def calcIETS(options,myGF,basis,hw):
                 IH[iV]-=myGF.HT[iOmega]*MM.trapez(Egrid,kasse*hilb[iOmega],\
                                                      equidistant=True)/2
                 
-        InH[iV]+=V*myGF.trans0 # Last to reduce cancelation errors
+        InH[iV]+=V*myGF.TeF # Last to reduce cancelation errors
 
     # Get the right units for gamma_eh, gamma_heat
-    hbar=1.0545727e-34/1.6021773e-19 # hbar in eV S
     gamma_eh=N.zeros((len(hw),),N.float)
     gamma_heat=N.zeros((len(hw),),N.float)
     for iOmega in range(len(hw)):
         # Units [Phonons per Second per dN where dN is number extra phonons]
-        gamma_eh[iOmega]=myGF.P1T[iOmega]*hw[iOmega]/N.pi/hbar
+        gamma_eh[iOmega]=myGF.P1T[iOmega]*hw[iOmega]*PC.unitConv
         # Units [Phonons per second per eV [eV-ihw]
-        gamma_heat[iOmega]=myGF.P2T[iOmega]/N.pi/hbar
+        gamma_heat[iOmega]=myGF.P2T[iOmega]*PC.unitConv
 
-    print 'checking: gamma_eh',gamma_eh # OK
-    print 'checking: gamma_heat',gamma_heat # OK
+    print 'Inelastica.calcIETS: gamma_eh =',gamma_eh # OK
+    print 'Inelastica.calcIETS: gamma_heat =',gamma_heat # OK
 
-    #hw, T, nHT, HT, lLOE, nPhtot, nPh, = hw, myGF.trans0, myGF.nHT, myGF.HT, [Vl, InH, IH], nPhtot, nPhvsBias
+    #hw, T, nHT, HT, lLOE, nPhtot, nPh, = hw, myGF.TeF, myGF.nHT, myGF.HT, [Vl, InH, IH], nPhtot, nPhvsBias
     V, I, dI, ddI, BdI, BddI, NnPhtot,NnPh = Broaden(options,Vl,InH+IH,nPhtot,nPhvsBias)
 
-    print 'checking: BddI',BddI[:10] # OK
+    print 'Inelastica.calcIETS: BdI[:10] =',BdI[:10] # OK
+    print 'Inelastica.calcIETS: BddI[:10] =',BddI[:10] # OK
 
     datafile = '%s/%s.IN'%(options.DestDir,options.systemlabel)
     initncfile(datafile,hw)
-    writeLOEData2Datafile(datafile,hw,myGF.trans0,myGF.nHT,myGF.HT)
+    writeLOEData2Datafile(datafile,hw,myGF.TeF,myGF.nHT,myGF.HT)
     writeLOE2ncfile(datafile,hw,myGF.nHT,myGF.HT,V,I,NnPhtot,NnPh,\
                     dI,ddI,BdI,BddI,gamma_eh,gamma_heat)
 
@@ -347,21 +309,19 @@ def calcIETS(options,myGF,basis,hw):
 ########################################################
 def checkImPart(x):
     if abs(x.imag)>0.0000001:
-        print "LOE : Imaginary part (%.3e) too big"%x.imag
+        print "Inelastica.checkImPart: Imaginary part (%.3e) too big"%x.imag
         kuk
     return x.real   
 
 ########################################################
 def writeFGRrates():
     # This does not work at the moment....
-    unitConv=1.602177e-19/N.pi/1.054572e-34
-
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Reading ',options.PhononNetCDF
 
     options.iChan, options.iSide = 0, 2
     outFile = file('%s/%s.IN.FGR'%(options.DestDir,options.systemlabel,'w'))
-    outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (unitConv*myGF.totTrans.real,))
+    outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (PC.unitConv*myGF.totTrans.real,))
 
     tmp=N.sort(abs(N.array(myGF.nHT[:])))
     SelectionMin=tmp[-options.NumPhCurr]        
@@ -389,18 +349,18 @@ def writeFGRrates():
             writeCurrent(currOut)
             
         outFile.write('\nPhonon mode %i : %f eV [Rates in units of (1/s/eV)]\n' % (ihw,IETS.hw[ihw]))
-        outFile.write('eh-damp : %e (1/s) , heating %e (1/(sV)))\n' % (IETS.P1T[ihw]*unitConv*IETS.hw[ihw],IETS.P2T[ihw]*unitConv))
-        outFile.write('eh-damp 1, 2 (MALMAL, MARMAR): %e (1/s) , %e (1/(s)))\n' % (IETS.ehDamp1[ihw]*unitConv*IETS.hw[ihw],IETS.ehDamp2[ihw]*unitConv*IETS.hw[ihw]))
-        outFile.write('SymI : %e (1/(sV)) , AsymI %e (?))\n' % (IETS.nHT[ihw]*unitConv,IETS.HT[ihw]*unitConv))
-        outFile.write('Elast : %e (1/(sV)) , Inelast %e (1/(sV)))\n' % (IETS.nHTel[ihw]*unitConv,IETS.nHTin[ihw]*unitConv))
+        outFile.write('eh-damp : %e (1/s) , heating %e (1/(sV)))\n' % (IETS.P1T[ihw]*PC.unitConv*IETS.hw[ihw],IETS.P2T[ihw]*PC.unitConv))
+        outFile.write('eh-damp 1, 2 (MALMAL, MARMAR): %e (1/s) , %e (1/(s)))\n' % (IETS.ehDampL[ihw]*PC.unitConv*IETS.hw[ihw],IETS.ehDampR[ihw]*PC.unitConv*IETS.hw[ihw]))
+        outFile.write('SymI : %e (1/(sV)) , AsymI %e (?))\n' % (IETS.nHT[ihw]*PC.unitConv,IETS.HT[ihw]*PC.unitConv))
+        outFile.write('Elast : %e (1/(sV)) , Inelast %e (1/(sV)))\n' % (IETS.nHTel[ihw]*PC.unitConv,IETS.nHTin[ihw]*PC.unitConv))
         outFile.write('down=left EC, right=right EC\n')
         if IETS.P2T[ihw]>0.0:
             if abs(totrate/(IETS.P2T[ihw])-1)<0.05:
-                outFile.write('Sum/Tr[MALMAR] , Tr: %1.3f  %e\n'%(totrate/(IETS.P2T[ihw]),unitConv*IETS.P2T[ihw]))
+                outFile.write('Sum/Tr[MALMAR] , Tr: %1.3f  %e\n'%(totrate/(IETS.P2T[ihw]),PC.unitConv*IETS.P2T[ihw]))
             else:
-                outFile.write('WARNING: !!!! Sum/Tr[MALMAR] , Tr: %2.2e  %e\n'%(totrate/(IETS.P2T[ihw]),unitConv*IETS.P2T[ihw]))
+                outFile.write('WARNING: !!!! Sum/Tr[MALMAR] , Tr: %2.2e  %e\n'%(totrate/(IETS.P2T[ihw]),PC.unitConv*IETS.P2T[ihw]))
         else:
-            outFile.write(' Tr:  %e\n'%(unitConv*IETS.P2T[ihw]))
+            outFile.write(' Tr:  %e\n'%(PC.unitConv*IETS.P2T[ihw]))
         inter = inter/IETS.P2T[ihw]
         intra = intra/IETS.P2T[ihw]
         outFile.write('Interchannel ratio: Sum(inter)/Tr[MALMAR]      = %.4f \n'%inter)
@@ -408,7 +368,7 @@ def writeFGRrates():
         outFile.write('Inter+intra ratio: Sum(inter+intra)/Tr[MALMAR] = %.4f \n'%(inter+intra))
         for iL in range(len(IETS.ECleft)):
             for iR in range(len(IETS.ECright)):
-                outFile.write('%e ' % (unitConv*rate[iL,iR],))
+                outFile.write('%e ' % (PC.unitConv*rate[iL,iR],))
             outFile.write('\n')
         outFile.close()
         NCfile.close()
@@ -450,6 +410,7 @@ def Broaden(options,VV,II,nPhtot,nPh):
     
     # Calculate first derivative with Vrms broadening
     for iV, V in enumerate(BdV):
+        SIO.printDone(iV,len(BdV),'Inelastica.Broaden: First-derivative Vrms broadening')
         wt=(N.array(range(200))/200.0-0.5)*N.pi
         VL=V+VA*N.sin(wt)
         dIL=MM.interpolate(VL,dV,dI)
@@ -457,6 +418,7 @@ def Broaden(options,VV,II,nPhtot,nPh):
 
     # Calculate second derivative with Vrms broadening    
     for iV, V in enumerate(BddV):
+        SIO.printDone(iV,len(BddV),'Inelastica.Broaden: Second-derivative Vrms broadening')
         wt=(N.array(range(200))/200.0-0.5)*N.pi
         VL=V+VA*N.sin(wt)
         ddIL=MM.interpolate(VL,ddV,ddI)
@@ -535,14 +497,12 @@ def writeLOE2ncfile(filename,hw,nHT,HT,V,I,nPhtot,nPh,\
     tmp=ncfile.createVariable('LOE_gamma_heat','d',('Nph',))
     tmp[:]=N.array(gamma_heat)
     tmp.units='Phonon heating [*(bias-hw) (eV) = 1/Second]'
-    unitConv=1.602177e-19/N.pi/1.054572e-34
     ncTotR = ncfile.createVariable('LOE_ISymTr','d',('Nph',))
-    ncTotR[:] = N.array(nHT)*unitConv
+    ncTotR[:] = N.array(nHT)*PC.unitConv
     ncTotR.units = 'Trace giving Symmetric current contribution (same units as eigenchannels [1/s/eV])'
     ncTotL = ncfile.createVariable('LOE_IAsymTr','d',('Nph',))
     ncTotL[:] = N.array(HT)
     ncTotL.units = 'Trace giving Asymmetric current contribution'
-    
     ncfile.close()
     
 def writeLOEData2Datafile(file,hw,T,nHT,HT):
@@ -553,10 +513,4 @@ def writeLOEData2Datafile(file,hw,T,nHT,HT):
         f.write("## %e %e %e %e\n" % (hw[ii],T,nHT[ii],HT[ii]))
     f.write("\n")
     f.close()
-
-    
-##################### Start main routine #####################
-
-if __name__ == '__main__':
-    main()
 

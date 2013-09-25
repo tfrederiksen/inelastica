@@ -1,5 +1,7 @@
 print "SVN $Id$"
 
+import numpy as N
+
 # From Kittel: Introd. Solid State Physics, 7th ed. (1996)
 Rydberg2eV = 13.6058
 Bohr2Ang = 0.529177 
@@ -11,6 +13,10 @@ hbar2SI = 1.05459e-34
 # From http://physics.nist.gov/constants
 invm2eV =  1.239841875e-6
 invcm2eV = 1.239841875e-4
+
+# Current conversion factor
+unitConv=1.602177e-19/N.pi/1.054572e-34
+#unitConv=eV2Joule/N.pi/hbar2SI
 
 # from http://physics.nist.gov/PhysRefData/Elements/
 AtomicMass = {1:1.007947,    # H
