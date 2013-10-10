@@ -480,7 +480,11 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref):
     
 def OpenNetCDFFile(filename,nao,xyz,DeviceFirst,DeviceLast,FCfirst,FClast):
     print 'Phonons.WriteNetCDFFile: Writing', filename
-    file = nc.NetCDFFile(filename,'w','Created '+time.ctime(time.time()))
+    try:
+        # Use 64 bit format
+        file = nc.NetCDFFile(filename,'wl','Created '+time.ctime(time.time()))
+    except:
+        file = nc.NetCDFFile(filename,'w','Created '+time.ctime(time.time()))
     file.title = 'Output from Phonons.py'
     file.createDimension('AtomicOrbitals',int(nao))
     file.createDimension('dim3',3)
@@ -811,7 +815,11 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                 except:
                     # First time a netcdf-file is created
                     print 'Phonons.GenerateAuxNETCDF: Generating', AuxNCfile
-                    NCfile2 = nc.NetCDFFile(AuxNCfile,'w','Created '+time.ctime(time.time()))
+                    try:
+                        # Use 64 bit format
+                        NCfile2 = nc.NetCDFFile(AuxNCfile,'wl','Created '+time.ctime(time.time()))
+                    except:
+                        NCfile2 = nc.NetCDFFile(AuxNCfile,'w','Created '+time.ctime(time.time()))
                     NCfile2.createDimension('Index',None)
                     NCfile2.createDimension('NSpin',len(TSHS0.H))
                     NCfile2.createDimension('AtomicOrbitals',len(TSHS0.H[0,:,:]))
