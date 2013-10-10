@@ -60,6 +60,9 @@ symbols = {'\alpha':'\\f{Symbol}a',
            '\beta':'\\f{Symbol}b',
            '\gamma':'\\f{Symbol}g',
            '\delta':'\\f{Symbol}d',
+           '\lambda':'\\f{Symbol}l',
+           '\pi':'\\f{Symbol}p',
+           '\sigma':'\\f{Symbol}s',
            '\Gamma':'\\f{Symbol}G',
            '\Delta':'\\f{Symbol}D'
           }

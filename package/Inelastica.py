@@ -26,7 +26,9 @@ def main(options):
     options.geom = MG.Geom(options.XV)
     # Set up electrodes and device Greens function
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
+    elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
+    elecR.scaling = options.scaleSigR
     GF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
     # Read phonons
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')

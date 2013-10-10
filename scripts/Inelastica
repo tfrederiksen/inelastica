@@ -18,7 +18,7 @@ parser.add_option("-F","--DeviceFirst", dest='devSt',default=0,type='int',
 parser.add_option("-L","--DeviceLast", dest='devEnd',default=0,type='int',
                   help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
 parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
-                  help="Energy where eigenchannel scattering states are evaluated [default=%default eV]")
+                  help="Energy reference where Greens functions etc are evaluated [default=%default eV]")
 parser.add_option("--eta", dest='eta', default=0.000001,type='float',
                   help="Tiny imag. part in Green's functions etc. [default=%default eV]")
 parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
@@ -49,7 +49,11 @@ parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_t
                   help="Use SigNCfiles [default=%default]")
 parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [default=%default eV]",
                   type='float', default=0.0)
-
+# Scale (artificially) the coupling to the electrodes
+parser.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to Sigma_L [default=%default]",
+                  type='float', default=1.0)
+parser.add_option("--scaleSigR", dest="scaleSigR", help="Scale factor applied to Sigma_R [default=%default]",
+                  type='float', default=1.0)
 (options, args) = parser.parse_args()
 
 # Destination directory

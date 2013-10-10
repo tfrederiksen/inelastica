@@ -49,6 +49,11 @@ parser.add_option("--useSigNC", dest='signc',default=False,action='store_true',
                   help="Use SigNCfiles")
 parser.add_option("--NumChan", dest="numchan", help="Number of eigenchannels [%default]",
                   type='int', default=10)
+# Scale (artificially) coupling to electrodes
+parser.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to Sigma_L [default=%default]",
+                  type='float', default=1.0)
+parser.add_option("--scaleSigR", dest="scaleSigR", help="Scale factor applied to Sigma_R [default=%default]",
+                  type='float', default=1.0)
 
 (options, args) = parser.parse_args()
 

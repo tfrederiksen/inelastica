@@ -590,7 +590,7 @@ class Symmetry:
         length = N.array(length)[ipiv]
         a123 = N.array([a1,a2,a3])[ipiv]
 
-        # Calculate angels in degrees
+        # Calculate angles in degrees
         angles = []
         for ii,a in enumerate([a123[0],a123[1]]):
             for jj,b in enumerate([a123[1],a123[2]][ii:]):

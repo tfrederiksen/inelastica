@@ -29,7 +29,9 @@ import numpy as N
 def calc(options):
     kPointList, kWeights, NNk, Nk1, Nk2, GaussKronrod = getKpoints(options)
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
+    elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
+    elecR.scaling = options.scaleSigR
     myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=[options.devSt, options.devEnd])
     nspin = myGF.HS.nspin
     if options.devSt==0:

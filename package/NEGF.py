@@ -153,6 +153,7 @@ class ElectrodeSelfEnergy:
         self.NA2=NA2
         self.kpoint = N.array([1e10,1e10],N.float)
         self.voltage = voltage
+        self.scaling = 1.0 # Default scale factor for coupling to device
 
     def getSig(self,ee,qp=N.array([0,0],N.float),left=True,Bulk=False,ispin=0,UseF90helpers=True,etaLead=0.0,useSigNCfiles=False):
         """
@@ -239,7 +240,9 @@ class ElectrodeSelfEnergy:
             Sig=LA.inv(SGF)
         if useSigNCfiles:
             SavedSig.addSig(self.path,self.hash,eeshifted,qp,left,ispin,etaLead,Sig)
-        return Sig
+        if self.scaling!=1.0:
+            print 'NEGF.getSig: Scaling self-energy with a factor',self.scaling
+        return Sig*self.scaling
 
     def getg0(self,ee,kpoint,left=True,ispin=0):
         # Calculate surface Green's function for small electrode calculation
