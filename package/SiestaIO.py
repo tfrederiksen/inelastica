@@ -300,6 +300,7 @@ def ReadWFSFile(filename):
                     #print labelfis,symfio
                     REpsi.append(repsi),IMpsi.append(impsi)
                 PSIvectors.append(N.array(REpsi)+1j*N.array(IMpsi))
+    file.close()
     return nk,nspin,nuotot,nwflist,PSIvectors
 
 
@@ -557,6 +558,7 @@ def ReadFDFLines(infile,head='', printAlot=True):
                 else:
                     lines.append(tmp)
         tmp = file.readline()
+    file.close()
     return lines
 
 
@@ -819,6 +821,7 @@ def ReadForces(infile):
         if 'Atomic forces' in line:
             # Start of forces block
             fline = True
+    f.close()
     return data
 
 
@@ -834,6 +837,7 @@ def ReadTRANSAVfile(infile):
             e = float(s[0])
     data = N.array(data)
     [e,t] = N.transpose(data)
+    f.close()
     return e,t
     
 #--------------------------------------------------------------------------------
@@ -1062,6 +1066,7 @@ def ReadPDOSFile(filename,index=[],atom_index=[],species=[],nlist=[],llist=[],ml
     ev = GetPDOSenergyValues(dom)
     eF = GetXMLFermiEnergy(dom)
     pdos,usedOrbitals,usedAtoms = GetPDOSfromOrbitals(dom,index,atom_index,species,nlist,llist,mlist)
+    file.close()
     return nspin,norb,ev,pdos,usedOrbitals,usedAtoms,eF
 
 def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llist=[],mlist=[],FermiRef=True,Normalize=False):
