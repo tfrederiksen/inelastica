@@ -175,7 +175,10 @@ class ElectrodeSelfEnergy:
         
         if useSigNCfiles:
             Found, Sig = SavedSig.getSig(self.path,self.hash,eeshifted,qp,left*1,ispin,etaLead)
-            if Found: return Sig
+            if Found:
+                if self.scaling!=1.0:
+                    print 'NEGF.getSig: Scaling self-energy with a factor',self.scaling
+                return Sig*self.scaling
 
         if ispin>=self.HS.nspin:
             ispin=0
