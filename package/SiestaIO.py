@@ -311,6 +311,7 @@ def printDone(i,n,mess):
             print mess,": %3.0f %% done" %(10.0*int(10.0*float(i+1)/n))
         if i+1==n:
             print mess,": 100 % done"
+        sys.stdout.flush()
 
 #--------------------------------------------------------------------------------
 # MKL-format IO
@@ -1471,19 +1472,21 @@ class HS:
             print 'SiestaIO.HS.__init__: Reading',fn
             self.gamma, self.onlyS, self.nuo, self.no, self.nspin, self.maxnh, self.qtot, \
                 self.temp, self.nua, self.ef, self.cell, self.ts_kscell, self.ts_kdispl,\
-                self.ts_gamma_scf, self.istep, self.ia1 = F90.readnewtshs.read(fn)
+                self.ts_gamma_scf, self.istep, self.ia1 = F90.readtshs.read(fn)
             # Logical 
             self.gamma, self.onlyS = self.gamma!=0, self.onlyS!=0
             # Arrays
-            arr = F90.readnewtshs
-            self.lasto, self.numh, self.listh, self.indxuo =   \
-                arr.lasto.copy(), arr.numh.copy(), arr.listh.copy(), arr.indxuo.copy()
+            arr = F90.readtshs
+            self.lasto, self.numh, self.listh = \
+                arr.lasto.copy(), arr.numh.copy(), arr.listh.copy()
             self.xa, self.isa, self.Ssparse, self.Hsparse, self.xij = \
                 arr.xa.copy(), arr.isa.copy(), arr.s.copy(), arr.h.copy(), arr.xij.copy()
             # Fix units and indices
             self.cell, self.xa = self.cell*PC.Bohr2Ang, N.transpose(self.xa*PC.Bohr2Ang)
             self.xij, self.Hsparse = N.transpose(self.xij)*PC.Bohr2Ang, N.transpose(self.Hsparse)*PC.Rydberg2eV
             self.ef = self.ef*PC.Rydberg2eV
+            # Clean up in fortran module (no need to have dead memory floating)
+            F90.readtshs.deallocate
         else:
             general, sparse, matrices = self.__ReadTSHSFile(fn)
             self.nua, self.nuo, self.no , self.nspin, self.maxnh, \
@@ -1501,7 +1504,18 @@ class HS:
         self.makeDerivedQuant()
         if not self.gamma and not self.onlyS:
             self.removeUnitCellXij(UseF90helpers)       # Remove phase change in unitcell
-        self.kpoint = N.array([1e10,1e10,1e10],N.float) # Save time by not repeating
+        self.resetkpoint() # save time by not repeating
+
+    def resetkpoint(self):
+        """
+        Resets the kpoint and H,S.
+        The garbage collector cannot tell if H or S will be used subsequently
+        """
+        self.kpoint = N.array([1e10,1e10,1e10],N.float)
+        if "H" in self.__dict__:
+            del self.H
+        if "S" in self.__dict__:
+            del self.S
 
     def __ReadTSHSFile(self,filename):
         """
@@ -1614,10 +1628,14 @@ class HS:
 
         if F90imported and UseF90helpers:
             #      subroutine f90removeunitcellxij( maxnh, no, nuo, nua,
-            # +     numh, xij, xa, listhptr, listh, indxuo, atomindx, xijo)
-            self.xij=F90.f90removeunitcellxij(maxnh=self.maxnh,no=self.no,nuo=self.nuo,nua=self.nua,
-                                              numh=self.numh,xij=self.xij,xa=self.xa,listhptr=self.listhptr,
-                                              listh=self.listh,indxuo=self.indxuo,atomindx=self.atomindx)
+            # +     numh, xij, xa, listhptr, listh, atomindx, xijo)
+            self.xij=F90.f90removeunitcellxij(nnzs=self.maxnh,no_u=self.nuo,
+                                              na_u=self.nua,
+                                              numh=self.numh,
+                                              xij=self.xij,xa=self.xa,
+                                              listhptr=self.listhptr,
+                                              listh=self.listh,
+                                              atomindx=self.atomindx)
         else:
             for iuo in range(self.nuo):
                 for jnz in range(self.numh[iuo]):
@@ -1641,14 +1659,13 @@ class HS:
             kuk
         if N.max(abs(self.kpoint-kpoint))>1e-10:
             print "SiestaIO.HS.setkpoint: %s k ="%self.fn,kpoint
-            self.kpoint=kpoint.copy()
-            self.S=self.setkpointhelper(self.Ssparse,kpoint,UseF90helpers)
+            self.kpoint = kpoint.copy()
+            self.S = self.setkpointhelper(self.Ssparse,kpoint,UseF90helpers)
             if not self.onlyS:    
-                self.H=N.zeros((self.nspin,self.nuo,self.nuo),N.complex)
+                self.H = N.empty((self.nspin,self.nuo,self.nuo),N.complex)
                 for ispin in range(self.nspin):
-                    self.H[ispin,:,:]=self.setkpointhelper(self.Hsparse[ispin,:],kpoint,UseF90helpers)
-                    # Move Fermi energy to zero
-                    self.H[ispin,:,:]=self.H[ispin,:,:]-self.ef*self.S            
+                    self.H[ispin] = self.setkpointhelper(self.Hsparse[ispin,:],kpoint,UseF90helpers) \
+                        - self.ef * self.S
 
     def setkpointhelper(self, Sparse, kpoint,UseF90helpers=True):
         """
@@ -1664,13 +1681,17 @@ class HS:
         For efficiency this routine is normally run in Fortran90. Compile with f2py:
         cd F90;source compile.bat
         """
-        Full = N.zeros((self.nuo,self.nuo),N.complex)
         if UseF90helpers and F90imported:
-            Full=F90.f90setkpointhelper(sparse=Sparse, maxnh=N.array(self.maxnh,N.int), kpoint=kpoint, 
-                                   no=N.array(self.no,N.int), nuo=N.array(self.nuo,N.int), numh=self.numh, 
-                                   rcell=self.rcell, xij=self.xij, listhptr=N.array(self.listhptr,N.int), 
-                                   listh=self.listh, indxuo=self.indxuo)
+            Full=F90.f90setkpointhelper(nnzs=self.maxnh,sparse=Sparse, kpoint=kpoint, 
+                                        no_u=self.nuo, numh=self.numh, 
+                                        rcell=self.rcell, xij=self.xij, 
+                                        listhptr=self.listhptr,
+                                        listh=self.listh)
+            # This ensures that the array is in C-layout (row-major)
+            # returning from FORTRAN will make it column-major
+            Full = N.ascontiguousarray(Full) 
         else:
+            Full = N.zeros((self.nuo,self.nuo),N.complex)
             # Phase factor 
             tmp=N.dot(kpoint,N.dot(N.transpose(self.rcell),N.transpose(self.xij)))
             phase=N.exp(2.0j*N.pi*tmp)    # exp(2 pi i k*(Rj-Ri)) where i,j from Hij
@@ -1682,6 +1703,6 @@ class HS:
                 #if juo==self.listh[si]-1:
                 #    if phase[si]!=1.0+0.0j:
                 #        print "hej"
-                    Full[iuo,juo]=Full[iuo,juo]+Sparse[si]*phase[si]       
+                    Full[iuo,juo] += Sparse[si]*phase[si]       
         return Full
 

@@ -307,29 +307,18 @@ def GetOrbitalIndices(dirname,speciesnumber):
          
 def Downfold2Device(orbitalIndices,H0,S0,dH,DeviceFirst,DeviceLast,FCfirst,FClast,PBCFirst,PBCLast):
     # Remove Periodic Boundary terms
-    PBCorbFirst=orbitalIndices[PBCFirst-1][0]
-    PBCorbLast=orbitalIndices[PBCLast-1][1]
-    
-    for ii in range(FCfirst-1,FClast):
-        if ii+1<PBCFirst:
-            # Left contact, remove contribution to right contact
-            print "Phonons.Downfold2Device: Removing He-ph, Left atom %i" % (ii+1)
-            for aa in range(PBCorbLast+1,len(S0)):
-                for bb in range(len(S0)):
-                    for dir in range(3): # x,y,z
-                        for iSpin in range(len(H0)):
-                            dH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
-                            dH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
-        if ii+1>PBCLast:
-            # Right contact, remove contribution to left contact
-            print "Phonons.Downfold2Device: Removing He-ph, Right atom %i" % (ii+1)
-            for aa in range(PBCorbFirst-1):
-                for bb in range(len(S0)):
-                    for dir in range(3): # x,y,z
-                        for iSpin in range(len(H0)):
-                            dH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
-                            dH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
-                    
+    PBCorbFirst = orbitalIndices[PBCFirst-1][0]
+    PBCorbLast  = orbitalIndices[PBCLast-1][1]
+    if FCfirst < PBCFirst:
+        # we have something to remove...
+        bb = (PBCFirst - FCfirst) * 3
+        dH[:bb,:,PBCorbLast+1:TSHS0.nuo,:] = 0.0
+        dH[:bb,:,:,PBCorbLast+1:TSHS0.nuo] = 0.0
+    if PBCLast < FClast:
+        aa = (PBCLast - FCfirst) * 3
+        dH[aa:,:,:PBCorbFirst-1,:] = 0.0
+        dH[aa:,:,:,:PBCorbFirst-1] = 0.0
+
     # Downfold to device subspace        
     first,last = orbitalIndices[DeviceFirst-1][0],orbitalIndices[DeviceLast-1][1]
     h0 = H0[:,first:last+1,first:last+1].copy()
@@ -343,17 +332,22 @@ def Downfold2Device(orbitalIndices,H0,S0,dH,DeviceFirst,DeviceLast,FCfirst,FClas
 def CalcHeph(dH,hw,U,atomnumber,FCfirst):
     print 'Phonons.CalcHeph: Calculating...\n',
     const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-    Heph = 0.0*dH
+    Heph = N.zeros(dH.shape,dH.dtype)
+    # we extend the atomic mass and the other "constants" to ease the calculation
+    UcOam = N.empty((len(hw),len(hw)),N.float)
+    # create transformed phonon-vector displacements
+    for i in range(len(hw)):
+        UcOam[:,i] = U[:,i]*const/(2*PC.AtomicMass[atomnumber[FCfirst-1+i/3]]*hw)**.5
     for i in range(len(hw)):
         # Loop over modes
         SIO.printDone(i, len(hw),'Calculating Heph')
         if hw[i]>0:
             for j in range(len(hw)):
                 # Loop over atomic coordinates
-                Heph[i] += const*dH[j]*U[i,j]/(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
+                Heph[i] += UcOam[i,j]*dH[j]
         else:
             print 'Phonons.CalcHeph: Nonpositive frequency --> Zero-valued coupling matrix' 
-            Heph[i] = 0.0*dH[0]
+            # already zero
         #Check that Heph is Hermitian
         for iSpin in range(len(dH[0])):
             if not N.allclose(Heph[i,iSpin,:,:],
@@ -361,26 +355,31 @@ def CalcHeph(dH,hw,U,atomnumber,FCfirst):
                               atol=1e-6):
                 print 'Phonons.CalcHeph: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
     print '  ... Done!'
-    return N.array(Heph)
+    return Heph
 
 
 def CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,kpoint):
     print 'Phonons.CorrectdH: Applying correction to dH...'
-    dHnew = dH.copy()
-    onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,nao,displacement,kpoint)
+    onlyS0,dS = GetOnlyS(onlySdir,nao,displacement,kpoint)
+    invS0H0 = N.empty((2,)+H0.shape,dtype=H0.dtype)
     invS0 = LA.inv(S0)
+    for iSpin in range(len(H0)):
+        invS0H0[0,iSpin,:,:] = mm(invS0,H0[iSpin,:,:])
+        invS0H0[1,iSpin,:,:] = mm(H0[iSpin,:,:],invS0)
+    del invS0
+    # don't re-create the array every time... too expensive
+    dSdij = N.zeros((nao,nao),N.float)
     for i in range(len(dH)):
         SIO.printDone(i, len(dH),'Correcting dH')
-        # Explicit correction
-        dSdij = N.zeros((nao,nao),N.float)
+        # Explicit correction (force real-type, is the correct?, it is created at the k-point)
         first,last = orbitalIndices[FCfirst-1+i/3]
-        if i%3==0:   dSdij[:,first:last+1] = dSx[:,first:last+1]  # x-move
-        elif i%3==1: dSdij[:,first:last+1] = dSy[:,first:last+1]  # y-move
-        elif i%3==2: dSdij[:,first:last+1] = dSz[:,first:last+1]  # z-move
+        dSdij[:,first:last+1] = dS[i%3,:,first:last+1]
         for iSpin in range(len(H0)):
-            dHnew[i,iSpin,:,:] = dH[i,iSpin,:,:] - mm(N.transpose(dSdij),invS0,H0[iSpin,:,:]) - mm(H0[iSpin,:,:],invS0,dSdij)
+            dH[i,iSpin,:,:] -= mm(N.transpose(dSdij),invS0H0[0,iSpin,:,:]) + mm(invS0H0[1,iSpin,:,:],dSdij)
+        dSdij[:,first:last+1] = 0. # reset
+    del invS0H0
     print '  ... Done!'
-    return dHnew
+    return dH
 
 
 def GetOnlyS(onlySdir,nao,displacement,kpoint):
@@ -407,20 +406,20 @@ def GetOnlyS(onlySdir,nao,displacement,kpoint):
             if orbitals!=nao:
                 print 'nao=%i,  orbitals=%i'%(nao,orbitals)
                 sys.exit('Phonons.GetOnlyS: Error assigning orbitals to atoms!')    
-            S0=S[0:nao,0:nao].copy()
+            S0 = S[0:nao,0:nao].copy()
             dmat=S[0:nao,nao:nao*2].copy()
             if file.endswith('_1.onlyS'):
-                dxm=dmat
+                dxm = dmat
             elif file.endswith('_2.onlyS'):
-                dxp=dmat
+                dxp = dmat
             elif file.endswith('_3.onlyS'):
-                dym=dmat
+                dym = dmat
             elif file.endswith('_4.onlyS'):
-                dyp=dmat
+                dyp = dmat
             elif file.endswith('_5.onlyS'):
-                dzm=dmat
+                dzm = dmat
             elif file.endswith('_6.onlyS'):
-                dzp=dmat
+                dzp = dmat
         thisd = 1e10
         for i in range(1,7):
             xyz = N.array(SIO.Getxyz(onlySdir+'/RUN_%i.fdf'%i))
@@ -430,11 +429,12 @@ def GetOnlyS(onlySdir,nao,displacement,kpoint):
     print 'Phonons.GetOnlyS: OnlyS-displacement (min) = %.5f Ang'%thisd
     print 'Phonons.GetOnlyS: FC-displacement          = %.5f Ang'%displacement    
     if abs(thisd-displacement)/displacement > 0.05:  # Tolerate 5 percent off...
-        sys.exit('Phonons.GetOnlyS: OnlyS-displacement different from FC-displacement!')    
-    dSx = (dxp-dxm)/(2.*displacement)
-    dSy = (dyp-dym)/(2.*displacement)
-    dSz = (dzp-dzm)/(2.*displacement)
-    return S0,dSx,dSy,dSz
+        sys.exit('Phonons.GetOnlyS: OnlyS-displacement different from FC-displacement!')   
+    dS = N.empty((3,)+dxp.shape,dtype=dxp.dtype)
+    dS[0] = (dxp-dxm)/(2.*displacement)
+    dS[1] = (dyp-dym)/(2.*displacement)
+    dS[2] = (dzp-dzm)/(2.*displacement)
+    return S0 , dS
 
 
 def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref):
@@ -449,16 +449,16 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref):
         # The first file is the one corresponding to no displacement
         TSHS0 = SIO.HS(HSfiles[0])
         TSHS0.setkpoint(kpoint) # Here eF is moved to zero
-        #Check that H0 is Hermitian
+        # Check that H0 is Hermitian
         for iSpin in range(len(TSHS0.H)):
             if not N.allclose(TSHS0.H[iSpin,:,:],
                               N.transpose(N.conjugate(TSHS0.H[iSpin,:,:])),
                               atol=1e-6):
                 print 'Phonons.GetH0S0dH: WARNING: Hamiltonian H0 not Hermitian!'
-            if not N.allclose(TSHS0.S,
-                              N.transpose(N.conjugate(TSHS0.S)),
-                              atol=1e-6):
-                print 'Phonons.GetH0S0dH: WARNING: Overlap matrix S0 not Hermitian!'
+        if not N.allclose(TSHS0.S,
+                          N.transpose(N.conjugate(TSHS0.S)),
+                          atol=1e-6):
+            print 'Phonons.GetH0S0dH: WARNING: Overlap matrix S0 not Hermitian!'
         if TSHS0.istep!=0: # the first TSHS file should have istep=0
             print "Phonons.GetH0S0dH: Assumption on file order not right ",HSfiles[0]
             kuk
@@ -475,6 +475,8 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref):
                         TSHSm.H[iSpin,:,:] += (TSHSm.ef-TSHS0.ef)*TSHSm.S 
                         TSHSp.H[iSpin,:,:] += (TSHSp.ef-TSHS0.ef)*TSHSp.S
                 dH.append((TSHSp.H-TSHSm.H)/(2*displacement))
+                # don't wait for the garbage collector...
+                del TSHSm, TSHSp
     return TSHS0.ef,TSHS0.H,TSHS0.S,N.array(dH)
 
     
@@ -794,6 +796,9 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
         # The first TSHSfile in a folder is the one corresponding to no displacement
         TSHS0 = SIO.HS(HSfiles[0])
         TSHS0.setkpoint(kpoint) # Here eF is moved to zero
+        if TSHS0.istep!=0: # the first TSHS file should have istep=0
+            print "Phonons.GenerateAuxNETCDF: Assumption on file order not right ",HSfiles[0]
+            kuk
         for j in range(len(HSfiles)/2):
             if TSHS0.ia1+j/3 >= FCfirst and TSHS0.ia1+j/3 <= FClast:
                 # Read TSHS file since it is within (FCfirst,FClast)
@@ -808,6 +813,7 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                         TSHSp.H[iSpin,:,:] += (TSHSp.ef-TSHS0.ef)*TSHSp.S
                 # Calculate differences
                 tmpdH = (TSHSp.H-TSHSm.H)/(2*displacement)
+                del TSHSm, TSHSp
                 try:
                     RedH[index,:] = tmpdH.real
                     if not GammaPoint: ImdH[index,:] = tmpdH.imag
@@ -821,8 +827,8 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                     except:
                         NCfile2 = nc.NetCDFFile(AuxNCfile,'w','Created '+time.ctime(time.time()))
                     NCfile2.createDimension('Index',None)
-                    NCfile2.createDimension('NSpin',len(TSHS0.H))
-                    NCfile2.createDimension('AtomicOrbitals',len(TSHS0.H[0,:,:]))
+                    NCfile2.createDimension('NSpin',TSHS0.nspin)
+                    NCfile2.createDimension('AtomicOrbitals',TSHS0.nuo)
                     NCfile2.createDimension('dim1',1)
                     NCfile2.createDimension('dim3',3)
                     FCfirsttmp = NCfile2.createVariable('FCfirst','d',('dim1',))
@@ -853,53 +859,52 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
     print 'Phonons.GenerateAuxNETCDF: len(dH) =',index
     
     # Correct dH
-    onlyS0,dSx,dSy,dSz = GetOnlyS(onlySdir,nao,displacement,kpoint)
+    onlyS0,dS = GetOnlyS(onlySdir,nao,displacement,kpoint)
+    invS0H0 = N.empty((2,)+TSHS0.H.shape,dtype=TSHS0.H.dtype)
     invS0 = LA.inv(TSHS0.S)
+    for iSpin in range(TSHS0.nspin):
+        invS0H0[0,iSpin,:,:] = mm(invS0,TSHS0.H[iSpin,:,:])
+        invS0H0[1,iSpin,:,:] = mm(TSHS0.H[iSpin,:,:],invS0)
+    del invS0
+    # don't re-create the array every time... too expensive
+    if SinglePrec:
+        dSdij = N.zeros((nao,nao),N.float32)
+    else:
+        dSdij = N.zeros((nao,nao),N.float)
     for i in range(index):
         SIO.printDone(i,index,'Correcting dH')
-        if SinglePrec:
-            dSdij = N.zeros((nao,nao),N.float32)
-        else:
-            dSdij = N.zeros((nao,nao),N.float)
-
         first,last = orbitalIndices[FCfirst-1+i/3]
-        if i%3==0:   dSdij[:,first:last+1] = dSx[:,first:last+1]  # x-move
-        elif i%3==1: dSdij[:,first:last+1] = dSy[:,first:last+1]  # y-move
-        elif i%3==2: dSdij[:,first:last+1] = dSz[:,first:last+1]  # z-move
-        for iSpin in range(len(TSHS0.H)):
-            RedH[i,iSpin,:] = RedH[i,iSpin,:] - mm(N.transpose(dSdij),invS0,TSHS0.H[iSpin,:,:]).real - mm(TSHS0.H[iSpin,:,:],invS0,dSdij).real
-            if not GammaPoint: ImdH[i,iSpin,:] = ImdH[i,iSpin,:] - mm(N.transpose(dSdij),invS0,TSHS0.H[iSpin,:,:]).imag - mm(TSHS0.H[iSpin,:,:],invS0,dSdij).imag
+        # Explicit correction (force real-type, is the correct?, it is created at the k-point)
+        dSdij[:,first:last+1] = dS[i%3,:,first:last+1]
+        for iSpin in range(TSHS0.nspin):
+            RedH[i,iSpin,:] -= mm(N.transpose(dSdij),invS0H0[0,iSpin,:,:]).real + \
+                mm(invS0H0[1,iSpin,:,:],dSdij).real
+            if not GammaPoint: 
+                ImdH[i,iSpin,:] -= mm(N.transpose(dSdij),invS0H0[0,iSpin,:,:]).imag + \
+                    mm(invS0H0[1,iSpin,:,:],dSdij).imag
+        dSdij[:,first:last+1] = 0. # reset
     print '  ... Done!'
     NCfile2.sync()
     
     # Remove Periodic Boundary terms
     PBCorbFirst = orbitalIndices[PBCFirst-1][0]
-    PBCorbLast  = orbitalIndices[PBCLast-1][1]    
-    for ii in range(FCfirst-1,FClast):
-        if ii+1<PBCFirst:
-            # Left contact, remove contribution to right contact
-            print "Phonons.GenerateAuxNETCDF: Removing He-ph, Left atom %i" % (ii+1)
-            for aa in range(PBCorbLast+1,len(TSHS0.H)):
-                for bb in range(len(TSHS0.H)):
-                    for dir in range(3): # x,y,z
-                        for iSpin in range(len(TSHS0.H)):
-                            RedH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
-                            RedH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
-                            if not GammaPoint:
-                                ImdH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
-                                ImdH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
-        if ii+1>PBCLast:
-            # Right contact, remove contribution to left contact
-            print "Phonons.GenerateAuxNETCDF: Removing He-ph, Right atom %i" % (ii+1)
-            for aa in range(PBCorbFirst-1):
-                for bb in range(len(TSHS0.H)):
-                    for dir in range(3): # x,y,z
-                        for iSpin in range(len(H0)):
-                            RedH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
-                            RedH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
-                            if not GammaPoint:
-                                ImdH[(ii-FCfirst+1)*3+dir,iSpin,aa,bb]=0.0
-                                ImdH[(ii-FCfirst+1)*3+dir,iSpin,bb,aa]=0.0
+    PBCorbLast  = orbitalIndices[PBCLast-1][1]
+    if FCfirst < PBCFirst:
+        # we have something to remove...
+        bb = (PBCFirst - FCfirst) * 3
+        RedH[:bb,:,PBCorbLast+1:TSHS0.nuo,:] = 0.
+        RedH[:bb,:,:,PBCorbLast+1:TSHS0.nuo] = 0.
+        if not GammaPoint:
+            ImdH[aa:bb,:,PBCorbLast+1:TSHS0.nuo,:] = 0.
+            ImdH[aa:bb,:,:,PBCorbLast+1:TSHS0.nuo] = 0.
+    if PBCLast < FClast:
+        aa = (PBCLast - FCfirst) * 3
+        RedH[aa:,:,:PBCorbFirst-1,:] = 0.
+        RedH[aa:,:,:,:PBCorbFirst-1] = 0.
+        if not GammaPoint:
+            ImdH[aa:,:,:PBCorbFirst-1,:] = 0.
+            ImdH[aa:,:,:,:PBCorbFirst-1] = 0.
+
     NCfile2.close()
     print 'Phonons.GenerateAuxNETCDF: File %s written.'%AuxNCfile
 
@@ -943,26 +948,34 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
     print 'Phonons.CalcHephNETCDF: Calculating...\n',
     const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
     ReHeph  = NCfile.createVariable('He_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
-    if not GammaPoint: ImHeph  = NCfile.createVariable('ImHe_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
-    for i in range(len(hw)):
-        ReHeph[i,:] = 0.0*ReH0
-        if not GammaPoint: ImHeph[i,:] = 0.0*ImH0
+    if not GammaPoint: 
+        ImHeph  = NCfile.createVariable('ImHe_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
+
+    # Initialize
+    ReHeph[:,:,:,:] = 0.
+    if not GammaPoint: 
+        ImHeph[:,:,:,:] = 0.
     NCfile.sync()
+
+    # we extend the atomic mass and the other "constants" to ease the calculation
+    UcOam = N.empty((len(hw),len(hw)),N.float)
+    # create transformed phonon-vector displacements
+    for i in range(len(hw)):
+        UcOam[:,i] = U[:,i]*const/(2*PC.AtomicMass[atomnumber[FCfirst-1+i/3]]*hw)**.5
+
     for i in range(len(hw)):
         # Loop over modes
         SIO.printDone(i, len(hw),'Calculating Heph')
         if hw[i]>0:
             for j in range(len(hw)):
                 # Loop over atomic coordinates
-                # Heph[i] += const*dH[j]*U[i,j]/(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
-                ReHeph[i,:] += const*N.array(RedH[j])[:,first:last+1,first:last+1]*U[i,j] \
-                    /(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
-                if not GammaPoint: ImHeph[i,:] += const*N.array(ImdH[j])[:,first:last+1,first:last+1]*U[i,j] \
-                    /(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
+                ReHeph[i,:] += UcOam[i,j] * RedH[j,:,first:last+1,first:last+1]
+                if not GammaPoint:
+                    ImHeph[i,:] += UcOam[i,j] * ImdH[j,:,first:last+1,first:last+1]
         else:
             print 'Phonons.CalcHephNETCDF: Nonpositive frequency --> Zero-valued coupling matrix' 
-            ReHeph[i,:] = 0.0*ReH0
-            if not GammaPoint: ImHeph[i,:] = 0.0*ImH0
+            # already zero
+
         #Check that Heph is Hermitian
         for iSpin in range(len(ReH0)):
             if not GammaPoint:

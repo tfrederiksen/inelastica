@@ -8,6 +8,17 @@ import sys, string
 import pickle, hashlib, glob, time, os 
 import Scientific.IO.NetCDF as NC
 
+# For speed some routines can be linked as F90 code
+try:
+    import F90helpers as F90
+    F90imported = True
+except:
+    F90imported = False
+    print "########################################################"
+    print "Perhaps time to compile F90/setkpointhelper"
+    print "Try:" 
+    print "        cd F90;source compile.bat"
+    print "########################################################"
 #try:
 #    import scipy.linalg as SLA
 #    hasSciPy = True
@@ -192,13 +203,13 @@ class ElectrodeSelfEnergy:
         nua, lasto, nuo = self.HS.nua, self.HS.lasto, self.HS.nuo 
         SGFstart, loop = 0, []
         for ia in range(nua):         # Atoms in electrode
+            g0start , g0end = lasto[ia] , lasto[ia+1]-1
             for i2 in range(NA2):     # Repetition NA2
                 for i1 in range(NA1): # Repetition NA1
-                    g0start, g0end = lasto[ia],lasto[ia+1]-1          
-                    SGFend=SGFstart+(g0end-g0start+1)-1               # add the number of orbitals in atom ia
+                    SGFend   = SGFstart+(g0end-g0start+1)-1      # add the number of orbitals in atom ia
                     tmp=[ia,i1,i2,SGFstart,SGFend,g0start,g0end]
                     loop.append(tmp)
-                    SGFstart=SGFend+1
+                    SGFstart = SGFend+1
 
         if SGFstart!=NA1*NA2*nuo:
             print "Error: Check of orbitals in making Sigma not correct"
@@ -251,6 +262,10 @@ class ElectrodeSelfEnergy:
         # Calculate surface Green's function for small electrode calculation
         self.setupHS(kpoint)
         #print "NEGF.getg0: Constructing surface GF at (ReE,ImE) = (%.6e,%6e)"%(ee.real,ee.imag)
+
+        if F90imported:
+            return self.F90calcg0(ee,left=left,ispin=ispin)
+
         return self.calcg0_old(ee,left=left,ispin=ispin)
         #Potentially faster method but seems to have numerical instability
         #if hasSciPy and :
@@ -300,6 +315,31 @@ class ElectrodeSelfEnergy:
         if err>1.0e-8 and not left:
             print "WARNING: Lopez-scheme not-so-well converged for RIGHT electrode at E = %.4f eV:"%ee, err
         return g00
+
+    def F90calcg0(self,ee,ispin=0,left=True):
+        """
+        Call the fortran equivalent routine of the Lopez-Sancho algorithm also 
+        utilised in tbtrans.
+        Coded by Nick Papior Andersen
+        """
+        no = len(self.H[ispin,:,:])
+        oHs = self.H.shape
+        oSs = self.S.shape
+        # due to an implementation not fully complete we need to transfer the shapes (luckily 
+        # the shape is just an internal parameter, and any data transfer is not needed...)
+        self.H.shape = (len(self.H),-1)
+        self.S.shape = (self.S.size,)
+        self.H01.shape = self.H.shape
+        self.S01.shape = self.S.shape
+        tmp = F90.surfacegreen(no=no,ze=ee,h00=self.H[ispin,:],s00=self.S,
+                                h01=self.H01[ispin,:],s01=self.S01,accur=1.e-15,is_left=left)
+        tmp = N.ascontiguousarray(tmp)
+        tmp.shape = oSs
+        self.H.shape = oHs
+        self.S.shape = oSs
+        self.H01.shape = oHs
+        self.S01.shape = oSs
+        return tmp
 
     def calcg0_old(self,ee,ispin=0,left=True):
         """
@@ -455,7 +495,10 @@ class GF:
             if max(Soverlap,Hoverlap) > 1e-10 :
                 print "ERROR! Too much overlap directly from left-top right"
                 print "Make Device Region larger!"
-                sys.exit(1)
+                # I would really like this to do something else (forcing users to edit the
+                # code to get it to run is very dangerous)
+                # The criteria is (in my opinion) very crude...
+                #sys.exit(1)
             
             # Find orbitals in device region coupling to left and right.
             tau  = abs(self.S0[0:devSt-1,0:devEnd])
@@ -552,16 +595,18 @@ class GF:
         self.Ga = MM.dagger(self.Gr)
         # Calculate spectral functions
         self.AL = MM.mm(self.Gr[:,0:nuoL],self.GamL,self.Ga[0:nuoL,:])
-        self.ALT = MM.mm(self.Ga[:,0:nuoL],self.GamL,self.Gr[0:nuoL,:])
+        tmp = MM.mm(self.GamL,self.Gr[0:nuoL,:])
+        self.ALT = MM.mm(self.Ga[:,0:nuoL],tmp)
         self.AR = MM.mm(self.Gr[:,nuo-nuoR:nuo],self.GamR,self.Ga[nuo-nuoR:nuo,:])
-        self.ARGLG = MM.mm(self.AR[:,0:nuoL],self.GamL,self.Gr[0:nuoL,:])
+        self.ARGLG = MM.mm(self.AR[:,0:nuoL],tmp)
+        del tmp # then we don't use more memory than needed...
         self.A = self.AL + self.AR
         
     def setkpoint(self,kpoint,ispin=0):
         # Initiate H, S to correct kpoint
         nuo, nuoL, nuoR = self.nuo0, self.nuoL0, self.nuoR0
 
-        kpoint3 = N.zeros((3),N.float)
+        kpoint3 = N.empty((3),N.float)
         kpoint3[0:2]=kpoint[:]
         self.HS.setkpoint(kpoint3)
         # Remove PBC in z-direction
@@ -569,10 +614,10 @@ class GF:
             self.H0=self.HS.H[ispin,:,:].copy()
             self.S0=self.HS.S.copy()
             # Remove direct left/right coupling 
-            self.H0[0:nuoL,nuo-nuoR:nuo]=N.zeros((nuoL,nuoR),N.complex)
-            self.H0[nuo-nuoR:nuo,0:nuoL]=N.zeros((nuoR,nuoL),N.complex)
-            self.S0[0:nuoL,nuo-nuoR:nuo]=N.zeros((nuoL,nuoR),N.complex)
-            self.S0[nuo-nuoR:nuo,0:nuoL]=N.zeros((nuoR,nuoL),N.complex)
+            self.H0[0:nuoL,nuo-nuoR:nuo] = 0.
+            self.H0[nuo-nuoR:nuo,0:nuoL] = 0.
+            self.S0[0:nuoL,nuo-nuoR:nuo] = 0.
+            self.S0[nuo-nuoR:nuo,0:nuoL] = 0.
         else:
             # Do trick with kz
             tmpH1, tmpS1 = self.HS.H[ispin,:,:].copy(), self.HS.S.copy()
@@ -654,7 +699,7 @@ class GF:
         ev, U = LA.eigh(A1)
         U = N.transpose(U)
 
-        Utilde=0.0*U
+        Utilde = N.empty(U.shape,U.dtype)
 
         for jj in range(len(ev)): # Problems with negative numbers
             if ev[jj]<0: ev[jj]=0

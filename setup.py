@@ -63,11 +63,12 @@ import numpy.distutils.extension as Next
 
 # Fortran helper files
 F90ext = Next.Extension('Inelastica.F90helpers',\
-                        ['package/F90/distributegs.F',
-                         'package/F90/readNewTSHS.F90',
-                         'package/F90/removeUnitCellXij.F',
-                         'package/F90/setkpointhelper.F'],
-                        f2py_options=['fcompiler=intele'])
+                        ['package/F90/distributegs.f90',
+                         'package/F90/surfaceGreen.f90',
+                         'package/F90/readTSHS.f90',
+                         'package/F90/removeUnitCellXij.f90',
+                         'package/F90/setkpointhelper.f90'],
+                        )
 
 # Main setup of python modules
 setup(name='Inelastica',

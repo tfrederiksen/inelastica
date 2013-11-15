@@ -108,14 +108,16 @@ def Hilbert(f,ker=None):
     
     def kernel(f):
         'Hilbert transform kernel'
-        n = 2*len(f)
-        aux = N.zeros(n/2+1,N.float)
-        for i in N.arange(1,n/2+1):
-            aux[i] = i*N.log(i)
-        ker = N.zeros(n,N.float)
-        for i in N.arange(1,n/2):
-            ker[i] = aux[i+1]-2*aux[i]+aux[i-1]
-            ker[n-i] = -ker[i]
+        nh  = len(f)
+        n   = 2 * nh
+        aux = N.empty(nh+1,N.float)
+        aux[0] = 0
+        tmp = N.arange(1,nh+1)
+        aux[1:] = N.log(tmp) * tmp
+        ker = N.empty(n,N.float)
+        ker[0] = 0
+        ker[1:nh]  = aux[2:nh+1] - 2*aux[1:nh] + aux[:nh-1]
+        ker[nh+1:] = -ker[1:nh][::-1]
         return -FFT.fft(ker)/N.pi
 
     def transform(f,ker):
