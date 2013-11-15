@@ -137,7 +137,7 @@ class SavedSigClass:
     """
     Saves calculated Sig in files in the directory of the TSHS file for the electrode.
     1: Each process opens a new file if it needs to write Sigma
-    2: The file cannot be read before the finnished flag is set
+    2: The file cannot be read before the finished flag is set
     3: The integrity of the data is maintained by a hash of HS, NA1, NA2, voltage
     """
     def __init__(self):
@@ -158,10 +158,10 @@ SavedSig = SavedSigClass()
 
 class ElectrodeSelfEnergy:
     """ 
-    Calculate surface Greensfunction and self energy
+    Calculate surface Greens function and self energy
     (should probably be renamed selfEnergy ...)
     For spinpolarized use the ispin given, for nonpolarized use 
-    the same self-energy for both spin 
+    the same self-energy for both spin
     """
     global SavedSig
     def __init__(self,fn,NA1,NA2,voltage=0.0,UseF90helpers=True):
@@ -613,7 +613,7 @@ class GF:
         # Initiate H, S to correct kpoint
         nuo, nuoL, nuoR = self.nuo0, self.nuoL0, self.nuoR0
 
-        kpoint3 = N.empty((3),N.float)
+        kpoint3 = N.zeros((3),N.float)
         kpoint3[0:2]=kpoint[:]
         self.HS.setkpoint(kpoint3)
         # Remove PBC in z-direction
