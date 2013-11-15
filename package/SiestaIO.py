@@ -15,6 +15,7 @@ import MakeGeom as MG
 import gzip
 import Scientific.IO.NetCDF as nc
 import PhysicalConstants as PC
+import ValueCheck as VC
 
 # For speed some routines can be linked as F90 code
 try:
@@ -258,7 +259,7 @@ def ReadFortranBin(file,type,num,printLength=False,unpack=True):
             print 'SiestaIO.ReadFortranBin: %i bytes read' %data[0]
         if data[0]!=data[-1] or data[0]!=struct.calcsize(fortranPrefix+fmt):
             print 'SiestaIO.ReadFortranBin: Error reading Fortran formatted binary file'
-            kuk
+            sys.exit(1)
         return data[1:-1]
     else:
         return bin
@@ -597,7 +598,7 @@ def Getxyz(infile,pbc=[]):
     	    xyz.append([string.atof(data[i][0])*pbc[0][j]+string.atof(data[i][1])*pbc[1][j]+string.atof(data[i][2])*pbc[2][j] for j in range(3)])
     else :
 	print("Give correct AtomicCoordinates Format")
-	kuk
+	sys.exit(1)
     return xyz
 
 
@@ -1654,12 +1655,12 @@ class HS:
     def setkpoint(self,kpoint,UseF90helpers=True):
         "Make full matrices from sparse for specific k-point"
         kpoint = N.array(kpoint,N.float)
-        if self.gamma and N.max(abs(kpoint))>1e-10:
-            print "ERROR: Trying to set non-zero k-point for Gamma point calculation"
-            kuk
-        if N.max(abs(self.kpoint-kpoint))>1e-10:
-            print "SiestaIO.HS.setkpoint: %s k ="%self.fn,kpoint
-            self.kpoint = kpoint.copy()
+        if self.gamma:
+            VC.Check("same-kpoint", abs(kpoint),
+                     "Trying to set non-zero k-point for Gamma point calculation.")
+        if N.any(N.abs(self.kpoint-kpoint) > VC.GetCheck("same-kpoint")):
+            print "SiestaIO.HS.setkpoint: %s k =" % self.fn,kpoint
+            self.kpoint = kpoint
             self.S = self.setkpointhelper(self.Ssparse,kpoint,UseF90helpers)
             if not self.onlyS:    
                 self.H = N.empty((self.nspin,self.nuo,self.nuo),N.complex)

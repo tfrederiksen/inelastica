@@ -9,36 +9,34 @@ subroutine f90distributegs(loop, nuo, nua, NA1, NA2, kpoint, &
 
   implicit none
 
-  integer, parameter :: dp = selected_real_kind(p=15)
-
 ! INPUT:
 ! Loop indexes
  integer, intent(in) :: loop(nua*NA1*NA2,7)        
 ! Dimensions
  integer, intent(in) :: nuo, nua, NA1, NA2                    
 ! K-point
- real(dp), intent(in) :: kpoint(2)              
+ real*8, intent(in) :: kpoint(2)              
 ! matESmH 
- complex(dp), intent(in) :: matESmH(0:nuo-1,0:nuo-1)                      
+ complex*16, intent(in) :: matESmH(0:nuo-1,0:nuo-1)                      
 ! g0 
- complex(dp), intent(in) :: g0(0:nuo-1,0:nuo-1)                       
+ complex*16, intent(in) :: g0(0:nuo-1,0:nuo-1)                       
 ! Matrices:
- complex(dp), intent(in) :: ESmH(0:nuo*NA1*NA2-1,0:nuo*NA1*NA2-1)   
- complex(dp), intent(in) :: SGF(0:nuo*NA1*NA2-1,0:nuo*NA1*NA2-1)   
+ complex*16, intent(in) :: ESmH(0:nuo*NA1*NA2-1,0:nuo*NA1*NA2-1)   
+ complex*16, intent(in) :: SGF(0:nuo*NA1*NA2-1,0:nuo*NA1*NA2-1)   
 ! OUTPUT:
- complex(dp),intent(out) :: outESmH(0:nuo*NA1*NA2-1,0:nuo*NA1*NA2-1)   
- complex(dp),intent(out) :: outSGF(0:nuo*NA1*NA2-1,0:nuo*NA1*NA2-1)   
+ complex*16,intent(out) :: outESmH(0:nuo*NA1*NA2-1,0:nuo*NA1*NA2-1)   
+ complex*16,intent(out) :: outSGF(0:nuo*NA1*NA2-1,0:nuo*NA1*NA2-1)   
 
 ! Local variables 
 
- complex(dp) :: phase
+ complex*16 :: phase
 ! Loop indecies
  integer :: ii, ia, i1, i2, iSGFs, iSGFe, ig0s, ig0e
  integer :: jj, ja, j1, j2, jSGFs, jSGFe, jg0s, jg0e
- real(dp) :: frac
+ real*8 :: frac
  integer :: totN
 
- frac = 1._dp / (NA1*NA2)
+ frac = 1._8 / (NA1*NA2)
  totN = nua*NA1*NA2
  outESmH = ESmH
  outSGF = SGF
@@ -70,7 +68,7 @@ subroutine f90distributegs(loop, nuo, nua, NA1, NA2, kpoint, &
 !              SGF[iSGFs:iSGFe+1,jSGFs:jSGFe+1]=SGF[iSGFs:iSGFe+1,jSGFs:jSGFe+1]+\
 !                N.conjugate(phase)*g0[ig0s:ig0e+1,jg0s:jg0e+1]
        phase = frac*cdexp( &
-            dcmplx(0d0,-6.283185307179586477_dp)* &
+            dcmplx(0d0,-6.283185307179586477_8)* &
             ((j1-i1)*kpoint(1)+(j2-i2)*kpoint(2)))           ! Note changed sign
 ! Here fortran is different in the second index by one 
        outESmH(iSGFs:iSGFe,jSGFs:jSGFe) = &

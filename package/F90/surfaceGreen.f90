@@ -14,41 +14,40 @@
 ! **********************************************************************
     implicit none
 
-    integer,     parameter :: dp   = selected_real_kind(p=15)
-    complex(dp), parameter :: z_1  = dcmplx(1._dp,0._dp)
-    complex(dp), parameter :: z_m1 = dcmplx(-1._dp,0._dp)
-    complex(dp), parameter :: z_0  = dcmplx(0._dp,0._dp)
+    complex*16, parameter :: z_1  = dcmplx(1._8,0._8)
+    complex*16, parameter :: z_m1 = dcmplx(-1._8,0._8)
+    complex*16, parameter :: z_0  = dcmplx(0._8,0._8)
 
 ! ***********************
 ! * INPUT variables     *
 ! ***********************
     integer,     intent(in) :: no
-    complex(dp), intent(in) :: ZE 
-    complex(dp), intent(in) :: H00(no*no),S00(no*no)
-    complex(dp), intent(in) :: H01(no*no),S01(no*no)
+    complex*16, intent(in) :: ZE 
+    complex*16, intent(in) :: H00(no*no),S00(no*no)
+    complex*16, intent(in) :: H01(no*no),S01(no*no)
 
-    real(dp)   , intent(in) :: accur
+    real*8   , intent(in) :: accur
     logical,     intent(in) :: is_left
 
 ! ***********************
 ! * OUTPUT variables    *
 ! ***********************
-    complex(dp), intent(out) :: GS(no*no)
+    complex*16, intent(out) :: GS(no*no)
 
 ! ***********************
 ! * LOCAL variables     *
 ! ***********************
-    complex(dp), allocatable, target :: zwork(:)
+    complex*16, allocatable, target :: zwork(:)
     integer :: nom1, no2, nosq
     integer :: ierr             !error in inversion
     integer :: i,j,ic,ic2
     logical :: LEFT, as_first
 
-    real(dp) :: ro
+    real*8 :: ro
 
     ! on the stack...
     integer :: ipvt(no)
-    complex(dp), dimension(:), pointer :: rh,rh1,w,alpha,beta,gb
+    complex*16, dimension(:), pointer :: rh,rh1,w,alpha,beta,gb
 
     ! The inelastica way is opposite, hence we have to reverse it here.
     LEFT = .not. is_left
@@ -91,7 +90,7 @@
     end do
 
     ! Initialize loop
-    ro = accur + 1._dp
+    ro = accur + 1._8
     as_first = .false.
     do while ( ro > accur ) 
 
@@ -140,7 +139,7 @@
           gs(:) = gs(:) + w(:)
        end if
        
-       ro = -1._dp
+       ro = -1._8
        do i = 1 , nosq
           ro = max(ro,abs(w(i)))
        end do

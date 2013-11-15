@@ -246,7 +246,8 @@ class Geom:
     def PlaceInXYplane(self,atomindices):
         # This function orientates the geometry such that three specified
         # atom indices fall in the same xy-plane
-        if len(atomindices)!=3: kuk
+        if len(atomindices)!=3: 
+            raise ValueError("You need at least 3 atoms here")
         v1 = N.array(self.xyz[atomindices[0]])-N.array(self.xyz[atomindices[1]])
         v2 = N.array(self.xyz[atomindices[0]])-N.array(self.xyz[atomindices[2]])
         self.AlignPlane(v1,v2)
@@ -376,7 +377,7 @@ class Geom:
         counts = len(self.leftContactList), len(self.deviceList), \
                  len(self.rightContactList), len(self.xyz)
         if counts[0]+counts[1]+counts[2] != counts[3]:
-            kuk
+            raise ValueError("Non conforming")
         print '   ... Atoms (Left/Device/Right):  %i / %i / %i  =  %i'%counts
         print '   ... DeviceFirst, DeviceLast = %i, %i  (Siesta numbering)'\
               %(self.deviceList[0],self.deviceList[-1])

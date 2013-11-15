@@ -16,6 +16,7 @@ import PhysicalConstants as PC
 import WriteXMGR as XMGR
 import Symmetry
 import MiscMath as MM
+import ValueCheck as VC
 
 mm = MM.mm
 
@@ -427,9 +428,9 @@ def GetOnlyS(onlySdir,nao,displacement,kpoint):
                 thisd = min(thisd,(N.dot(xyz[0]-xyz[j],xyz[0]-xyz[j]))**.5)
     # Check that onlyS-directory also corresponds to the same displacement
     print 'Phonons.GetOnlyS: OnlyS-displacement (min) = %.5f Ang'%thisd
-    print 'Phonons.GetOnlyS: FC-displacement          = %.5f Ang'%displacement    
-    if abs(thisd-displacement)/displacement > 0.05:  # Tolerate 5 percent off...
-        sys.exit('Phonons.GetOnlyS: OnlyS-displacement different from FC-displacement!')   
+    print 'Phonons.GetOnlyS: FC-displacement          = %.5f Ang'%displacement
+    VC.Check("displacement-tolerance",abs(thisd-displacement)/displacement,
+             "Phonons.GetOnlyS: OnlyS-displacement different from FC-displacement")
     dS = N.empty((3,)+dxp.shape,dtype=dxp.dtype)
     dS[0] = (dxp-dxm)/(2.*displacement)
     dS[1] = (dyp-dym)/(2.*displacement)
@@ -461,7 +462,7 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref):
             print 'Phonons.GetH0S0dH: WARNING: Overlap matrix S0 not Hermitian!'
         if TSHS0.istep!=0: # the first TSHS file should have istep=0
             print "Phonons.GetH0S0dH: Assumption on file order not right ",HSfiles[0]
-            kuk
+            raise IOError("Files not in order")
         for j in range(len(HSfiles)/2):
             if TSHS0.ia1+j/3 >= FCfirst and TSHS0.ia1+j/3 <= FClast:
                 # Read TSHS file since it is within (FCfirst,FClast)
@@ -798,7 +799,7 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
         TSHS0.setkpoint(kpoint) # Here eF is moved to zero
         if TSHS0.istep!=0: # the first TSHS file should have istep=0
             print "Phonons.GenerateAuxNETCDF: Assumption on file order not right ",HSfiles[0]
-            kuk
+            raise IOError("File order not good")
         for j in range(len(HSfiles)/2):
             if TSHS0.ia1+j/3 >= FCfirst and TSHS0.ia1+j/3 <= FClast:
                 # Read TSHS file since it is within (FCfirst,FClast)
@@ -928,8 +929,9 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
         ImdH = NCfile2.variables['ImdH']
     auxkpoint = NCfile2.variables['kpoint'][:]
     print '   ... kpoint from %s ='%AuxNCfile,auxkpoint
-    if not N.allclose(auxkpoint,kpoint):
-        sys.exit('Aux. file does not match specified kpoint. Delete %s and try again!'%AuxNCfile)
+    VC.Check("same-kpoint",N.abs(auxkpoint-kpoint),
+             "Aux. file does not match specified k-point.",
+             "Delete {0} and try again!".format(AuxNCfile))
     NCfile.createDimension('NSpin',len(ReH0))
     Write2NetCDFFile(NCfile,ReH0,'H0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
     Write2NetCDFFile(NCfile,ReS0,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
@@ -1005,8 +1007,7 @@ def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,\
     FCsym = CorrectFCMatrix(FCsym,FCfirst,FClast,Sym.NN)
 
     if Sym.basis.NN!=FClast-FCfirst+1:
-        print "Phonons: ERROR: FCfirst/last do not fit with the number of atoms in the basis (%i)."%Sym.basis.NN
-        kuk
+        raise ValueError("Phonons: ERROR: FCfirst/last do not fit with the number of atoms in the basis (%i)."%Sym.basis.NN)
     
     # a_i : real space lattice vectors
     a1,a2,a3 = Sym.a1,Sym.a2,Sym.a3

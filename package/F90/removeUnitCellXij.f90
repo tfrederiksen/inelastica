@@ -21,9 +21,6 @@ subroutine f90removeunitcellxij(nnzs, no_u, na_u, &
 
   implicit none
 
-! Double precision
-  integer,  parameter :: dp = selected_real_kind(p=15)
-
 ! INPUT:
 ! Dimension of sparse matrix
   integer, intent(in)  :: nnzs                    
@@ -34,9 +31,9 @@ subroutine f90removeunitcellxij(nnzs, no_u, na_u, &
 ! Number of nonzero column elements
   integer, intent(in)  :: numh(no_u) 
 ! Vector connecting unitcells 
-  real(dp), intent(in) :: xij(nnzs,3)         
+  real*8, intent(in) :: xij(nnzs,3)         
 ! Position of atom in unitcell 
-  real(dp), intent(in) :: xa(na_u,3)         
+  real*8, intent(in) :: xa(na_u,3)         
 ! Start of row in Sparse matrix
   integer, intent(in)  :: listhptr(no_u)        
 ! Column number
@@ -46,7 +43,7 @@ subroutine f90removeunitcellxij(nnzs, no_u, na_u, &
 
 ! OUTPUT:
 ! Output full matrix
-  real(dp), intent(out) :: xijo(nnzs,3)         
+  real*8, intent(out) :: xijo(nnzs,3)         
 
 ! Loop indecies
   integer :: iuo, j, ind, juo

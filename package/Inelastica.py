@@ -17,6 +17,7 @@ import Scientific.IO.NetCDF as NC
 import sys
 import PhysicalConstants as PC
 import time
+import ValueCheck as VC
 
 ########################################################
 ##################### Main routine #####################
@@ -300,9 +301,8 @@ def calcIETS(options,GF,basis,hw):
     
 ########################################################
 def checkImPart(x):
-    if abs(x.imag)>0.0000001:
-        print "Inelastica.checkImPart: Imaginary part (%.3e) too big"%x.imag
-        kuk
+    VC.Check("zero-imaginary-part",abs(x.imag),
+             "Imaginary part too large.")
     return x.real   
 
 ########################################################

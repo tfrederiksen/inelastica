@@ -4,9 +4,10 @@ import SiestaIO as SIO
 import MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
-import sys, string
+import string
 import pickle, hashlib, glob, time, os 
 import Scientific.IO.NetCDF as NC
+import ValueCheck as VC
 
 # For speed some routines can be linked as F90 code
 try:
@@ -158,8 +159,7 @@ class ElectrodeSelfEnergy:
         self.hash=myHash([self.HS,NA1,NA2,voltage])
         SavedSig.add_hsfile(self.path)
         if self.HS.gamma:
-            print "Are you trying to sneak a Gamma point electrode calculation past me?"
-            kuk
+            raise IOError("Are you trying to sneak a Gamma point electrode calculation past me?")
         self.NA1=NA1
         self.NA2=NA2
         self.kpoint = N.array([1e10,1e10],N.float)
@@ -212,8 +212,7 @@ class ElectrodeSelfEnergy:
                     SGFstart = SGFend+1
 
         if SGFstart!=NA1*NA2*nuo:
-            print "Error: Check of orbitals in making Sigma not correct"
-            kuk
+            raise ValueError("Error: Check of orbitals in making Sigma not correct")
 
         # Complete the full Gs with atoms copied out NA1*NA2
         # To obtain Sigma we also need H expanded, i.e., 
@@ -395,16 +394,15 @@ class ElectrodeSelfEnergy:
                 else:
                     test=ee*S-H-MM.mm(ee*S01-H01,gs,ee*MM.dagger(S01)-MM.dagger(H01))
                 myConvTest=N.max(abs(MM.mm(test,gs)-N.identity((self.HS.nuo),N.complex)))
-                if myConvTest<1.0e-5: # THF: tolerance slightly raised from originally 2.0e-7
+                if myConvTest<VC.GetCheck("Lopez-Sancho"):
                     converged=True
-                    if myConvTest>1.0e-8 and left:
-                        print "WARNING: Lopez-scheme not-so-well converged for LEFT electrode at E = %.4f eV:"%ee, myConvTest
-                    if myConvTest>1.0e-8 and not left:
-                        print "WARNING: Lopez-scheme not-so-well converged for RIGHT electrode at E = %.4f eV:"%ee, myConvTest
+                    if myConvTest > VC.GetCheck("Lopez-Sancho-warning"):
+                        v = "RIGHT"
+                        if left: v = "LEFT"
+                        print "WARNING: Lopez-scheme not-so-well converged for "+v+" electrode at E = %.4f eV:"%ee, myConvTest
                 else:
-                    print "Error: gs iteration: ", iteration
-                    print "Lopez report conv : ",LopezConvTest," but not converged :",myConvTest
-                    kuk
+                    VC.Check("Lopez-Sancho",myConvTest,
+                             "Error: gs iteration {0}".format(iteration))
         return gs        
         
     def setupHS(self,kpoint):
@@ -491,14 +489,12 @@ class GF:
             self.setkpoint(kpoint,ispin=0) # At least for one spin
             
             devSt, devEnd = self.DeviceOrbs[0], self.DeviceOrbs[1]
-            Soverlap, Hoverlap = N.max(abs(self.S0[0:devSt,devEnd:self.nuo0])), N.max(abs(self.H0[0:devSt,devEnd:self.nuo0]))
-            if max(Soverlap,Hoverlap) > 1e-10 :
-                print "ERROR! Too much overlap directly from left-top right"
-                print "Make Device Region larger!"
-                # I would really like this to do something else (forcing users to edit the
-                # code to get it to run is very dangerous)
-                # The criteria is (in my opinion) very crude...
-                #sys.exit(1)
+            VC.Check("Device-Elec-overlap",N.abs(self.S0[0:devSt,devEnd:self.nuo0]),
+                     "Too much overlap directly from left-top right",
+                     "Make device region larger")
+            VC.Check("Device-Elec-overlap",N.abs(self.H0[0:devSt,devEnd:self.nuo0]),
+                     "Too large Hamiltonian directly from left-top right.",
+                     "Make device region larger")
             
             # Find orbitals in device region coupling to left and right.
             tau  = abs(self.S0[0:devSt-1,0:devEnd])
@@ -651,9 +647,8 @@ class GF:
             tmp2 = MM.dagger(Gr)
             Tmat = MM.mm(tmp,tmp2[nuo-nuoR:nuo,0:nuoL])
         Trans = N.trace(Tmat)
-        if Trans.imag>1e-10: 
-            print "Error transmission has large imaginary value :", Trans
-            kuk
+        VC.Check("trans-imaginary-part",Trans.imag,
+                 "Transmission has large imaginary part")
         # Calculate eigenchannel transmissions too
         tval,tvec = LA.eig(Tmat)
         tval = sorted(tval,reverse=True) # Sort eigenvalues descending

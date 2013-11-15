@@ -15,11 +15,9 @@ module readTSHS
   
   implicit none
 
-  integer, private, parameter :: dp = selected_real_kind(p=15)
-  
   PUBLIC
-  real(dp), dimension(:), allocatable :: S          
-  real(dp), dimension(:,:), allocatable :: H, xij, xa          
+  real*8, dimension(:), allocatable :: S          
+  real*8, dimension(:,:), allocatable :: H, xij, xa          
   integer, dimension(:), allocatable :: listhptr, numh, listh, lasto, isa
   
 CONTAINS
@@ -38,9 +36,6 @@ CONTAINS
        ucell, ts_kscell, ts_kdispl, &      
        ts_gamma_scf, istep, ia1)
 
-    ! required twice (module parameters are not recognized)
-    integer, parameter :: dp = selected_real_kind(p=15)
-
 ! INPUT:
 ! filename
     character(len=*), intent(in) :: fname
@@ -50,9 +45,9 @@ CONTAINS
     logical, intent(out) :: gamma, onlyS, ts_gamma_scf
     integer, intent(out) :: no_u, nspin, maxnh
     integer, intent(out) :: istep, ia1, na_u, no_s
-    real(dp), intent(out) :: qtot, ef, temp, ucell(3,3)
+    real*8, intent(out) :: qtot, ef, temp, ucell(3,3)
     integer, intent(out) :: ts_kscell(3,3)
-    real(dp), intent(out) :: ts_kdispl(3)
+    real*8, intent(out) :: ts_kdispl(3)
 
 !     Local variables:
     integer :: iu, ih, is, k

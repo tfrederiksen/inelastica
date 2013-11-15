@@ -14,7 +14,7 @@ def test_prereq():
         print "#### ERROR ####"
         print "Inelastica needs the package 'numpy' to run."
         print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
-        sys.exit([1])
+        sys.exit(1)
 
     try:
         import numpy.distutils
@@ -23,7 +23,7 @@ def test_prereq():
         print "#### ERROR ####"
         print "Inelastica requires the f2py extension of numpy."
         print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
-        sys.exit([1])
+        sys.exit(1)
 
     # Check for ScientificPython including netCDF.
     print "# Testing : ScientificPython."
@@ -33,7 +33,7 @@ def test_prereq():
         print "#### ERROR ####"
         print "Inelastica requires ScientificPython with NetCDF extensions."
         print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
-        sys.exit([1])
+        sys.exit(1)
 
     print "# Testing : numpy speed."
     # Make sure that numpy is compiled with optimized LAPACK/BLAS
