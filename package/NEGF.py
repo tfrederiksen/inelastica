@@ -20,6 +20,17 @@ except:
     print "Try:" 
     print "        cd F90;source compile.bat"
     print "########################################################"
+
+try:
+    import F90_lapack as F90_lapack
+    F90_lapack_imp = True
+except:
+    F90_lapack_imp = False
+    print "########################################################"
+    print "The linking/finding of LAPACK routines does not work"
+    print "Ensure the placement of LAPACK in your LD_LIBRARY_PATH" 
+    print "########################################################"
+
 #try:
 #    import scipy.linalg as SLA
 #    hasSciPy = True
@@ -262,7 +273,7 @@ class ElectrodeSelfEnergy:
         self.setupHS(kpoint)
         #print "NEGF.getg0: Constructing surface GF at (ReE,ImE) = (%.6e,%6e)"%(ee.real,ee.imag)
 
-        if F90imported:
+        if F90_lapack_imp:
             return self.F90calcg0(ee,left=left,ispin=ispin)
 
         return self.calcg0_old(ee,left=left,ispin=ispin)

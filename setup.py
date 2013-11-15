@@ -62,13 +62,18 @@ from numpy.distutils.core import setup
 import numpy.distutils.extension as Next
 
 # Fortran helper files
-F90ext = Next.Extension('Inelastica.F90helpers',\
-                        ['package/F90/distributegs.f90',
-                         'package/F90/surfaceGreen.f90',
-                         'package/F90/readTSHS.f90',
-                         'package/F90/removeUnitCellXij.f90',
-                         'package/F90/setkpointhelper.f90'],
-                        )
+F90ext = \
+    Next.Extension('Inelastica.F90helpers',\
+                       ['package/F90/distributegs.f90',
+                        'package/F90/readTSHS.f90',
+                        'package/F90/removeUnitCellXij.f90',
+                        'package/F90/setkpointhelper.f90'],
+                   )
+
+F90extLapack = \
+    Next.Extension('Inelastica.F90_lapack',\
+                       ['package/F90/surfaceGreen.f90'],
+                   )
 
 # Main setup of python modules
 setup(name='Inelastica',
@@ -103,7 +108,7 @@ Provides:
                   'scripts/grid2grid'
                   ],
       packages=['Inelastica'],
-      ext_modules=[F90ext],
+      ext_modules=[F90ext,F90extLapack],
       data_files=[('Inelastica/PBS', ['PBS/RUN.OS.pbs','PBS/RUN.py.pbs', \
                            'PBS/RUN.TS.pbs'],)]
       )
