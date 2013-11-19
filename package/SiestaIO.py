@@ -826,6 +826,21 @@ def ReadForces(infile):
     f.close()
     return data
 
+def ReadFAFile(filename):
+    "Returns forces from a FA-file"
+    print 'SiestaIO.ReadFAFile: Reading',filename
+    file = SIO_open(filename,'rb')
+    # Read comment line (line 1)
+    line = file.readline()
+    natoms = int(string.strip(line))
+    # Read remaining lines
+    FA = []
+    for line in file.readlines():
+        data = string.split(line)
+        FA.append([string.atof(data[j]) for j in range(1,4)])
+    file.close()
+    return N.array(FA)
+
 
 def ReadTRANSAVfile(infile):
     # Read (averaged *.TRANS.AV) transmission function
