@@ -19,6 +19,7 @@ import MiscMath as MM
 import ValueCheck as VC
 
 mm = MM.mm
+dagger = MM.dagger
 
 def Analyze(FCwildcard,
             onlySdir='../onlyS',
@@ -351,9 +352,7 @@ def CalcHeph(dH,hw,U,atomnumber,FCfirst):
             # already zero
         #Check that Heph is Hermitian
         for iSpin in range(len(dH[0])):
-            if not N.allclose(Heph[i,iSpin,:,:],
-                              N.transpose(N.conjugate(Heph[i,iSpin,:,:])),
-                              atol=1e-6):
+            if not N.allclose(Heph[i,iSpin,:,:],dagger(Heph[i,iSpin,:,:]),atol=1e-6):
                 print 'Phonons.CalcHeph: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
     print '  ... Done!'
     return Heph
@@ -369,14 +368,13 @@ def CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,kpoin
         invS0H0[1,iSpin,:,:] = mm(H0[iSpin,:,:],invS0)
     del invS0
     # don't re-create the array every time... too expensive
-    dSdij = N.zeros((nao,nao),N.float)
+    dSdij = N.zeros((nao,nao),N.complex)
     for i in range(len(dH)):
         SIO.printDone(i, len(dH),'Correcting dH')
-        # Explicit correction (force real-type, is the correct?, it is created at the k-point)
         first,last = orbitalIndices[FCfirst-1+i/3]
         dSdij[:,first:last+1] = dS[i%3,:,first:last+1]
         for iSpin in range(len(H0)):
-            dH[i,iSpin,:,:] -= mm(N.transpose(dSdij),invS0H0[0,iSpin,:,:]) + mm(invS0H0[1,iSpin,:,:],dSdij)
+            dH[i,iSpin,:,:] -= mm(dagger(dSdij),invS0H0[0,iSpin,:,:]) + mm(invS0H0[1,iSpin,:,:],dSdij)
         dSdij[:,first:last+1] = 0. # reset
     del invS0H0
     print '  ... Done!'
@@ -452,13 +450,9 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref):
         TSHS0.setkpoint(kpoint) # Here eF is moved to zero
         # Check that H0 is Hermitian
         for iSpin in range(len(TSHS0.H)):
-            if not N.allclose(TSHS0.H[iSpin,:,:],
-                              N.transpose(N.conjugate(TSHS0.H[iSpin,:,:])),
-                              atol=1e-6):
+            if not N.allclose(TSHS0.H[iSpin,:,:],dagger(TSHS0.H[iSpin,:,:]),atol=1e-6):
                 print 'Phonons.GetH0S0dH: WARNING: Hamiltonian H0 not Hermitian!'
-        if not N.allclose(TSHS0.S,
-                          N.transpose(N.conjugate(TSHS0.S)),
-                          atol=1e-6):
+        if not N.allclose(TSHS0.S,dagger(TSHS0.S),atol=1e-6):
             print 'Phonons.GetH0S0dH: WARNING: Overlap matrix S0 not Hermitian!'
         if TSHS0.istep!=0: # the first TSHS file should have istep=0
             print "Phonons.GetH0S0dH: Assumption on file order not right ",HSfiles[0]
@@ -869,21 +863,20 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
     del invS0
     # don't re-create the array every time... too expensive
     if SinglePrec:
-        dSdij = N.zeros((nao,nao),N.float32)
+        dSdij = N.zeros((nao,nao),N.complex64)
     else:
-        dSdij = N.zeros((nao,nao),N.float)
+        dSdij = N.zeros((nao,nao),N.complex)
     for i in range(index):
         SIO.printDone(i,index,'Correcting dH')
         first,last = orbitalIndices[FCfirst-1+i/3]
-        # Explicit correction (force real-type, is the correct?, it is created at the k-point)
         dSdij[:,first:last+1] = dS[i%3,:,first:last+1]
         for iSpin in range(TSHS0.nspin):
-            RedH[i,iSpin,:] -= mm(N.transpose(dSdij),invS0H0[0,iSpin,:,:]).real + \
-                mm(invS0H0[1,iSpin,:,:],dSdij).real
+            tmp = mm(dagger(dSdij),invS0H0[0,iSpin,:,:]) + mm(invS0H0[1,iSpin,:,:],dSdij)
+            RedH[i,iSpin,:] -= tmp.real
             if not GammaPoint: 
-                ImdH[i,iSpin,:] -= mm(N.transpose(dSdij),invS0H0[0,iSpin,:,:]).imag + \
-                    mm(invS0H0[1,iSpin,:,:],dSdij).imag
+                ImdH[i,iSpin,:] -= tmp.imag
         dSdij[:,first:last+1] = 0. # reset
+    del tmp
     print '  ... Done!'
     NCfile2.sync()
     
@@ -1103,7 +1096,7 @@ def calcPhBands(FCmean, a1, a2, a3, xyz, kdir, korig, Nk, Nbasis, basisatom):
                 FCk[ii*3:(ii+1)*3,(basisatom[jj])*3:(basisatom[jj]+1)*3]+=N.transpose(tmp)
         
         #print N.max(N.abs((FCk-N.conjugate(N.transpose(FCk)))))/N.max(N.abs(FCk))
-        FCk = (FCk+N.conjugate(N.transpose(FCk)))/2
+        FCk = (FCk+dagger(FCk))/2
         a,b = LA.eig(FCk*units)
         Band[ik,:] = N.sort(N.sqrt(a))
     return Band
