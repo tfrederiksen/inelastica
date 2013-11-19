@@ -341,8 +341,8 @@ class ElectrodeSelfEnergy:
         self.S.shape = (self.S.size,)
         self.H01.shape = self.H.shape
         self.S01.shape = self.S.shape
-        tmp = F90.surfacegreen(no=no,ze=ee,h00=self.H[ispin,:],s00=self.S,
-                                h01=self.H01[ispin,:],s01=self.S01,accur=1.e-15,is_left=left)
+        tmp = F90_lapack.surfacegreen(no=no,ze=ee,h00=self.H[ispin,:],s00=self.S,
+                                      h01=self.H01[ispin,:],s01=self.S01,accur=1.e-15,is_left=left)
         tmp = N.ascontiguousarray(tmp)
         tmp.shape = oSs
         self.H.shape = oHs
