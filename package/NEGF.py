@@ -11,24 +11,18 @@ import ValueCheck as VC
 
 # For speed some routines can be linked as F90 code
 try:
-    import F90helpers as F90
-    F90imported = True
-except:
-    F90imported = False
-    print "########################################################"
-    print "Perhaps time to compile F90/setkpointhelper"
-    print "Try:" 
-    print "        cd F90;source compile.bat"
-    print "########################################################"
-
-try:
-    import F90_lapack as F90_lapack
+    import F90_lapack as F90
     F90_lapack_imp = True
 except:
     F90_lapack_imp = False
     print "########################################################"
+    print "Problems encountered with F90_lapack.so"
     print "The linking/finding of LAPACK routines does not work"
     print "Ensure the placement of LAPACK in your LD_LIBRARY_PATH" 
+    print "Try compiling manually following these steps:" 
+    print " $ cd Inelastica/package/F90"
+    print " $ source compile.bat (or compile_alternative.bat)"
+    print " $ cp F90_lapack.so <python>/site-packages/Inelastica/"
     print "########################################################"
 
 #try:
@@ -341,8 +335,8 @@ class ElectrodeSelfEnergy:
         self.S.shape = (self.S.size,)
         self.H01.shape = self.H.shape
         self.S01.shape = self.S.shape
-        tmp = F90_lapack.surfacegreen(no=no,ze=ee,h00=self.H[ispin,:],s00=self.S,
-                                      h01=self.H01[ispin,:],s01=self.S01,accur=1.e-15,is_left=left)
+        tmp = F90.surfacegreen(no=no,ze=ee,h00=self.H[ispin,:],s00=self.S,
+                               h01=self.H01[ispin,:],s01=self.S01,accur=1.e-15,is_left=left)
         tmp = N.ascontiguousarray(tmp)
         tmp.shape = oSs
         self.H.shape = oHs

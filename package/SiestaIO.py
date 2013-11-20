@@ -24,9 +24,12 @@ try:
 except:
     F90imported = False
     print "########################################################"
-    print "Perhaps time to compile F90/setkpointhelper"
-    print "Try:" 
-    print "        cd F90;source compile.bat"
+    print "Problems encountered with F90helpers.so"
+    print "Falling back on a pure python (slower) implementation"
+    print "Try compiling manually following these steps:"
+    print " $ cd Inelastica/package/F90"
+    print " $ source compile.bat (or compile_alternative.bat)"
+    print " $ cp F90helpers.so <python>/site-packages/Inelastica/"
     print "########################################################"
 
 # Check length of int and long and use the one that has 8 bytes
