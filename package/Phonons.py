@@ -964,9 +964,9 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
         if hw[i]>0:
             for j in range(len(hw)):
                 # Loop over atomic coordinates
-                ReHeph[i,:] += UcOam[i,j] * RedH[j,:,first:last+1,first:last+1]
+                ReHeph[i,:] += UcOam[i,j] * RedH[j][:,first:last+1,first:last+1]
                 if not GammaPoint:
-                    ImHeph[i,:] += UcOam[i,j] * ImdH[j,:,first:last+1,first:last+1]
+                    ImHeph[i,:] += UcOam[i,j] * ImdH[j][:,first:last+1,first:last+1]
         else:
             print 'Phonons.CalcHephNETCDF: Nonpositive frequency --> Zero-valued coupling matrix' 
             # already zero
