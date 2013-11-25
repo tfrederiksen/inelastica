@@ -59,6 +59,7 @@ def test_prereq():
 test_prereq()
 
 from numpy.distutils.core import setup
+from numpy.distutils.system_info import get_info, NotFoundError
 import numpy.distutils.extension as Next
 
 # Fortran helper files
@@ -70,10 +71,14 @@ F90ext = \
                         'package/F90/setkpointhelper.f90'],
                    )
 
+# Retrieve the LAPACK-library...
+lapack_opt = get_info('lapack_opt')
+if not lapack_opt:
+    raise NotFoundError('no lapack/blas resources found')
 F90extLapack = \
     Next.Extension('Inelastica.F90_lapack',\
                        ['package/F90/surfaceGreen.f90'],
-                   )
+                   **lapack_opt)
 
 # Main setup of python modules
 setup(name='Inelastica',
