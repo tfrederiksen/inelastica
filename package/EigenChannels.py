@@ -103,12 +103,11 @@ def calcT(options,geom,myGF,basis):
         for ii in range(len(ev)):
             if N.abs(ev[ii])<options.MolStates:
                 fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii,ev[ii])
-                writeWavefunction(options,geom,basis,mm(myGF.Us,es[:,ii]),fn=fn)
-
-
+                writeWavefunction(options,geom,basis,mm(myGF.Us,es[:,ii]),fn=fn,
+                                  printNormalization=True)
 
 ########################################################
-def calcWF(options,geom,basis,Y):
+def calcWF(options,geom,basis,Y,printNormalization=False):
     """
     Calculate wavefunction, returns:
     YY : complex wavefunction on regular grid
@@ -174,6 +173,9 @@ def calcWF(options,geom,basis,Y):
 
         YY[ixmin:ixmax,iymin:iymax,izmin:izmax]=YY[ixmin:ixmax,iymin:iymax,izmin:izmax]+\
                                                  RR*thisSphHar*Y[ii]
+
+    if printNormalization:
+        print "Normalization of wavefunction on real space grid:",N.sum(YY.conjugate()*YY)*dx*dy*dz
 
     return YY, options.res, origo, nx, ny, nz
 
@@ -405,7 +407,7 @@ def writeXSF(geom,fn,YY,nx,ny,nz,origo,dstep):
 
 
 ########################################################
-def writeWavefunction(options,geom,basis,Y,fn=None):
+def writeWavefunction(options,geom,basis,Y,fn=None,printNormalization=False):
     """
     Writes wave function to the specified output type
     Y: vector for wavefunction
@@ -430,7 +432,7 @@ def writeWavefunction(options,geom,basis,Y,fn=None):
         (basis.ii[ii],basis.atomnum[ii],basis.M[ii],basis.L[ii],abs(Y[ii])))
     foT.close()
 
-    YY, dstep, origo, nx, ny, nz = calcWF(options,geom,basis,Y)
+    YY, dstep, origo, nx, ny, nz = calcWF(options,geom,basis,Y,printNormalization=printNormalization)
 
     # Write wave function in specified file format
     if options.format.lower() == 'macu':
