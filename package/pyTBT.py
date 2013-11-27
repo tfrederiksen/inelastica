@@ -25,9 +25,24 @@ import SiestaIO as SIO
 import MiscMath as MM
 import NEGF
 import numpy as N
+import Kmesh
 
 def calc(options):
-    kPointList, kWeights, NNk, Nk1, Nk2, GaussKronrod = getKpoints(options)
+    GaussKronrod = False
+    if options.Gk1>1:
+        Nk1,t1 = options.Gk1,'GK'
+        GaussKronrod = True
+    else:
+        Nk1,t1 = options.Nk1,'LIN'
+    if options.Gk2>1:
+        Nk2,t2 = options.Gk2,'GK'
+        GaussKronrod = True
+    else:
+        Nk2,t2 = options.Nk2,'LIN'
+    kmesh = Kmesh.kmesh(Nk1,Nk2,Nk3=1,meshtype=[t1,t2,'LIN'],invsymmetry=not options.skipsymmetry)
+    NNk = len(kmesh.kpts)
+    kPointList = kmesh.kpts[:,:2]
+    kWeights = kmesh.wgts[:3]
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
@@ -65,7 +80,7 @@ Voltage                         : %f
         if nspin<2: thisspinlabel = outFile
         else: thisspinlabel = outFile+['.UP','.DOWN'][iSpin]
         fo=open(thisspinlabel+'.AVTRANS','write')
-        fo.write('# Nk1=%i Nk2=%i eta=%.2e etaLead=%.2e\n'%(Nk1,Nk2,options.eta,options.etaLead))
+        fo.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(t1,Nk1,t2,Nk2,options.eta,options.etaLead))
         if GaussKronrod: fo.write('# E   Ttot(E)   Ti(E) (i=1-10) T_error(E)\n')
         else: fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
         # Loop over energy
@@ -115,8 +130,9 @@ Voltage                         : %f
         # Write k-point-resolved transmission
         fo=open(thisspinlabel+'.TRANS','write')
         for ik in range(NNk):
-            kpt=kPointList[ik]
-            fo.write('\n\n# k = %f, %f '%(kpt[0],kpt[1]))
+            kpt = kPointList[ik]
+            w = kWeights[0][ik]
+            fo.write('\n\n# k = %f, %f    w = %f'%(kpt[0],kpt[1],w))
             for ie, ee in enumerate(options.Elist):
                 transline = '\n%.10f '%ee
                 for ichan in range(options.numchan+1):
@@ -228,76 +244,4 @@ def xmladd(doc,parent,name,values):
     parent.appendChild(elem)
     txt=doc.createTextNode(values)
     elem.appendChild(txt)
-
-def getKpoints(options):
-    if options.Gk1>1 and options.Gk2>1: # GK-method fails with fewer points
-        # Generate Gauss-Kronrod k-grid
-        GaussKronrod=True
-        kl1, kwl1, kwle1 = MM.GaussKronrod(options.Gk1)
-        kl2, kwl2, kwle2 = MM.GaussKronrod(options.Gk2)        
-    else:
-        # Generate linearly spaced k-grid
-        GaussKronrod=False
-        kl1 = [(ii*1.0)/options.Nk1-0.5+0.5/options.Nk1 for ii in range(options.Nk1)]
-        kwl1 = [1.0/options.Nk1 for ii in range(options.Nk1)]
-        kl2 = [(ii*1.0)/options.Nk2-0.5+0.5/options.Nk2 for ii in range(options.Nk2)]
-        kwl2 = [1.0/options.Nk2 for ii in range(options.Nk2)]
-        kl1, kwl1, kl2, kwl2 = N.array(kl1), N.array(kwl1), N.array(kl2), N.array(kwl2)
-
-    # Repeat out for 2D
-    kl, kwl = N.zeros((len(kl1)*len(kl2),2)), N.zeros((len(kl1)*len(kl2),))
-    if GaussKronrod:
-        TDkwle1, TDkwle2 = N.zeros((len(kl1)*len(kl2),)), N.zeros((len(kl1)*len(kl2),))
-    jj=0
-    for i1 in range(len(kl1)):
-        for i2 in range(len(kl2)):
-            kl[jj,:]=[kl1[i1],kl2[i2]]
-            kwl[jj]=kwl1[i1]*kwl2[i2]
-            if GaussKronrod:
-                TDkwle1[jj]=kwle1[i1]*kwl2[i2]
-                TDkwle2[jj]=kwl1[i1]*kwle2[i2]
-            jj+=1
-
-    # Remove duplicates for symmetry
-    # INVERSION SYMMETRY:
-    # If the Bloch function
-    #    \psi(k) = exp(ikr)u(k),
-    # with crystal momentum k, is an eigenstate of the Schroedinger equation then also
-    #    \psi^\dagger(k) = exp(-ikr)u^\dagger(k)
-    # with crystal momentum -k, is an eigenstate with same eigenvalue.
-    # Hence E(k) = E(-k).
-    # TIME REVERSAL SYMMETRY:
-    # t,\psi(r,t) --> -t,\psi^\dagger(r,-t). T(k) = T(-k).
-    # (Elastic) propagation from L to R is always identical to propagation from R to L.
-    if not options.skipsymmetry:
-        print 'pyTBT.getKpoints: Applying inversion (time-reversal) symmetry reduction to list of k-points'
-        indx = []
-        for i1 in range(len(kl)):
-            for i2 in range(len(indx)):
-                if N.allclose(-kl[i1],kl[indx[i2][0]],atol=1e-7,rtol=1e-7):
-                    indx[i2][1]+=1
-                    break
-            else:
-                indx+=[[i1,1]]
-        indx, weight   = N.array([ii[0] for ii in indx]), N.array([ii[1] for ii in indx])
-        kl, kwl = kl[indx], kwl[indx]*weight
-        if GaussKronrod:
-            TDkwle1, TDkwle2 = TDkwle1[indx]*weight, TDkwle2[indx]*weight
-    
-    # Print selected k-points
-    s = 'pyTBT.getKpoints: i, k1[i], k2[i], kwl[i]'
-    if GaussKronrod: s += ', TDkwle1[i], TDkwle2[i]'
-    print s
-    for i in range(len(kl)):
-        s = '... %i   %.8f %.8f   %.8f'%(i,kl[i,0],kl[i,1],kwl[i])
-        if GaussKronrod:
-            s += '   %.8e %.8e'%(TDkwle1[i],TDkwle2[i])
-        print s
-    print 'Nk = %i, Sum(kw) = %.4f\n'%(len(kl),N.sum(kwl))
-    
-    if GaussKronrod:
-        return kl, [kwl, TDkwle1, TDkwle2], len(kl), options.Gk1, options.Gk1, GaussKronrod
-    else:
-        return kl, [kwl], len(kl), options.Nk1, options.Nk1, GaussKronrod
-
 

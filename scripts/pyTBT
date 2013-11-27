@@ -116,6 +116,6 @@ else:
     options.dE = 0.0
     options.Elist = N.array((options.Emin,),N.float)
 
-print '\pyTBT: options.Elist =\n',options.Elist
+print 'pyTBT: options.Elist =\n',options.Elist
 
 pyTBT.calc(options)
