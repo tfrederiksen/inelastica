@@ -307,10 +307,11 @@ def writecube(geom,fn,YY,nx,ny,nz,origo,dstep):
         tmp=xyz[ii,:]/PC.Bohr2Ang
         foR.write('%f %f %f\n'% (tmp[0],tmp[1],tmp[2]))
     # Write wavefunction
+    YYY = YY.real*(PC.Bohr2Ang**(3.0/2.0))
     for ix in range(nx):
         for iy in range(ny):
             for iz in range(nz):
-                foR.write('%1.3e\n' % YY[ix,iy,iz].real)
+                foR.write('%1.3e\n' % YYY[ix,iy,iz])
     foR.close()
 
 ################# Write wave function in macu format ######################
