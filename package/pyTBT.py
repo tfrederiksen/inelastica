@@ -39,10 +39,8 @@ def calc(options):
         GaussKronrod = True
     else:
         Nk2,t2 = options.Nk2,'LIN'
-    kmesh = Kmesh.kmesh(Nk1,Nk2,Nk3=1,meshtype=[t1,t2,'LIN'],invsymmetry=not options.skipsymmetry)
-    NNk = len(kmesh.kpts)
-    kPointList = kmesh.kpts[:,:2]
-    kWeights = kmesh.wgts[:3]
+    mesh = Kmesh.kmesh(Nk1,Nk2,Nk3=1,meshtype=[t1,t2,'LIN'],invsymmetry=not options.skipsymmetry)
+    NNk = len(mesh.k)
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
@@ -85,17 +83,16 @@ Voltage                         : %f
         else: fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
         # Loop over energy
         for ie, ee in enumerate(options.Elist):
-            Tavg = N.zeros((options.numchan+1,len(kWeights)),N.float)
+            Tavg = N.zeros((options.numchan+1,len(mesh.w)),N.float)
             AavL = N.zeros((myGF.nuo,myGF.nuo),N.complex)
             AavR = N.zeros((myGF.nuo,myGF.nuo),N.complex)
             # Loops over k-points
             for ik in range(NNk):
-                kpt=N.array(kPointList[ik],N.float)
-                myGF.calcGF(ee+options.eta*1.0j,kpt,ispin=iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+                myGF.calcGF(ee+options.eta*1.0j,mesh.k[ik,:2],ispin=iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
                 # Transmission:
                 T = myGF.calcT(options.numchan)
-                for iw in range(len(kWeights)):
-                    Tavg[:,iw] += T*kWeights[iw][ik]
+                for iw in range(len(mesh.w)):
+                    Tavg[:,iw] += T*mesh.w[iw,ik]
                 Tkpt[ie,ik] = T
                 # DOS calculation:
                 if options.dos:
@@ -103,8 +100,8 @@ Voltage                         : %f
                     nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
                     AL = MM.mm(Gr[:,0:nuoL],GamL,MM.dagger(Gr)[0:nuoL,:])
                     AR = MM.mm(Gr[:,nuo-nuoR:nuo],GamR,MM.dagger(Gr)[nuo-nuoR:nuo,:])
-                    AavL += kWeights[0][ik]*MM.mm(AL,myGF.S)
-                    AavR += kWeights[0][ik]*MM.mm(AR,myGF.S)
+                    AavL += mesh.w[0,ik]*MM.mm(AL,myGF.S)
+                    AavR += mesh.w[0,ik]*MM.mm(AR,myGF.S)
             # Print calculated quantities
             if GaussKronrod:
                 err = (N.abs(Tavg[0,0]-Tavg[0,1])+N.abs(Tavg[0,0]-Tavg[0,2]))/2
@@ -130,9 +127,8 @@ Voltage                         : %f
         # Write k-point-resolved transmission
         fo=open(thisspinlabel+'.TRANS','write')
         for ik in range(NNk):
-            kpt = kPointList[ik]
-            w = kWeights[0][ik]
-            fo.write('\n\n# k = %f, %f    w = %f'%(kpt[0],kpt[1],w))
+            w = mesh.w[0,ik]
+            fo.write('\n\n# k = %f, %f    w = %f'%(mesh.k[ik,0],mesh.k[ik,1],w))
             for ie, ee in enumerate(options.Elist):
                 transline = '\n%.10f '%ee
                 for ichan in range(options.numchan+1):
