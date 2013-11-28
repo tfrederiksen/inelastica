@@ -39,7 +39,7 @@ def calc(options):
         Nk2,t2 = options.Nk2,'LIN'
     # Generate full k-mesh:
     mesh = Kmesh.kmesh(Nk1,Nk2,Nk3=1,meshtype=[t1,t2,'LIN'],invsymmetry=not options.skipsymmetry)
-    NNk = len(mesh.k)
+    mesh.mesh2file('%s/%s.%ix%i.mesh'%(options.DestDir,options.systemlabel,mesh.Nk[0],mesh.Nk[1]))
     # Setup self-energies and device GF
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecL.scaling = options.scaleSigL
@@ -66,19 +66,19 @@ SpinPolarization                : %i
 Voltage                         : %f
 ##############################################################
 
-"""%(options.Emin,options.dE,options.Emax,Nk1,Nk2,options.eta,options.etaLead,options.devSt,options.devEnd,options.UseBulk,nspin,options.voltage)
+"""%(options.Emin,options.dE,options.Emax,mesh.Nk[0],mesh.Nk[1],options.eta,options.etaLead,options.devSt,options.devEnd,options.UseBulk,nspin,options.voltage)
         
     if options.dos:
         DOSL=N.zeros((nspin,len(options.Elist),myGF.nuo),N.float)
         DOSR=N.zeros((nspin,len(options.Elist),myGF.nuo),N.float)
     # Loop over spin
     for iSpin in range(nspin):
-        Tkpt=N.zeros((len(options.Elist),NNk,options.numchan+1),N.float)
-        outFile = options.DestDir+'/%s.%ix%i'%(options.systemlabel,Nk1,Nk2)
+        Tkpt=N.zeros((len(options.Elist),mesh.NNk,options.numchan+1),N.float)
+        outFile = options.DestDir+'/%s.%ix%i'%(options.systemlabel,mesh.Nk[0],mesh.Nk[1])
         if nspin<2: thisspinlabel = outFile
         else: thisspinlabel = outFile+['.UP','.DOWN'][iSpin]
         fo=open(thisspinlabel+'.AVTRANS','write')
-        fo.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(t1,Nk1,t2,Nk2,options.eta,options.etaLead))
+        fo.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(mesh.type[0],mesh.Nk[0],mesh.type[1],mesh.Nk[1],options.eta,options.etaLead))
         fo.write('# E   Ttot(E)   Ti(E)(i=1-10)   RelErrorTtot(E)\n')
         # Loop over energy
         for ie, ee in enumerate(options.Elist):
@@ -86,7 +86,7 @@ Voltage                         : %f
             AavL = N.zeros((myGF.nuo,myGF.nuo),N.complex)
             AavR = N.zeros((myGF.nuo,myGF.nuo),N.complex)
             # Loops over k-points
-            for ik in range(NNk):
+            for ik in range(mesh.NNk):
                 myGF.calcGF(ee+options.eta*1.0j,mesh.k[ik,:2],ispin=iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
                 # Transmission:
                 T = myGF.calcT(options.numchan)
@@ -122,7 +122,7 @@ Voltage                         : %f
         
         # Write k-point-resolved transmission
         fo=open(thisspinlabel+'.TRANS','write')
-        for ik in range(NNk):
+        for ik in range(mesh.NNk):
             w = mesh.w[:,ik]
             fo.write('\n\n# k = %f, %f    w = %f %f %f %f'%(mesh.k[ik,0],mesh.k[ik,1],w[0],w[1],w[2],w[3]))
             for ie, ee in enumerate(options.Elist):
