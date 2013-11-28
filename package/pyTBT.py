@@ -28,19 +28,19 @@ import numpy as N
 import Kmesh
 
 def calc(options):
-    GaussKronrod = False
+    # K-points
     if options.Gk1>1:
         Nk1,t1 = options.Gk1,'GK'
-        GaussKronrod = True
     else:
         Nk1,t1 = options.Nk1,'LIN'
     if options.Gk2>1:
         Nk2,t2 = options.Gk2,'GK'
-        GaussKronrod = True
     else:
         Nk2,t2 = options.Nk2,'LIN'
+    # Generate full k-mesh:
     mesh = Kmesh.kmesh(Nk1,Nk2,Nk3=1,meshtype=[t1,t2,'LIN'],invsymmetry=not options.skipsymmetry)
     NNk = len(mesh.k)
+    # Setup self-energies and device GF
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
@@ -48,9 +48,9 @@ def calc(options):
     myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=[options.devSt, options.devEnd])
     nspin = myGF.HS.nspin
     if options.devSt==0:
-        options.devSt=GF.DeviceAtoms[0]
+        options.devSt = myGF.DeviceAtoms[0]
     if options.devEnd==0:
-        options.devEnd=GF.DeviceAtoms[1]
+        options.devEnd = myGF.DeviceAtoms[1]
 
     print """
 ##############################################################
@@ -79,8 +79,7 @@ Voltage                         : %f
         else: thisspinlabel = outFile+['.UP','.DOWN'][iSpin]
         fo=open(thisspinlabel+'.AVTRANS','write')
         fo.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(t1,Nk1,t2,Nk2,options.eta,options.etaLead))
-        if GaussKronrod: fo.write('# E   Ttot(E)   Ti(E) (i=1-10) T_error(E)\n')
-        else: fo.write('# E   Ttot(E)   Ti(E) (i=1-10)\n')
+        fo.write('# E   Ttot(E)   Ti(E)(i=1-10)   RelErrorTtot(E)\n')
         # Loop over energy
         for ie, ee in enumerate(options.Elist):
             Tavg = N.zeros((options.numchan+1,len(mesh.w)),N.float)
@@ -103,19 +102,16 @@ Voltage                         : %f
                     AavL += mesh.w[0,ik]*MM.mm(AL,myGF.S)
                     AavR += mesh.w[0,ik]*MM.mm(AR,myGF.S)
             # Print calculated quantities
-            if GaussKronrod:
-                err = (N.abs(Tavg[0,0]-Tavg[0,1])+N.abs(Tavg[0,0]-Tavg[0,2]))/2
-                print ee, Tavg[:,0], err
-            else:
-                print ee, Tavg[:,0]
-            
+            err = (N.abs(Tavg[0,0]-Tavg[0,1])+N.abs(Tavg[0,0]-Tavg[0,2]))/2
+            relerr = err/Tavg[0,0]
+            print 'ispin= %i, e= %.4f, Tavg= %.8f, RelErr= %.1e'%(iSpin,ee,Tavg[0,0],relerr)
             transline = '\n%.10f '%ee
             for ichan in range(options.numchan+1):
                 if ichan==0:
                     transline += '%.8e '%Tavg[ichan,0]
                 else:
                     transline += '%.4e '%Tavg[ichan,0]
-            if GaussKronrod: transline += '%.4e '%err
+            transline += '%.2e '%relerr
             fo.write(transline)
             # Partial density of states:
             if options.dos:
@@ -127,8 +123,8 @@ Voltage                         : %f
         # Write k-point-resolved transmission
         fo=open(thisspinlabel+'.TRANS','write')
         for ik in range(NNk):
-            w = mesh.w[0,ik]
-            fo.write('\n\n# k = %f, %f    w = %f'%(mesh.k[ik,0],mesh.k[ik,1],w))
+            w = mesh.w[:,ik]
+            fo.write('\n\n# k = %f, %f    w = %f %f %f %f'%(mesh.k[ik,0],mesh.k[ik,1],w[0],w[1],w[2],w[3]))
             for ie, ee in enumerate(options.Elist):
                 transline = '\n%.10f '%ee
                 for ichan in range(options.numchan+1):
