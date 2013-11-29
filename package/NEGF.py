@@ -459,7 +459,7 @@ class GF:
         nuo0, nuoL0, nuoR0 : Non-folded sizes
         FoldedL, FoldedR : True/False
         DeviceAtoms : start/end Siesta numbering of atoms included in device
-        DeviceOrbs : Start / end of orbitals. Siesta ordering.
+        DeviceOrbs : Start/end of orbitals. Siesta ordering.
         """
         self.elecL, self.elecR, self.Bulk = elecL, elecR, Bulk
         self.HS = SIO.HS(TSHSfile)

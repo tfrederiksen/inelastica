@@ -54,6 +54,7 @@ parser.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to
                   type='float', default=1.0)
 parser.add_option("--scaleSigR", dest="scaleSigR", help="Scale factor applied to Sigma_R [default=%default]",
                   type='float', default=1.0)
+
 (options, args) = parser.parse_args()
 
 # Destination directory
@@ -93,10 +94,8 @@ options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 
 options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'Inelastica')
 
 # Device region
-if options.devSt<=0:
-    options.devSt  = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom', int, 0, 'pyTBT')
-if options.devEnd<=0:
-    options.devEnd = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo', int, 0, 'pyTBT')
+options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,0,'pyTBT')
+options.DeviceAtoms = [max(options.devSt,1),min(options.devEnd,options.NumberOfAtoms)]
 
 # Voltage
 options.voltage = SIO.GetFDFlineWithDefault(options.fn,'TS.Voltage', float, 0.0, 'Inelastica')

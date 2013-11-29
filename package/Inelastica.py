@@ -30,7 +30,7 @@ def main(options):
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
-    GF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
+    GF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=options.DeviceAtoms)
     # Read phonons
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Inelastica: Reading ',options.PhononNetCDF
@@ -48,7 +48,7 @@ def main(options):
     GF.HT = []      # Hilbert/Iasym factor
     # Calculate transmission at Fermi level
     GF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-    basis = SIO.BuildBasis(options.XV,options.devSt,options.devEnd,GF.HS.lasto)
+    basis = SIO.BuildBasis(options.XV,options.DeviceAtoms[0],options.DeviceAtoms[1],GF.HS.lasto)
     GF.TeF = GF.calcT(options.numchan)[0]
     # Check consistency of PHrun vs TSrun inputs
     IntegrityCheck(options,GF,basis,NCfile)   
@@ -68,7 +68,7 @@ def IntegrityCheck(options,GF,basis,NCfile):
     PH_dev = N.array(NCfile.variables['DeviceAtoms'][:])
     PH_xyz = N.array(NCfile.variables['GeometryXYZ'][:])
     PH_anr = N.array(NCfile.variables['AtomNumbers'][:])
-    TS_dev = range(options.devSt,options.devEnd+1)
+    TS_dev = range(options.DeviceAtoms[0],options.DeviceAtoms[1]+1)
     TS_anr = options.geom.anr
     TS_xyz = options.geom.xyz
     print '\nInelastica.IntegrityCheck:'
@@ -87,11 +87,11 @@ def IntegrityCheck(options,GF,basis,NCfile):
             s = ('---').center(36)
         s += '  vs'
         # Geom B
-        if options.devSt+i in TS_dev:
-            s += ('%i'%(options.devSt+i)).rjust(5)
+        if options.DeviceAtoms[0]+i in TS_dev:
+            s += ('%i'%(options.DeviceAtoms[0]+i)).rjust(5)
             for j in range(3):
-                s += ('%.4f'%(TS_xyz[options.devSt-1+i,j])).rjust(9)
-            s += ('%i'%TS_anr[options.devSt-1+i]).rjust(4)
+                s += ('%.4f'%(TS_xyz[options.DeviceAtoms[0]-1+i,j])).rjust(9)
+            s += ('%i'%TS_anr[options.DeviceAtoms[0]-1+i]).rjust(4)
         else:
             s += ('---').center(36)
         print s
@@ -110,12 +110,12 @@ def IntegrityCheck(options,GF,basis,NCfile):
         # Geometric distance between atoms
         if i==0:
             # Allow for a global offset of coordinates R
-            R = PH_xyz[PH_dev[0]-1+i]-TS_xyz[options.devSt-1+i]
+            R = PH_xyz[PH_dev[0]-1+i]-TS_xyz[options.DeviceAtoms[0]-1+i]
             print 'Global offset R = [%.3f %.3f %.3f]'%(R[0],R[1],R[2])
-        d = PH_xyz[PH_dev[0]-1+i]-TS_xyz[options.devSt-1+i] - R
+        d = PH_xyz[PH_dev[0]-1+i]-TS_xyz[options.DeviceAtoms[0]-1+i] - R
         dist_xyz += N.dot(d,d)**.5
         # Difference between atom numbers
-        a = PH_anr[PH_dev[0]-1+i]-TS_anr[options.devSt-1+i]
+        a = PH_anr[PH_dev[0]-1+i]-TS_anr[options.DeviceAtoms[0]-1+i]
         dist_anr += abs(a)
     if dist_xyz<1e-3:
         print '... Check 2 passed: Atomic coordinates consistent'

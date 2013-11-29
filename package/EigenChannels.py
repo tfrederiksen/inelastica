@@ -25,7 +25,7 @@ def main(options):
     geom = MG.Geom(XV)
     myGF = readHS(options)
     options.nspin = myGF.HS.nspin
-    basis = SIO.BuildBasis(XV,options.devSt,options.devEnd,myGF.HS.lasto)
+    basis = SIO.BuildBasis(XV,options.DeviceAtoms[0],options.DeviceAtoms[1],myGF.HS.lasto)
     calcT(options,geom,myGF,basis)
 
 
@@ -35,9 +35,7 @@ def readHS(options):
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
-    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
-    options.devSt = myGF.DeviceAtoms[0]
-    options.devEnd = myGF.DeviceAtoms[1]
+    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=options.DeviceAtoms)
     myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
     return myGF
 
@@ -118,8 +116,8 @@ def calcWF(options,geom,basis,Y,printNormalization=False):
     nx, ny, nz : number of grid points
     """
 
-    xyz=N.array(geom.xyz[options.devSt-1:options.devEnd])
-    atomnum=geom.anr[options.devSt-1:options.devEnd]
+    xyz=N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
+    atomnum=geom.anr[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]]
 
     # Size of cube
     xmin, xmax = min(xyz[:,0])-5.0, max(xyz[:,0])+5.0
@@ -191,21 +189,21 @@ def calcCurrent(options,basis,H,Y):
     """
     
     NN=len(H)
-    NN2=options.devEnd-options.devSt+1
+    NN2=options.DeviceAtoms[1]-options.DeviceAtoms[0]+1
     Curr=N.zeros((NN2,NN2),N.float)
     
     if len(Y.shape)==2:
         for ii in range(NN):
-            a1=basis.ii[ii]-options.devSt
+            a1=basis.ii[ii]-options.DeviceAtoms[0]
             for jj in range(NN):
-                a2=basis.ii[jj]-options.devSt
+                a2=basis.ii[jj]-options.DeviceAtoms[0]
                 tmp=H[jj,ii]*Y[ii,jj]/2/N.pi
                 Curr[a1,a2]=Curr[a1,a2]+4*N.pi*tmp.imag
     else:
         for ii in range(NN):
-            a1=basis.ii[ii]-options.devSt
+            a1=basis.ii[ii]-options.DeviceAtoms[0]
             for jj in range(NN):
-                a2=basis.ii[jj]-options.devSt
+                a2=basis.ii[jj]-options.DeviceAtoms[0]
                 tmp=H[ii,jj]*N.conjugate(Y[ii])*Y[jj]
                 Curr[a1,a2]=Curr[a1,a2]+4*N.pi*tmp.imag
     
@@ -219,11 +217,11 @@ def writeCurrent(options,geom,Curr):
     Curr : Bond current matrix
     """
     fn=fileName(options)
-    xyz=N.array(geom.xyz[options.devSt-1:options.devEnd])
-    atomnum=geom.anr[options.devSt-1:options.devEnd]
+    xyz=N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
+    atomnum=geom.anr[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]]
 
     foC=file(fn+'.curr','w')
-    foC.write('%i\n'%(options.devEnd-options.devSt+1))
+    foC.write('%i\n'%(options.DeviceAtoms[1]-options.DeviceAtoms[0]+1))
 
     for ii in range(len(xyz)):
         foC.write('%i %e %e %e\n'%(atomnum[ii],xyz[ii,0],xyz[ii,1],xyz[ii,2]))
@@ -483,7 +481,7 @@ def oldmyopen():
     myprint('iSpin            : %i'%(options.iSpin),file)
     myprint('kPoint           : [%f,%f]'%(options.kPoint[0],options.kPoint[1]),file)
     myprint('BothSides        : %s'%options.bothsides,file)
-    myprint('Device [from,to] : [%i,%i]'%(options.devSt, options.devEnd),file)
+    myprint('Device [from,to] : [%i,%i]'%(options.DeviceAtoms[0], options.DeviceAtoms[1]),file)
     myprint('DestDir          : %s'%options.DestDir,file)
     myprint('##################################################################################',file)
     file.close()

@@ -45,10 +45,8 @@ def calc(options):
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
-    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=[options.devSt, options.devEnd])
+    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
     nspin = myGF.HS.nspin
-    options.devSt = myGF.DeviceAtoms[0]
-    options.devEnd = myGF.DeviceAtoms[1]
 
     print """
 ##############################################################
@@ -64,7 +62,8 @@ SpinPolarization                : %i
 Voltage                         : %f
 ##############################################################
 
-"""%(options.Emin,options.dE,options.Emax,mesh.Nk[0],mesh.Nk[1],options.eta,options.etaLead,options.devSt,options.devEnd,options.UseBulk,nspin,options.voltage)
+"""%(options.Emin,options.dE,options.Emax,mesh.Nk[0],mesh.Nk[1],options.eta,options.etaLead,\
+         options.DeviceAtoms[0],options.DeviceAtoms[1],options.UseBulk,nspin,options.voltage)
         
     if options.dos:
         DOSL=N.zeros((nspin,len(options.Elist),myGF.nuo),N.float)
@@ -159,10 +158,10 @@ def WritePDOS(fn,options,myGF,DOS,basis):
     import gzip
 
     # First, last orbital in full space and pyTBT folded space.
-    devOrbSt = myGF.HS.lasto[options.devSt-1]
-    pyTBTdevOrbSt = devOrbSt-myGF.HS.lasto[options.devSt-1]
-    devOrbEnd = myGF.HS.lasto[options.devEnd]-1
-    pyTBTdevOrbEnd = devOrbEnd-myGF.HS.lasto[options.devSt-1]
+    devOrbSt = myGF.HS.lasto[options.DeviceAtoms[0]-1]
+    pyTBTdevOrbSt = devOrbSt-myGF.HS.lasto[options.DeviceAtoms[0]-1]
+    devOrbEnd = myGF.HS.lasto[options.DeviceAtoms[1]]-1
+    pyTBTdevOrbEnd = devOrbEnd-myGF.HS.lasto[options.DeviceAtoms[0]-1]
 
     doc = xml.Document()
     pdos = doc.createElement('pdos')
@@ -196,10 +195,6 @@ def WritePDOS(fn,options,myGF,DOS,basis):
     import WriteXMGR as XMGR
     g = XMGR.Graph()
     for atom, lVal, name in plots:
-        print atom
-        print lVal
-        print name
-        print [ii for ii in lVal]
         nspin, ee, PDOS = SIO.ExtractPDOS(fn,None,\
                                       FermiRef=False,llist=lVal,\
                                       species=atom)        
