@@ -465,12 +465,12 @@ class GF:
         self.HS = SIO.HS(TSHSfile)
 
         self.DeviceAtoms=DeviceAtoms
-        if DeviceAtoms[0]==0:
+        if DeviceAtoms[0]<=1:
             self.DeviceAtoms[0]=1
             self.FoldedL = False
         else:
             self.FoldedL = True
-        if DeviceAtoms[1]==0:
+        if DeviceAtoms[1]==0 or DeviceAtoms[1]>=self.HS.nua:
             self.DeviceAtoms[1]=self.HS.nua
             self.FoldedR = False
         else:
@@ -488,7 +488,7 @@ class GF:
         if not self.FoldedR:
             print "Suggest right folding to atom : ",self.HS.nua-self.elecR.HS.nua*self.elecR.NA1*self.elecR.NA2
 
-        if self.FoldedL and self.FoldedR:
+        if self.FoldedL or self.FoldedR:
             # Check that device region is large enough!
             kpoint=N.zeros((2,),N.float)
             self.setkpoint(kpoint,ispin=0) # At least for one spin
@@ -500,7 +500,7 @@ class GF:
             VC.Check("Device-Elec-overlap",N.abs(self.H0[0:devSt,devEnd:self.nuo0]),
                      "Too large Hamiltonian directly from left-top right.",
                      "Make device region larger")
-            
+        if self.FoldedL:
             # Find orbitals in device region coupling to left and right.
             tau  = abs(self.S0[0:devSt-1,0:devEnd])
             coupling = N.sum(tau,axis=0)
@@ -509,7 +509,7 @@ class GF:
             self.devEndL = max(ii+1,self.nuoL0)
             self.nuoL = self.devEndL-devSt+1
             print "Left self energy on orbitals %i-%i"%(devSt,self.devEndL)
-
+        if self.FoldedR:
             tau  = abs(self.S0[devEnd-1:self.nuo0,0:self.nuo0])
             coupling = N.sum(tau,axis=0)
             ii=devSt-1

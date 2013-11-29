@@ -47,10 +47,8 @@ def calc(options):
     elecR.scaling = options.scaleSigR
     myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=[options.devSt, options.devEnd])
     nspin = myGF.HS.nspin
-    if options.devSt==0:
-        options.devSt = myGF.DeviceAtoms[0]
-    if options.devEnd==0:
-        options.devEnd = myGF.DeviceAtoms[1]
+    options.devSt = myGF.DeviceAtoms[0]
+    options.devEnd = myGF.DeviceAtoms[1]
 
     print """
 ##############################################################
@@ -118,6 +116,7 @@ Voltage                         : %f
                 DOSL[iSpin,ie,:] += N.diag(AavL).real/(2*N.pi)
                 DOSR[iSpin,ie,:] += N.diag(AavR).real/(2*N.pi)
                 print 'ispin= %i, e= %.4f, DOSL= %.4f, DOSR= %.4f'%(iSpin,ee,N.sum(DOSL[iSpin,ie,:]),N.sum(DOSR[iSpin,ie,:]))
+        fo.write('\n')
         fo.close()
         
         # Write k-point-resolved transmission
@@ -133,6 +132,7 @@ Voltage                         : %f
                     else:
                         transline += '%.4e '%Tkpt[ie,ik,ichan]
                 fo.write(transline)
+        fo.write('\n')
         fo.close()
     # End loop over spin
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file

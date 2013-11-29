@@ -36,6 +36,8 @@ def readHS(options):
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
     myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=[options.devSt, options.devEnd])
+    options.devSt = myGF.DeviceAtoms[0]
+    options.devEnd = myGF.DeviceAtoms[1]
     myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
     return myGF
 
