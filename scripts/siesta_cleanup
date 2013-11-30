@@ -30,6 +30,8 @@ rmfilestail=[
     ".alloc",
     ".POT.CONF",
     ".GF",
+    ".TBTGFL",
+    ".TBTGFR",
     ".IEIG",
     ".confpot",
     ".psdump",
