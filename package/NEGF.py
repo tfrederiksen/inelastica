@@ -252,10 +252,10 @@ class ElectrodeSelfEnergy:
                                 N.conjugate(phase)*g0[ig0s:ig0e+1,jg0s:jg0e+1]
 
         # Calculate self-energy or inverse of SGF for Bulk: SGF^-1 = E S - H - Sig
-        if not Bulk:
-            Sig=ESmH-LA.inv(SGF)
+        if Bulk:
+            Sig = LA.inv(SGF) # SGF^1
         else:
-            Sig=LA.inv(SGF)
+            Sig = ESmH-LA.inv(SGF)
         if useSigNCfiles:
             SavedSig.addSig(self.path,self.hash,eeshifted,qp,left,ispin,etaLead,Sig)
         if self.scaling!=1.0:
@@ -544,7 +544,7 @@ class GF:
             eSmH = ee*self.S0-self.H0                                        
             eSmHmS = eSmH[0:devEndL,0:devEndL].copy()                             
             if self.Bulk:
-                eSmHmS[0:nuoL0,0:nuoL0] = SigL0     
+                eSmHmS[0:nuoL0,0:nuoL0] = SigL0 # SGF^1
             else:
                 eSmHmS[0:nuoL0,0:nuoL0] = eSmHmS[0:nuoL0,0:nuoL0]-SigL0     
             tau  = eSmHmS[0:devSt-1,devSt-1:devEndL].copy()
@@ -554,7 +554,11 @@ class GF:
                 MM.mm(taud,inv,tau)
             self.SigL = eSmH[devSt-1:devEndL,devSt-1:devEndL]-eSmHmS[devSt-1:devEndL,devSt-1:devEndL]
         else:
-            self.SigL=SigL0
+            self.SigL = SigL0
+        self.GamL = 1.0j*(self.SigL-MM.dagger(self.SigL))
+        if self.Bulk and not FoldedL:
+            # Reverse sign since SigL is really SGF^-1
+            self.GamL = -1.0*self.GamL
 
         if FoldedR:
             # Fold down from nuoR0 to the device region
@@ -563,7 +567,7 @@ class GF:
             eSmHmS = eSmH[devStR-1:nuo0,devStR-1:nuo0].copy()
             tmpnuo=len(eSmHmS)                             
             if self.Bulk:
-                eSmHmS[tmpnuo-nuoR0:tmpnuo,tmpnuo-nuoR0:tmpnuo] = SigR0     
+                eSmHmS[tmpnuo-nuoR0:tmpnuo,tmpnuo-nuoR0:tmpnuo] = SigR0 # SGF^1
             else:
                 eSmHmS[tmpnuo-nuoR0:tmpnuo,tmpnuo-nuoR0:tmpnuo] = eSmHmS[tmpnuo-nuoR0:tmpnuo,tmpnuo-nuoR0:tmpnuo]-SigR0     
             tau  = eSmHmS[0:nuoR,nuoR:tmpnuo].copy()
@@ -572,9 +576,11 @@ class GF:
             eSmHmS[0:nuoR,0:nuoR]=eSmHmS[0:nuoR,0:nuoR]-MM.mm(tau,inv,taud)
             self.SigR = eSmH[devStR-1:devEnd,devStR-1:devEnd]-eSmHmS[0:nuoR,0:nuoR]
         else:
-            self.SigR=SigR0
-
-        self.GamL, self.GamR = 1.0j*(self.SigL-MM.dagger(self.SigL)), 1.0j*(self.SigR-MM.dagger(self.SigR))
+            self.SigR = SigR0
+        self.GamR = 1.0j*(self.SigR-MM.dagger(self.SigR))
+        if self.Bulk and not FoldedR:
+            # Reverse sign since SigR is really SGF^-1
+            self.GamR = -1.0*self.GamR
 
         # Finally ready to calculate Gr
         eSmH=ee*self.S-self.H
@@ -582,16 +588,16 @@ class GF:
             eSmH[0:nuoL,0:nuoL]=eSmH[0:nuoL,0:nuoL]-self.SigL
         else:
             if self.Bulk:
-                eSmH[0:nuoL,0:nuoL]=self.SigL
+                eSmH[0:nuoL,0:nuoL] = self.SigL # SGF^1
             else:
-                eSmH[0:nuoL,0:nuoL]=eSmH[0:nuoL,0:nuoL]-self.SigL
+                eSmH[0:nuoL,0:nuoL] = eSmH[0:nuoL,0:nuoL]-self.SigL
         if FoldedR:
             eSmH[nuo-nuoR:nuo,nuo-nuoR:nuo]=eSmH[nuo-nuoR:nuo,nuo-nuoR:nuo]-self.SigR
         else:
             if self.Bulk:
-                eSmH[nuo-nuoR:nuo,nuo-nuoR:nuo]=self.SigR
+                eSmH[nuo-nuoR:nuo,nuo-nuoR:nuo] = self.SigR # SGF^1
             else:
-                eSmH[nuo-nuoR:nuo,nuo-nuoR:nuo]=eSmH[nuo-nuoR:nuo,nuo-nuoR:nuo]-self.SigR
+                eSmH[nuo-nuoR:nuo,nuo-nuoR:nuo] = eSmH[nuo-nuoR:nuo,nuo-nuoR:nuo]-self.SigR
         self.Gr = LA.inv(eSmH)
         self.Ga = MM.dagger(self.Gr)
         # Calculate spectral functions
