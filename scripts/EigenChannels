@@ -44,6 +44,13 @@ parser.add_option("-y","--k2", dest='k2', default=0.0,type='float',
                   help="k-point along a2 [%default]")
 parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
                   help="Use SigNCfiles [%default]")
+
+# Electrode stuff
+parser.add_option("--bulk", dest='UseBulk',default=-1,action='store_true',
+                  help="Use bulk in electrodes. The Hamiltonian from the electrode calculation is inserted into the electrode region in the TranSIESTA cell [TS.UseBulkInElectrodes]")
+parser.add_option("--nobulk", dest='UseBulk',default=-1,action='store_false',
+                  help="Use only self-energies in the electrodes. The full Hamiltonian of the TranSIESTA cell is used in combination with self-energies for the electrodes [TS.UseBulkInElectrodes]")
+
 # Scale (artificially) the coupling to the electrodes
 parser.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to Sigma_L [default=%default]",
                   type='float', default=1.0)
@@ -85,9 +92,14 @@ options.NA2L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Left', int, 1
 options.fnR  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileRight', str, None, 'EigenChannels')
 options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 1, 'EigenChannels')
 options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'EigenChannels')
+if options.UseBulk < 0:
+    options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'EigenChannels')
 
 # Device region
 options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,0,'pyTBT')
+if options.DeviceLast<options.DeviceFirst:
+    print 'pyTBT error: DeviceLast<DeviceFirst not allowed. Setting DeviceLast=DeviceFirst'
+    options.DeviceLast = options.DeviceFirst
 options.DeviceAtoms = [max(options.DeviceFirst,1),min(options.DeviceLast,options.NumberOfAtoms)]
 
 # Voltage

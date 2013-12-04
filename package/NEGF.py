@@ -463,7 +463,7 @@ class GF:
         """
         self.elecL, self.elecR, self.Bulk = elecL, elecR, Bulk
         self.HS = SIO.HS(TSHSfile)
-
+        print 'GF: UseBulk=',Bulk
         self.DeviceAtoms=DeviceAtoms
         if DeviceAtoms[0]<=1:
             self.DeviceAtoms[0]=1
@@ -481,7 +481,7 @@ class GF:
         self.nuo = self.DeviceOrbs[1]-self.DeviceOrbs[0]+1
         self.nuoL, self.nuoR = self.nuoL0, self.nuoR0 # Not folded, for folded case changed below
         
-        print "GF : ",TSHSfile
+        print "GF:",TSHSfile
         print "Device atoms %i-%i, orbitals %i-%i"%(tuple(self.DeviceAtoms+self.DeviceOrbs))
         if not self.FoldedL:
             print "Suggest left folding to atom : ",self.elecL.HS.nua*self.elecL.NA1*self.elecL.NA2+1

@@ -13,9 +13,9 @@ For help use --help!
 parser = OptionParser(usage,description=description)
 parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [default=%default]",
                   type='int', default=4)
-parser.add_option("-F","--DeviceFirst", dest='devSt',default=0,type='int',
+parser.add_option("-F","--DeviceFirst", dest='DeviceFirst',default=0,type='int',
                   help="First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]")
-parser.add_option("-L","--DeviceLast", dest='devEnd',default=0,type='int',
+parser.add_option("-L","--DeviceLast", dest='DeviceLast',default=0,type='int',
                   help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
 parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
                   help="Energy reference where Greens functions etc are evaluated [default=%default eV]")
@@ -49,6 +49,13 @@ parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_t
                   help="Use SigNCfiles [default=%default]")
 parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [default=%default eV]",
                   type='float', default=0.0)
+
+# Electrode stuff
+parser.add_option("--bulk", dest='UseBulk',default=-1,action='store_true',
+                  help="Use bulk in electrodes. The Hamiltonian from the electrode calculation is inserted into the electrode region in the TranSIESTA cell [TS.UseBulkInElectrodes]")
+parser.add_option("--nobulk", dest='UseBulk',default=-1,action='store_false',
+                  help="Use only self-energies in the electrodes. The full Hamiltonian of the TranSIESTA cell is used in combination with self-energies for the electrodes [TS.UseBulkInElectrodes]")
+
 # Scale (artificially) the coupling to the electrodes
 parser.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to Sigma_L [default=%default]",
                   type='float', default=1.0)
@@ -90,12 +97,15 @@ options.NA2L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Left', int, 1
 options.fnR  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileRight', str, None, 'Inelastica')
 options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 1, 'Inelastica')
 options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'Inelastica')
-
-options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'Inelastica')
+if options.UseBulk < 0:
+    options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'Inelastica')
 
 # Device region
 options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,0,'pyTBT')
-options.DeviceAtoms = [max(options.devSt,1),min(options.devEnd,options.NumberOfAtoms)]
+if options.DeviceLast<options.DeviceFirst:
+    print 'pyTBT error: DeviceLast<DeviceFirst not allowed. Setting DeviceLast=DeviceFirst'
+    options.DeviceLast = options.DeviceFirst
+options.DeviceAtoms = [max(options.DeviceFirst,1),min(options.DeviceLast,options.NumberOfAtoms)]
 
 # Voltage
 options.voltage = SIO.GetFDFlineWithDefault(options.fn,'TS.Voltage', float, 0.0, 'Inelastica')

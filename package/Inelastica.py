@@ -30,7 +30,7 @@ def main(options):
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
-    GF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=True,DeviceAtoms=options.DeviceAtoms)
+    GF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
     # Read phonons
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Inelastica: Reading ',options.PhononNetCDF
