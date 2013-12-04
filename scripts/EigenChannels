@@ -4,6 +4,9 @@ import numpy as N
 import os, sys, subprocess
 from optparse import OptionParser, OptionGroup
 
+from datetime import datetime
+start = datetime.now()
+
 usage = "usage: %prog [options] DestinationDirectory"
 description = """
 Eigenchannels script that calculates:
@@ -113,3 +116,12 @@ if not os.path.exists(options.fn):
     parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
 
 EigenChannels.main(options)
+
+# Timing                                                                                                                                                                                                            
+dT = datetime.now()-start
+hours = dT.days/24.+(dT.seconds+dT.microseconds*1.e-6)/60.**2
+minutes = hours*60.
+seconds = minutes*60.
+print 'Total walltime %.2f hrs = %.2f min = %.2f sec'%(hours,minutes,seconds)
+
+

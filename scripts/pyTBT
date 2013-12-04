@@ -1,9 +1,12 @@
-#! /usr/bin/env python
+#!/lustre-scratch/thf/SOFTWARE/Python-2.6.5/bin/python
 
 import numpy as N
 from optparse import OptionParser, OptionGroup
 import os, sys, subprocess
-        
+
+from datetime import datetime
+start = datetime.now()
+
 usage = "usage: %prog [options] DestinationDirectory"
 
 description = """pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge.
@@ -128,3 +131,10 @@ else:
 print 'pyTBT: options.Elist =\n',options.Elist
 
 pyTBT.calc(options)
+
+# Timing
+dT = datetime.now()-start
+hours = dT.days/24.+(dT.seconds+dT.microseconds*1.e-6)/60.**2
+minutes = hours*60.
+seconds = minutes*60.
+print 'Total walltime %.2f hrs = %.2f min = %.2f sec'%(hours,minutes,seconds)

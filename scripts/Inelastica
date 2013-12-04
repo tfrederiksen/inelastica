@@ -4,6 +4,9 @@ from optparse import OptionParser, OptionGroup
 import numpy as N
 import os, sys, subprocess
 
+from datetime import datetime
+start = datetime.now()
+
 usage = "usage: %prog [options] DestinationDirectory"
 description = """
 Inelastica script calculates and writes LOE quantities in ascii (Systemlabel.IN) and NetCDF (Systemlabel.IN.nc) 
@@ -119,3 +122,9 @@ options.kPoint = N.array([options.k1,options.k2,0.0],N.float)
 
 Inelastica.main(options)
 
+# Timing
+dT = datetime.now()-start
+hours = dT.days/24.+(dT.seconds+dT.microseconds*1.e-6)/60.**2
+minutes = hours*60.
+seconds = minutes*60.
+print 'Total walltime %.2f hrs = %.2f min = %.2f sec'%(hours,minutes,seconds)

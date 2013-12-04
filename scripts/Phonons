@@ -4,6 +4,9 @@ from optparse import OptionParser
 import os, sys, subprocess
 import numpy as N
 
+from datetime import datetime
+start = datetime.now()
+
 usage = "usage: %prog [options] DestinationDirectory"
 
 description = "Methods to calculate vibrations and e-ph couplings from SIESTA output"
@@ -105,3 +108,10 @@ Phonons.Analyze(FCwildcard=options.FCwildcard,onlySdir=options.onlySdir,
                 AuxNCfile=options.AuxNCfile,
                 Isotopes=eval(options.Isotopes),
                 kpoint=options.kPoint)
+
+# Timing
+dT = datetime.now()-start
+hours = dT.days/24.+(dT.seconds+dT.microseconds*1.e-6)/60.**2
+minutes = hours*60.
+seconds = minutes*60.
+print 'Total walltime %.2f hrs = %.2f min = %.2f sec'%(hours,minutes,seconds)
