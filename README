@@ -1,11 +1,11 @@
 Inelastica:
-	Python package for the SIESTA / TranSIESTA DFT code.
+	Python package for the SIESTA/TranSIESTA DFT codes.
+
 By:
-	Magnus Paulsson (magnus.paulsson@hik.se)
+	Magnus Paulsson (magnus.paulsson@lnu.se)
 	Thomas Frederiksen (thomas_frederiksen@ehu.es)
 
 All documentation is contained at the Inelastica wiki:
-	http://sourceforge.net/apps/mediawiki/inelastica/
+	https://sourceforge.net/apps/mediawiki/inelastica/
 
 Please update the documentation when you solve a problem!
-

@@ -1,14 +1,11 @@
-Overall: 
-	 k-point sampling!
-	 cleanup? Anyone has energy for this?
-	 Rather ugly stepwise complications going from Inelastica ->
-	   Eigenchannels -> pyTBT
+Overall:
+	Handling of ghost orbitals.
 
 SetupRuns.py:
 	All the bits concerning Inelastica need to be rewritten
 
 EigenChannels:
-	DOS: How to calculate and outfiles?
+	Re-establish the calculation of FGR scattering rates
 
 Inelastica:
 	Rates saved to file for faster calculation?
@@ -28,5 +25,3 @@ SCBA routines:
 	Migrate to numpy?
 	pyMPI?
 
-SDOS.py:
-	Usefull or remove?
