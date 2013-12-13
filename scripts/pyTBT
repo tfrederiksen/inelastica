@@ -105,10 +105,10 @@ if options.UseBulk < 0:
 
 # Device region
 if options.DeviceFirst<=0:
-    options.DeviceFirst = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom',int,0,'pyTBT')
+    options.DeviceFirst = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom',int,1,'pyTBT')
 if options.DeviceLast<=0:
-    options.DeviceLast = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo',int,0,'pyTBT')
-options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,0,'pyTBT')
+    options.DeviceLast = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo',int,1e10,'pyTBT')
+options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,1e10,'pyTBT')
 if options.DeviceLast<options.DeviceFirst:
     print 'pyTBT error: DeviceLast<DeviceFirst not allowed. Setting DeviceLast=DeviceFirst'
     options.DeviceLast = options.DeviceFirst

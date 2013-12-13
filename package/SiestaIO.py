@@ -549,6 +549,8 @@ def ReadFDFLines(infile,head='', printAlot=True):
     tmp = file.readline()
     while tmp != '':
         if len(tmp)>3:
+            tmp = tmp.replace(':',' ') # Remove ':' from fdf
+            tmp = tmp.replace('=',' ') # Remove '=' from fdf
             tmp = string.split(tmp)
             for ii,s in enumerate(tmp):  # Remove comments
                 if s[0]=="#":

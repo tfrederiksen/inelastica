@@ -100,10 +100,10 @@ if options.UseBulk < 0:
 
 # Device region
 if options.DeviceFirst<=0:
-    options.DeviceFirst = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom',int,0,'EigenChannels')
+    options.DeviceFirst = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom',int,1,'EigenChannels')
 if options.DeviceLast<=0:
-    options.DeviceLast = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo',int,0,'EigenChannels')
-options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,0,'EigenChannels')
+    options.DeviceLast = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo',int,1e10,'EigenChannels')
+options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,1e10,'EigenChannels')
 if options.DeviceLast<options.DeviceFirst:
     print 'EigenChannels error: DeviceLast<DeviceFirst not allowed. Setting DeviceLast=DeviceFirst'
     options.DeviceLast = options.DeviceFirst
