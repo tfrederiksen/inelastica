@@ -104,9 +104,13 @@ if options.UseBulk < 0:
     options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'Inelastica')
 
 # Device region
-options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,0,'pyTBT')
+if options.DeviceFirst<=0:
+    options.DeviceFirst = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom',int,0,'Inelastica')
+if options.DeviceLast<=0:
+    options.DeviceLast = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo',int,0,'Inelastica')
+options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,0,'Inelastica')
 if options.DeviceLast<options.DeviceFirst:
-    print 'pyTBT error: DeviceLast<DeviceFirst not allowed. Setting DeviceLast=DeviceFirst'
+    print 'Inelastica error: DeviceLast<DeviceFirst not allowed. Setting DeviceLast=DeviceFirst'
     options.DeviceLast = options.DeviceFirst
 options.DeviceAtoms = [max(options.DeviceFirst,1),min(options.DeviceLast,options.NumberOfAtoms)]
 

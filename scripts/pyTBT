@@ -17,10 +17,10 @@ parser = OptionParser(usage,description=description)
 # keywords with defaults from fdf-file:
 parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
                   help="Input fdf-file for TranSIESTA calculation [%default]")
-parser.add_option("-F","--DeviceFirst", dest='DeviceFirst',default=1,type='int',
-                  help="First device atom (SIESTA numbering) [%default]")
+parser.add_option("-F","--DeviceFirst", dest='DeviceFirst',default=0,type='int',
+                  help="First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]")
 parser.add_option("-L","--DeviceLast", dest='DeviceLast',default=0,type='int',
-                  help="Last device atom (SIESTA numbering) [NumberOfAtoms]")
+                  help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
 parser.add_option("-N","--NPoints", dest='NPoints',default=0,type='int',
                   help="Energy points [TS.TBT.NPoints]")
 parser.add_option("--Emin", dest='Emin',default=1e10,type='float',
@@ -104,6 +104,10 @@ if options.UseBulk < 0:
     options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'pyTBT')
 
 # Device region
+if options.DeviceFirst<=0:
+    options.DeviceFirst = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom',int,0,'pyTBT')
+if options.DeviceLast<=0:
+    options.DeviceLast = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo',int,0,'pyTBT')
 options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,0,'pyTBT')
 if options.DeviceLast<options.DeviceFirst:
     print 'pyTBT error: DeviceLast<DeviceFirst not allowed. Setting DeviceLast=DeviceFirst'
