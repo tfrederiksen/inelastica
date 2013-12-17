@@ -83,7 +83,7 @@ def Array2XYsets(A,**keywords):
         sets.append(XYset(x,y,**keywords))
     return sets
 
-def Datafile2XYsets(fn,**keywords):
+def Datafile2XYsets(fn,Sort=False,**keywords):
     print 'WriteXMGR.Datafile2XYsets: reading', fn
     f = open(fn,'r')
     A = []
@@ -96,6 +96,11 @@ def Datafile2XYsets(fn,**keywords):
                 A.append(l)
     f.close()
     A = N.array(A)
+    if Sort:
+        print ' ... sorting along x-values'
+        tmp = N.transpose(A)
+        argi = tmp.argsort()[0] # sort x-values
+        A = A[argi]
     print ' ... data shape =', N.shape(A)
     return Array2XYsets(A,**keywords)
 
