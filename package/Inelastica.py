@@ -115,7 +115,14 @@ def IntegrityCheck(options,GF,basis,NCfile):
         d = PH_xyz[PH_dev[0]-1+i]-TS_xyz[options.DeviceAtoms[0]-1+i] - R
         dist_xyz += N.dot(d,d)**.5
         # Difference between atom numbers
-        a = PH_anr[PH_dev[0]-1+i]-TS_anr[options.DeviceAtoms[0]-1+i]
+        if PH_anr[PH_dev[0]-1+i]<200:
+            a = PH_anr[PH_dev[0]-1+i]-TS_anr[options.DeviceAtoms[0]-1+i]
+        elif PH_anr[PH_dev[0]-1+i]<1200:
+            # Deuterated atom in PH calculation
+            a = (PH_anr[PH_dev[0]-1+i]-1000)-TS_anr[options.DeviceAtoms[0]-1+i]
+        elif PH_anr[PH_dev[0]-1+i]<2200:
+            # "Special" species with a mass defined as anr>2000
+            a = (PH_anr[PH_dev[0]-1+i]-2000)-TS_anr[options.DeviceAtoms[0]-1+i]
         dist_anr += abs(a)
     if dist_xyz<1e-3:
         print '... Check 2 passed: Atomic coordinates consistent'
