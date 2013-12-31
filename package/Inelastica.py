@@ -204,7 +204,7 @@ def calcIETS(options,GFp,GFm,basis,hw):
     max_win=max(-options.minBias,max_hw)+20*kT+4*options.Vrms
     min_win=min(-options.maxBias,-max_hw)-20*kT-4*options.Vrms
     pts=int(N.floor((max_win-min_win)/kT*3))
-    Egrid=N.array(range(pts),N.float)/pts*(max_win-min_win)+min_win
+    Egrid=N.linspace(min_win,max_win,pts)
     print "Inelastica.calcIETS: Hilbert integration grid : %i pts [%f,%f]" % (pts,min(Egrid),max(Egrid))
     
     # Calculate the prefactors for the Hilbert and non-Hilbert terms
@@ -222,11 +222,9 @@ def calcIETS(options,GFp,GFm,basis,hw):
     print 'Inelastica.calcIETS: Biaspoints =',NN
 
     # Add some points for the Lock in broadening
-    approxdV=(options.maxBias-options.minBias)/NN
-    NN+=int(((8*options.Vrms)/approxdV)+.5)
-    
-    Vl=options.minBias-4*options.Vrms+ \
-        (options.maxBias-options.minBias+8*options.Vrms)/NN*N.array(range(NN),N.float)
+    approxdV=(options.maxBias-options.minBias)/(NN-1)
+    NN+=int(((8*options.Vrms)/approxdV)+.5)    
+    Vl=N.linspace(options.minBias-4*options.Vrms,options.maxBias+4*options.Vrms,NN)
 
     InH=N.zeros((NN,),N.complex) # Non-Hilb-term current
     IH=N.zeros((NN,),N.complex) # Hilb-term current
@@ -337,17 +335,16 @@ def calcIETS(options,GFp,GFm,basis,hw):
     print 'Inelastica.calcIETS: gamma_heat_p =',gamma_heat_p # OK
     print 'Inelastica.calcIETS: gamma_heat_m =',gamma_heat_m # OK
 
-    #hw, T, nHT, HT, lLOE, nPhtot, nPh, = hw, GF.TeF, GF.nHT, GF.HT, [Vl, InH, IH], nPhtot, nPhvsBias
     V, I, dI, ddI, BdI, BddI, NnPhtot,NnPh = Broaden(options,Vl,InH+IH,nPhtot,nPhvsBias)
 
-    print 'Inelastica.calcIETS: V[:5]  =',V[:5] # OK
-    print 'Inelastica.calcIETS: V[-5:] =',V[-5:] # OK
-    print 'Inelastica.calcIETS: I[:5]  =',I[:5] # OK
-    print 'Inelastica.calcIETS: I[-5:] =',I[-5:] # OK
-    print 'Inelastica.calcIETS: BdI[:5]  =',BdI[:5] # OK
-    print 'Inelastica.calcIETS: BdI[-5:] =',BdI[-5:] # OK
-    print 'Inelastica.calcIETS: BddI[:5]  =',BddI[:5] # OK
-    print 'Inelastica.calcIETS: BddI[-5:] =',BddI[-5:] # OK
+    print 'Inelastica.calcIETS: V[:5]        =',V[:5] # OK
+    print 'Inelastica.calcIETS: V[-5:][::-1] =',V[-5:][::-1] # OK
+    print 'Inelastica.calcIETS: I[:5]        =',I[:5] # OK
+    print 'Inelastica.calcIETS: I[-5:][::-1] =',I[-5:][::-1] # OK
+    print 'Inelastica.calcIETS: BdI[:5]        =',BdI[:5] # OK
+    print 'Inelastica.calcIETS: BdI[-5:][::-1] =',BdI[-5:][::-1] # OK
+    print 'Inelastica.calcIETS: BddI[:5]        =',BddI[:5] # OK
+    print 'Inelastica.calcIETS: BddI[-5:][::-1] =',BddI[-5:][::-1] # OK
 
     datafile = '%s/%s.IN'%(options.DestDir,options.systemlabel)
     writeLOEData2Datafile(datafile+'p',hw,GFp.TeF,GFp.nHT,GFp.HT)
@@ -478,8 +475,8 @@ def Broaden(options,VV,II,nPhtot,nPh):
         BddI[iV]=8.0/3.0/N.pi*N.sum(ddIL*(N.cos(wt)**4))*(wt[1]-wt[0])
 
     # Reduce to one voltage grid
-    NN=options.biasPoints 
-    V=options.minBias+(options.maxBias-options.minBias)/NN*N.array(range(NN)) 
+    NN=options.biasPoints
+    V = N.linspace(options.minBias,options.maxBias,NN)
 
     NI=MM.interpolate(V,VV,II)
     NdI=MM.interpolate(V,dV,dI)
