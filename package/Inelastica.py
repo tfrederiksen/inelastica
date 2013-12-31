@@ -59,13 +59,20 @@ def main(options):
     IntegrityCheck(options,GFp,basis,NCfile)   
     # Calculate trace factors one mode at a time
     print 'Inelastica: LOEscale =',options.LOEscale
-    # LOEscale=1.0 => Generalized LOE, see arXiv:1312.7625
-    # LOEscale=0.0 => Original LOE-WBA method
-    for ihw in range(len(hw)):
-        GFp.calcGF(options.energy+hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-        GFm.calcGF(options.energy-hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-        calcTraces(options,GFp,GFm,basis,NCfile,ihw)
-        calcTraces(options,GFm,GFp,basis,NCfile,ihw)
+    if options.LOEscale==0.0:
+        # LOEscale=0.0 => Original LOE-WBA method
+        GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+        GFm.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+        for ihw in range(len(hw)):
+            calcTraces(options,GFp,GFm,basis,NCfile,ihw)
+            calcTraces(options,GFm,GFp,basis,NCfile,ihw)
+    else:
+        # LOEscale=1.0 => Generalized LOE, see arXiv:1312.7625
+        for ihw in range(len(hw)):
+            GFp.calcGF(options.energy+hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+            GFm.calcGF(options.energy-hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+            calcTraces(options,GFp,GFm,basis,NCfile,ihw)
+            calcTraces(options,GFm,GFp,basis,NCfile,ihw)
     # Multiply traces with voltage-dependent functions
     calcIETS(options,GFp,GFm,basis,hw)
     NCfile.close()
