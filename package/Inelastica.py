@@ -1,11 +1,5 @@
 print "SVN $Id$"
 
-"""
-Inelastica:
-1: Analyze IETS spectra, Paulsson et al PRL 2008
-"""
-
-import EigenChannels as EC
 import NEGF
 import SiestaIO as SIO
 import MakeGeom as MG
@@ -30,33 +24,50 @@ def main(options):
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
-    GF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
+    # Work with GFs etc at two different energies: p=Ef+hw/2 and m=Ef-hw/2
+    GFp = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
+    # Prepare lists for various trace factors
+    #GF.dGnout = []
+    #GF.dGnin = []
+    GFp.P1T = []     # M.A.M.A (total e-h damping)
+    GFp.P2T = []     # M.AL.M.AR (emission)
+    GFp.ehDampL = [] # M.AL.M.AL (L e-h damping)
+    GFp.ehDampR = [] # M.AR.M.AR (R e-h damping)
+    GFp.nHT = []     # non-Hilbert/Isym factor
+    GFp.nHTin = []
+    GFp.nHTel = []
+    GFp.HT = []      # Hilbert/Iasym factor
+    GFm = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
+    GFm.P1T = []     # M.A.M.A (total e-h damping)
+    GFm.P2T = []     # M.AL.M.AR (emission)
+    GFm.ehDampL = [] # M.AL.M.AL (L e-h damping)
+    GFm.ehDampR = [] # M.AR.M.AR (R e-h damping)
+    GFm.nHT = []     # non-Hilbert/Isym factor
+    GFm.nHTin = []
+    GFm.nHTel = []
+    GFm.HT = []      # Hilbert/Iasym factor
+    # Calculate transmission at Fermi level
+    GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+    basis = SIO.BuildBasis(options.XV,options.DeviceAtoms[0],options.DeviceAtoms[1],GFp.HS.lasto)
+    GFp.TeF = GFp.calcT(options.numchan)[0]
+    GFm.TeF = GFp.TeF
     # Read phonons
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Inelastica: Reading ',options.PhononNetCDF
     hw = N.array(NCfile.variables['hw'][:])
-    # Prepare lists for various trace factors
-    #GF.dGnout = []
-    #GF.dGnin = []
-    GF.P1T = []     # M.A.M.A (total e-h damping)
-    GF.P2T = []     # M.AL.M.AR (emission)
-    GF.ehDampL = [] # M.AL.M.AL (L e-h damping)
-    GF.ehDampR = [] # M.AR.M.AR (R e-h damping)
-    GF.nHT = []     # non-Hilbert/Isym factor
-    GF.nHTin = []
-    GF.nHTel = []
-    GF.HT = []      # Hilbert/Iasym factor
-    # Calculate transmission at Fermi level
-    GF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-    basis = SIO.BuildBasis(options.XV,options.DeviceAtoms[0],options.DeviceAtoms[1],GF.HS.lasto)
-    GF.TeF = GF.calcT(options.numchan)[0]
     # Check consistency of PHrun vs TSrun inputs
-    IntegrityCheck(options,GF,basis,NCfile)   
+    IntegrityCheck(options,GFp,basis,NCfile)   
     # Calculate trace factors one mode at a time
+    print 'Inelastica: LOEscale =',options.LOEscale
+    # LOEscale=1.0 => Generalized LOE, see arXiv:1312.7625
+    # LOEscale=0.0 => Original LOE-WBA method
     for ihw in range(len(hw)):
-        calcTraces(options,GF,basis,NCfile,ihw)
+        GFp.calcGF(options.energy+hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+        GFm.calcGF(options.energy-hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+        calcTraces(options,GFp,GFm,basis,NCfile,ihw)
+        calcTraces(options,GFm,GFp,basis,NCfile,ihw)
     # Multiply traces with voltage-dependent functions
-    calcIETS(options,GF,basis,hw)
+    calcIETS(options,GFp,GFm,basis,hw)
     NCfile.close()
 
 
@@ -143,37 +154,40 @@ def IntegrityCheck(options,GF,basis,NCfile):
         sys.exit('Inelastica: Error - inconsistency detected for device region.\n')
 
 
-def calcTraces(options,GF,basis,NCfile,ihw):
+def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
     # Calculate various traces over the electronic structure
     # Electron-phonon couplings
     M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
     # Calculation of intermediate quantity
-    MARGLGM = MM.mm(M,GF.ARGLG,M)
+    MARGLGM = MM.mm(M,GF1.ARGLG,M)
+    MARGLGM2 = MM.mm(M,GF2.ARGLG,M)
     # LOE expressions in compact form
-    t1 = MM.mm(MARGLGM,GF.AR)
-    t2 = MM.mm(MARGLGM,GF.AL)
+    t1 = MM.mm(MARGLGM,GF2.AR)
+    t2 = MM.mm(MARGLGM2,GF1.AL)
     K23 = N.trace(t1+t2).imag
-    K4 = N.trace(MM.mm(M,GF.ALT,M,GF.AR))
+    K4 = N.trace(MM.mm(M,GF1.ALT,M,GF2.AR))
     aK23 = 2*N.trace(t1-t2).real # asymmetric part
     # Non-Hilbert term defined here with a minus sign
-    GF.nHTin.append(-1.0*checkImPart(K4))
-    GF.nHTel.append(-1.0*checkImPart(K23))
-    GF.nHT.append(-1.0*checkImPart(K23+K4))
-    GF.HT.append(checkImPart(aK23))
+    GF1.nHTin.append(-1.0*checkImPart(K4))
+    GF1.nHTel.append(-1.0*checkImPart(K23))
+    GF1.nHT.append(-1.0*checkImPart(K23+K4))
+    GF1.HT.append(checkImPart(aK23))
     # Power, damping and current rates
-    GF.P1T.append(checkImPart(N.trace(MM.mm(M,GF.A,M,GF.A))))
-    GF.P2T.append(checkImPart(N.trace(MM.mm(M,GF.AL,M,GF.AR))))
-    GF.ehDampL.append(checkImPart(N.trace(MM.mm(M,GF.AL,M,GF.AL))))
-    GF.ehDampR.append(checkImPart(N.trace(MM.mm(M,GF.AR,M,GF.AR))))
+    GF1.P1T.append(checkImPart(N.trace(MM.mm(M,GF1.A,M,GF2.A))))
+    GF1.P2T.append(checkImPart(N.trace(MM.mm(M,GF1.AL,M,GF2.AR))))
+    GF1.ehDampL.append(checkImPart(N.trace(MM.mm(M,GF1.AL,M,GF2.AL))))
+    GF1.ehDampR.append(checkImPart(N.trace(MM.mm(M,GF1.AR,M,GF2.AR))))
     # Remains from older version (see before rev. 219):
     #GF.dGnout.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
     #GF.dGnin.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
     # NB: TF Should one use GF.HNO (nonorthogonal) or GF.H (orthogonalized) above?
 
-def calcIETS(options,GF,basis,hw):
+def calcIETS(options,GFp,GFm,basis,hw):
     # Calculate product of electronic traces and voltage functions
-    print 'Inelastica.calcIETS: nHT =',N.array(GF.nHT)*PC.unitConv # OK
-    print 'Inelastica.calcIETS: HT  =',N.array(GF.HT) # OK
+    print 'Inelastica.calcIETS: nHTp =',N.array(GFp.nHT)*PC.unitConv # OK
+    print 'Inelastica.calcIETS: nHTm =',N.array(GFm.nHT)*PC.unitConv # OK
+    print 'Inelastica.calcIETS: HTp  =',N.array(GFp.HT) # OK
+    print 'Inelastica.calcIETS: HTm  =',N.array(GFm.HT) # OK
     
     # Set up grid and Hilbert term
     kT = options.Temp/11604.0 # (eV)
@@ -206,7 +220,7 @@ def calcIETS(options,GF,basis,hw):
     
     Vl=options.minBias-4*options.Vrms+ \
         (options.maxBias-options.minBias+8*options.Vrms)/NN*N.array(range(NN),N.float)
-    
+
     InH=N.zeros((NN,),N.complex) # Non-Hilb-term current
     IH=N.zeros((NN,),N.complex) # Hilb-term current
     Pow=N.zeros((NN,),N.float) # Power
@@ -251,16 +265,24 @@ def calcIETS(options,GF,basis,hw):
                         tmpheat=(1-mexpV)/(1-mexphw)* \
                                  ((1+mexphw)*(1-mexpV)*ihw-(1-mexphw)*(1+mexpV)*PV)/ \
                                  (exphwmV+mexphw*mexpV-mexpV**2-1)
-                        
-                heat=tmpheat*GF.P2T[iOmega]/N.pi # Heating term / (hbar hw)
+                if V>0:
+                    heat=tmpheat*GFp.P2T[iOmega]/N.pi # Heating term / (hbar hw)
+                else:
+                    heat=tmpheat*GFm.P2T[iOmega]/N.pi # Heating term / (hbar hw)
                 
                 if options.PhHeating: # Heating?
-                    nPh[iOmega]=heat/(ihw*GF.P1T[iOmega]/N.pi+options.PhExtDamp)+1.0/(exphw-1.0)
+                    if V>0:
+                        nPh[iOmega]=heat/(ihw*GFp.P1T[iOmega]/N.pi+options.PhExtDamp)+1.0/(exphw-1.0)
+                    else:
+                        nPh[iOmega]=heat/(ihw*GFm.P1T[iOmega]/N.pi+options.PhExtDamp)+1.0/(exphw-1.0)
                 nPhvsBias[iV,iOmega]=nPh[iOmega]
-                    
-                # Damping term /(hbar hw)
-                damp = ihw*(1/(exphw-1)-nPh[iOmega])*GF.P1T[iOmega]/N.pi
                 
+                # Damping term /(hbar hw)
+                if V>0:
+                    damp = ihw*(1/(exphw-1)-nPh[iOmega])*GFp.P1T[iOmega]/N.pi
+                else:
+                    damp = ihw*(1/(exphw-1)-nPh[iOmega])*GFm.P1T[iOmega]/N.pi
+
                 # Power in units of 1/(hbar)
                 Pow[iV]=ihw*(heat+damp)
                 nPhtot[iV]=nPhtot[iV]+nPh[iOmega]
@@ -273,37 +295,62 @@ def calcIETS(options,GF,basis,hw):
                     tmp+=kT
                 else:
                     tmp+=(V+ihw)/(N.exp(N.clip((ihw+V)/kT,-70.0,70.0))-1)
-                    InH[iV]+=(tmp-V*nPh[iOmega])*GF.nHT[iOmega]
+                    if V>0:
+                        InH[iV]+=(tmp-V*nPh[iOmega])*GFp.nHT[iOmega]
+                    else:
+                        InH[iV]+=(tmp-V*nPh[iOmega])*GFm.nHT[iOmega]
 
                 # Finite temp Hilbert
-                IH[iV]-=GF.HT[iOmega]*MM.trapez(Egrid,kasse*hilb[iOmega],\
+                if V>0:
+                    IH[iV]-=GFp.HT[iOmega]*MM.trapez(Egrid,kasse*hilb[iOmega],\
                                                      equidistant=True)/2
-                
-        InH[iV]+=V*GF.TeF # Last to reduce cancelation errors
+                else:
+                    IH[iV]-=GFm.HT[iOmega]*MM.trapez(Egrid,kasse*hilb[iOmega],\
+                                                     equidistant=True)/2
+        if V>0:
+            InH[iV]+=V*GFp.TeF # Last to reduce cancelation errors
+        else:
+            InH[iV]+=V*GFm.TeF # Last to reduce cancelation errors
 
     # Get the right units for gamma_eh, gamma_heat
-    gamma_eh=N.zeros((len(hw),),N.float)
-    gamma_heat=N.zeros((len(hw),),N.float)
+    gamma_eh_p=N.zeros((len(hw),),N.float)
+    gamma_eh_m=N.zeros((len(hw),),N.float)
+    gamma_heat_p=N.zeros((len(hw),),N.float)
+    gamma_heat_m=N.zeros((len(hw),),N.float)
     for iOmega in range(len(hw)):
         # Units [Phonons per Second per dN where dN is number extra phonons]
-        gamma_eh[iOmega]=GF.P1T[iOmega]*hw[iOmega]*PC.unitConv
+        gamma_eh_p[iOmega]=GFp.P1T[iOmega]*hw[iOmega]*PC.unitConv
+        gamma_eh_m[iOmega]=GFm.P1T[iOmega]*hw[iOmega]*PC.unitConv
         # Units [Phonons per second per eV [eV-ihw]
-        gamma_heat[iOmega]=GF.P2T[iOmega]*PC.unitConv
+        gamma_heat_p[iOmega]=GFp.P2T[iOmega]*PC.unitConv
+        gamma_heat_m[iOmega]=GFm.P2T[iOmega]*PC.unitConv
 
-    print 'Inelastica.calcIETS: gamma_eh =',gamma_eh # OK
-    print 'Inelastica.calcIETS: gamma_heat =',gamma_heat # OK
+    print 'Inelastica.calcIETS: gamma_eh_p =',gamma_eh_p # OK
+    print 'Inelastica.calcIETS: gamma_eh_m =',gamma_eh_m # OK
+    print 'Inelastica.calcIETS: gamma_heat_p =',gamma_heat_p # OK
+    print 'Inelastica.calcIETS: gamma_heat_m =',gamma_heat_m # OK
 
     #hw, T, nHT, HT, lLOE, nPhtot, nPh, = hw, GF.TeF, GF.nHT, GF.HT, [Vl, InH, IH], nPhtot, nPhvsBias
     V, I, dI, ddI, BdI, BddI, NnPhtot,NnPh = Broaden(options,Vl,InH+IH,nPhtot,nPhvsBias)
 
-    print 'Inelastica.calcIETS: BdI[:10] =',BdI[:10] # OK
-    print 'Inelastica.calcIETS: BddI[:10] =',BddI[:10] # OK
+    print 'Inelastica.calcIETS: V[:5]  =',V[:5] # OK
+    print 'Inelastica.calcIETS: V[-5:] =',V[-5:] # OK
+    print 'Inelastica.calcIETS: I[:5]  =',I[:5] # OK
+    print 'Inelastica.calcIETS: I[-5:] =',I[-5:] # OK
+    print 'Inelastica.calcIETS: BdI[:5]  =',BdI[:5] # OK
+    print 'Inelastica.calcIETS: BdI[-5:] =',BdI[-5:] # OK
+    print 'Inelastica.calcIETS: BddI[:5]  =',BddI[:5] # OK
+    print 'Inelastica.calcIETS: BddI[-5:] =',BddI[-5:] # OK
 
     datafile = '%s/%s.IN'%(options.DestDir,options.systemlabel)
-    initncfile(datafile,hw)
-    writeLOEData2Datafile(datafile,hw,GF.TeF,GF.nHT,GF.HT)
-    writeLOE2ncfile(datafile,hw,GF.nHT,GF.HT,V,I,NnPhtot,NnPh,\
-                    dI,ddI,BdI,BddI,gamma_eh,gamma_heat)
+    writeLOEData2Datafile(datafile+'p',hw,GFp.TeF,GFp.nHT,GFp.HT)
+    initncfile(datafile+'p',hw)
+    writeLOE2ncfile(datafile+'p',hw,GFp.nHT,GFp.HT,V,I,NnPhtot,NnPh,\
+                        dI,ddI,BdI,BddI,gamma_eh_p,gamma_heat_p,options)
+    writeLOEData2Datafile(datafile+'m',hw,GFm.TeF,GFm.nHT,GFm.HT)
+    initncfile(datafile+'m',hw)
+    writeLOE2ncfile(datafile+'m',hw,GFm.nHT,GFm.HT,V,I,NnPhtot,NnPh,\
+                        dI,ddI,BdI,BddI,gamma_eh_p,gamma_heat_p,options)
 
     
 ########################################################
@@ -450,14 +497,13 @@ def initncfile(filename,hw):
     ncfile.title = 'Inelastica Output'
     ncfile.version = 1
     ncfile.createDimension('Nph',len(hw))
-    ncfile.createDimension('Bias',None)
     nchw = ncfile.createVariable('hw','d',('Nph',))
     nchw[:] = N.array(hw)
     nchw.units = 'eV'
     ncfile.close()
     
 def writeLOE2ncfile(filename,hw,nHT,HT,V,I,nPhtot,nPh,\
-                     dI,ddI,BdI,BddI,gamma_eh,gamma_heat):
+                        dI,ddI,BdI,BddI,gamma_eh,gamma_heat,options):
     'Write LOE data to netCDF file'
     print 'Inelastica: Write LOE data to nc-file'
     ncfile = NC.NetCDFFile(filename+'.nc','a')
@@ -495,14 +541,31 @@ def writeLOE2ncfile(filename,hw,nHT,HT,V,I,nPhtot,nPh,\
     tmp.units='e-h damping [*deltaN=1/Second]'
     tmp=ncfile.createVariable('LOE_gamma_heat','d',('Nph',))
     tmp[:]=N.array(gamma_heat)
+    # Symmetric part
     tmp.units='Phonon heating [*(bias-hw) (eV) = 1/Second]'
     ncTotR = ncfile.createVariable('LOE_ISymTr','d',('Nph',))
     ncTotR[:] = N.array(nHT)*PC.unitConv
     ncTotR.units = 'Trace giving Symmetric current contribution (same units as eigenchannels [1/s/eV])'
+    ncTotR2 = ncfile.createVariable('LOE_ISymTr2','d',('Nph',))
+    ncTotR2[:] = N.array(nHT)
+    ncTotR2.units = 'Trace giving Symmetric current contribution (same units as asymmetric contrib.)'
+    # Asymmetric part
     ncTotL = ncfile.createVariable('LOE_IAsymTr','d',('Nph',))
     ncTotL[:] = N.array(HT)
     ncTotL.units = 'Trace giving Asymmetric current contribution'
+    # Write energy reference where Greens functions are evaluated
+    ncfile.createDimension('number',1)
+    tmp=ncfile.createVariable('EnergyRef','d',('number',))
+    tmp[:]=N.array(options.energy)
+    # Write LOEscale
+    tmp=ncfile.createVariable('LOEscale','d',('number',))
+    tmp[:]=N.array(options.LOEscale)
+    # Write k-point
+    ncfile.createDimension('vector',3)
+    tmp=ncfile.createVariable('kpoint','d',('vector',))
+    tmp[:]=N.array(options.kPoint)
     ncfile.close()
+
     
 def writeLOEData2Datafile(file,hw,T,nHT,HT):
     f = open(file,'a')

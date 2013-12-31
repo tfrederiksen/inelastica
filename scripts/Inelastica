@@ -65,6 +65,10 @@ parser.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to
 parser.add_option("--scaleSigR", dest="scaleSigR", help="Scale factor applied to Sigma_R [default=%default]",
                   type='float', default=1.0)
 
+# Which LOE method?
+parser.add_option("--LOEscale", dest="LOEscale", help="Scale factor to interpolate between LOE-WBA (0.0) and generalized LOE (1.0), see arXiv:1312.7625 [default=%default]",
+                  type='float', default=1.0)
+
 (options, args) = parser.parse_args()
 
 # Destination directory
