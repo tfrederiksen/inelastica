@@ -214,9 +214,11 @@ def Analyze(FCwildcard,
         Write2NetCDFFile(NCfile,S0.real,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
         Write2NetCDFFile(NCfile,Heph.real,'He_ph',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
         # Write imaginary part
-        Write2NetCDFFile(NCfile,H0.imag,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-        Write2NetCDFFile(NCfile,S0.imag,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
-        Write2NetCDFFile(NCfile,Heph.imag,'ImHe_ph',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+        GammaPoint = N.dot(kpoint,kpoint)<1e-7
+        if not GammaPoint:
+            Write2NetCDFFile(NCfile,H0.imag,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+            Write2NetCDFFile(NCfile,S0.imag,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
+            Write2NetCDFFile(NCfile,Heph.imag,'ImHe_ph',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
 
     if CalcCoupl and PrintSOrbitals:
         # Print e-ph coupling matrices in s-orbital subspace
