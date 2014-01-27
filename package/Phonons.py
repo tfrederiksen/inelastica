@@ -219,6 +219,7 @@ def Analyze(FCwildcard,
             Write2NetCDFFile(NCfile,H0.imag,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
             Write2NetCDFFile(NCfile,S0.imag,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
             Write2NetCDFFile(NCfile,Heph.imag,'ImHe_ph',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+        NCfile.sync()
 
     if CalcCoupl and PrintSOrbitals:
         # Print e-ph coupling matrices in s-orbital subspace
