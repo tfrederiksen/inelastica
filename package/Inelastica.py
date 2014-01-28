@@ -160,11 +160,14 @@ def IntegrityCheck(options,GF,basis,NCfile):
     if (not check1) or (not check2) or (not check3):
         sys.exit('Inelastica: Error - inconsistency detected for device region.\n')
 
-
 def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
     # Calculate various traces over the electronic structure
     # Electron-phonon couplings
-    M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
+    M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:],N.complex)
+    try:
+        M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw,options.iSpin,:,:],N.complex)
+    except:
+        print 'Warning: Variable ImHe_ph not found'
     # Calculation of intermediate quantity
     MARGLGM = MM.mm(M,GF1.ARGLG,M)
     MARGLGM2 = MM.mm(M,GF2.ARGLG,M)
@@ -378,7 +381,7 @@ def writeFGRrates():
     
     for ihw in range(len(GF.hw)):
         SIO.printDone(ihw,len(GF.hw),'Golden Rate') 
-        M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:])
+        M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:],N.complex) + 1.j*N.array(NCfile.variables['ImHe_ph'][ihw,options.iSpin,:,:],N.complex)
         rate=N.zeros((len(GF.ECleft),len(GF.ECright)),N.float)
         totrate=0.0
         inter,intra = 0.0, 0.0 # splitting total rate in two
