@@ -178,9 +178,9 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
     K4 = N.trace(MM.mm(M,GF1.ALT,M,GF2.AR))
     aK23 = 2*N.trace(t1-t2).real # asymmetric part
     # Non-Hilbert term defined here with a minus sign
-    GF1.nHTin.append(-1.0*checkImPart(K4))
-    GF1.nHTel.append(-1.0*checkImPart(K23))
-    GF1.nHT.append(-1.0*checkImPart(K23+K4))
+    GF1.nHTin.append(checkImPart(K4))
+    GF1.nHTel.append(checkImPart(K23))
+    GF1.nHT.append(checkImPart(K23+K4))
     GF1.HT.append(checkImPart(aK23))
     # Power, damping and current rates
     GF1.P1T.append(checkImPart(N.trace(MM.mm(M,GF1.A,M,GF2.A))))
@@ -209,18 +209,7 @@ def calcIETS(options,GFp,GFm,basis,hw):
     pts=int(N.floor((max_win-min_win)/kT*3))
     Egrid=N.linspace(min_win,max_win,pts)
     print "Inelastica.calcIETS: Hilbert integration grid : %i pts [%f,%f]" % (pts,min(Egrid),max(Egrid))
-    
-    # Calculate the prefactors for the Hilbert and non-Hilbert terms
-    # Also calculate the Hilbert transfer of the box on the grid for each mode
-    hilb=[] # List of hilbert transforms
-    ker=None
-    for ii in range(len(hw)):
-        hwi=hw[ii]
-        tmp=MM.box(hwi,-hwi,Egrid,kT)
-        tmp2, ker = MM.Hilbert(tmp,ker)
-        hilb.append(tmp2)
-        SIO.printDone(ii,len(hw),'Inelastica.calcIETS: Hilbert transform')
-    
+
     NN = options.biasPoints
     print 'Inelastica.calcIETS: Biaspoints =',NN
 
@@ -229,96 +218,75 @@ def calcIETS(options,GFp,GFm,basis,hw):
     NN+=int(((8*options.Vrms)/approxdV)+.5)    
     Vl=N.linspace(options.minBias-4*options.Vrms,options.maxBias+4*options.Vrms,NN)
 
-    InH=N.zeros((NN,),N.complex) # Non-Hilb-term current
-    IH=N.zeros((NN,),N.complex) # Hilb-term current
-    Pow=N.zeros((NN,),N.float) # Power
-    nPhtot=N.zeros((NN,),N.float) # Number of phonons (sum over modes)
-    nPhvsBias=N.zeros((NN,len(hw)),N.float) # Number of phonons
-    nPh=N.zeros((len(hw),),N.float)         # Number of phonons                                  
-
-    for iV in range(len(Vl)):
-        SIO.printDone(iV,len(Vl),'Inelastica.calcIETS: Calculating voltage-dependent functions')
-        
-        InH[iV], IH[iV], Pow[iV] = 0.0, 0.0, 0.0
-        V=Vl[iV]
-        
-        kasse=MM.box(0,-V,Egrid,kT)
-
-        for iOmega in range(len(hw)):
-            ihw = hw[iOmega]
-            if ihw>options.modeCutoff:
-                PV=abs(V)
-                
-                # Power
-                exphw=N.exp(N.clip(ihw/kT,-300,300))
-                expV=N.exp(N.clip(PV/kT,-300,300))
-                exphwmV=N.exp(N.clip((ihw-PV)/kT,-300,300))
-                if ihw/kT>300:
-                    mexphw=0.0
-                else:
-                    mexphw=N.exp(N.clip(-ihw/kT,-300,300))
-                if PV/kT>300:
-                    mexpV=0.0
-                else:
-                    mexpV=N.exp(N.clip(-PV/kT,-300,300))
-
-                # Re-written third time lucky? Numerical problems galore!
-                if (ihw-PV)/kT>150:
-                    tmpheat=0
-                else:
-                    if abs((ihw-PV)/kT)<1e-3:
-                        tmpheat= (2*mexphw*ihw+kT*mexphw**2-kT)/(mexphw**2-1)-\
-                                 (PV-ihw)*(4*ihw*mexphw**2+kT*mexphw**4-kT)/(2*kT*(1-mexphw**2)**2)
-                    else:
-                        tmpheat=(1-mexpV)/(1-mexphw)* \
-                                 ((1+mexphw)*(1-mexpV)*ihw-(1-mexphw)*(1+mexpV)*PV)/ \
-                                 (exphwmV+mexphw*mexpV-mexpV**2-1)
-                if V>0:
-                    heat=tmpheat*GFp.P2T[iOmega]/N.pi # Heating term / (hbar hw)
-                else:
-                    heat=tmpheat*GFm.P2T[iOmega]/N.pi # Heating term / (hbar hw)
-                
-                if options.PhHeating: # Heating?
-                    if V>0:
-                        nPh[iOmega]=heat/(ihw*GFp.P1T[iOmega]/N.pi+options.PhExtDamp)+1.0/(exphw-1.0)
-                    else:
-                        nPh[iOmega]=heat/(ihw*GFm.P1T[iOmega]/N.pi+options.PhExtDamp)+1.0/(exphw-1.0)
-                nPhvsBias[iV,iOmega]=nPh[iOmega]
-                
-                # Damping term /(hbar hw)
-                if V>0:
-                    damp = ihw*(1/(exphw-1)-nPh[iOmega])*GFp.P1T[iOmega]/N.pi
-                else:
-                    damp = ihw*(1/(exphw-1)-nPh[iOmega])*GFm.P1T[iOmega]/N.pi
-
-                # Power in units of 1/(hbar)
-                Pow[iV]=ihw*(heat+damp)
-                nPhtot[iV]=nPhtot[iV]+nPh[iOmega]
-                tmp=0.0
-                if abs(V-ihw)/kT<1e-7:
-                    tmp=-kT
-                else:
-                    tmp=(V-ihw)/(N.exp(N.clip((ihw-V)/kT,-70.0,70.0))-1)
-                if abs(V+ihw)/kT<1e-7:
-                    tmp+=kT
-                else:
-                    tmp+=(V+ihw)/(N.exp(N.clip((ihw+V)/kT,-70.0,70.0))-1)
-                    if V>0:
-                        InH[iV]+=(tmp-V*nPh[iOmega])*GFp.nHT[iOmega]
-                    else:
-                        InH[iV]+=(tmp-V*nPh[iOmega])*GFm.nHT[iOmega]
-
-                # Finite temp Hilbert
-                if V>0:
-                    IH[iV]-=GFp.HT[iOmega]*MM.trapez(Egrid,kasse*hilb[iOmega],\
-                                                     equidistant=True)/2
-                else:
-                    IH[iV]-=GFm.HT[iOmega]*MM.trapez(Egrid,kasse*hilb[iOmega],\
-                                                     equidistant=True)/2
-        if V>0:
-            InH[iV]+=V*GFp.TeF # Last to reduce cancelation errors
+    # Vector implementation on Vgrid:
+    wp = (1+N.sign(Vl))/2. # weights for positive V 
+    wm = (1-N.sign(Vl))/2. # weights for negative V
+    
+    # Mode occupation and power dissipation
+    Pow = N.zeros((len(hw),NN),N.float) # (modes,Vgrid)
+    nPh = N.zeros((len(hw),NN),N.float)
+    t0 = N.clip(Vl/kT,-700,700)
+    cosh0 = N.cosh(t0) # Vgrid
+    sinh0 = N.sinh(t0)
+    for i in range(len(hw)):
+        P1T = wm*GFm.P1T[i]+wp*GFp.P1T[i]
+        P2T = wm*GFm.P2T[i]+wp*GFp.P2T[i]
+        # Bose distribution
+        nB = 1/(N.exp(N.clip(hw[i]/kT,-300,300))-1) # number
+        t1 = N.clip(hw[i]/(2*kT),-700,700) # number
+        coth1 = N.cosh(t1)/N.sinh(t1)
+        # Emission rate and e-h damping
+        damp = P1T*hw[i]/N.pi # Vgrid
+        emis = P2T*(hw[i]*(cosh0-1)*coth1-Vl*sinh0)/(N.cosh(2*t1)-cosh0)/N.pi
+        # Determine mode occupation
+        if options.PhHeating:
+            nPh[i,:] = emis/(hw[i]*P1T/N.pi+options.PhExtDamp)+nB
         else:
-            InH[iV]+=V*GFm.TeF # Last to reduce cancelation errors
+            nPh[i,:] = nB
+        # Mode-resolved power dissipation
+        Pow[i,:] = hw[i]*((nB-nPh[i])*damp+emis)
+
+    # Current: non-Hilbert part (InH)
+    InH = N.zeros((NN,),N.float) # Vgrid
+    for i in range(len(hw)):
+        nHT = wm*GFm.nHT[i]+wp*GFp.nHT[i] # Vgrid
+        t1 = hw[i]/(2*kT) # number 
+        t1 = N.clip(t1,-700,700)
+        coth1 = N.cosh(t1)/N.sinh(t1)
+        t2 = (hw[i]+Vl)/(2*kT) # Vgrid
+        t2 = N.clip(t2,-700,700)
+        coth2 = N.cosh(t2)/N.sinh(t2)
+        t3 = (hw[i]-Vl)/(2*kT) # Vgrid
+        t3 = N.clip(t3,-700,700)
+        coth3 = N.cosh(t3)/N.sinh(t3) # Vgrid
+        # Isym function
+        Isym = 0.5*(hw[i]+Vl)*(coth1-coth2) # Vgrid
+        Isym -= 0.5*(hw[i]-Vl)*(coth1-coth3)
+        # non-Hilbert part
+        InH += (Isym+Vl*nPh[i])*nHT # Vgrid
+
+    # Current: Add Landauer part, GFm.TeF = GFp.TeF
+    InH += GFp.TeF*Vl # Vgrid
+
+    # Current: Hilbert part
+    IH = N.zeros((NN,),N.float)
+    # Prepare box/window function on array
+    Vl2 = N.outer(Vl,N.ones(Egrid.shape)) 
+    Egrid2 = N.outer(N.ones(Vl.shape),Egrid)
+    # Box/window function nF(E-Vl2)-nF(E-0):
+    kasse = MM.box(0,-Vl2,Egrid2,kT) # (Vgrid,Egrid)
+    ker = None
+    for i in range(len(hw)):
+        # Box/window function nF(E-hw)-nF(E+hw)
+        tmp = MM.box(-hw[i],hw[i],Egrid,kT)
+        hilb, ker = MM.Hilbert(tmp,ker) # Egrid
+        # Calculate Iasym for each bias point
+        for j in range(len(Vl)):
+            Iasym = MM.trapez(Egrid,kasse[j]*hilb,equidistant=True)/2
+            if Vl[j]>0:
+                IH[j] += GFp.HT[i]*Iasym
+            else:
+                IH[j] += GFm.HT[i]*Iasym
 
     # Get the right units for gamma_eh, gamma_heat
     gamma_eh_p=N.zeros((len(hw),),N.float)
@@ -338,7 +306,11 @@ def calcIETS(options,GFp,GFm,basis,hw):
     print 'Inelastica.calcIETS: gamma_heat_p =',gamma_heat_p # OK
     print 'Inelastica.calcIETS: gamma_heat_m =',gamma_heat_m # OK
 
-    V, I, dI, ddI, BdI, BddI, NnPhtot,NnPh = Broaden(options,Vl,InH+IH,nPhtot,nPhvsBias)
+    V, I, dI, ddI, BdI, BddI, NPow, NnPh = Broaden(options,Vl,InH+IH,Pow,nPh)
+
+    # Total power and phonons
+    NPowtot = N.sum(NPow,axis=0) # sum over modes
+    NnPhtot = N.sum(NnPh,axis=0) # sum over modes
 
     print 'Inelastica.calcIETS: V[:5]        =',V[:5] # OK
     print 'Inelastica.calcIETS: V[-5:][::-1] =',V[-5:][::-1] # OK
@@ -350,14 +322,16 @@ def calcIETS(options,GFp,GFm,basis,hw):
     print 'Inelastica.calcIETS: BddI[-5:][::-1] =',BddI[-5:][::-1] # OK
 
     datafile = '%s/%s.IN'%(options.DestDir,options.systemlabel)
+    # ascii
     writeLOEData2Datafile(datafile+'p',hw,GFp.TeF,GFp.nHT,GFp.HT)
-    initncfile(datafile+'p',hw)
-    writeLOE2ncfile(datafile+'p',hw,GFp.nHT,GFp.HT,V,I,NnPhtot,NnPh,\
-                        dI,ddI,BdI,BddI,gamma_eh_p,gamma_heat_p,options)
     writeLOEData2Datafile(datafile+'m',hw,GFm.TeF,GFm.nHT,GFm.HT)
+    # netcdf
+    initncfile(datafile+'p',hw)
+    writeLOE2ncfile(datafile+'p',hw,GFp.nHT,GFp.HT,V,I,NnPhtot,N.transpose(NnPh),\
+                    dI,ddI,BdI,BddI,gamma_eh_p,gamma_heat_p,options)
     initncfile(datafile+'m',hw)
-    writeLOE2ncfile(datafile+'m',hw,GFm.nHT,GFm.HT,V,I,NnPhtot,NnPh,\
-                        dI,ddI,BdI,BddI,gamma_eh_p,gamma_heat_p,options)
+    writeLOE2ncfile(datafile+'m',hw,GFm.nHT,GFm.HT,V,I,NnPhtot,N.transpose(NnPh),\
+                    dI,ddI,BdI,BddI,gamma_eh_p,gamma_heat_p,options)
 
     
 ########################################################
@@ -432,10 +406,10 @@ def writeFGRrates():
 # Broadening due to Vrms
 ################################################################
 
-def Broaden(options,VV,II,nPhtot,nPh):
+def Broaden(options,VV,II,Pow,nPh):
     """
     Broadening corresponding to Lock in measurements for the
-    conductance and IETS spectra. Also resample II, nPh and nPhtot
+    conductance and IETS spectra. Also resample II, Pow, and nPh
     to match a common voltage list
     """
 
@@ -486,12 +460,13 @@ def Broaden(options,VV,II,nPhtot,nPh):
     NddI=MM.interpolate(V,ddV,ddI)
     NBdI=MM.interpolate(V,BdV,BdI)
     NBddI=MM.interpolate(V,BddV,BddI)
-    NnPhtot=MM.interpolate(V,VV,nPhtot)
-    NnPh=N.zeros((len(V),len(nPh[0,:])),N.float)
-    for ii in range(len(nPh[0,:])):
-        NnPh[:,ii]=MM.interpolate(V,VV,nPh[:,ii])
+    NPow=N.zeros((len(Pow),len(V)),N.float)
+    NnPh=N.zeros((len(nPh),len(V)),N.float)
+    for ii in range(len(nPh)):
+        NPow[ii]=MM.interpolate(V,VV,Pow[ii])
+        NnPh[ii]=MM.interpolate(V,VV,nPh[ii])
     
-    return V, NI ,NdI, NddI, NBdI, NBddI, NnPhtot, NnPh
+    return V, NI ,NdI, NddI, NBdI, NBddI, NPow, NnPh
 
 ################################################################
 # Output to NetCDF file
