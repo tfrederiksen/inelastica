@@ -192,6 +192,18 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
     #GF.dGnin.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
     # NB: TF Should one use GF.HNO (nonorthogonal) or GF.H (orthogonalized) above?
 
+    # Check against original LOE-WBA formulation
+    if options.LOEscale==0.0:
+        isym1 = MM.mm(GF1.ALT,M,GF2.AR,M)
+        isym2 = MM.mm(MM.dagger(GF1.ARGLG),M,GF2.A,M)
+        isym3 = MM.mm(GF1.ARGLG,M,GF2.A,M)
+        isym = N.trace( isym1+1j/2.*(isym2-isym3) )
+        print 'LOE-WBA check: Isym diff',K23+K4-isym
+        iasym1 = MM.mm(MM.dagger(GF1.ARGLG),M,GF2.AR-GF2.AL,M)
+        iasym2 = MM.mm(GF1.ARGLG,M,GF2.AR-GF2.AL,M)
+        iasym = N.trace( iasym1+iasym2 )
+        print 'LOE-WBA check: Iasym diff',aK23-iasym
+
 def calcIETS(options,GFp,GFm,basis,hw):
     # Calculate product of electronic traces and voltage functions
     print 'Inelastica.calcIETS: nHTp =',N.array(GFp.nHT)*PC.unitConv # OK
@@ -263,7 +275,7 @@ def calcIETS(options,GFp,GFm,basis,hw):
         Isym = 0.5*(hw[i]+Vl)*(coth1-coth2) # Vgrid
         Isym -= 0.5*(hw[i]-Vl)*(coth1-coth3)
         # non-Hilbert part
-        InH += (Isym+Vl*nPh[i])*nHT # Vgrid
+        InH += (Isym+2*Vl*nPh[i])*nHT # Vgrid
 
     # Current: Add Landauer part, GFm.TeF = GFp.TeF
     InH += GFp.TeF*Vl # Vgrid
