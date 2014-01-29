@@ -99,7 +99,8 @@ def Analyze(FCwildcard,
         print '  ... atom mass %.4f --> %.4f'%(PC.AtomicMass[atomnumber[ii-1]],\
                                                PC.AtomicMass[anr])
         atomnumber[ii-1] = anr
-        
+    
+    DeviceFirst = max(DeviceFirst,1)
     DeviceLast = min(DeviceLast,len(xyz))
     print 'Phonons.Analyze: This run uses'
     print '  ... DeviceFirst = %4i, DeviceLast = %4i, Device atoms  = %4i'\
