@@ -260,6 +260,7 @@ def calcIETS(options,GFp,GFm,basis,hw):
 
     # Current: non-Hilbert part (InH)
     InH = N.zeros((NN,),N.float) # Vgrid
+    IsymF = N.zeros((NN,),N.float)
     for i in range(len(hw)):
         nHT = wm*GFm.nHT[i]+wp*GFp.nHT[i] # Vgrid
         t1 = hw[i]/(2*kT) # number 
@@ -276,12 +277,14 @@ def calcIETS(options,GFp,GFm,basis,hw):
         Isym -= 0.5*(hw[i]-Vl)*(coth1-coth3)
         # non-Hilbert part
         InH += (Isym+2*Vl*nPh[i])*nHT # Vgrid
+        IsymF += Isym
 
     # Current: Add Landauer part, GFm.TeF = GFp.TeF
     InH += GFp.TeF*Vl # Vgrid
 
     # Current: Hilbert part
     IH = N.zeros((NN,),N.float)
+    IasymF = N.zeros((NN,),N.float)
     # Prepare box/window function on array
     Vl2 = N.outer(Vl,N.ones(Egrid.shape)) 
     Egrid2 = N.outer(N.ones(Vl.shape),Egrid)
@@ -295,6 +298,7 @@ def calcIETS(options,GFp,GFm,basis,hw):
         # Calculate Iasym for each bias point
         for j in range(len(Vl)):
             Iasym = MM.trapez(Egrid,kasse[j]*hilb,equidistant=True)/2
+            IasymF[j] += Iasym
             if Vl[j]>0:
                 IH[j] += GFp.HT[i]*Iasym
             else:
@@ -318,7 +322,16 @@ def calcIETS(options,GFp,GFm,basis,hw):
     print 'Inelastica.calcIETS: gamma_heat_p =',gamma_heat_p # OK
     print 'Inelastica.calcIETS: gamma_heat_m =',gamma_heat_m # OK
 
-    V, I, dI, ddI, BdI, BddI, NPow, NnPh = Broaden(options,Vl,InH+IH,Pow,nPh)
+    V, I, dI, ddI, BdI, BddI = Broaden(options,Vl,InH+IH)
+    V, Is, dIs, ddIs, BdIs, BddIs = Broaden(options,Vl,IsymF)
+    V, Ia, dIa, ddIa, BdIa, BddIa = Broaden(options,Vl,IasymF)
+
+    # Interpolate quantities to new V-grid
+    NPow=N.zeros((len(Pow),len(V)),N.float)
+    NnPh=N.zeros((len(Pow),len(V)),N.float)
+    for ii in range(len(Pow)):
+        NPow[ii]=MM.interpolate(V,Vl,Pow[ii])
+        NnPh[ii]=MM.interpolate(V,Vl,nPh[ii])
 
     print 'Inelastica.calcIETS: V[:5]        =',V[:5] # OK
     print 'Inelastica.calcIETS: V[-5:][::-1] =',V[-5:][::-1] # OK
@@ -361,6 +374,11 @@ def calcIETS(options,GFp,GFm,basis,hw):
     write2NCfile(outNC,N.sum(NnPh,axis=0),'nPh_tot','Total number of phonons')
     write2NCfile(outNC,NPow,'Pow','Mode-resolved power balance')
     write2NCfile(outNC,N.sum(NPow,axis=0),'Pow_tot','Total power balance')
+    # Write "universal functions"
+    write2NCfile(outNC,dIs,'dIs','dIsym function')
+    write2NCfile(outNC,dIa,'dIa','dIasym function')
+    write2NCfile(outNC,ddIs,'ddIs','ddIasym function')
+    write2NCfile(outNC,ddIa,'ddIa','ddIasym function')
     # Write energy reference where Greens functions are evaluated
     outNC.createDimension('number',1)    
     tmp=outNC.createVariable('EnergyRef','d',('number',))
@@ -447,7 +465,7 @@ def writeFGRrates():
 # Broadening due to Vrms
 ################################################################
 
-def Broaden(options,VV,II,Pow,nPh):
+def Broaden(options,VV,II):
     """
     Broadening corresponding to Lock in measurements for the
     conductance and IETS spectra. Also resample II, Pow, and nPh
@@ -501,13 +519,8 @@ def Broaden(options,VV,II,Pow,nPh):
     NddI=MM.interpolate(V,ddV,ddI)
     NBdI=MM.interpolate(V,BdV,BdI)
     NBddI=MM.interpolate(V,BddV,BddI)
-    NPow=N.zeros((len(Pow),len(V)),N.float)
-    NnPh=N.zeros((len(nPh),len(V)),N.float)
-    for ii in range(len(nPh)):
-        NPow[ii]=MM.interpolate(V,VV,Pow[ii])
-        NnPh[ii]=MM.interpolate(V,VV,nPh[ii])
-    
-    return V, NI ,NdI, NddI, NBdI, NBddI, NPow, NnPh
+
+    return V, NI ,NdI, NddI, NBdI, NBddI
 
 ################################################################
 # Output to NetCDF file
