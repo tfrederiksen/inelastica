@@ -320,10 +320,6 @@ def calcIETS(options,GFp,GFm,basis,hw):
 
     V, I, dI, ddI, BdI, BddI, NPow, NnPh = Broaden(options,Vl,InH+IH,Pow,nPh)
 
-    # Total power and phonons
-    NPowtot = N.sum(NPow,axis=0) # sum over modes
-    NnPhtot = N.sum(NnPh,axis=0) # sum over modes
-
     print 'Inelastica.calcIETS: V[:5]        =',V[:5] # OK
     print 'Inelastica.calcIETS: V[-5:][::-1] =',V[-5:][::-1] # OK
     print 'Inelastica.calcIETS: I[:5]        =',I[:5] # OK
@@ -334,16 +330,49 @@ def calcIETS(options,GFp,GFm,basis,hw):
     print 'Inelastica.calcIETS: BddI[-5:][::-1] =',BddI[-5:][::-1] # OK
 
     datafile = '%s/%s.IN'%(options.DestDir,options.systemlabel)
-    # ascii
+    # ascii format
     writeLOEData2Datafile(datafile+'p',hw,GFp.TeF,GFp.nHT,GFp.HT)
     writeLOEData2Datafile(datafile+'m',hw,GFm.TeF,GFm.nHT,GFm.HT)
-    # netcdf
-    initncfile(datafile+'p',hw)
-    writeLOE2ncfile(datafile+'p',hw,GFp.nHT,GFp.HT,V,I,NnPhtot,N.transpose(NnPh),\
-                    dI,ddI,BdI,BddI,gamma_eh_p,gamma_heat_p,options)
-    initncfile(datafile+'m',hw)
-    writeLOE2ncfile(datafile+'m',hw,GFm.nHT,GFm.HT,V,I,NnPhtot,N.transpose(NnPh),\
-                    dI,ddI,BdI,BddI,gamma_eh_p,gamma_heat_p,options)
+    # netcdf format
+    outNC = initNCfile(datafile,hw,V)
+    write2NCfile(outNC,BddI/BdI,'IETS','Broadened BddI/BdI [1/V]')
+    write2NCfile(outNC,ddI/dI,'IETS_0','Intrinsic ddI/dI [1/V]')
+    write2NCfile(outNC,BdI,'BdI','Broadened BdI, G0')
+    write2NCfile(outNC,BddI,'BddI','Broadened BddI, G0')
+    write2NCfile(outNC,I,'I','Intrinsic I, G0 V')
+    write2NCfile(outNC,dI,'dI','Intrinsic dI, G0')
+    write2NCfile(outNC,ddI,'ddI','Intrinsic ddI, G0/V')
+    if options.LOEscale==0.0:
+        write2NCfile(outNC,GFp.nHT,'ISymTr','Trace giving Symmetric current contribution (prefactor to universal function)')
+        write2NCfile(outNC,GFp.HT,'IAsymTr','Trace giving Asymmetric current contribution (prefactor to universal function)')
+        write2NCfile(outNC,gamma_eh_p,'gamma_eh','e-h damping [*deltaN=1/Second]')
+        write2NCfile(outNC,gamma_heat_p,'gamma_heat','Phonon heating [*(bias-hw) (eV) = 1/Second]')
+    else:
+        write2NCfile(outNC,GFp.nHT,'ISymTr_p','Trace giving Symmetric current contribution (prefactor to universal function)')
+        write2NCfile(outNC,GFp.HT,'IAsymTr_p','Trace giving Asymmetric current contribution (prefactor to universal function)')
+        write2NCfile(outNC,GFm.nHT,'ISymTr_m','Trace giving Symmetric current contribution (prefactor to universal function)')
+        write2NCfile(outNC,GFm.HT,'IAsymTr_m','Trace giving Asymmetric current contribution (prefactor to universal function)')
+        write2NCfile(outNC,gamma_eh_p,'gamma_eh_p','e-h damping [*deltaN=1/Second]')
+        write2NCfile(outNC,gamma_heat_p,'gamma_heat_p','Phonon heating [*(bias-hw) (eV) = 1/Second]')
+        write2NCfile(outNC,gamma_eh_m,'gamma_eh_m','e-h damping [*deltaN=1/Second]')
+        write2NCfile(outNC,gamma_heat_m,'gamma_heat_m','Phonon heating [*(bias-hw) (eV) = 1/Second]')
+    # Phonon occupations and power balance
+    write2NCfile(outNC,NnPh,'nPh','Number of phonons')
+    write2NCfile(outNC,N.sum(NnPh,axis=0),'nPh_tot','Total number of phonons')
+    write2NCfile(outNC,NPow,'Pow','Mode-resolved power balance')
+    write2NCfile(outNC,N.sum(NPow,axis=0),'Pow_tot','Total power balance')
+    # Write energy reference where Greens functions are evaluated
+    outNC.createDimension('number',1)    
+    tmp=outNC.createVariable('EnergyRef','d',('number',))
+    tmp[:]=N.array(options.energy)
+    # Write LOEscale
+    tmp=outNC.createVariable('LOEscale','d',('number',))
+    tmp[:]=N.array(options.LOEscale)
+    # Write k-point
+    outNC.createDimension('vector',3)
+    tmp=outNC.createVariable('kpoint','d',('vector',))
+    tmp[:]=N.array(options.kPoint)
+    outNC.close()
 
     
 ########################################################
@@ -484,82 +513,37 @@ def Broaden(options,VV,II,Pow,nPh):
 # Output to NetCDF file
 ################################################################
 
-def initncfile(filename,hw):
+def initNCfile(filename,hw,V):
     'Initiate netCDF file'
     print 'Inelastica: Initializing nc-file'
     ncfile = NC.NetCDFFile(filename+'.nc','w','Created '+time.ctime(time.time()))
     ncfile.title = 'Inelastica Output'
     ncfile.version = 1
     ncfile.createDimension('Nph',len(hw))
-    nchw = ncfile.createVariable('hw','d',('Nph',))
-    nchw[:] = N.array(hw)
-    nchw.units = 'eV'
-    ncfile.close()
-    
-def writeLOE2ncfile(filename,hw,nHT,HT,V,I,nPhtot,nPh,\
-                        dI,ddI,BdI,BddI,gamma_eh,gamma_heat,options):
-    'Write LOE data to netCDF file'
-    print 'Inelastica: Write LOE data to nc-file'
-    ncfile = NC.NetCDFFile(filename+'.nc','a')
-    ncfile.createDimension('LOE_V',len(V))
-    tmp=ncfile.createVariable('LOE_V','d',('LOE_V',))
-    tmp[:]=N.array(V)
-    tmp.units='V'
-    tmp=ncfile.createVariable('LOE_IETS','d',('LOE_V',))
-    tmpn=BddI/BdI
-    tmp[:]=N.array(tmpn.real)
-    tmp.units='Broadened ddI/dI [1/V]'
-    tmp=ncfile.createVariable('LOE_dI','d',('LOE_V',))
-    tmp[:]=N.array(dI.real)
-    tmp.units='dI LOE, G0'
-    tmp=ncfile.createVariable('LOE_ddI','d',('LOE_V',))
-    tmp[:]=N.array(ddI.real)
-    tmp.units='ddI LOE, G0/V'
-    tmp=ncfile.createVariable('LOE_BdI','d',('LOE_V',))
-    tmp[:]=N.array(BdI.real)
-    tmp.units='Broadened dI LOE, G0'
-    tmp=ncfile.createVariable('LOE_BddI','d',('LOE_V',))
-    tmp[:]=N.array(BddI.real)
-    tmp.units='Broadened ddI LOE, G0/V'
-    tmp=ncfile.createVariable('LOE_I','d',('LOE_V',))
-    tmp[:]=N.array(I.real)
-    tmp.units='G0 V'
-    tmp=ncfile.createVariable('LOE_tot_nPh','d',('LOE_V',))
-    tmp[:]=N.array(nPhtot.real)
-    tmp.units='Total number of phonons '
-    tmp=ncfile.createVariable('LOE_nPh','d',('LOE_V','Nph'))
-    tmp[:]=N.array(nPh.real)
-    tmp.units='Number of phonons'
-    tmp=ncfile.createVariable('LOE_gamma_eh','d',('Nph',))
-    tmp[:]=N.array(gamma_eh)
-    tmp.units='e-h damping [*deltaN=1/Second]'
-    tmp=ncfile.createVariable('LOE_gamma_heat','d',('Nph',))
-    tmp[:]=N.array(gamma_heat)
-    # Symmetric part
-    tmp.units='Phonon heating [*(bias-hw) (eV) = 1/Second]'
-    ncTotR = ncfile.createVariable('LOE_ISymTr','d',('Nph',))
-    ncTotR[:] = N.array(nHT)*PC.unitConv
-    ncTotR.units = 'Trace giving Symmetric current contribution (same units as eigenchannels [1/s/eV])'
-    ncTotR2 = ncfile.createVariable('LOE_ISymTr2','d',('Nph',))
-    ncTotR2[:] = N.array(nHT)
-    ncTotR2.units = 'Trace giving Symmetric current contribution (same units as asymmetric contrib.)'
-    # Asymmetric part
-    ncTotL = ncfile.createVariable('LOE_IAsymTr','d',('Nph',))
-    ncTotL[:] = N.array(HT)
-    ncTotL.units = 'Trace giving Asymmetric current contribution'
-    # Write energy reference where Greens functions are evaluated
-    ncfile.createDimension('number',1)
-    tmp=ncfile.createVariable('EnergyRef','d',('number',))
-    tmp[:]=N.array(options.energy)
-    # Write LOEscale
-    tmp=ncfile.createVariable('LOEscale','d',('number',))
-    tmp[:]=N.array(options.LOEscale)
-    # Write k-point
-    ncfile.createDimension('vector',3)
-    tmp=ncfile.createVariable('kpoint','d',('vector',))
-    tmp[:]=N.array(options.kPoint)
-    ncfile.close()
+    # Phonon mode frequencies
+    tmp = ncfile.createVariable('hw','d',('Nph',))
+    tmp[:] = N.array(hw)
+    tmp.units = 'eV'
+    # Voltage
+    ncfile.createDimension('V',len(V))
+    tmp = ncfile.createVariable('V','d',('V',))
+    tmp[:] = N.array(V)
+    tmp.units = 'V'
+    return ncfile
 
+def write2NCfile(NCfile,var,name,unit):
+    var = N.array(var)
+    dim1 = len(NCfile.variables['hw'][:])
+    dim2 = len(NCfile.variables['V'][:])
+    print 'Inelastica.write2NCfile: Writing',name,var.shape
+    if var.shape == (dim1,):
+        tmp = NCfile.createVariable(name,'d',('Nph',))
+    elif var.shape == (dim2,):
+        tmp = NCfile.createVariable(name,'d',('V',))
+    elif var.shape == (dim1,dim2):
+        tmp = NCfile.createVariable(name,'d',('Nph','V'))
+    tmp[:] = var.real
+    tmp.units = unit
     
 def writeLOEData2Datafile(file,hw,T,nHT,HT):
     f = open(file,'a')
