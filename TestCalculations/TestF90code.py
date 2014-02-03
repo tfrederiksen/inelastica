@@ -25,7 +25,7 @@ def main():
             print "Failed to give same results between python and fortran code for simple variables!!!"
             kuk
         if N.sum(N.abs(HS1.cell-HS2.cell))+N.sum(N.abs(HS1.lasto-HS2.lasto))+N.sum(N.abs(HS1.numh-HS2.numh)) \
-               +N.sum(N.abs(HS1.listh-HS2.listh))+N.sum(N.abs(HS1.indxuo-HS2.indxuo))+N.sum(N.abs(HS1.xa-HS2.xa)) \
+               +N.sum(N.abs(HS1.listh-HS2.listh))+N.sum(N.abs(HS1.xa-HS2.xa)) \
                +N.sum(N.abs(HS1.isa-HS2.isa))+N.sum(N.abs(HS1.Ssparse-HS2.Ssparse)) > 1e-9:
             print "Failed to give same results between python and fortran code for arrays!!!"
             kuk
@@ -45,24 +45,25 @@ def main():
 
     # SurfaceGF
     print '\nTESTING pyTBT.surfaceGF method (1x1 vs 3x3)'
-    elec=NEGF.ElectrodeSelfEnergy('../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS',3,3)
+    elecNoF90=NEGF.ElectrodeSelfEnergy('../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS',3,3,UseF90helpers=False)
+    elecF90=NEGF.ElectrodeSelfEnergy('../TestCalculations/Self-energy-FCC111/ELEC-1x1//Au3D_BCA.TSHS',3,3,UseF90helpers=True)
 
     for ii in range(10):
         k=N.array(RA.random(3),N.float)
         print " Checking k-point: %f,%f,%f"%(k[0],k[1],k[2])
-        elec.HS.kpoint=N.zeros((3,),N.float) # To ensure it is calculated!
-        elec.HS.setkpoint(k,UseF90helpers=True)
-        H1, S1 = elec.HS.H.copy(), elec.HS.S.copy()
-        elec.HS.kpoint=N.zeros((3,),N.float) # To ensure it is calculated!
-        elec.HS.setkpoint(k,UseF90helpers=False)
-        H2, S2 = elec.HS.H.copy(), elec.HS.S.copy()
+        elecF90.HS.kpoint=N.zeros((3,),N.float) # To ensure it is calculated!
+        elecF90.HS.setkpoint(k,UseF90helpers=True)
+        H1, S1 = elecF90.HS.H.copy(), elecF90.HS.S.copy()
+        elecNoF90.HS.kpoint=N.zeros((3,),N.float) # To ensure it is calculated!
+        elecNoF90.HS.setkpoint(k,UseF90helpers=False)
+        H2, S2 = elecNoF90.HS.H.copy(), elecNoF90.HS.S.copy()
         tmp1=N.max(abs(H1-H2))
         tmp2=N.max(abs(S1-S2))
         print "Max difference kpointhelper: ",max(tmp1,tmp2)
 
         ee=RA.random(1)+0.0001j
-        SGFf90=elec.getSig(ee,k[0:2].copy(),UseF90helpers=True)
-        SGF=elec.getSig(ee,k[0:2].copy(),UseF90helpers=False)
+        SGFf90=elecF90.getSig(ee,k[0:2].copy(),UseF90helpers=True)
+        SGF=elecNoF90.getSig(ee,k[0:2].copy(),UseF90helpers=False)
         SGFerr=N.max(abs(SGFf90-SGF))
         print "Max difference for self-energy: ",SGFerr
         maxerr=max(tmp1,tmp2,SGFerr,maxerr)
