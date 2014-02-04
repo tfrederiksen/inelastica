@@ -24,37 +24,34 @@ def main(options):
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
+    # Read phonons
+    NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
+    print 'Inelastica: Reading ',options.PhononNetCDF
+    hw = N.array(NCfile.variables['hw'][:])
     # Work with GFs etc at two different energies: p=Ef+hw/2 and m=Ef-hw/2
     GFp = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
     # Prepare lists for various trace factors
     #GF.dGnout = []
     #GF.dGnin = []
-    GFp.P1T = []     # M.A.M.A (total e-h damping)
-    GFp.P2T = []     # M.AL.M.AR (emission)
-    GFp.ehDampL = [] # M.AL.M.AL (L e-h damping)
-    GFp.ehDampR = [] # M.AR.M.AR (R e-h damping)
-    GFp.nHT = []     # non-Hilbert/Isym factor
-    GFp.nHTin = []
-    GFp.nHTel = []
-    GFp.HT = []      # Hilbert/Iasym factor
+    GFp.P1T = N.zeros(len(hw),N.float)     # M.A.M.A (total e-h damping)
+    GFp.P2T = N.zeros(len(hw),N.float)     # M.AL.M.AR (emission)
+    GFp.ehDampL = N.zeros(len(hw),N.float) # M.AL.M.AL (L e-h damping)
+    GFp.ehDampR = N.zeros(len(hw),N.float) # M.AR.M.AR (R e-h damping)
+    GFp.nHT = N.zeros(len(hw),N.float)     # non-Hilbert/Isym factor
+    GFp.HT = N.zeros(len(hw),N.float)      # Hilbert/Iasym factor
+    #
     GFm = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
-    GFm.P1T = []     # M.A.M.A (total e-h damping)
-    GFm.P2T = []     # M.AL.M.AR (emission)
-    GFm.ehDampL = [] # M.AL.M.AL (L e-h damping)
-    GFm.ehDampR = [] # M.AR.M.AR (R e-h damping)
-    GFm.nHT = []     # non-Hilbert/Isym factor
-    GFm.nHTin = []
-    GFm.nHTel = []
-    GFm.HT = []      # Hilbert/Iasym factor
+    GFm.P1T = N.zeros(len(hw),N.float)     # M.A.M.A (total e-h damping)
+    GFm.P2T = N.zeros(len(hw),N.float)     # M.AL.M.AR (emission)
+    GFm.ehDampL = N.zeros(len(hw),N.float) # M.AL.M.AL (L e-h damping)
+    GFm.ehDampR = N.zeros(len(hw),N.float) # M.AR.M.AR (R e-h damping)
+    GFm.nHT = N.zeros(len(hw),N.float)     # non-Hilbert/Isym factor
+    GFm.HT = N.zeros(len(hw),N.float)      # Hilbert/Iasym factor
     # Calculate transmission at Fermi level
     GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
     basis = SIO.BuildBasis(options.XV,options.DeviceAtoms[0],options.DeviceAtoms[1],GFp.HS.lasto)
     GFp.TeF = GFp.calcT(options.numchan)[0]
     GFm.TeF = GFp.TeF
-    # Read phonons
-    NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
-    print 'Inelastica: Reading ',options.PhononNetCDF
-    hw = N.array(NCfile.variables['hw'][:])
     # Check consistency of PHrun vs TSrun inputs
     IntegrityCheck(options,GFp,basis,NCfile)   
     # Calculate trace factors one mode at a time
@@ -63,12 +60,12 @@ def main(options):
         # LOEscale=0.0 => Original LOE-WBA method
         GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
         GFm.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-        for ihw in range(len(hw)):
+        for ihw in (hw>options.modeCutoff).nonzero()[0]:
             calcTraces(options,GFp,GFm,basis,NCfile,ihw)
             calcTraces(options,GFm,GFp,basis,NCfile,ihw)
     else:
         # LOEscale=1.0 => Generalized LOE, see arXiv:1312.7625
-        for ihw in range(len(hw)):
+        for ihw in (hw>options.modeCutoff).nonzero()[0]:
             GFp.calcGF(options.energy+hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
             GFm.calcGF(options.energy-hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
             calcTraces(options,GFp,GFm,basis,NCfile,ihw)
@@ -163,6 +160,7 @@ def IntegrityCheck(options,GF,basis,NCfile):
 def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
     # Calculate various traces over the electronic structure
     # Electron-phonon couplings
+    ihw = int(ihw)
     M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:],N.complex)
     try:
         M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw,options.iSpin,:,:],N.complex)
@@ -178,15 +176,13 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
     K4 = N.trace(MM.mm(M,GF1.ALT,M,GF2.AR))
     aK23 = 2*N.trace(t1-t2).real # asymmetric part
     # Non-Hilbert term defined here with a minus sign
-    GF1.nHTin.append(checkImPart(K4))
-    GF1.nHTel.append(checkImPart(K23))
-    GF1.nHT.append(checkImPart(K23+K4))
-    GF1.HT.append(checkImPart(aK23))
+    GF1.nHT[ihw] = checkImPart(K23+K4)
+    GF1.HT[ihw] = checkImPart(aK23)
     # Power, damping and current rates
-    GF1.P1T.append(checkImPart(N.trace(MM.mm(M,GF1.A,M,GF2.A))))
-    GF1.P2T.append(checkImPart(N.trace(MM.mm(M,GF1.AL,M,GF2.AR))))
-    GF1.ehDampL.append(checkImPart(N.trace(MM.mm(M,GF1.AL,M,GF2.AL))))
-    GF1.ehDampR.append(checkImPart(N.trace(MM.mm(M,GF1.AR,M,GF2.AR))))
+    GF1.P1T[ihw] = checkImPart(N.trace(MM.mm(M,GF1.A,M,GF2.A)))
+    GF1.P2T[ihw] = checkImPart(N.trace(MM.mm(M,GF1.AL,M,GF2.AR)))
+    GF1.ehDampL[ihw] = checkImPart(N.trace(MM.mm(M,GF1.AL,M,GF2.AL)))
+    GF1.ehDampR[ihw] = checkImPart(N.trace(MM.mm(M,GF1.AR,M,GF2.AR)))
     # Remains from older version (see before rev. 219):
     #GF.dGnout.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
     #GF.dGnin.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
@@ -206,10 +202,10 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
 
 def calcIETS(options,GFp,GFm,basis,hw):
     # Calculate product of electronic traces and voltage functions
-    print 'Inelastica.calcIETS: nHTp =',N.array(GFp.nHT)*PC.unitConv # OK
-    print 'Inelastica.calcIETS: nHTm =',N.array(GFm.nHT)*PC.unitConv # OK
-    print 'Inelastica.calcIETS: HTp  =',N.array(GFp.HT) # OK
-    print 'Inelastica.calcIETS: HTm  =',N.array(GFm.HT) # OK
+    print 'Inelastica.calcIETS: nHTp =',GFp.nHT*PC.unitConv # OK
+    print 'Inelastica.calcIETS: nHTm =',GFm.nHT*PC.unitConv # OK
+    print 'Inelastica.calcIETS: HTp  =',GFp.HT # OK
+    print 'Inelastica.calcIETS: HTm  =',GFm.HT # OK
     
     # Set up grid and Hilbert term
     kT = options.Temp/11604.0 # (eV)
@@ -240,7 +236,7 @@ def calcIETS(options,GFp,GFm,basis,hw):
     t0 = N.clip(Vl/kT,-700,700)
     cosh0 = N.cosh(t0) # Vgrid
     sinh0 = N.sinh(t0)
-    for i in range(len(hw)):
+    for i in (hw>options.modeCutoff).nonzero()[0]:
         P1T = wm*GFm.P1T[i]+wp*GFp.P1T[i]
         P2T = wm*GFm.P2T[i]+wp*GFp.P2T[i]
         # Bose distribution
@@ -261,7 +257,7 @@ def calcIETS(options,GFp,GFm,basis,hw):
     # Current: non-Hilbert part (InH)
     InH = N.zeros((NN,),N.float) # Vgrid
     IsymF = N.zeros((NN,),N.float)
-    for i in range(len(hw)):
+    for i in (hw>options.modeCutoff).nonzero()[0]:
         nHT = wm*GFm.nHT[i]+wp*GFp.nHT[i] # Vgrid
         t1 = hw[i]/(2*kT) # number 
         t1 = N.clip(t1,-700,700)
@@ -291,7 +287,7 @@ def calcIETS(options,GFp,GFm,basis,hw):
     # Box/window function nF(E-Vl2)-nF(E-0):
     kasse = MM.box(0,-Vl2,Egrid2,kT) # (Vgrid,Egrid)
     ker = None
-    for i in range(len(hw)):
+    for i in (hw>options.modeCutoff).nonzero()[0]:
         # Box/window function nF(E-hw)-nF(E+hw)
         tmp = MM.box(-hw[i],hw[i],Egrid,kT)
         hilb, ker = MM.Hilbert(tmp,ker) # Egrid
@@ -309,13 +305,13 @@ def calcIETS(options,GFp,GFm,basis,hw):
     gamma_eh_m=N.zeros((len(hw),),N.float)
     gamma_heat_p=N.zeros((len(hw),),N.float)
     gamma_heat_m=N.zeros((len(hw),),N.float)
-    for iOmega in range(len(hw)):
+    for i in (hw>options.modeCutoff).nonzero()[0]:
         # Units [Phonons per Second per dN where dN is number extra phonons]
-        gamma_eh_p[iOmega]=GFp.P1T[iOmega]*hw[iOmega]*PC.unitConv
-        gamma_eh_m[iOmega]=GFm.P1T[iOmega]*hw[iOmega]*PC.unitConv
+        gamma_eh_p[i]=GFp.P1T[i]*hw[i]*PC.unitConv
+        gamma_eh_m[i]=GFm.P1T[i]*hw[i]*PC.unitConv
         # Units [Phonons per second per eV [eV-ihw]
-        gamma_heat_p[iOmega]=GFp.P2T[iOmega]*PC.unitConv
-        gamma_heat_m[iOmega]=GFm.P2T[iOmega]*PC.unitConv
+        gamma_heat_p[i]=GFp.P2T[i]*PC.unitConv
+        gamma_heat_m[i]=GFm.P2T[i]*PC.unitConv
 
     print 'Inelastica.calcIETS: gamma_eh_p =',gamma_eh_p # OK
     print 'Inelastica.calcIETS: gamma_eh_m =',gamma_eh_m # OK
