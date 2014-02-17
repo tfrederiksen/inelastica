@@ -233,7 +233,7 @@ class ElectrodeSelfEnergy:
                 kpoint[0]+=ik1*1.0/NA1
                 kpoint[1]+=ik2*1.0/NA2
                 # Surface GF with possible extra imaginary part (etaLead):
-                g0=self.getg0(eeshifted+1j*etaLead,kpoint,left=left,ispin=ispin)             
+                g0=self.getg0(eeshifted+1j*etaLead,kpoint,left=left,ispin=ispin,UseF90=UseF90helpers)
                 matESmH = eeshifted*self.S-self.H[ispin,:,:]
                 if SIO.F90imported and UseF90helpers:
                     ESmH, SGF = SIO.F90.f90distributegs(loop=N.array(loop,N.int), nuo=nuo,\
@@ -262,12 +262,12 @@ class ElectrodeSelfEnergy:
             print 'NEGF.getSig: Scaling self-energy with a factor',self.scaling
         return Sig*self.scaling
 
-    def getg0(self,ee,kpoint,left=True,ispin=0):
+    def getg0(self,ee,kpoint,left=True,ispin=0,UseF90=True):
         # Calculate surface Green's function for small electrode calculation
         self.setupHS(kpoint)
         #print "NEGF.getg0: Constructing surface GF at (ReE,ImE) = (%.6e,%6e)"%(ee.real,ee.imag)
 
-        if F90_lapack_imp:
+        if F90_lapack_imp and UseF90:
             return self.F90calcg0(ee,left=left,ispin=ispin)
 
         return self.calcg0_old(ee,left=left,ispin=ispin)
