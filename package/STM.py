@@ -10,6 +10,7 @@ fudgeEnergy = 5e-5         # Fudge energy in eV used to see if Ef is close to th
 
 import pyTBT as pyTBT
 import SiestaIO as SIO
+import NEGF
 import MakeGeom as MG
 #import EigenChannels as EC
 import WriteXMGR as XMGR
@@ -60,10 +61,27 @@ def readbasis():
 
 ########################################################
 def readHS():
+    class options:
+        pass
+    options.fn='RUN.fdf'
+    options.fnL  = './'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileLeft', str, None, 'pyTBT')
+    options.NA1L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Left', int, 1, 'pyTBT')
+    options.NA2L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Left', int, 1, 'pyTBT')
+    options.fnR  = './'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileRight', str, None, 'pyTBT')
+    options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 1, 'pyTBT')
+    options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'pyTBT')
+
+    options.systemlabel = SIO.GetFDFlineWithDefault("RUN.fdf",'SystemLabel', str, 'Systemlabel', 'Eigenchannels')       
+    options.TSHS = './%s.TSHS'%(options.systemlabel)
+
     # Setup H, S and self-energies
+    # Setup self-energies and device GF
+    elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,0)
+    elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,0)
+    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=False,DeviceAtoms=[general.from_atom, general.to_atom])
+
     HS.L, HS.R, HS.GF, devSt, devEnd, general.Elist, general.eta, general.SiestaOutFile = \
-        pyTBT.main(pyTBT=False, fn=general.fdfFile, 
-                   deviceRegion=[general.from_atom, general.to_atom])
+        elecL, elecR, myGF, myGF.DeviceOrbs[0], myGF.DeviceOrbs[1], [0.0], 1e-6, options.systemlabel
 
 ########################################################
 def calcSTM():
