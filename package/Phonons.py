@@ -179,7 +179,7 @@ def Analyze(FCwildcard,
     DeviceAtoms = range(DeviceFirst,DeviceLast+1)
     Write2NetCDFFile(NCfile,DeviceAtoms,'DeviceAtoms',('NumDevAtoms',),
                      description='Range of atomic indices (counting from 1)')
-    Write2NetCDFFile(NCfile,range(FCfirst,FClast+1),'DynamicAtoms',('NumFCAtoms',),
+    Write2NetCDFFile(NCfile,N.array(range(FCfirst,FClast+1),N.float),'DynamicAtoms',('NumFCAtoms',),
                      description='Range of atomic indices (counting from 1)')
 
     if CalcCoupl:
@@ -242,7 +242,7 @@ def Analyze(FCwildcard,
                     print '\nPhonons.Analyze: Coupling matrix Heph[%i].imag (in s-orbital subspace) Spin=%i'%(i,iSpin)
                     ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
                                            DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].imag)
-    #NCfile.close()
+    NCfile.close()
 
     print '=========================================================================='
     print '  Program finished:  %s '%time.ctime()
