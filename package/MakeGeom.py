@@ -180,10 +180,10 @@ class Geom:
                 self.xyz[i][j] = round(self.xyz[i][j],digits)
 
     def repeteGeom(self,vec,rep=3):
-        #TF 050606
-        for i in range(self.natoms):
-            [x,y,z] = self.xyz[i]
-            for j in range(1,rep):
+        # TF 050606: MP 140302 changed repetition order to keep unitcells together
+        for j in range(1,rep):
+            for i in range(self.natoms):
+                [x,y,z] = self.xyz[i]
                 self.addAtom([x+j*vec[0],y+j*vec[1],z+j*vec[2]],\
                              self.snr[i],self.anr[i])
 
