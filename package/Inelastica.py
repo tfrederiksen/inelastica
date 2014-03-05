@@ -191,15 +191,15 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
 
     # Check against original LOE-WBA formulation
     if options.LOEscale==0.0:
-        #isym1 = MM.mm(GF1.ALT,M,GF2.AR,M)
-        #isym2 = MM.mm(MM.dagger(GF1.ARGLG),M,GF2.A,M)
-        #isym3 = MM.mm(GF1.ARGLG,M,GF2.A,M)
-        #isym = MM.trace( isym1)+1j/2.*(MM.trace(isym2)-MM.trace(isym3))
-        #print 'LOE-WBA check: Isym diff',K23+K4-isym
-        #iasym1 = MM.mm(MM.dagger(GF1.ARGLG),M,GF2.AR-GF2.AL,M)
-        #iasym2 = MM.mm(GF1.ARGLG,M,GF2.AR-GF2.AL,M)
-        #iasym = MM.trace( iasym1)+MM.trace(iasym2 )
-        #print 'LOE-WBA check: Iasym diff',aK23-iasym
+        isym1 = MM.mm(GF1.ALT,M,GF2.AR,M)
+        isym2 = MM.mm(MM.dagger(GF1.ARGLG),M,GF2.A,M)
+        isym3 = MM.mm(GF1.ARGLG,M,GF2.A,M)
+        isym = MM.trace( isym1)+1j/2.*(MM.trace(isym2)-MM.trace(isym3))
+        print 'LOE-WBA check: Isym diff',K23+K4-isym
+        iasym1 = MM.mm(MM.dagger(GF1.ARGLG),M,GF2.AR-GF2.AL,M)
+        iasym2 = MM.mm(GF1.ARGLG,M,GF2.AR-GF2.AL,M)
+        iasym = MM.trace( iasym1)+MM.trace(iasym2 )
+        print 'LOE-WBA check: Iasym diff',aK23-iasym
 
 def calcIETS(options,GFp,GFm,basis,hw):
     # Calculate product of electronic traces and voltage functions
@@ -401,7 +401,7 @@ def writeFGRrates(options,GF,hw,NCfile):
     # Make human readable format
 
     # Eigenchannels
-    GF.calcEigChan(channels=4)
+    GF.calcEigChan(channels=options.numchan)
 
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Reading ',options.PhononNetCDF
@@ -412,8 +412,8 @@ def writeFGRrates(options,GF,hw,NCfile):
     outFile = file('%s/%s.IN.FGR'%(options.DestDir,options.systemlabel),'w')
     outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (PC.unitConv*GF.totTrans.real,))
 
-    tmp=N.sort(abs(N.array(GF.nHT[:])))
-    SelectionMin=tmp[-options.numchan]        
+    #tmp=N.sort(abs(N.array(GF.nHT[:])))
+    #SelectionMin=tmp[-options.numchan]        
 
     for ihw in range(len(hw)):
         SIO.printDone(ihw,len(hw),'Golden Rate') 
