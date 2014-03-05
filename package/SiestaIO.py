@@ -192,7 +192,7 @@ def WriteANIFile(filename,Geom,Energy,InUnits='Ang',OutUnits='Ang'):
         file.write('%f \n'%Energy[ii])
         for iixyz in range(iGeom.natoms):
             file.write('%s %2.6f %2.6f %2.6f\n'%\
-                       (PC.PeriodicTable[iGeom.anr[iixyz]],\
+                       (PC.PeriodicTable[abs(iGeom.anr[iixyz])],\
                         convFactor*iGeom.xyz[iixyz][0],\
                         convFactor*iGeom.xyz[iixyz][1],\
                         convFactor*iGeom.xyz[iixyz][2]))
@@ -1295,13 +1295,13 @@ def ReadIonNCFiles(wildcard='*ion.nc'):
     ions = {}
     for ionnc in glob.glob(wildcard):
         ion = ReadIonNCFile(ionnc)
-        if ion.atomnum in ions:
-            ions[ion.atomnum][ion.numorb] = ion
+        if abs(ion.atomnum) in ions:
+            ions[abs(ion.atomnum)][ion.numorb] = ion
         else:
-            ions[ion.atomnum] = {}
+            ions[abs(ion.atomnum)] = {}
             if ion.numorb in ions[ion.atomnum]:
                 print "WARNING: Basis set for atom %i is not unique"%ion.atomnum
-            ions[ion.atomnum][ion.numorb] = ion
+            ions[abs(ion.atomnum)][ion.numorb] = ion
     return ions
 
 
@@ -1320,7 +1320,7 @@ def BuildBasis(XVfile,FirstAtom,LastAtom,lasto):
     # Determine the basis dimension nn
     nn = 0
     for i in range(FirstAtom-1,LastAtom): # Python counts from zero
-        an = atomnumber[i]
+        an = abs(atomnumber[i]) # handles ghost atoms
         nn += ions[an][lasto[i+1]-lasto[i]].numorb
 
     if nn!=lasto[LastAtom]-lasto[FirstAtom-1]:
@@ -1344,7 +1344,7 @@ def BuildBasis(XVfile,FirstAtom,LastAtom,lasto):
     iorb = 0
     for ii in range(FirstAtom-1,LastAtom):
         an = atomnumber[ii]
-        ion = ions[an][lasto[ii+1]-lasto[ii]]
+        ion = ions[abs(an)][lasto[ii+1]-lasto[ii]]
         for jj in range(len(ion.L)):
             for kk in range(-ion.L[jj],ion.L[jj]+1):
                 basis.ii[iorb]=ii+1
