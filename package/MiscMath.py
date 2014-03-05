@@ -7,11 +7,79 @@ import numpy.fft as FFT
 ##############################################################
 
 def mm(* args):
-    # Matrix multiplication with arbitrary number of arguments                                                                                              
-    tmp=N.dot(args[0],args[1])
-    for ii in range(len(args)-2):
-        tmp=N.dot(tmp,args[ii+2])
-    return tmp
+    # Matrix multiplication with arbitrary number of arguments
+    # and the SpectralMatrix type
+    args = list(args)
+
+    # Look for SpectralMatrices
+    where=N.where(N.array([isinstance(ii,SpectralMatrix) for ii in args]))[0]
+    if len(where)>0:
+        res = __mmSpectralMatrix(args,where)
+    else:
+        res= __mm(args)
+    
+    return res
+
+def __mmSpectralMatrix(args,where):
+    # find smallest
+    size = [args[where[ii]].L.shape[1] for ii in range(len(where))]
+    smallest = N.where(N.array(size)==N.min(size))[0][0]
+    
+    # if more than one SpectralMatrix, expand others into normal matrices
+    args = [[ii] for ii in args] # To get flatten to work
+    for ii in where:
+        if ii!=where[smallest]:
+            args[ii]=[args[ii][0].L,args[ii][0].R]
+    args=sum(args,[]) # Flatten list
+
+    # Split at Spectral matrix
+    where=N.where(N.array([isinstance(ii,SpectralMatrix) for ii in args]))[0]
+    res=SpectralMatrix()
+    res.L=__mm(args[:where[0]]+[args[where[0]].L])
+    res.R=__mm([args[where[0]].R]+args[where[0]+1:])
+    return res
+
+def __mm(args):
+    # Normal matrix mult, order important for speed if matrices has different sizes
+    if len(args)==1: return args[0]
+    
+    # Find smallest matrix
+    Lsize = N.array([ii.shape[0] for ii in args[:-1]])
+    if len(args[-1].shape)==1:
+        # Most rightmost is vector 
+        Rsize = N.array([ii.shape[1] for ii in args[1:-1]]+[1])
+    else:
+        Rsize = N.array([ii.shape[1] for ii in args[1:]])
+
+    Lwhere = N.where(Lsize==N.min(Lsize))[0]
+    Rwhere = N.where(Rsize==N.min(Rsize))[0]
+
+    if N.min(Lsize)>N.min(Rsize):
+        where = [ii+1 for ii in Rwhere]
+        left = False
+    else:
+        where = Lwhere
+        left = True
+    
+    if len(where)==len(args)-1 or len(args)==2:
+        # Order does not matter
+        res=N.dot(args[0],args[1])
+        for ii in range(len(args)-2):
+            res=N.dot(res,args[ii+2])
+    else:
+        # Make sure the matrix mult is done in order of smaller
+        # matrices first
+        ii = where[0]
+        if ii == 0:
+            res = __mm([__mm([args[0],args[1]])]+args[2:])
+        elif ii==len(args)-1:
+            res = __mm(args[:ii-1]+[__mm([args[ii-1],args[ii]])])
+        else:
+            if left:
+                res = __mm(args[:ii]+[__mm([args[ii]]+args[ii+1:])])
+            else:
+                res = __mm([__mm(args[:ii]+[args[ii]])]+args[ii+1:])
+    return res
 
 def dagger(x):
     # Hermitian conjugation
@@ -510,3 +578,62 @@ def GaussKronrod(NN):
     return x/2, w1/2, w2/2
 
 ##############################################################
+#
+# New matrixclass for spectral matrix
+# Idea : Split A into two smaller matrices
+# A(mxm) = U(mxn)*U^t where U=sqrt(lambda_i) [v_1 v_2 ...]
+# labda, v are eigvalues, vectors
+#
+# The magic takes place in Matrix multiply function
+#
+# TODO: adding two gives full matrix! Should be easy to fix.
+
+class SpectralMatrix:
+    # self.L/R : Left / right matrices
+    def __init__(self,A=None,cutoff=1e-9):
+        if A!=None:
+            # Initialize ... only Hermitean matrices
+            ev,evec = LA.eigh(A)
+            
+            # Drop eigenvalues
+            indx = N.where(N.abs(ev)>cutoff)[0]
+            ev, evec = ev[indx], evec[:,indx]
+            if len(indx)>0.3*len(A):
+                print "WARNING: Spectralmatrix has large fraction (%i/%i) of non-zero eigenvalues!"%(len(indx),len(A))
+            self.L = N.dot(evec,N.diag(ev))
+            self.R = dagger(evec)
+            if False:
+                print N.allclose(A,N.dot(self.L,self.R))
+    def full(self):
+        return mm(self.L,self.R)
+    def __add__(self,b):
+        # Could be improved for addition of two spectral matrices
+        return self.full()+b
+        #if not isinstance(b,SpectralMatrix):
+        #    return self.full()+b
+        #else:
+        #    return SpectralMatrix(self.full()+b.full())
+    def __radd__(self,b):
+        return self+b
+    def __sub__(self,b):
+        if not isinstance(b,SpectralMatrix):
+            return self.full()-b
+        else:
+            return SpectralMatrix(self.full()-b.full())
+    def __rsub__(self,b):
+        if not isinstance(b,SpectralMatrix):
+            return b-self.full()
+        else:
+            return SpectralMatrix(b.full()-self.full())
+    def __mul__(self,b):
+        tmp = SpectralMatrix()
+        tmp.L, tmp.R = self.L*b, self.R
+        return tmp
+    def __rmul__(self,b):
+        return self*b
+    
+def trace(a):
+    if isinstance(a,SpectralMatrix):
+        return N.trace(mm(a.R,a.L)) # Switch sum around to make faster!
+    else:
+        return N.trace(a)

@@ -48,7 +48,7 @@ def main(options):
     GFm.nHT = N.zeros(len(hw),N.float)     # non-Hilbert/Isym factor
     GFm.HT = N.zeros(len(hw),N.float)      # Hilbert/Iasym factor
     # Calculate transmission at Fermi level
-    GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+    GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
     basis = SIO.BuildBasis(options.XV,options.DeviceAtoms[0],options.DeviceAtoms[1],GFp.HS.lasto)
     GFp.TeF = GFp.calcT(options.numchan)[0]
     GFm.TeF = GFp.TeF
@@ -58,22 +58,23 @@ def main(options):
     print 'Inelastica: LOEscale =',options.LOEscale
     if options.LOEscale==0.0:
         # LOEscale=0.0 => Original LOE-WBA method
-        GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-        GFm.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+        GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
+        GFm.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
         for ihw in (hw>options.modeCutoff).nonzero()[0]:
             calcTraces(options,GFp,GFm,basis,NCfile,ihw)
             calcTraces(options,GFm,GFp,basis,NCfile,ihw)
+        writeFGRrates(options,GFp,hw,NCfile)
     else:
         # LOEscale=1.0 => Generalized LOE, see arXiv:1312.7625
         for ihw in (hw>options.modeCutoff).nonzero()[0]:
-            GFp.calcGF(options.energy+hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-            GFm.calcGF(options.energy-hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+            GFp.calcGF(options.energy+hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
+            GFm.calcGF(options.energy-hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
             calcTraces(options,GFp,GFm,basis,NCfile,ihw)
             calcTraces(options,GFm,GFp,basis,NCfile,ihw)
     # Multiply traces with voltage-dependent functions
     calcIETS(options,GFp,GFm,basis,hw)
     NCfile.close()
-
+    NEGF.SavedSig.close()
 
 ########################################################
 def IntegrityCheck(options,GF,basis,NCfile):
@@ -172,17 +173,17 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
     # LOE expressions in compact form
     t1 = MM.mm(MARGLGM,GF2.AR)
     t2 = MM.mm(MARGLGM2,GF1.AL)
-    K23 = N.trace(t1+t2).imag
-    K4 = N.trace(MM.mm(M,GF1.ALT,M,GF2.AR))
-    aK23 = 2*N.trace(t1-t2).real # asymmetric part
+    K23 = MM.trace(t1).imag+MM.trace(t2).imag
+    K4 = MM.trace(MM.mm(M,GF1.ALT,M,GF2.AR))
+    aK23 = 2*(MM.trace(t1).real-MM.trace(t2).real) # asymmetric part
     # Non-Hilbert term defined here with a minus sign
     GF1.nHT[ihw] = checkImPart(K23+K4)
     GF1.HT[ihw] = checkImPart(aK23)
     # Power, damping and current rates
-    GF1.P1T[ihw] = checkImPart(N.trace(MM.mm(M,GF1.A,M,GF2.A)))
-    GF1.P2T[ihw] = checkImPart(N.trace(MM.mm(M,GF1.AL,M,GF2.AR)))
-    GF1.ehDampL[ihw] = checkImPart(N.trace(MM.mm(M,GF1.AL,M,GF2.AL)))
-    GF1.ehDampR[ihw] = checkImPart(N.trace(MM.mm(M,GF1.AR,M,GF2.AR)))
+    GF1.P1T[ihw] = checkImPart(MM.trace(MM.mm(M,GF1.A,M,GF2.A)))
+    GF1.P2T[ihw] = checkImPart(MM.trace(MM.mm(M,GF1.AL,M,GF2.AR)))
+    GF1.ehDampL[ihw] = checkImPart(MM.trace(MM.mm(M,GF1.AL,M,GF2.AL)))
+    GF1.ehDampR[ihw] = checkImPart(MM.trace(MM.mm(M,GF1.AR,M,GF2.AR)))
     # Remains from older version (see before rev. 219):
     #GF.dGnout.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
     #GF.dGnin.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
@@ -190,15 +191,15 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
 
     # Check against original LOE-WBA formulation
     if options.LOEscale==0.0:
-        isym1 = MM.mm(GF1.ALT,M,GF2.AR,M)
-        isym2 = MM.mm(MM.dagger(GF1.ARGLG),M,GF2.A,M)
-        isym3 = MM.mm(GF1.ARGLG,M,GF2.A,M)
-        isym = N.trace( isym1+1j/2.*(isym2-isym3) )
-        print 'LOE-WBA check: Isym diff',K23+K4-isym
-        iasym1 = MM.mm(MM.dagger(GF1.ARGLG),M,GF2.AR-GF2.AL,M)
-        iasym2 = MM.mm(GF1.ARGLG,M,GF2.AR-GF2.AL,M)
-        iasym = N.trace( iasym1+iasym2 )
-        print 'LOE-WBA check: Iasym diff',aK23-iasym
+        #isym1 = MM.mm(GF1.ALT,M,GF2.AR,M)
+        #isym2 = MM.mm(MM.dagger(GF1.ARGLG),M,GF2.A,M)
+        #isym3 = MM.mm(GF1.ARGLG,M,GF2.A,M)
+        #isym = MM.trace( isym1)+1j/2.*(MM.trace(isym2)-MM.trace(isym3))
+        #print 'LOE-WBA check: Isym diff',K23+K4-isym
+        #iasym1 = MM.mm(MM.dagger(GF1.ARGLG),M,GF2.AR-GF2.AL,M)
+        #iasym2 = MM.mm(GF1.ARGLG,M,GF2.AR-GF2.AL,M)
+        #iasym = MM.trace( iasym1)+MM.trace(iasym2 )
+        #print 'LOE-WBA check: Iasym diff',aK23-iasym
 
 def calcIETS(options,GFp,GFm,basis,hw):
     # Calculate product of electronic traces and voltage functions
@@ -396,65 +397,74 @@ def checkImPart(x):
     return x.real   
 
 ########################################################
-def writeFGRrates():
-    # This does not work at the moment....
+def writeFGRrates(options,GF,hw,NCfile):
+    # Make human readable format
+
+    # Eigenchannels
+    GF.calcEigChan(channels=4)
+
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Reading ',options.PhononNetCDF
 
     options.iChan, options.iSide = 0, 2
-    outFile = file('%s/%s.IN.FGR'%(options.DestDir,options.systemlabel,'w'))
+    print options.DestDir
+    print options.systemlabel
+    outFile = file('%s/%s.IN.FGR'%(options.DestDir,options.systemlabel),'w')
     outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (PC.unitConv*GF.totTrans.real,))
 
     tmp=N.sort(abs(N.array(GF.nHT[:])))
-    SelectionMin=tmp[-options.NumPhCurr]        
-    
-    for ihw in range(len(GF.hw)):
-        SIO.printDone(ihw,len(GF.hw),'Golden Rate') 
-        M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:],N.complex) + 1.j*N.array(NCfile.variables['ImHe_ph'][ihw,options.iSpin,:,:],N.complex)
+    SelectionMin=tmp[-options.numchan]        
+
+    for ihw in range(len(hw)):
+        SIO.printDone(ihw,len(hw),'Golden Rate') 
+        M = N.array(NCfile.variables['He_ph'][ihw,options.iSpin,:,:],N.complex)
+        try:
+            M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw,options.iSpin,:,:],N.complex)
+        except:
+            print 'Warning: Variable ImHe_ph not found'
         rate=N.zeros((len(GF.ECleft),len(GF.ECright)),N.float)
         totrate=0.0
         inter,intra = 0.0, 0.0 # splitting total rate in two
         for iL in range(len(GF.ECleft)):
             for iR in range(len(GF.ECright)):
-                tmp=N.dot(N.conjugate(GF.ECleft[iL]),mm(M,GF.ECright[iR]))
+                tmp=N.dot(N.conjugate(GF.ECleft[iL]),MM.mm(M,GF.ECright[iR]))
                 rate[iL,iR]=(2*N.pi)**2*abs(tmp)**2
                 totrate+=rate[iL,iR]
                 if iL==iR: intra += rate[iL,iR]
                 else: inter += rate[iL,iR]
 
-        if abs(GF.nHT[ihw])>=SelectionMin:
-            options.iChan = ihw
-            currOut, currIn = IETS.dGnout[ihw], IETS.dGnin[ihw]
-            options.iSide = 3
-            writeCurrent(currIn)
-            options.iSide = 4
-            writeCurrent(currOut)
+        #if abs(GF.nHT[ihw])>=SelectionMin:
+        #    options.iChan = ihw
+        #    currOut, currIn = IETS.dGnout[ihw], IETS.dGnin[ihw]
+        #    options.iSide = 3
+        #    writeCurrent(currIn)
+        #    options.iSide = 4
+        #    writeCurrent(currOut)
             
-        outFile.write('\nPhonon mode %i : %f eV [Rates in units of (1/s/eV)]\n' % (ihw,IETS.hw[ihw]))
-        outFile.write('eh-damp : %e (1/s) , heating %e (1/(sV)))\n' % (IETS.P1T[ihw]*PC.unitConv*IETS.hw[ihw],IETS.P2T[ihw]*PC.unitConv))
-        outFile.write('eh-damp 1, 2 (MALMAL, MARMAR): %e (1/s) , %e (1/(s)))\n' % (IETS.ehDampL[ihw]*PC.unitConv*IETS.hw[ihw],IETS.ehDampR[ihw]*PC.unitConv*IETS.hw[ihw]))
-        outFile.write('SymI : %e (1/(sV)) , AsymI %e (?))\n' % (IETS.nHT[ihw]*PC.unitConv,IETS.HT[ihw]*PC.unitConv))
-        outFile.write('Elast : %e (1/(sV)) , Inelast %e (1/(sV)))\n' % (IETS.nHTel[ihw]*PC.unitConv,IETS.nHTin[ihw]*PC.unitConv))
+        outFile.write('\nPhonon mode %i : %f eV [Rates in units of (1/s/eV)]\n' % (ihw,hw[ihw]))
+        outFile.write('eh-damp : %e (1/s) , heating %e (1/(sV)))\n' % (GF.P1T[ihw]*PC.unitConv*hw[ihw],GF.P2T[ihw]*PC.unitConv))
+        outFile.write('eh-damp 1, 2 (MALMAL, MARMAR): %e (1/s) , %e (1/(s)))\n' % (GF.ehDampL[ihw]*PC.unitConv*hw[ihw],GF.ehDampR[ihw]*PC.unitConv*hw[ihw]))
+        outFile.write('SymI : %e (1/(sV)) , AsymI %e (?))\n' % (GF.nHT[ihw]*PC.unitConv,GF.HT[ihw]*PC.unitConv))
+        #outFile.write('Elast : %e (1/(sV)) , Inelast %e (1/(sV)))\n' % (GF.nHTel[ihw]*PC.unitConv,GF.nHTin[ihw]*PC.unitConv))
         outFile.write('down=left EC, right=right EC\n')
-        if IETS.P2T[ihw]>0.0:
-            if abs(totrate/(IETS.P2T[ihw])-1)<0.05:
-                outFile.write('Sum/Tr[MALMAR] , Tr: %1.3f  %e\n'%(totrate/(IETS.P2T[ihw]),PC.unitConv*IETS.P2T[ihw]))
+        if GF.P2T[ihw]>0.0:
+            if abs(totrate/(GF.P2T[ihw])-1)<0.05:
+                outFile.write('Sum/Tr[MALMAR] , Tr: %1.3f  %e\n'%(totrate/(GF.P2T[ihw]),PC.unitConv*GF.P2T[ihw]))
             else:
-                outFile.write('WARNING: !!!! Sum/Tr[MALMAR] , Tr: %2.2e  %e\n'%(totrate/(IETS.P2T[ihw]),PC.unitConv*IETS.P2T[ihw]))
+                outFile.write('WARNING: !!!! Sum/Tr[MALMAR] , Tr: %2.2e  %e\n'%(totrate/(GF.P2T[ihw]),PC.unitConv*GF.P2T[ihw]))
         else:
-            outFile.write(' Tr:  %e\n'%(PC.unitConv*IETS.P2T[ihw]))
-        inter = inter/IETS.P2T[ihw]
-        intra = intra/IETS.P2T[ihw]
+            outFile.write(' Tr:  %e\n'%(PC.unitConv*GF.P2T[ihw]))
+        inter = inter/GF.P2T[ihw]
+        intra = intra/GF.P2T[ihw]
         outFile.write('Interchannel ratio: Sum(inter)/Tr[MALMAR]      = %.4f \n'%inter)
         outFile.write('Intrachannel ratio: Sum(intra)/Tr[MALMAR]      = %.4f \n'%intra)
         outFile.write('Inter+intra ratio: Sum(inter+intra)/Tr[MALMAR] = %.4f \n'%(inter+intra))
-        for iL in range(len(IETS.ECleft)):
-            for iR in range(len(IETS.ECright)):
+        for iL in range(len(GF.ECleft)):
+            for iR in range(len(GF.ECright)):
                 outFile.write('%e ' % (PC.unitConv*rate[iL,iR],))
             outFile.write('\n')
-        outFile.close()
-        NCfile.close()
-                        
+    outFile.close()
+        
 
 
 ################################################################

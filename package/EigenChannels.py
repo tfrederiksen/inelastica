@@ -27,7 +27,7 @@ def main(options):
     options.nspin = myGF.HS.nspin
     basis = SIO.BuildBasis(XV,options.DeviceAtoms[0],options.DeviceAtoms[1],myGF.HS.lasto)
     calcT(options,geom,myGF,basis)
-
+    NEGF.SavedSig.close()
 
 ########################################################
 def readHS(options):

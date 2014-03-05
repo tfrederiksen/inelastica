@@ -118,14 +118,9 @@ class SigDir:
 
     def close(self):
         if not self.newFile==None:
-            print "1"
             var=self.newFile.createVariable('Done','i',('One',))
-            print "2"
-            var = 1
         for f in self.files:
-            print "Closing",f
             f.close()
-            print "...done!"
 
 class SavedSigClass:
     """
@@ -520,8 +515,11 @@ class GF:
         # Quantities expressed in nonorthogonal basis:
         self.OrthogonalDeviceRegion = False
 
-    def calcGF(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=True):
-        "Calculate GF etc at energy ee and 2d k-point"
+    def calcGF(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=True,SpectralMatrices=False):
+        """
+        Calculate GF etc at energy ee and 2d k-point
+        SpectralMatrices uses special format for the spectralfunction matrices, see MiscMath
+        """
 
         nuo, nuoL, nuoR = self.nuo, self.nuoL, self.nuoR
         nuo0, nuoL0, nuoR0 = self.nuo0, self.nuoL0, self.nuoR0
@@ -601,13 +599,21 @@ class GF:
         self.Gr = LA.inv(eSmH)
         self.Ga = MM.dagger(self.Gr)
         # Calculate spectral functions
-        self.AL = MM.mm(self.Gr[:,0:nuoL],self.GamL,self.Ga[0:nuoL,:])
-        tmp = MM.mm(self.GamL,self.Gr[0:nuoL,:])
-        self.ALT = MM.mm(self.Ga[:,0:nuoL],tmp)
-        self.AR = MM.mm(self.Gr[:,nuo-nuoR:nuo],self.GamR,self.Ga[nuo-nuoR:nuo,:])
-        self.ARGLG = MM.mm(self.AR[:,0:nuoL],tmp)
-        del tmp # then we don't use more memory than needed...
-        self.A = self.AL + self.AR
+        if SpectralMatrices:
+            self.AL = MM.SpectralMatrix(MM.mm(self.Gr[:,0:nuoL],self.GamL,self.Ga[0:nuoL,:]))
+            tmp = MM.mm(self.GamL,self.Gr[0:nuoL,:])
+            self.ALT = MM.SpectralMatrix(MM.mm(self.Ga[:,0:nuoL],tmp))
+            self.AR = MM.SpectralMatrix(MM.mm(self.Gr[:,nuo-nuoR:nuo],self.GamR,self.Ga[nuo-nuoR:nuo,:]))
+            self.ARGLG = MM.mm(self.AR.full()[:,0:nuoL],tmp)
+            self.A = MM.SpectralMatrix(1.0j*(self.Gr-self.Ga))
+        else:
+            self.AL = MM.mm(self.Gr[:,0:nuoL],self.GamL,self.Ga[0:nuoL,:])
+            tmp = MM.mm(self.GamL,self.Gr[0:nuoL,:])
+            self.ALT = MM.mm(self.Ga[:,0:nuoL],tmp)
+            self.AR = MM.mm(self.Gr[:,nuo-nuoR:nuo],self.GamR,self.Ga[nuo-nuoR:nuo,:])
+            self.ARGLG = MM.mm(self.AR[:,0:nuoL],tmp)
+            self.A = self.AL+self.AR
+            
         
     def setkpoint(self,kpoint,ispin=0):
         # Initiate H, S to correct kpoint
@@ -725,6 +731,7 @@ class GF:
 
     def calcEigChan(self,channels=10):
         if not self.OrthogonalDeviceRegion:
+            self.totTrans = self.calcT(1)[0]
             self.orthogonalize()
         # Calculate Eigenchannels from left
         self.A1 = MM.mm(self.Gr,self.GamL,self.Ga)
