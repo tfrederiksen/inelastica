@@ -29,11 +29,11 @@ OSPBSsubs = [['$NODES$','1:ppn=1'],['$MEM$','1gb'],['$WALLTIME$',  '1:00:00']]
 
 T, F = True, False
 
-CG = T
-FC = F
-OS = F
-TS = F
-PH = F
+CG = F
+FC = T
+OS = T
+TS = T
+PH = T
 
 
 if CG:
@@ -44,7 +44,7 @@ if CG:
                overwrite=False,submitJob=submitJob,PBSsubs=TSPBSsubs)                    
 
 # For the remaining runs we will explore the L = 10.00 Ang case
-geom = './L10.00'
+geom = './L9.68'
 head,tail = os.path.split(geom)   
 
 if FC:

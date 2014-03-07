@@ -6,7 +6,7 @@ MD.TypeOfRun        CG
 MD.NumCGsteps       0
 MD.MaxCGDispl       0.05 Ang
 DM.NumberPulay      10
-DM.MixingWeight     0.02
+DM.MixingWeight     0.01
 DM.Tolerance        1.d-4
 MaxSCFIterations    200
 MeshCutoff          200. Ry 

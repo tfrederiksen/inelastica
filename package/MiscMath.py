@@ -590,11 +590,10 @@ def GaussKronrod(NN):
 
 class SpectralMatrix:
     # self.L/R : Left / right matrices
-    def __init__(self,A=None,cutoff=1e-9):
+    def __init__(self,A=None,cutoff=1e-8):
         if A!=None:
             # Initialize ... only Hermitean matrices
             ev,evec = LA.eigh(A)
-            
             # Drop eigenvalues
             indx = N.where(N.abs(ev)>cutoff)[0]
             ev, evec = ev[indx], evec[:,indx]
@@ -606,25 +605,43 @@ class SpectralMatrix:
                 print N.allclose(A,N.dot(self.L,self.R))
     def full(self):
         return mm(self.L,self.R)
-    def __add__(self,b):
+    def __add__(self,b,subtract=False):
         # Could be improved for addition of two spectral matrices
-        return self.full()+b
-        #if not isinstance(b,SpectralMatrix):
-        #    return self.full()+b
-        #else:
-        #    return SpectralMatrix(self.full()+b.full())
+        if not isinstance(b,SpectralMatrix):
+            return self.full()+b
+        else:
+            NN = self.L.shape[0]
+            Na, Nb = self.L.shape[1], b.L.shape[1]
+            if Na+Nb>0.3*NN:
+                # Too many eigenvalues
+                print "Too many eigenvalues"
+                if not subtract:
+                    return self.full()+b.full()
+                else:
+                    return self.full()-b.full()
+            else:
+                res=SpectralMatrix()
+                res.L = N.zeros((NN,Na+Nb),N.complex) # Always assume complex !?
+                res.R = N.zeros((Na+Nb,NN),N.complex) # Always assume complex !?
+                res.L[:,0:Na], res.R[0:Na,:] = self.L, self.R
+                if not subtract:
+                    res.L[:,Na:Na+Nb], res.R[Na:Na+Nb,:] = b.L, b.R
+                else:
+                    res.L[:,Na:Na+Nb], res.R[Na:Na+Nb,:] = -b.L, -b.R
+                return res
+            
     def __radd__(self,b):
         return self+b
     def __sub__(self,b):
         if not isinstance(b,SpectralMatrix):
             return self.full()-b
         else:
-            return SpectralMatrix(self.full()-b.full())
+            return self.__add__(b,subtract=True)
     def __rsub__(self,b):
         if not isinstance(b,SpectralMatrix):
             return b-self.full()
         else:
-            return SpectralMatrix(b.full()-self.full())
+            return b.__add__(self,subtract=True)
     def __mul__(self,b):
         tmp = SpectralMatrix()
         tmp.L, tmp.R = self.L*b, self.R

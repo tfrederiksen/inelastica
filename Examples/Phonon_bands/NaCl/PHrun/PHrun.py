@@ -4,7 +4,7 @@ from Inelastica.Phonons import *
 Analyze('../FCrun_*',
         onlySdir='../OS',
         DeviceFirst=0,DeviceLast=0,
-        FCfirst=259,FClast=260,
+        FCfirst=1,FClast=2,
         outlabel='NaCl',
         CalcCoupl=False,
         AuxNCfile=False,

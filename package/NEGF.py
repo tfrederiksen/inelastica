@@ -605,7 +605,7 @@ class GF:
             self.ALT = MM.SpectralMatrix(MM.mm(self.Ga[:,0:nuoL],tmp))
             self.AR = MM.SpectralMatrix(MM.mm(self.Gr[:,nuo-nuoR:nuo],self.GamR,self.Ga[nuo-nuoR:nuo,:]))
             self.ARGLG = MM.mm(self.AR.full()[:,0:nuoL],tmp)
-            self.A = MM.SpectralMatrix(1.0j*(self.Gr-self.Ga))
+            self.A = self.AL+self.AR
         else:
             self.AL = MM.mm(self.Gr[:,0:nuoL],self.GamL,self.Ga[0:nuoL,:])
             tmp = MM.mm(self.GamL,self.Gr[0:nuoL,:])
