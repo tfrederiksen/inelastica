@@ -181,11 +181,13 @@ class Geom:
 
     def repeteGeom(self,vec,rep=3):
         # TF 050606: MP 140302 changed repetition order to keep unitcells together
+        # TF 140313: Vectorial implementation (much faster for large systems)
+        xyz = N.array(self.xyz)
+        dr = N.outer(N.ones(len(xyz)),N.array(vec))
         for j in range(1,rep):
-            for i in range(self.natoms):
-                [x,y,z] = self.xyz[i]
-                self.addAtom([x+j*vec[0],y+j*vec[1],z+j*vec[2]],\
-                             self.snr[i],self.anr[i])
+            xyz += dr
+            for i in range(len(xyz)):
+                self.addAtom(xyz[i],self.snr[i],self.anr[i])
 
     def addGeom(self,Other):
         #TF/050606
