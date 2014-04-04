@@ -49,7 +49,7 @@ def main(options):
     GFm.HT = N.zeros(len(hw),N.float)      # Hilbert/Iasym factor
     # Calculate transmission at Fermi level
     GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
-    basis = SIO.BuildBasis(options.XV,options.DeviceAtoms[0],options.DeviceAtoms[1],GFp.HS.lasto)
+    basis = SIO.BuildBasis(options.fn,options.DeviceAtoms[0],options.DeviceAtoms[1],GFp.HS.lasto)
     GFp.TeF = GFp.calcT(options.numchan)[0]
     GFm.TeF = GFp.TeF
     # Check consistency of PHrun vs TSrun inputs

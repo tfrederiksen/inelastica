@@ -1287,41 +1287,30 @@ def ReadIonNCFile(filename,printnorm=False):
     file.close()
     return ion
 
-def ReadIonNCFiles(wildcard='*ion.nc'):
-    """
-    Reads all *ion.nc files in a folder
-    """
-    import glob
-    ions = {}
-    for ionnc in glob.glob(wildcard):
-        ion = ReadIonNCFile(ionnc)
-        if abs(ion.atomnum) in ions:
-            ions[abs(ion.atomnum)][ion.numorb] = ion
-        else:
-            ions[abs(ion.atomnum)] = {}
-            if ion.numorb in ions[ion.atomnum]:
-                print "WARNING: Basis set for atom %i is not unique"%ion.atomnum
-            ions[abs(ion.atomnum)][ion.numorb] = ion
-    return ions
-
-
-def BuildBasis(XVfile,FirstAtom,LastAtom,lasto):
+def BuildBasis(FDFfile,FirstAtom,LastAtom,lasto):
     """
     Builds the information for each basis orbital in the Hamiltonian
     """
     class basis:
         pass
-
-    XVfile = os.path.abspath(XVfile)
-    vectors,speciesnumber,atomnumber,xyz = ReadXVFile(XVfile)
-    head,tail =  os.path.split(XVfile)
-    ions = ReadIonNCFiles(head+'/*ion.nc')
+    CSL = GetFDFblock(FDFfile,'ChemicalSpeciesLabel')
+    systemlabel = GetFDFlineWithDefault(FDFfile,'SystemLabel', str, 'Systemlabel', 'SiestaIO')
+    head,tail =  os.path.split(FDFfile)
+    XVfile = '%s/%s.XV'%(head,systemlabel)
+    try:
+        # XV file prevails
+        vectors,speciesnumber,atomnumber,xyz = ReadXVFile(XVfile)
+    except:
+        vectors,xyz,speciesnumber,atomnumber,natoms = ReadFDFFile(FDFfile)
+    ions = {}
+    for i in range(len(CSL)):
+        # Read ion-nc file for each SIESTA species
+        ions[int(CSL[i][0])] = ReadIonNCFile(head+'/%s.ion.nc'%CSL[i][2])
 
     # Determine the basis dimension nn
     nn = 0
     for i in range(FirstAtom-1,LastAtom): # Python counts from zero
-        an = abs(atomnumber[i]) # handles ghost atoms
-        nn += ions[an][lasto[i+1]-lasto[i]].numorb
+        nn += ions[speciesnumber[i]].numorb
 
     if nn!=lasto[LastAtom]-lasto[FirstAtom-1]:
         print "Length of basis set build: %i"%nn
@@ -1344,7 +1333,7 @@ def BuildBasis(XVfile,FirstAtom,LastAtom,lasto):
     iorb = 0
     for ii in range(FirstAtom-1,LastAtom):
         an = atomnumber[ii]
-        ion = ions[abs(an)][lasto[ii+1]-lasto[ii]]
+        ion = ions[speciesnumber[ii]]
         for jj in range(len(ion.L)):
             for kk in range(-ion.L[jj],ion.L[jj]+1):
                 basis.ii[iorb]=ii+1

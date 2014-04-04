@@ -56,7 +56,7 @@ def readxv():
 ########################################################
 def readbasis():
     global basis
-    fn=glob.glob('*.XV')
+    fn=glob.glob('RUN.fdf')
     basis = SIO.BuildBasis(fn[0], general.from_atom, general.to_atom, HS.GF.HS.lasto)
 
 ########################################################

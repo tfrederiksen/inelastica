@@ -143,7 +143,7 @@ Voltage                         : %f
 
     if options.dos:
         # Read basis
-        basis = SIO.BuildBasis('%s/%s.XV'%(options.head,options.systemlabel),1,myGF.HS.nua,myGF.HS.lasto)
+        basis = SIO.BuildBasis(options.fn,1,myGF.HS.nua,myGF.HS.lasto)
         WritePDOS(outFile+'.PDOS.gz',options,myGF,DOSL+DOSR,basis)
         WritePDOS(outFile+'.PDOSL.gz',options,myGF,DOSL,basis)
         WritePDOS(outFile+'.PDOSR.gz',options,myGF,DOSR,basis)
