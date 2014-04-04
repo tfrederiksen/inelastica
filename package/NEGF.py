@@ -515,9 +515,8 @@ class GF:
         # Quantities expressed in nonorthogonal basis:
         self.OrthogonalDeviceRegion = False
 
-    def calcGF(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=True,SpectralMatrices=False):
-        """
-        Calculate GF etc at energy ee and 2d k-point
+    def calcSigLR(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=False,SpectralMatrices=False):
+        """Calculate (folded) self-energy at energy ee and 2d k-point
         SpectralMatrices uses special format for the spectralfunction matrices, see MiscMath
         """
 
@@ -525,9 +524,8 @@ class GF:
         nuo0, nuoL0, nuoR0 = self.nuo0, self.nuoL0, self.nuoR0
         FoldedL, FoldedR = self.FoldedL, self.FoldedR
         devSt, devEnd = self.DeviceOrbs[0], self.DeviceOrbs[1]
-        self.setkpoint(kpoint,ispin=ispin)
-
         # Calculate Sigma without folding
+        self.setkpoint(kpoint,ispin)
         SigL0 = self.elecL.getSig(ee,kpoint,left=True,Bulk=self.Bulk,ispin=ispin,etaLead=etaLead,useSigNCfiles=useSigNCfiles)
         SigR0 = self.elecR.getSig(ee,kpoint,left=False,Bulk=self.Bulk,ispin=ispin,etaLead=etaLead,useSigNCfiles=useSigNCfiles)
         
@@ -579,8 +577,44 @@ class GF:
         if self.Bulk and not FoldedR:
             # Reverse sign since SigR is really SGF^-1
             self.GamR = -1.0*self.GamR
+        
+    def calcGF(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=False,SpectralMatrices=False):
+        "Calculate GF etc at energy ee and 2d k-point"
+        nuo, nuoL, nuoR = self.nuo, self.nuoL, self.nuoR
+        nuo0, nuoL0, nuoR0 = self.nuo0, self.nuoL0, self.nuoR0
+        FoldedL, FoldedR = self.FoldedL, self.FoldedR
+        devSt, devEnd = self.DeviceOrbs[0], self.DeviceOrbs[1]
 
-        # Finally ready to calculate Gr
+        # Determine whether electrode self-energies should be k-sampled or not
+        try:    mesh = self.elecL.mesh # a mesh was attached
+        except: mesh = False
+        # Calculate electrode self-energies
+        if mesh:
+            try:    self.SigAvg # Averaged self-energies exist
+            except: self.SigAvg = [False,-1]
+            if self.SigAvg[0] == ee and self.SigAvg[1] == ispin:
+                # We have already the averaged self-energies
+                print 'NEGF: Reusing sampled electrode self-energies',mesh.Nk,mesh.type,'for ispin= %i e= %f'%(ispin,ee)
+            else:
+                # k-sampling performed over folded electrode self-energies
+                print 'NEGF: Sampling electrode self-energies',mesh.Nk,mesh.type,'for ispin= %i e= %f'%(ispin,ee)
+                self.calcSigLR(ee,mesh.k[0,:2],ispin,etaLead,useSigNCfiles,SpectralMatrices)
+                AvgSigL = mesh.w[0,0]*self.SigL
+                AvgSigR = mesh.w[0,0]*self.SigR
+                for i in range(1,len(mesh.k)):
+                    self.calcSigLR(ee,mesh.k[i,:2],ispin,etaLead,useSigNCfiles,SpectralMatrices)
+                    AvgSigL += mesh.w[0,i]*self.SigL
+                    AvgSigR += mesh.w[0,i]*self.SigR
+                # We now simply continue with the averaged self-energies
+                self.SigL = AvgSigL
+                self.SigR = AvgSigR
+                self.SigAvg = [ee,ispin]
+        else:
+            # We sample k-points the usual way
+            self.calcSigLR(ee,kpoint,ispin,etaLead,useSigNCfiles)
+
+        # Ready to calculate Gr
+        self.setkpoint(kpoint,ispin)
         eSmH=ee*self.S-self.H
         if FoldedL:
             eSmH[0:nuoL,0:nuoL]=eSmH[0:nuoL,0:nuoL]-self.SigL

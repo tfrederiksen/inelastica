@@ -39,6 +39,8 @@ parser.add_option("-b","--Gk2", dest='Gk2', default=0,type='int',
                   help="Gaussian quadrature k-point sampling for a2 direction (2*GK2+1 points) [%default]")
 parser.add_option("-s", "--skipsym", dest='skipsymmetry',default=False,action='store_true',
                   help="Skip inversion (time-reversal) symmetry (i.e., k=-k) that reduces the number of k-point evaluations")
+parser.add_option("-j", "--singlejunction", dest='singlejunction',default=False,action='store_true',
+                  help="k-point sample only electrode self-energies")
 
 # Imaginary part to Greens functions
 parser.add_option("-e","--eta", dest="eta", help="Imaginary part added to all energies (device and leads) [%default eV]",

@@ -48,6 +48,11 @@ def calc(options):
     myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
     nspin = myGF.HS.nspin
 
+    # k-sample only self-energies?
+    if options.singlejunction:
+        elecL.mesh = mesh
+        mesh = Kmesh.kmesh(3,3,1)
+
     print """
 ##############################################################
 pyTBT
