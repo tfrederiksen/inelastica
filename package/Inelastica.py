@@ -28,6 +28,8 @@ def main(options):
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Inelastica: Reading ',options.PhononNetCDF
     hw = N.array(NCfile.variables['hw'][:])
+    if NCfile.CurrentHWidx != len(hw):
+        sys.exit('Inelastica: Error - not all phonon He-ph are calculated.')
     # Work with GFs etc at two different energies: p=Ef+hw/2 and m=Ef-hw/2
     GFp = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
     # Prepare lists for various trace factors

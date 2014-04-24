@@ -163,24 +163,26 @@ def Analyze(FCwildcard,
         tmp1.append(orbitalIndices[ii,0]-orbitalIndices[DeviceFirst-1,0])
         tmp2.append(orbitalIndices[ii,1]-orbitalIndices[DeviceFirst-1,0])
     naoDev = orbitalIndices[DeviceLast-1][1]-orbitalIndices[DeviceFirst-1][0]+1
-    NCfile = OpenNetCDFFile('%s.nc'%outlabel,
-                            naoDev,xyz,DeviceFirst,DeviceLast,FCfirst,FClast)
-    Write2NetCDFFile(NCfile,tmp1,'FirstOrbital',('NumDevAtoms',),
-                     description='Orbital index for the first orbital on the atoms (counting from 0)')
-    Write2NetCDFFile(NCfile,tmp2,'LastOrbital',('NumDevAtoms',),
-                     description='Orbital index for the last orbital on the atoms (counting from 0)')
-    Write2NetCDFFile(NCfile,hw,'hw',('PhononModes',),units='eV')
-    Write2NetCDFFile(NCfile,U,'U',('PhononModes','PhononModes',),
-                     description='U[i,j] where i is mode index and j atom displacement')
-    Write2NetCDFFile(NCfile,vectors,'UnitCell',('dim3','dim3',),units='Ang')
-    Write2NetCDFFile(NCfile,xyz,'GeometryXYZ',('NumTotAtoms','dim3',),units='Ang')
-    Write2NetCDFFile(NCfile,atomnumber,'AtomNumbers',('NumTotAtoms',),units='Atomic Number')
-    Write2NetCDFFile(NCfile,speciesnumber,'SpeciesNumbers',('NumTotAtoms',),units='Species Number')
-    DeviceAtoms = range(DeviceFirst,DeviceLast+1)
-    Write2NetCDFFile(NCfile,DeviceAtoms,'DeviceAtoms',('NumDevAtoms',),
-                     description='Range of atomic indices (counting from 1)')
-    Write2NetCDFFile(NCfile,N.array(range(FCfirst,FClast+1),N.float),'DynamicAtoms',('NumFCAtoms',),
-                     description='Range of atomic indices (counting from 1)')
+    NCfile,newNCfile = OpenNetCDFFile('%s.nc'%outlabel,
+                            naoDev,xyz,DeviceFirst,DeviceLast,FCfirst,FClast,AuxNCfile)
+    if newNCfile:
+        Write2NetCDFFile(NCfile,tmp1,'FirstOrbital',('NumDevAtoms',),
+                         description='Orbital index for the first orbital on the atoms (counting from 0)')
+        Write2NetCDFFile(NCfile,tmp2,'LastOrbital',('NumDevAtoms',),
+                         description='Orbital index for the last orbital on the atoms (counting from 0)')
+        Write2NetCDFFile(NCfile,hw,'hw',('PhononModes',),units='eV')
+        Write2NetCDFFile(NCfile,U,'U',('PhononModes','PhononModes',),
+                         description='U[i,j] where i is mode index and j atom displacement')
+        Write2NetCDFFile(NCfile,vectors,'UnitCell',('dim3','dim3',),units='Ang')
+        Write2NetCDFFile(NCfile,xyz,'GeometryXYZ',('NumTotAtoms','dim3',),units='Ang')
+        Write2NetCDFFile(NCfile,atomnumber,'AtomNumbers',('NumTotAtoms',),units='Atomic Number')
+        Write2NetCDFFile(NCfile,speciesnumber,'SpeciesNumbers',('NumTotAtoms',),units='Species Number')
+        DeviceAtoms = range(DeviceFirst,DeviceLast+1)
+        Write2NetCDFFile(NCfile,DeviceAtoms,'DeviceAtoms',('NumDevAtoms',),
+                         description='Range of atomic indices (counting from 1)')
+        del DeviceAtoms
+        Write2NetCDFFile(NCfile,N.array(range(FCfirst,FClast+1),N.float),'DynamicAtoms',('NumFCAtoms',),
+                         description='Range of atomic indices (counting from 1)')
 
     if CalcCoupl:
         print '\nPhonons.Analyze: AbsEref =',AbsEref
@@ -220,6 +222,8 @@ def Analyze(FCwildcard,
             Write2NetCDFFile(NCfile,H0.imag,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
             Write2NetCDFFile(NCfile,S0.imag,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
             Write2NetCDFFile(NCfile,Heph.imag,'ImHe_ph',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+        # Ensure it is complete
+        NCfile.CurrentHWidx = len(hw)
         NCfile.sync()
 
     if CalcCoupl and PrintSOrbitals:
@@ -479,11 +483,24 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref):
     return TSHS0.ef,TSHS0.H,TSHS0.S,N.array(dH)
 
     
-def OpenNetCDFFile(filename,nao,xyz,DeviceFirst,DeviceLast,FCfirst,FClast):
+def OpenNetCDFFile(filename,nao,xyz,DeviceFirst,DeviceLast,FCfirst,FClast,AuxNCfile):
     print 'Phonons.WriteNetCDFFile: Writing', filename
+    # If no auxillary file, we *MUST* create the regular one
+    i_f = False
+    if AuxNCfile: i_f = os.path.isfile(filename)
+    if i_f:
+        # We will try and append to the file instead of reading it
+        file = nc.NetCDFFile(filename,'a')
+        i_f = i_f and file.dimensions['AtomicOrbitals'] == int(nao)
+        i_f = i_f and file.dimensions['PhononModes'] == (FClast-FCfirst+1)*3
+        i_f = i_f and file.dimensions['NumTotAtoms'] == len(xyz)
+        i_f = i_f and file.dimensions['NumDevAtoms'] == DeviceLast-DeviceFirst+1
+        i_f = i_f and file.dimensions['NumFCAtoms']  == FClast-FCfirst+1
+        if i_f: return file,False
     try:
         # Use 64 bit format
-        file = nc.NetCDFFile(filename,'wl','Created '+time.ctime(time.time()))
+        file = nc.NetCDFFile(filename,'wl',
+                             'Created '+time.ctime(time.time()))
     except:
         file = nc.NetCDFFile(filename,'w','Created '+time.ctime(time.time()))
     file.title = 'Output from Phonons.py'
@@ -494,7 +511,8 @@ def OpenNetCDFFile(filename,nao,xyz,DeviceFirst,DeviceLast,FCfirst,FClast):
     file.createDimension('NumTotAtoms',len(xyz))
     file.createDimension('NumDevAtoms',DeviceLast-DeviceFirst+1)
     file.createDimension('NumFCAtoms',FClast-FCfirst+1)
-    return file
+    file.CurrentHWidx = 0
+    return file,True
 
 
 def Write2NetCDFFile(file,var,varLabel,dimensions,units=None,description=None):
@@ -929,13 +947,23 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
     VC.Check("same-kpoint",N.abs(auxkpoint-kpoint),
              "Aux. file does not match specified k-point.",
              "Delete {0} and try again!".format(AuxNCfile))
-    NCfile.createDimension('NSpin',len(ReH0))
-    Write2NetCDFFile(NCfile,ReH0,'H0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-    Write2NetCDFFile(NCfile,ReS0,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
-    if not GammaPoint:
-        Write2NetCDFFile(NCfile,ImH0,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-        Write2NetCDFFile(NCfile,ImS0,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
-        Write2NetCDFFile(NCfile,kpoint,'kpoint',('dim3',))
+    newNCfile = NCfile.CurrentHWidx == 0
+    if newNCfile:
+        NCfile.createDimension('NSpin',len(ReH0))
+        Write2NetCDFFile(NCfile,ReH0,'H0',
+                         ('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+        Write2NetCDFFile(NCfile,ReS0,'S0',
+                         ('AtomicOrbitals','AtomicOrbitals',),units='eV')
+        if not GammaPoint:
+            Write2NetCDFFile(NCfile,ImH0,'ImH0',
+                             ('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
+            Write2NetCDFFile(NCfile,ImS0,'ImS0',
+                             ('AtomicOrbitals','AtomicOrbitals',),units='eV')
+            Write2NetCDFFile(NCfile,kpoint,'kpoint',('dim3',))
+    else:
+        if NCfile.dimensions['NSpin'] != len(ReH0):
+            sys.exit('Phonons.CalcHephNETCDF: Current %s does not correspond to correct spin-component, please delete file'%(NCfile))
+
 
     # Check AuxNCfile
     if FCfirst != int(NCfile2.variables['FCfirst'][0]):
@@ -946,15 +974,16 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
     # CalcHeph
     print 'Phonons.CalcHephNETCDF: Calculating...\n',
     const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-    ReHeph  = NCfile.createVariable('He_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
-    if not GammaPoint: 
-        ImHeph  = NCfile.createVariable('ImHe_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
-
-    # Initialize
-    ReHeph[:,:,:,:] = 0.
-    if not GammaPoint: 
-        ImHeph[:,:,:,:] = 0.
-    NCfile.sync()
+    if newNCfile:
+        ReHeph  = NCfile.createVariable('He_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
+        if not GammaPoint: 
+            ImHeph  = NCfile.createVariable('ImHe_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
+        NCfile.sync()
+    else:
+        # Retrieve the data points as we are appending
+        ReHeph = NCfile.variables['He_ph']
+        if not GammaPoint: 
+            ImHeph = NCfile.variables['ImHe_ph']
 
     # we extend the atomic mass and the other "constants" to ease the calculation
     UcOam = N.empty((len(hw),len(hw)),N.float)
@@ -963,17 +992,25 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
         UcOam[:,i] = U[:,i]*const/(2*PC.AtomicMass[atomnumber[FCfirst-1+i/3]]*hw)**.5
 
     for i in range(len(hw)):
+        # skip already calculated contributions
+        if i < NCfile.CurrentHWidx: continue
         # Loop over modes
         SIO.printDone(i, len(hw),'Calculating Heph')
         if hw[i]>0:
-            for j in range(len(hw)):
+            # initialize
+            ReHeph[i,:] = UcOam[i,0] * RedH[0][:,first:last+1,first:last+1]
+            if not GammaPoint:
+                ImHeph[i,:] = UcOam[i,0] * ImdH[0][:,first:last+1,first:last+1]
+            for j in range(1,len(hw)):
                 # Loop over atomic coordinates
                 ReHeph[i,:] += UcOam[i,j] * RedH[j][:,first:last+1,first:last+1]
                 if not GammaPoint:
                     ImHeph[i,:] += UcOam[i,j] * ImdH[j][:,first:last+1,first:last+1]
+
         else:
+            ReHeph[i,:] = 0.
+            if not GammaPoint: ImHeph[i,:] = 0.
             print 'Phonons.CalcHephNETCDF: Nonpositive frequency --> Zero-valued coupling matrix' 
-            # already zero
 
         #Check that Heph is Hermitian
         for iSpin in range(len(ReH0)):
@@ -985,7 +1022,8 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
             else:
                 if not N.allclose(ReHeph[i,iSpin],N.transpose(ReHeph[i,iSpin]),atol=1e-5):
                     print 'Phonons.CalcHephNETCDF: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
-                    
+        # Update ref-counter
+        NCfile.CurrentHWidx = i + 1
         NCfile.sync()
     print '  ... Done!'
     #NCfile2.close() # Leave open for later access...
