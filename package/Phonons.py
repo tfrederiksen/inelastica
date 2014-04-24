@@ -1038,8 +1038,9 @@ def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,\
     # Get bandlines
     what = Sym.what()
 
-    bands, datasets = [], []
+    bands, datasets, kdist = [], [], []
     for elem in what:
+        kdist += [N.dot(elem[1],elem[1])**.5]
         # Calculate bands
         bands+=[ calcPhBands(MSFC, a1, a2, a3, xyz,\
                                  elem[1], elem[2], elem[3], numBasis,\
@@ -1053,36 +1054,43 @@ def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,\
         f.close()
         xx = N.array(range(elem[3]),N.float)/(elem[3]-1.0)
         #datasets += [[XMGR.XYDYset(xx,bands[-1][:,ii].real,bands[-1][:,ii].imag/2,Lcolor=ii+1) for ii in range(len(bands[-1][0,:]))]]
-        datasets += [[XMGR.XYset(xx,bands[-1][:,ii].real,Lcolor=ii+1) for ii in range(len(bands[-1][0,:]))]]
+        datasets += [[XMGR.XYset(xx,bands[-1][:,ii].real,Lcolor=1,Lwidth=2) for ii in range(len(bands[-1][0,:]))]]
 
-    tmp = [N.max(ii.real) for ii in bands]
-    maxEnergy = N.max(tmp)
-    maxEnergy = int(maxEnergy/10.0)*10+10
+    maxEnergy = N.max(bands).real
+    munit = 50.0
+    maxEnergy = int(1.05*maxEnergy/munit)*munit+munit
+
+    # Compute x-axis widths in the final plot
+    widths = N.array(kdist)/N.sum(kdist)
 
     gg=[]
+    xmin = 0.15
     for jj, ii in enumerate(datasets):
         g =XMGR.Graph()
         for data in ii:
             g.AddDatasets(data)
         g.SetSubtitle(what[jj][0])
-
-        g.SetXaxis(label='',majorUnit=0.5,minorUnit=0.1,max=1,min=0)     
+        g.SetXaxis(label='',majorUnit=1.0,minorUnit=1.0,max=1,min=0,useticklabels=False)     
         if jj==0:
-            g.SetYaxis(label='meV',majorUnit=10,minorUnit=2,max=maxEnergy,min=0)
+            g.SetYaxis(label='Phonon energy (meV)',majorUnit=munit,minorUnit=munit/5,max=maxEnergy,min=0)
         else:
-            g.SetYaxis(label='',majorUnit=1e10,minorUnit=2,max=maxEnergy,min=0)
+            g.SetYaxis(label='',majorUnit=munit,minorUnit=munit/5,max=maxEnergy,min=0,useticklabels=False)
+        # Place graph on canvas
+        xmax = xmin + widths[jj]
+        g.SetView(xmin=xmin,xmax=xmax,ymin=0.15,ymax=0.85)    
+        xmin = 1*xmax
         gg+=[g]
 
-    p = XMGR.Plot('PhononBands.agr',gg[0])
-
+    p = XMGR.Plot('PhononBands_%.2f.agr'%PhBandRadie,gg[0])
+    
     for ii in range(1,len(gg)):
         p.AddGraphs(gg[ii])
-    p.ArrangeGraphs(nx=len(gg),ny=1,hspace=0.0,vspace=0.0)
+    #p.ArrangeGraphs(nx=len(gg),ny=1,hspace=0.0,vspace=0.0)
 
     # Finally, write the plot file
-    p.ShowTimestamp()
+    #p.ShowTimestamp()
     p.WriteFile()
-    p.Print2File('PhononBands.eps')
+    p.Print2File('PhononBands_%.2f.eps'%PhBandRadie)
 
 
 def calcPhBands(FCmean, a1, a2, a3, xyz, kdir, korig, Nk, Nbasis, basisatom):

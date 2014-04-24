@@ -804,8 +804,10 @@ class Symmetry:
             X = [b1,b2,b3][int(ipiv[0])]
             what = [['000-100',X*0.5,0*X,101]]
         elif self.latticeType == 'GRAPHENE':
-            M = (b1+b2)/2
-            K = M+(b1-b2)/6
+            #M = (b1+b2)/2
+            #K = M+(b1-b2)/6
+            M = b1/2.
+            K = (b1+b2)/3.
             G = 0*M
             what = [['G-M',M,G,101],
                     ['M-K',K-M,M,101],
