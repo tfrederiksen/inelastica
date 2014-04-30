@@ -991,40 +991,65 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
     for i in range(len(hw)):
         UcOam[:,i] = U[:,i]*const/(2*PC.AtomicMass[atomnumber[FCfirst-1+i/3]]*hw)**.5
 
+    # Instead of operation in disk-memory
+    # we create a temporary array (real and imaginary)
+    # This will only matter if the default chunking size
+    # is smaller than the array-size used below (default around 
+    # 10mb~2000 orbitals)
+    Nspin = len(ReH0)
+    els = last + 1 - first
+    RI = 1 # Real-imaginary index size
+    if not GammaPoint: RI = 2
+    if SinglePrec:
+        tmp = N.empty((RI,Nspin,els,els),N.float32)
+    else:
+        tmp = N.empty((RI,Nspin,els,els),N.float64)
     for i in range(len(hw)):
+
         # skip already calculated contributions
         if i < NCfile.CurrentHWidx: continue
+
         # Loop over modes
         SIO.printDone(i, len(hw),'Calculating Heph')
-        if hw[i]>0:
-            # initialize
-            ReHeph[i,:] = UcOam[i,0] * RedH[0][:,first:last+1,first:last+1]
+
+        if hw[i] > 0:
+            tmp[0,:,:,:] = UcOam[i,0] * RedH[0][:,first:last+1,first:last+1]
             if not GammaPoint:
-                ImHeph[i,:] = UcOam[i,0] * ImdH[0][:,first:last+1,first:last+1]
+                tmp[1,:,:,:] = UcOam[i,0] * ImdH[0][:,first:last+1,first:last+1]
             for j in range(1,len(hw)):
                 # Loop over atomic coordinates
-                ReHeph[i,:] += UcOam[i,j] * RedH[j][:,first:last+1,first:last+1]
+                tmp[0,:,:,:] += UcOam[i,j] * RedH[j][:,first:last+1,first:last+1]
                 if not GammaPoint:
-                    ImHeph[i,:] += UcOam[i,j] * ImdH[j][:,first:last+1,first:last+1]
+                    tmp[1,:,:,:] += UcOam[i,j] * ImdH[j][:,first:last+1,first:last+1]
+            
+            # Check that Heph is Hermitian
+            for iSpin in range(Nspin):
+                # the real part
+                herm = N.allclose(tmp[0,iSpin,:,:],
+                                  N.transpose(tmp[0,iSpin,:,:]),atol=1e-5)
+                
+                if not GammaPoint:
+                    # the imaginary part (no need to create the temporary
+                    # complex matrix)
+                    herm = herm and \
+                        N.allclose(tmp[1,iSpin,:,:],
+                                   N.transpose(-tmp[1,iSpin,:,:]),atol=1e-5)
+                if not herm:
+                    print 'Phonons.CalcHephNETCDF: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
 
+            ReHeph[i,:] = tmp[0,:,:,:]
+            if not GammaPoint:
+                ImHeph[i,:] = tmp[1,:,:,:]
         else:
             ReHeph[i,:] = 0.
-            if not GammaPoint: ImHeph[i,:] = 0.
+            if not GammaPoint: 
+                ImHeph[i,:] = 0.
             print 'Phonons.CalcHephNETCDF: Nonpositive frequency --> Zero-valued coupling matrix' 
 
-        #Check that Heph is Hermitian
-        for iSpin in range(len(ReH0)):
-            if not GammaPoint:
-                if not N.allclose(ReHeph[i,iSpin]+1j*ImHeph[i,iSpin],
-                                  N.transpose(ReHeph[i,iSpin]-1j*ImHeph[i,iSpin]),
-                                  atol=1e-5):
-                    print 'Phonons.CalcHephNETCDF: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
-            else:
-                if not N.allclose(ReHeph[i,iSpin],N.transpose(ReHeph[i,iSpin]),atol=1e-5):
-                    print 'Phonons.CalcHephNETCDF: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
         # Update ref-counter
         NCfile.CurrentHWidx = i + 1
         NCfile.sync()
+    del tmp
     print '  ... Done!'
     #NCfile2.close() # Leave open for later access...
     return ReH0,ReS0,ReHeph
