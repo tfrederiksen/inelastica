@@ -35,10 +35,10 @@ parser.add_option("--FClast", dest="FClast",
                   help="Last FC atom index [default=%default]" ,
                   type="int",default=1000)
 
-parser.add_option("--PBCfirst", dest="PerBoundCorrFirst",\
+parser.add_option("--PBCFirst", dest="PerBoundCorrFirst",\
                   help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
                   type="int",default=1)
-parser.add_option("--PBClast", dest="PerBoundCorrLast",\
+parser.add_option("--PBCLast", dest="PerBoundCorrLast",\
                   help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
                   type="int",default=1000)
 
@@ -99,8 +99,8 @@ options.kPoint = N.array([options.k1,options.k2,options.k3],N.float)
 Phonons.Analyze(FCwildcard=options.FCwildcard,onlySdir=options.onlySdir,
                 DeviceFirst=options.DeviceFirst,DeviceLast=options.DeviceLast,
                 FCfirst=options.FCfirst,FClast=options.FClast,
-                PerBoundCorrFirst=options.PerBoundCorrFirst,
-                PerBoundCorrLast=options.PerBoundCorrLast,
+                PBCFirst=options.PerBoundCorrFirst,
+                PBCLast=options.PerBoundCorrLast,
                 outlabel=options.DestDir+'/'+options.label,
                 CalcCoupl=options.CalcCoupl,
                 PrintSOrbitals=options.PrintSOrbitals,

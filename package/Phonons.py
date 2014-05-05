@@ -25,7 +25,7 @@ def Analyze(FCwildcard,
             onlySdir='../onlyS',
             DeviceFirst=1,DeviceLast=1e3,
             FCfirst=1,FClast=1e3,
-            PerBoundCorrFirst=-1,PerBoundCorrLast=-1,
+            PBCFirst=-1,PBCLast=-1,
             outlabel='Out',
             CalcCoupl=True,
             PrintSOrbitals=False,
@@ -48,9 +48,9 @@ def Analyze(FCwildcard,
     -  DeviceLast : - (can be a subset of the SIESTA basis)   
     -  FCfirst    : Restrict FC matrix to these atoms
     -  FClast     : - (can be a subset of the SIESTA FC calculations)
-    -  PerBoundCorrFirst : Prevent interactions through periodic boundary
+    -  PBCFirst : Prevent interactions through periodic boundary
                     conditions (defaults to DeviceFirst)
-    -  PerBoundCorrLast : Defaults to DeviceLast
+    -  PBCLast : Defaults to DeviceLast
     -  CalcCoupl  : Whether or not to calculate e-ph couplings
     -  PrintSOrbitals : Print e-ph couplings in the s-orbital space
     -  CorrectFermiShifts : Use instantaneous Fermi energy as reference in finite-difference scheme
@@ -108,13 +108,13 @@ def Analyze(FCwildcard,
     print '  ... FCfirst     = %4i, FClast     = %4i, Dynamic atoms = %4i'\
           %(FCfirst,FClast,FClast-FCfirst+1)
 
-    ### Make sure PerBoundCorr is sensible numbers
-    if PerBoundCorrFirst<1:
-        PerBoundCorrFirst=DeviceFirst
-    if PerBoundCorrLast<1 or PerBoundCorrLast>DeviceLast:
-        PerBoundCorrLast=DeviceLast
+    ### Make sure PBC is sensible numbers
+    if PBCFirst<1:
+        PBCFirst=DeviceFirst
+    if PBCLast<1 or PBCLast>DeviceLast:
+        PBCLast=DeviceLast
     print '  ... PBC First   = %4i, PBC Last   = %4i, Device atoms  = %4i'\
-          %(PerBoundCorrFirst,PerBoundCorrLast,PerBoundCorrLast-PerBoundCorrFirst+1)
+          %(PBCFirst,PBCLast,PBCLast-PBCFirst+1)
 
     ### Build FC-matrix
     print '\nPhonons.Analyze: Building FC matrix:'
@@ -194,7 +194,7 @@ def Analyze(FCwildcard,
     if CalcCoupl and AuxNCfile:
         # Heph couplings utilizing netcdf-file
         if not os.path.isfile(AuxNCfile):
-            GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PerBoundCorrFirst,PerBoundCorrLast,
+            GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,
                               AuxNCfile,displacement,kpoint,AuxNCUseSinglePrec,AbsEref)
         else:
             print 'Phonons.Analyze: Reading from AuxNCfile =', AuxNCfile
@@ -209,7 +209,7 @@ def Analyze(FCwildcard,
         dH = CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,kpoint)
         # Downfold matrices to the subspace of the device atoms
         H0,S0,dH = Downfold2Device(orbitalIndices,H0,S0,dH,DeviceFirst,DeviceLast,
-                                   FCfirst,FClast,PerBoundCorrFirst,PerBoundCorrLast)
+                                   FCfirst,FClast,PBCFirst,PBCLast)
         # Calculate e-ph couplings
         print '\nPhonons.Analyze: Calculating electron-phonon couplings:'
         Heph = CalcHeph(dH,hw,U,atomnumber,FCfirst)
@@ -326,10 +326,12 @@ def Downfold2Device(orbitalIndices,H0,S0,dH,DeviceFirst,DeviceLast,FCfirst,FClas
     PBCorbLast  = orbitalIndices[PBCLast-1][1]
     if FCfirst < PBCFirst:
         # we have something to remove...
+        print 'Warning: Setting certain elements in dH to zero because FCfirst<PBCFirst'
         bb = (PBCFirst - FCfirst) * 3
         dH[:bb,:,PBCorbLast+1:TSHS0.nuo,:] = 0.0
         dH[:bb,:,:,PBCorbLast+1:TSHS0.nuo] = 0.0
     if PBCLast < FClast:
+        print 'Warning: Setting certain elements in dH to zero because PBCLast<FClast'
         aa = (PBCLast - FCfirst) * 3
         dH[aa:,:,:PBCorbFirst-1,:] = 0.0
         dH[aa:,:,:,:PBCorbFirst-1] = 0.0
@@ -919,6 +921,7 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
     PBCorbLast  = orbitalIndices[PBCLast-1][1]
     if FCfirst < PBCFirst:
         # we have something to remove...
+        print 'Warning: Setting certain elements in dH to zero because FCfirst<PBCFirst'
         bb = (PBCFirst - FCfirst) * 3
         RedH[:bb,:,PBCorbLast+1:TSHS0.nuo,:] = 0.
         RedH[:bb,:,:,PBCorbLast+1:TSHS0.nuo] = 0.
@@ -926,6 +929,7 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
             ImdH[aa:bb,:,PBCorbLast+1:TSHS0.nuo,:] = 0.
             ImdH[aa:bb,:,:,PBCorbLast+1:TSHS0.nuo] = 0.
     if PBCLast < FClast:
+        print 'Warning: Setting certain elements in dH to zero because PBCLast<FClast'
         aa = (PBCLast - FCfirst) * 3
         RedH[aa:,:,:PBCorbFirst-1,:] = 0.
         RedH[aa:,:,:,:PBCorbFirst-1] = 0.
