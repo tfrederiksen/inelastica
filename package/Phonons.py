@@ -350,18 +350,13 @@ def CalcHeph(dH,hw,U,atomnumber,FCfirst):
     print 'Phonons.CalcHeph: Calculating...\n',
     const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
     Heph = N.zeros(dH.shape,dH.dtype)
-    # we extend the atomic mass and the other "constants" to ease the calculation
-    UcOam = N.empty((len(hw),len(hw)),N.float)
-    # create transformed phonon-vector displacements
-    for i in range(len(hw)):
-        UcOam[:,i] = U[:,i]*const/(2*PC.AtomicMass[atomnumber[FCfirst-1+i/3]]*hw)**.5
     for i in range(len(hw)):
         # Loop over modes
         SIO.printDone(i, len(hw),'Calculating Heph')
         if hw[i]>0:
             for j in range(len(hw)):
                 # Loop over atomic coordinates
-                Heph[i] += UcOam[i,j]*dH[j]
+                Heph[i] += const*dH[j]*U[i,j]/(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
         else:
             print 'Phonons.CalcHeph: Nonpositive frequency --> Zero-valued coupling matrix' 
             # already zero
@@ -1001,12 +996,6 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
         if not GammaPoint: 
             ImHeph = NCfile.variables['ImHe_ph']
 
-    # we extend the atomic mass and the other "constants" to ease the calculation
-    UcOam = N.empty((len(hw),len(hw)),N.float)
-    # create transformed phonon-vector displacements
-    for i in range(len(hw)):
-        UcOam[:,i] = U[:,i]*const/(2*PC.AtomicMass[atomnumber[FCfirst-1+i/3]]*hw)**.5
-
     # Instead of operation in disk-memory
     # we create a temporary array (real and imaginary)
     # This will only matter if the default chunking size
@@ -1020,8 +1009,8 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
         tmp = N.empty((RI,Nspin,els,els),N.float32)
     else:
         tmp = N.empty((RI,Nspin,els,els),N.float64)
-    for i in range(len(hw)):
 
+    for i in range(len(hw)):
         # skip already calculated contributions
         if i < NCfile.CurrentHWidx: continue
 
@@ -1029,14 +1018,16 @@ def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLa
         SIO.printDone(i, len(hw),'Calculating Heph')
 
         if hw[i] > 0:
-            tmp[0,:,:,:] = UcOam[i,0] * RedH[0][:,first:last+1,first:last+1]
+            UcOam = const*U[i,0]/(2*PC.AtomicMass[atomnumber[FCfirst-1+0/3]]*hw[i])**.5
+            tmp[0,:,:,:] = UcOam * RedH[0][:,first:last+1,first:last+1]
             if not GammaPoint:
-                tmp[1,:,:,:] = UcOam[i,0] * ImdH[0][:,first:last+1,first:last+1]
+                tmp[1,:,:,:] = UcOam * ImdH[0][:,first:last+1,first:last+1]
             for j in range(1,len(hw)):
                 # Loop over atomic coordinates
-                tmp[0,:,:,:] += UcOam[i,j] * RedH[j][:,first:last+1,first:last+1]
+                UcOam = const*U[i,j]/(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
+                tmp[0,:,:,:] += UcOam * RedH[j][:,first:last+1,first:last+1]
                 if not GammaPoint:
-                    tmp[1,:,:,:] += UcOam[i,j] * ImdH[j][:,first:last+1,first:last+1]
+                    tmp[1,:,:,:] += UcOam * ImdH[j][:,first:last+1,first:last+1]
             
             # Check that Heph is Hermitian
             for iSpin in range(Nspin):
