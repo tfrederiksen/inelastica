@@ -139,7 +139,7 @@ def Analyze(FCwildcard,
     # Mean
     FC2 = ReduceAndSymmetrizeFC(FCmean,FCfirstMIN,FClastMAX,FCfirst,FClast)
     OutputFC(FC2,filename='%s.reduced.FC'%outlabel)
-    hw,U = CalcPhonons(FC2,atomnumber,FCfirst,FClast)
+    hw,U,Udisp = CalcPhonons(FC2,atomnumber,FCfirst,FClast)
     # FCm
     FC2 = ReduceAndSymmetrizeFC(FCm,FCfirstMIN,FClastMAX,FCfirst,FClast)
     CalcPhonons(FC2,atomnumber,FCfirst,FClast)
@@ -151,10 +151,13 @@ def Analyze(FCwildcard,
     print '\nPhonons.Analyze: Writing geometry and phonons to files.'
     SIO.WriteMKLFile('%s_FC%i-%i.mkl'%(outlabel,FCfirst,FClast),
                      atomnumber,xyz,hw,U,FCfirst,FClast)
+    SIO.WriteMKLFile('%s_FC%i-%i.real-displacements.mkl'%(outlabel,FCfirst,FClast),
+                     atomnumber,xyz,hw,Udisp,FCfirst,FClast)
     SIO.WriteXYZFile('%s.xyz'%outlabel,atomnumber,xyz)
     WriteFreqFile('%s.freq'%outlabel,hw)
     WriteVibDOSFile('%s.fdos'%outlabel,hw)
     WriteAXSFFiles('%s.axsf'%outlabel,xyz,atomnumber,hw,U,FCfirst, FClast)
+    WriteAXSFFiles('%s.real-displacements.axsf'%outlabel,xyz,atomnumber,hw,Udisp,FCfirst, FClast)
     
     ### Write data to NC-file
     print '\nPhonons.Analyze: Writing results to netCDF-file'
@@ -172,7 +175,9 @@ def Analyze(FCwildcard,
                          description='Orbital index for the last orbital on the atoms (counting from 0)')
         Write2NetCDFFile(NCfile,hw,'hw',('PhononModes',),units='eV')
         Write2NetCDFFile(NCfile,U,'U',('PhononModes','PhononModes',),
-                         description='U[i,j] where i is mode index and j atom displacement')
+                         description='Normal coordinates U[i,j] where i is mode index and j atom displacement')
+        Write2NetCDFFile(NCfile,Udisp,'Udisp',('PhononModes','PhononModes',),
+                         description='Real displacements Udisp[i,j] where i is mode index and j atom displacement')
         Write2NetCDFFile(NCfile,vectors,'UnitCell',('dim3','dim3',),units='Ang')
         Write2NetCDFFile(NCfile,xyz,'GeometryXYZ',('NumTotAtoms','dim3',),units='Ang')
         Write2NetCDFFile(NCfile,atomnumber,'AtomNumbers',('NumTotAtoms',),units='Atomic Number')
@@ -533,12 +538,12 @@ def CalcPhonons(FC,atomnumber,FCfirst,FClast):
                 FCtilde[i,3*j+k] = FC[i,j,k]/ \
                   ( PC.AtomicMass[atomnumber[FCfirst-1+i/3]] * PC.AtomicMass[atomnumber[FCfirst-1+j]] )**0.5
     # Solve eigenvalue problem with symmetric FCtilde
-    eval,evec = LA.eigh(FCtilde)
+    evalue,evec = LA.eigh(FCtilde)
     evec=N.transpose(evec)
-    eval=N.array(eval,N.complex)
+    evalue=N.array(evalue,N.complex)
     # Calculate frequencies
     const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-    hw = const*eval**0.5 # Units in eV
+    hw = const*evalue**0.5 # Units in eV
     for i in range(DynamicAtoms*3):
         # Real eigenvalues are defined as positive, imaginary eigenvalues as negative
         hw[i] = hw[i].real - abs(hw[i].imag)
@@ -548,19 +553,25 @@ def CalcPhonons(FC,atomnumber,FCfirst,FClast):
     for i in range(DynamicAtoms*3):
         U[i] = U[i]/(N.dot(U[i],U[i])**0.5)
     # Sort in order descending mode energies
-    hwrev = hw[::-1] # reversed array
-    Urev = U[::-1] # reversed array
+    hw = hw[::-1] # reverse array
+    U = U[::-1] # reverse array
+    # Compute real displacement vectors
+    Udisp = U.copy()
+    for i in range(DynamicAtoms*3):
+        # Eigenvectors after division by sqrt(mass)
+        Udisp[:,i] = U[:,i]/(PC.AtomicMass[atomnumber[FCfirst-1+i/3]]**.5)
+    # Print mode frequencies
     print 'Phonons.CalcPhonons: Frequencies in meV:'
     for i in range(DynamicAtoms*3):
-        print string.rjust('%.3f'%(1000*hwrev[i]),9),
+        print string.rjust('%.3f'%(1000*hw[i]),9),
         if (i-5)%6==0: print
     if (i-5)%6!=0: print
     print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
     for i in range(DynamicAtoms*3):
-        print string.rjust('%.3f'%(hwrev[i]/PC.invcm2eV),9),
+        print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
         if (i-5)%6==0: print
     if (i-5)%6!=0: print
-    return hwrev,Urev
+    return hw,U,Udisp
 
 
 def GetFCMatrices(tree,FCfirst,FClast,NumberOfAtoms):
@@ -761,6 +772,7 @@ def WriteVibDOSFile(filename,hw,gam=0.001,type='Gaussian'):
 
 def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
     'Writes the vibrational normal coordinates in xcrysden axsf-format'
+    print 'Phonons.WriteAXSFFile: Writing',filename
     f = open(filename,'w')
     f.write('ANIMSTEPS %i\n'%len(hw))    
     for i in range(len(hw)):
