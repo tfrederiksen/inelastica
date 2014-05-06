@@ -704,9 +704,15 @@ class GF:
         tval,tvec = LA.eig(Tmat)
         tval = sorted(tval,reverse=True) # Sort eigenvalues descending
         T = [Trans.real]
+        # Compute shot noise
+        Smat = MM.mm(Tmat,N.identity(len(Tmat))-Tmat)
+        SN = [N.trace(Smat)]
+        sval = N.diag(MM.mm(MM.dagger(tvec),Smat,tvec))
+        # Add channel decompositions
         for i in range(channels):
             T += [tval[i].real]
-        return N.array(T)
+            SN += [sval[i].real]
+        return N.array(T),N.array(SN)
 
     def orthogonalize(self):
         print 'NEGF.GF.orthogonalize: Orthogonalizing device region quantities'

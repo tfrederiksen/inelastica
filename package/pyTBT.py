@@ -75,26 +75,35 @@ Voltage                         : %f
         DOSR=N.zeros((nspin,len(options.Elist),DevGF.nuo),N.float)
     # Loop over spin
     for iSpin in range(nspin):
+        # initialize transmission and shot noise arrays
         Tkpt=N.zeros((len(options.Elist),mesh.NNk,options.numchan+1),N.float)
+        SNkpt=N.zeros((len(options.Elist),mesh.NNk,options.numchan+1),N.float)
+        # prepare output files
         outFile = options.DestDir+'/%s.%ix%i'%(options.systemlabel,mesh.Nk[0],mesh.Nk[1])
         if nspin<2: thisspinlabel = outFile
         else: thisspinlabel = outFile+['.UP','.DOWN'][iSpin]
         fo=open(thisspinlabel+'.AVTRANS','write')
         fo.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(mesh.type[0],mesh.Nk[0],mesh.type[1],mesh.Nk[1],options.eta,options.etaLead))
-        fo.write('# E   Ttot(E)   Ti(E)(i=1-10)   RelErrorTtot(E)\n')
+        fo.write('# E   Ttot(E)   Ti(E)(i=1-%i)   RelErrorTtot(E)\n'%options.numchan)
+        foSN=open(thisspinlabel+'.AVNOISE','write')
+        foSN.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(mesh.type[0],mesh.Nk[0],mesh.type[1],mesh.Nk[1],options.eta,options.etaLead))
+        foSN.write('# E   SNtot(E)   SNi(E)(i=1-%i)\n'%options.numchan)
         # Loop over energy
         for ie, ee in enumerate(options.Elist):
             Tavg = N.zeros((options.numchan+1,len(mesh.w)),N.float)
+            SNavg = N.zeros((options.numchan+1,len(mesh.w)),N.float)
             AavL = N.zeros((DevGF.nuo,DevGF.nuo),N.complex)
             AavR = N.zeros((DevGF.nuo,DevGF.nuo),N.complex)
             # Loops over k-points
             for ik in range(mesh.NNk):
                 DevGF.calcGF(ee+options.eta*1.0j,mesh.k[ik,:2],ispin=iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
                 # Transmission:
-                T = DevGF.calcT(options.numchan)
+                T,SN = DevGF.calcT(options.numchan)
                 for iw in range(len(mesh.w)):
                     Tavg[:,iw] += T*mesh.w[iw,ik]
+                    SNavg[:,iw] += SN*mesh.w[iw,ik]
                 Tkpt[ie,ik] = T
+                SNkpt[ie,ik] = SN
                 # DOS calculation:
                 if options.dos:
                     GamL, GamR, Gr = DevGF.GamL, DevGF.GamR, DevGF.Gr
@@ -108,13 +117,17 @@ Voltage                         : %f
             relerr = err/Tavg[0,0]
             print 'ispin= %i, e= %.4f, Tavg= %.8f, RelErr= %.1e'%(iSpin,ee,Tavg[0,0],relerr)
             transline = '\n%.10f '%ee
+            noiseline = '\n%.10f '%ee
             for ichan in range(options.numchan+1):
                 if ichan==0:
                     transline += '%.8e '%Tavg[ichan,0]
+                    noiseline += '%.8e '%SNavg[ichan,0]
                 else:
                     transline += '%.4e '%Tavg[ichan,0]
+                    noiseline += '%.4e '%SNavg[ichan,0]
             transline += '%.2e '%relerr
             fo.write(transline)
+            foSN.write(noiseline)
             # Partial density of states:
             if options.dos:
                 DOSL[iSpin,ie,:] += N.diag(AavL).real/(2*N.pi)
@@ -122,6 +135,8 @@ Voltage                         : %f
                 print 'ispin= %i, e= %.4f, DOSL= %.4f, DOSR= %.4f'%(iSpin,ee,N.sum(DOSL[iSpin,ie,:]),N.sum(DOSR[iSpin,ie,:]))
         fo.write('\n')
         fo.close()
+        foSN.write('\n')
+        foSN.close()
         
         # Write k-point-resolved transmission
         fo=open(thisspinlabel+'.TRANS','write')
@@ -138,6 +153,24 @@ Voltage                         : %f
                 fo.write(transline)
         fo.write('\n')
         fo.close()
+
+        # Write k-point-resolved shot noise
+        fo=open(thisspinlabel+'.NOISE','write')
+        for ik in range(mesh.NNk):
+            w = mesh.w[:,ik]
+            fo.write('\n\n# k = %f, %f    w = %f %f %f %f'%(mesh.k[ik,0],mesh.k[ik,1],w[0],w[1],w[2],w[3]))
+            for ie, ee in enumerate(options.Elist):
+                noiseline = '\n%.10f '%ee
+                for ichan in range(options.numchan+1):
+                    if ichan==0:
+                        noiseline += '%.8e '%SNkpt[ie,ik,ichan]
+                    else:
+                        noiseline += '%.4e '%SNkpt[ie,ik,ichan]
+                fo.write(noiseline)
+        fo.write('\n')
+        fo.close()
+
+
     # End loop over spin
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
 
