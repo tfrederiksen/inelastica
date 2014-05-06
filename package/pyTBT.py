@@ -45,8 +45,8 @@ def calc(options):
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
-    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
-    nspin = myGF.HS.nspin
+    DevGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
+    nspin = DevGF.HS.nspin
 
     # k-sample only self-energies?
     if options.singlejunction:
@@ -71,8 +71,8 @@ Voltage                         : %f
          options.DeviceAtoms[0],options.DeviceAtoms[1],options.UseBulk,nspin,options.voltage)
         
     if options.dos:
-        DOSL=N.zeros((nspin,len(options.Elist),myGF.nuo),N.float)
-        DOSR=N.zeros((nspin,len(options.Elist),myGF.nuo),N.float)
+        DOSL=N.zeros((nspin,len(options.Elist),DevGF.nuo),N.float)
+        DOSR=N.zeros((nspin,len(options.Elist),DevGF.nuo),N.float)
     # Loop over spin
     for iSpin in range(nspin):
         Tkpt=N.zeros((len(options.Elist),mesh.NNk,options.numchan+1),N.float)
@@ -85,24 +85,24 @@ Voltage                         : %f
         # Loop over energy
         for ie, ee in enumerate(options.Elist):
             Tavg = N.zeros((options.numchan+1,len(mesh.w)),N.float)
-            AavL = N.zeros((myGF.nuo,myGF.nuo),N.complex)
-            AavR = N.zeros((myGF.nuo,myGF.nuo),N.complex)
+            AavL = N.zeros((DevGF.nuo,DevGF.nuo),N.complex)
+            AavR = N.zeros((DevGF.nuo,DevGF.nuo),N.complex)
             # Loops over k-points
             for ik in range(mesh.NNk):
-                myGF.calcGF(ee+options.eta*1.0j,mesh.k[ik,:2],ispin=iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+                DevGF.calcGF(ee+options.eta*1.0j,mesh.k[ik,:2],ispin=iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
                 # Transmission:
-                T = myGF.calcT(options.numchan)
+                T = DevGF.calcT(options.numchan)
                 for iw in range(len(mesh.w)):
                     Tavg[:,iw] += T*mesh.w[iw,ik]
                 Tkpt[ie,ik] = T
                 # DOS calculation:
                 if options.dos:
-                    GamL, GamR, Gr = myGF.GamL, myGF.GamR, myGF.Gr
-                    nuo, nuoL, nuoR = myGF.nuo, myGF.nuoL, myGF.nuoR
+                    GamL, GamR, Gr = DevGF.GamL, DevGF.GamR, DevGF.Gr
+                    nuo, nuoL, nuoR = DevGF.nuo, DevGF.nuoL, DevGF.nuoR
                     AL = MM.mm(Gr[:,0:nuoL],GamL,MM.dagger(Gr)[0:nuoL,:])
                     AR = MM.mm(Gr[:,nuo-nuoR:nuo],GamR,MM.dagger(Gr)[nuo-nuoR:nuo,:])
-                    AavL += mesh.w[0,ik]*MM.mm(AL,myGF.S)
-                    AavR += mesh.w[0,ik]*MM.mm(AR,myGF.S)
+                    AavL += mesh.w[0,ik]*MM.mm(AL,DevGF.S)
+                    AavR += mesh.w[0,ik]*MM.mm(AR,DevGF.S)
             # Print calculated quantities
             err = (N.abs(Tavg[0,0]-Tavg[0,1])+N.abs(Tavg[0,0]-Tavg[0,2]))/2
             relerr = err/Tavg[0,0]
@@ -143,13 +143,13 @@ Voltage                         : %f
 
     if options.dos:
         # Read basis
-        basis = SIO.BuildBasis(options.fn,1,myGF.HS.nua,myGF.HS.lasto)
-        WritePDOS(outFile+'.PDOS.gz',options,myGF,DOSL+DOSR,basis)
-        WritePDOS(outFile+'.PDOSL.gz',options,myGF,DOSL,basis)
-        WritePDOS(outFile+'.PDOSR.gz',options,myGF,DOSR,basis)
+        basis = SIO.BuildBasis(options.fn,1,DevGF.HS.nua,DevGF.HS.lasto)
+        WritePDOS(outFile+'.PDOS.gz',options,DevGF,DOSL+DOSR,basis)
+        WritePDOS(outFile+'.PDOSL.gz',options,DevGF,DOSL,basis)
+        WritePDOS(outFile+'.PDOSR.gz',options,DevGF,DOSR,basis)
     
 
-def WritePDOS(fn,options,myGF,DOS,basis):
+def WritePDOS(fn,options,DevGF,DOS,basis):
     """
     PDOS from the surface Green's function from electrode calculations
     
@@ -163,19 +163,19 @@ def WritePDOS(fn,options,myGF,DOS,basis):
     import gzip
 
     # First, last orbital in full space and pyTBT folded space.
-    devOrbSt = myGF.HS.lasto[options.DeviceAtoms[0]-1]
-    pyTBTdevOrbSt = devOrbSt-myGF.HS.lasto[options.DeviceAtoms[0]-1]
-    devOrbEnd = myGF.HS.lasto[options.DeviceAtoms[1]]-1
-    pyTBTdevOrbEnd = devOrbEnd-myGF.HS.lasto[options.DeviceAtoms[0]-1]
+    devOrbSt = DevGF.HS.lasto[options.DeviceAtoms[0]-1]
+    pyTBTdevOrbSt = devOrbSt-DevGF.HS.lasto[options.DeviceAtoms[0]-1]
+    devOrbEnd = DevGF.HS.lasto[options.DeviceAtoms[1]]-1
+    pyTBTdevOrbEnd = devOrbEnd-DevGF.HS.lasto[options.DeviceAtoms[0]-1]
 
     doc = xml.Document()
     pdos = doc.createElement('pdos')
     doc.appendChild(pdos)
-    xmladd(doc,pdos,'nspin','%i'%myGF.HS.nspin)
-    xmladd(doc,pdos,'norbitals','%i'%(myGF.nuo))
-    xmladd(doc,pdos,'energy_values',myprint(options.Elist+myGF.HS.ef))
-    xmladd(doc,pdos,'E_Fermi','%.8f'%myGF.HS.ef)
-    for ii in range(myGF.nuo):
+    xmladd(doc,pdos,'nspin','%i'%DevGF.HS.nspin)
+    xmladd(doc,pdos,'norbitals','%i'%(DevGF.nuo))
+    xmladd(doc,pdos,'energy_values',myprint(options.Elist+DevGF.HS.ef))
+    xmladd(doc,pdos,'E_Fermi','%.8f'%DevGF.HS.ef)
+    for ii in range(DevGF.nuo):
         orb = doc.createElement('orbital')
         pdos.appendChild(orb)
         io = devOrbSt+ii
@@ -205,7 +205,7 @@ def WritePDOS(fn,options,myGF,DOS,basis):
                                       species=atom)        
         for iS in range(nspin):
             g.AddDatasets(
-                XMGR.XYset(ee-myGF.HS.ef,(-1)**iS*PDOS[iS],legend=name,Lwidth=2))
+                XMGR.XYset(ee-DevGF.HS.ef,(-1)**iS*PDOS[iS],legend=name,Lwidth=2))
 
     # Set axes and write XMGR plot to file
     g.SetXaxis(label='E-E\sF\N (eV)',autoscale=True)

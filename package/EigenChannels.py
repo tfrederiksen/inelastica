@@ -13,7 +13,7 @@ import MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
 import Scientific.IO.NetCDF as NC
-import sys, string, struct, glob,  os
+import sys, string, struct, glob, os
 import PhysicalConstants as PC
 
 
@@ -21,52 +21,47 @@ import PhysicalConstants as PC
 ##################### Main routine #####################
 ########################################################
 def main(options):
+    # Read geometry
     XV = '%s/%s.XV'%(options.head,options.systemlabel)
     geom = MG.Geom(XV)
-    myGF = readHS(options)
-    options.nspin = myGF.HS.nspin
-    basis = SIO.BuildBasis(options.fn,options.DeviceAtoms[0],options.DeviceAtoms[1],myGF.HS.lasto)
-    calcT(options,geom,myGF,basis)
-    NEGF.SavedSig.close()
 
-########################################################
-def readHS(options):
+    # Set up device Greens function
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
-    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
-    myGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
-    return myGF
+    DevGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
+    DevGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
 
-########################################################
-def calcT(options,geom,myGF,basis):
+    # Build basis
+    options.nspin = DevGF.HS.nspin
+    basis = SIO.BuildBasis(options.fn,options.DeviceAtoms[0],options.DeviceAtoms[1],DevGF.HS.lasto)
+
+    # Calculate transmission
     # Matrix to save total and eigenchannel transmissions
     # BEFORE ORTHOGO
-    T = myGF.calcT(options.numchan)
-
+    T = DevGF.calcT(options.numchan)
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
-
     print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
     for t in T:
         print '%.9f '%t,
     print
 
     # Now orthogonalize in device region
-    myGF.orthogonalize()
+    DevGF.orthogonalize()
 
     # Check that we get the same transmission:
-    T = myGF.calcT(options.numchan)
+    T = DevGF.calcT(options.numchan)
     print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
     for t in T:
         print '%.9f '%t,
     print
 
     # Calculate Eigenchannels
-    myGF.calcEigChan(options.numchan)
+    DevGF.calcEigChan(options.numchan)
 
     # Calculate Eigenchannels from left
-    ECleft, EigT = myGF.ECleft, myGF.EigTleft
+    ECleft, EigT = DevGF.ECleft, DevGF.EigTleft
     for jj in range(options.numchan):
         T[jj+1]=EigT[len(EigT)-jj-1]
 
@@ -74,37 +69,38 @@ def calcT(options,geom,myGF,basis):
     for jj in range(options.numchan):
         options.iSide, options.iChan = 0, jj+1
         writeWavefunction(options,geom,basis,ECleft[jj])
-        Curr=calcCurrent(options,basis,myGF.HNO,ECleft[jj])
+        Curr=calcCurrent(options,basis,DevGF.HNO,ECleft[jj])
         writeCurrent(options,geom,Curr)
                     
     # Calculate eigenchannels from right
     if options.bothsides:
-        ECright, EigT = myGF.ECright, myGF.EigTright
+        ECright, EigT = DevGF.ECright, DevGF.EigTright
         for jj in range(options.numchan):
             options.iSide, options.iChan = 1, jj+1
             writeWavefunction(options,geom,basis,ECright[jj])
-            Curr=calcCurrent(options,basis,myGF.HNO,ECright[jj])
+            Curr=calcCurrent(options,basis,DevGF.HNO,ECright[jj])
             writeCurrent(options,geom,Curr)
             
     # Calculate total "bond currents"
-    A1NO = mm(myGF.Us,myGF.A1,myGF.Us)
-    A2NO = mm(myGF.Us,myGF.A2,myGF.Us)
-    Curr=-calcCurrent(options,basis,myGF.HNO,A1NO)
+    A1NO = MM.mm(DevGF.Us,DevGF.A1,DevGF.Us)
+    A2NO = MM.mm(DevGF.Us,DevGF.A2,DevGF.Us)
+    Curr=-calcCurrent(options,basis,DevGF.HNO,A1NO)
     options.iChan, options.iSide = 0, 0
     writeCurrent(options,geom,Curr)
-    Curr=-calcCurrent(options,basis,myGF.HNO,A2NO)
+    Curr=-calcCurrent(options,basis,DevGF.HNO,A2NO)
     options.iSide = 1
     writeCurrent(options,geom,Curr)
 
     # Calculate eigenstates of device Hamiltonian
     if options.MolStates>0.0:
         print 'calculating molecular eigenstates of folded, orthogonalized device hamiltonian'
-        ev, es = LA.eigh(myGF.H)
+        ev, es = LA.eigh(DevGF.H)
         for ii in range(len(ev)):
             if N.abs(ev[ii])<options.MolStates:
                 fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii,ev[ii])
-                writeWavefunction(options,geom,basis,mm(myGF.Us,es[:,ii]),fn=fn,
+                writeWavefunction(options,geom,basis,MM.mm(DevGF.Us,es[:,ii]),fn=fn,
                                   printNormalization=True)
+
 
 ########################################################
 def calcWF(options,geom,basis,Y,printNormalization=False):
@@ -150,15 +146,15 @@ def calcWF(options,geom,basis,Y,printNormalization=False):
         
         ddx,ddy,ddz=rx[ixmin:ixmax]-rax,ry[iymin:iymax]-ray,rz[izmin:izmax]-raz
 
-        dr=N.sqrt(outerAdd(ddx*ddx,ddy*ddy,ddz*ddz))
-        drho=N.sqrt(outerAdd(ddx*ddx,ddy*ddy,0*ddz))
+        dr=N.sqrt(MM.outerAdd(ddx*ddx,ddy*ddy,ddz*ddz))
+        drho=N.sqrt(MM.outerAdd(ddx*ddx,ddy*ddy,0*ddz))
         
         imax=(basis.coff[ii]-2*basis.delta[ii])/basis.delta[ii]
         ri=dr/basis.delta[ii]            
         ri=N.where(ri<imax,ri,imax)
         ri=ri.astype(N.int)
-        costh, sinth = outerAdd(0*ddx,0*ddy,ddz)/dr, drho/dr
-        cosfi, sinfi = outerAdd(ddx,0*ddy,0*ddz)/drho, outerAdd(0*ddx,ddy,0*ddz)/drho
+        costh, sinth = MM.outerAdd(0*ddx,0*ddy,ddz)/dr, drho/dr
+        cosfi, sinfi = MM.outerAdd(ddx,0*ddy,0*ddz)/drho, MM.outerAdd(0*ddx,ddy,0*ddz)/drho
 
         # Numpy has changed the choose function to crap!
         RR=N.take(basis.orb[ii],ri)
@@ -273,7 +269,7 @@ def writenetcdf(geom,fn,YY,nx,ny,nz,origo,dstep):
     vargeom[:] = tmp
 
     varanr = file.createVariable('anr','i',('natoms',))
-    varanr[:] = geom.anr
+    varanr[:] = N.array(geom.anr,N.int32)
     
     # Set attributes
     setattr(varanr,'field','anr')
@@ -450,41 +446,6 @@ def writeWavefunction(options,geom,basis,Y,fn=None,printNormalization=False):
     if options.format.lower() == 'nc':
         writenetcdf(geom,fn+'.nc',YY,nx,ny,nz,origo,dstep)
 
-def oldmyopen():
-
-    def myprint(arg,file):
-        # Save in parameter file
-        print arg
-        file.write(arg+'\n')
-
-    class myopen:
-        # Double stdout to RUN.out and stdout
-        def write(self,x):
-            self.stdout.write(x)
-            self.file.write(x)
-
-    fo = myopen()
-    fo.stdout, fo.file = sys.stdout, open(options.DestDir+'/RUN.out','w',0)
-    sys.stdout = fo
-
-    file = open(options.DestDir+'/Parameters','w')    
-    argv=""
-    for ii in sys.argv: argv+=" "+ii
-    myprint(argv,file)
-    myprint('##################################################################################',file)
-    myprint('## Eigenchannel options',file)
-    myprint('fdfFile          : %s'%options.fdfFile,file)
-    myprint('Ef [eV]          : %f'%options.energy,file)
-    myprint('NumChan          : %i'%options.numchan,file)
-    myprint('Res [Ang]        : %f'%options.res,file)
-    myprint('PhononNetCDF     : %s'%options.PhononNetCDF,file)
-    myprint('iSpin            : %i'%(options.iSpin),file)
-    myprint('kPoint           : [%f,%f]'%(options.kPoint[0],options.kPoint[1]),file)
-    myprint('BothSides        : %s'%options.bothsides,file)
-    myprint('Device [from,to] : [%i,%i]'%(options.DeviceAtoms[0], options.DeviceAtoms[1]),file)
-    myprint('DestDir          : %s'%options.DestDir,file)
-    myprint('##################################################################################',file)
-    file.close()
 
 ################# File names ##################################
 def fileName(options):
@@ -502,8 +463,4 @@ def fileName(options):
         fn += '_kx%.3f_ky%.3f'%(options.kPoint[0],options.kPoint[1])
     return options.DestDir+'/'+fn
 
-################# Math helpers ################################
-mm = MM.mm
-outerAdd = MM.outerAdd
-dagger = MM.dagger
 
