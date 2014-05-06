@@ -52,7 +52,7 @@ def main(options):
     # Calculate transmission at Fermi level
     GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
     basis = SIO.BuildBasis(options.fn,options.DeviceAtoms[0],options.DeviceAtoms[1],GFp.HS.lasto)
-    GFp.TeF = GFp.calcT(options.numchan)[0]
+    GFp.TeF, SN = GFp.calcT(options.numchan)[0]
     GFm.TeF = GFp.TeF
     # Check consistency of PHrun vs TSrun inputs
     IntegrityCheck(options,GFp,basis,NCfile)   

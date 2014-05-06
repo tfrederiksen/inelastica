@@ -40,7 +40,7 @@ def main(options):
     # Calculate transmission
     # Matrix to save total and eigenchannel transmissions
     # BEFORE ORTHOGO
-    T = DevGF.calcT(options.numchan)
+    T, SN = DevGF.calcT(options.numchan)
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
     print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
     for t in T:
@@ -51,7 +51,7 @@ def main(options):
     DevGF.orthogonalize()
 
     # Check that we get the same transmission:
-    T = DevGF.calcT(options.numchan)
+    T, SN = DevGF.calcT(options.numchan)
     print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
     for t in T:
         print '%.9f '%t,
