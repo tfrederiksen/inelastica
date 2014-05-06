@@ -706,7 +706,7 @@ class GF:
         T = [Trans.real]
         # Compute shot noise
         Smat = MM.mm(Tmat,N.identity(len(Tmat))-Tmat)
-        SN = [N.trace(Smat)]
+        SN = [N.trace(Smat).real]
         sval = N.diag(MM.mm(MM.dagger(tvec),Smat,tvec))
         # Add channel decompositions
         for i in range(channels):
@@ -771,7 +771,6 @@ class GF:
 
     def calcEigChan(self,channels=10):
         if not self.OrthogonalDeviceRegion:
-            self.totTrans = self.calcT(1)[0]
             self.orthogonalize()
         # Calculate Eigenchannels from left
         self.A1 = MM.mm(self.Gr,self.GamL,self.Ga)

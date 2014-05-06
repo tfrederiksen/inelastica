@@ -52,8 +52,9 @@ def main(options):
     # Calculate transmission at Fermi level
     GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
     basis = SIO.BuildBasis(options.fn,options.DeviceAtoms[0],options.DeviceAtoms[1],GFp.HS.lasto)
-    GFp.TeF, SN = GFp.calcT(options.numchan)[0]
-    GFm.TeF = GFp.TeF
+    TeF, SN = GFp.calcT(options.numchan)
+    GFp.TeF = TeF[0] # first index is total transmission
+    GFm.TeF = TeF[0]
     # Check consistency of PHrun vs TSrun inputs
     IntegrityCheck(options,GFp,basis,NCfile)   
     # Calculate trace factors one mode at a time
@@ -296,7 +297,7 @@ def calcIETS(options,GFp,GFm,basis,hw):
         hilb, ker = MM.Hilbert(tmp,ker) # Egrid
         # Calculate Iasym for each bias point
         for j in range(len(Vl)):
-            Iasym = MM.trapez(Egrid,kasse[j]*hilb,equidistant=True)/2
+            Iasym = MM.trapez(Egrid,kasse[j]*hilb,equidistant=True).real/2
             IasymF[j] += Iasym
             if Vl[j]>0:
                 IH[j] += GFp.HT[i]*Iasym
@@ -412,7 +413,7 @@ def writeFGRrates(options,GF,hw,NCfile):
     print options.DestDir
     print options.systemlabel
     outFile = file('%s/%s.IN.FGR'%(options.DestDir,options.systemlabel),'w')
-    outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (PC.unitConv*GF.totTrans.real,))
+    outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (PC.unitConv*GF.TeF,))
 
     #tmp=N.sort(abs(N.array(GF.nHT[:])))
     #SelectionMin=tmp[-options.numchan]        
