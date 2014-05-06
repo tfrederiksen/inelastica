@@ -52,6 +52,8 @@ parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_t
                   help="Use SigNCfiles [default=%default]")
 parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [default=%default eV]",
                   type='float', default=0.0)
+parser.add_option("--SpectralCutoff", dest="SpectralCutoff", help="Cutoff value for SpectralMatrix functions (for ordinary matrix representation set cutoff<=0.0) [default=%default]",
+                  type='float', default=1e-8)
 
 # Electrode stuff
 parser.add_option("--bulk", dest='UseBulk',default=-1,action='store_true',
@@ -85,6 +87,11 @@ sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 tee = subprocess.Popen(["tee", options.DestDir+"/Output.log"], stdin=subprocess.PIPE)
 os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
 os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
+
+# Write function call
+print
+for arg in sys.argv: print arg,
+print '\n'
 
 # Load Inelastica stuff
 from Inelastica import Inelastica

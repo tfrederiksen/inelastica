@@ -597,8 +597,7 @@ class SpectralMatrix:
             # Drop eigenvalues
             indx = N.where(N.abs(ev)>cutoff)[0]
             ev, evec = ev[indx], evec[:,indx]
-            if len(indx)>0.3*len(A):
-                print "WARNING: Spectralmatrix has large fraction (%i/%i) of non-zero eigenvalues!"%(len(indx),len(A))
+            print "SpectralMatrix: Fraction of eigenvalues above cutoff (%.1e) is %i/%i"%(cutoff,len(indx),len(A))
             self.L = N.dot(evec,N.diag(ev))
             self.R = dagger(evec)
             if False:

@@ -1106,7 +1106,7 @@ def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llis
     else:
         # Set energy reference to SIESTAs internal
         eF = 0.0
-    if Normalize:
+    if Normalize and len(usedAtoms)>0:
         pdos = pdos/len(usedAtoms)
         print 'SiestaIO.ExtractPDOS: Normalizing PDOS to states/atom/eV'
     if outfile!=None: # Write to file or return lists

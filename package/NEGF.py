@@ -515,9 +515,10 @@ class GF:
         # Quantities expressed in nonorthogonal basis:
         self.OrthogonalDeviceRegion = False
 
-    def calcSigLR(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=False,SpectralMatrices=False):
-        """Calculate (folded) self-energy at energy ee and 2d k-point
-        SpectralMatrices uses special format for the spectralfunction matrices, see MiscMath
+    def calcSigLR(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=False,SpectralCutoff=0.0):
+        """
+        Calculate (folded) self-energy at energy ee and 2d k-point
+        Uses SpectralMatrix format for the spectralfunction matrices, see MiscMath, if cutoff>0.0
         """
 
         nuo, nuoL, nuoR = self.nuo, self.nuoL, self.nuoR
@@ -578,7 +579,7 @@ class GF:
             # Reverse sign since SigR is really SGF^-1
             self.GamR = -1.0*self.GamR
         
-    def calcGF(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=False,SpectralMatrices=False):
+    def calcGF(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=False,SpectralCutoff=0.0):
         "Calculate GF etc at energy ee and 2d k-point"
         nuo, nuoL, nuoR = self.nuo, self.nuoL, self.nuoR
         nuo0, nuoL0, nuoR0 = self.nuo0, self.nuoL0, self.nuoR0
@@ -598,11 +599,11 @@ class GF:
             else:
                 # k-sampling performed over folded electrode self-energies
                 print 'NEGF: Sampling electrode self-energies',mesh.Nk,mesh.type,'for ispin= %i e= %f'%(ispin,ee)
-                self.calcSigLR(ee,mesh.k[0,:2],ispin,etaLead,useSigNCfiles,SpectralMatrices)
+                self.calcSigLR(ee,mesh.k[0,:2],ispin,etaLead,useSigNCfiles,SpectralCutoff)
                 AvgSigL = mesh.w[0,0]*self.SigL
                 AvgSigR = mesh.w[0,0]*self.SigR
                 for i in range(1,len(mesh.k)):
-                    self.calcSigLR(ee,mesh.k[i,:2],ispin,etaLead,useSigNCfiles,SpectralMatrices)
+                    self.calcSigLR(ee,mesh.k[i,:2],ispin,etaLead,useSigNCfiles,SpectralCutoff)
                     AvgSigL += mesh.w[0,i]*self.SigL
                     AvgSigR += mesh.w[0,i]*self.SigR
                 # We now simply continue with the averaged self-energies
@@ -633,13 +634,15 @@ class GF:
         self.Gr = LA.inv(eSmH)
         self.Ga = MM.dagger(self.Gr)
         # Calculate spectral functions
-        if SpectralMatrices:
-            self.AL = MM.SpectralMatrix(MM.mm(self.Gr[:,0:nuoL],self.GamL,self.Ga[0:nuoL,:]))
+        if SpectralCutoff>0.0:
+            self.AL = MM.SpectralMatrix(MM.mm(self.Gr[:,0:nuoL],self.GamL,self.Ga[0:nuoL,:]),cutoff=SpectralCutoff)
             tmp = MM.mm(self.GamL,self.Gr[0:nuoL,:])
-            self.ALT = MM.SpectralMatrix(MM.mm(self.Ga[:,0:nuoL],tmp))
-            self.AR = MM.SpectralMatrix(MM.mm(self.Gr[:,nuo-nuoR:nuo],self.GamR,self.Ga[nuo-nuoR:nuo,:]))
+            self.ALT = MM.SpectralMatrix(MM.mm(self.Ga[:,0:nuoL],tmp),cutoff=SpectralCutoff)
+            self.AR = MM.SpectralMatrix(MM.mm(self.Gr[:,nuo-nuoR:nuo],self.GamR,self.Ga[nuo-nuoR:nuo,:]),cutoff=SpectralCutoff)
             self.ARGLG = MM.mm(self.AR.full()[:,0:nuoL],tmp)
             self.A = self.AL+self.AR
+            # transmission matrix AL.GamR
+            self.TT = MM.mm(self.AL.R[:,nuo-nuoR:nuo],self.GamR,self.AL.L[nuo-nuoR:nuo,:])
         else:
             self.AL = MM.mm(self.Gr[:,0:nuoL],self.GamL,self.Ga[0:nuoL,:])
             tmp = MM.mm(self.GamL,self.Gr[0:nuoL,:])
@@ -647,7 +650,8 @@ class GF:
             self.AR = MM.mm(self.Gr[:,nuo-nuoR:nuo],self.GamR,self.Ga[nuo-nuoR:nuo,:])
             self.ARGLG = MM.mm(self.AR[:,0:nuoL],tmp)
             self.A = self.AL+self.AR
-            
+            # transmission matrix AL.GamR
+            self.TT = MM.mm(self.AL[nuo-nuoR:nuo,nuo-nuoR:nuo],self.GamR)
         
     def setkpoint(self,kpoint,ispin=0):
         # Initiate H, S to correct kpoint
@@ -682,33 +686,21 @@ class GF:
         self.OrthogonalDeviceRegion = False
 
 
-    def calcT(self,channels=10):
-        # Calculate transmission
-        # Note that size of matrices may not be not uniform and care is taken to minimize computation times
-        GamL, GamR, Gr = self.GamL, self.GamR, self.Gr
-        if GamL.shape == Gr.shape and GamR.shape == Gr.shape:
-            # Quantities have same shape and the matrix product is
-            # straight-forward (but perhaps unnecesarily time consuming)
-            Tmat = MM.mm(GamL,Gr,GamR,MM.dagger(Gr))
-        else:
-            # Nonorthogonal quantities, computation time minimized
-            nuo, nuoL, nuoR = self.nuo, self.nuoL, self.nuoR
-            tmp = MM.mm(GamL,Gr[0:nuoL,nuo-nuoR:nuo])
-            tmp = MM.mm(tmp,GamR)
-            tmp2 = MM.dagger(Gr)
-            Tmat = MM.mm(tmp,tmp2[nuo-nuoR:nuo,0:nuoL])
-        Trans = N.trace(Tmat)
+    def calcT(self,channels=3):
+        # Transmission matrix (complex array)
+        TT = self.TT
+        Trans = N.trace(TT)
         VC.Check("trans-imaginary-part",Trans.imag,
                  "Transmission has large imaginary part")
         # Calculate eigenchannel transmissions too
-        tval,tvec = LA.eig(Tmat)
-        tval = sorted(tval,reverse=True) # Sort eigenvalues descending
-        T = [Trans.real]
+        tval,tvec = LA.eig(TT)
+        #tval = sorted(tval,reverse=True) # Sort eigenvalues descending
         # Compute shot noise
-        Smat = MM.mm(Tmat,N.identity(len(Tmat))-Tmat)
-        SN = [N.trace(Smat).real]
+        Smat = MM.mm(TT,N.identity(len(TT))-TT)
         sval = N.diag(MM.mm(MM.dagger(tvec),Smat,tvec))
-        # Add channel decompositions
+        # set up arrays
+        T = [Trans.real]
+        SN = [N.trace(Smat).real]        
         for i in range(channels):
             T += [tval[i].real]
             SN += [sval[i].real]

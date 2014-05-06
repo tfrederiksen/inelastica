@@ -84,6 +84,11 @@ tee = subprocess.Popen(["tee", options.DestDir+"/Output.log"], stdin=subprocess.
 os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
 os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
 
+# Write function call
+print
+for arg in sys.argv: print arg,
+print '\n'
+
 # Load Inelastica stuff
 from Inelastica import SiestaIO as SIO
 from Inelastica import pyTBT

@@ -106,12 +106,8 @@ Voltage                         : %f
                 SNkpt[ie,ik] = SN
                 # DOS calculation:
                 if options.dos:
-                    GamL, GamR, Gr = DevGF.GamL, DevGF.GamR, DevGF.Gr
-                    nuo, nuoL, nuoR = DevGF.nuo, DevGF.nuoL, DevGF.nuoR
-                    AL = MM.mm(Gr[:,0:nuoL],GamL,MM.dagger(Gr)[0:nuoL,:])
-                    AR = MM.mm(Gr[:,nuo-nuoR:nuo],GamR,MM.dagger(Gr)[nuo-nuoR:nuo,:])
-                    AavL += mesh.w[0,ik]*MM.mm(AL,DevGF.S)
-                    AavR += mesh.w[0,ik]*MM.mm(AR,DevGF.S)
+                    AavL += mesh.w[0,ik]*MM.mm(DevGF.AL,DevGF.S)
+                    AavR += mesh.w[0,ik]*MM.mm(DevGF.AR,DevGF.S)
             # Print calculated quantities
             err = (N.abs(Tavg[0,0]-Tavg[0,1])+N.abs(Tavg[0,0]-Tavg[0,2]))/2
             relerr = err/Tavg[0,0]
@@ -233,16 +229,14 @@ def WritePDOS(fn,options,DevGF,DOS,basis):
     import WriteXMGR as XMGR
     g = XMGR.Graph()
     for atom, lVal, name in plots:
-        nspin, ee, PDOS = SIO.ExtractPDOS(fn,None,\
-                                      FermiRef=False,llist=lVal,\
-                                      species=atom)        
+        nspin, ee, PDOS = SIO.ExtractPDOS(fn,None,FermiRef=False,llist=lVal,
+                                          species=atom,Normalize=True)        
         for iS in range(nspin):
-            g.AddDatasets(
-                XMGR.XYset(ee-DevGF.HS.ef,(-1)**iS*PDOS[iS],legend=name,Lwidth=2))
+            g.AddDatasets(XMGR.XYset(ee-DevGF.HS.ef,(-1)**iS*PDOS[iS],legend=name,Lwidth=2))
 
     # Set axes and write XMGR plot to file
     g.SetXaxis(label='E-E\sF\N (eV)',autoscale=True)
-    g.SetYaxis(label='DOS (1/eV)',autoscale=True)
+    g.SetYaxis(label='DOS (1/eV/atom)',autoscale=True)
     g.SetTitle(fn,size=1.3)
     g.ShowLegend()
     p = XMGR.Plot(fn+'.xmgr',g)

@@ -50,7 +50,8 @@ def main(options):
     GFm.nHT = N.zeros(len(hw),N.float)     # non-Hilbert/Isym factor
     GFm.HT = N.zeros(len(hw),N.float)      # Hilbert/Iasym factor
     # Calculate transmission at Fermi level
-    GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
+    GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+               etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
     basis = SIO.BuildBasis(options.fn,options.DeviceAtoms[0],options.DeviceAtoms[1],GFp.HS.lasto)
     TeF, SN = GFp.calcT(options.numchan)
     GFp.TeF = TeF[0] # first index is total transmission
@@ -60,18 +61,22 @@ def main(options):
     # Calculate trace factors one mode at a time
     print 'Inelastica: LOEscale =',options.LOEscale
     if options.LOEscale==0.0:
-        # LOEscale=0.0 => Original LOE-WBA method
-        GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
-        GFm.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
+        # LOEscale=0.0 => Original LOE-WBA method, PRB 72, 201101(R) (2005) [cond-mat/0505473].
+        GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+                   etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
+        GFm.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+                   etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
         for ihw in (hw>options.modeCutoff).nonzero()[0]:
             calcTraces(options,GFp,GFm,basis,NCfile,ihw)
             calcTraces(options,GFm,GFp,basis,NCfile,ihw)
         writeFGRrates(options,GFp,hw,NCfile)
     else:
-        # LOEscale=1.0 => Generalized LOE, see arXiv:1312.7625
+        # LOEscale=1.0 => Generalized LOE, PRB 89, 081405(R) (2014) [arXiv:1312.7625]
         for ihw in (hw>options.modeCutoff).nonzero()[0]:
-            GFp.calcGF(options.energy+hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
-            GFm.calcGF(options.energy-hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralMatrices=True)
+            GFp.calcGF(options.energy+hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+                       etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
+            GFm.calcGF(options.energy-hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+                       etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
             calcTraces(options,GFp,GFm,basis,NCfile,ihw)
             calcTraces(options,GFm,GFp,basis,NCfile,ihw)
     # Multiply traces with voltage-dependent functions
