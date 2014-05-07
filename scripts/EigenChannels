@@ -60,6 +60,10 @@ parser.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to
 parser.add_option("--scaleSigR", dest="scaleSigR", help="Scale factor applied to Sigma_R [default=%default]",
                   type='float', default=1.0)
 
+# Use spectral matrices? 
+parser.add_option("--SpectralCutoff", dest="SpectralCutoff", help="Cutoff value for SpectralMatrix functions (for ordinary matrix representation set cutoff<=0.0) [default=%default]",
+                  type='float', default=0.0)
+
 (options, args) = parser.parse_args()
 
 # Destination directory

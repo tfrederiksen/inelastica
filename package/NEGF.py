@@ -755,11 +755,11 @@ class GF:
         UF = N.transpose(UF)
 
         EC=[]
+        tmp = MM.mm(self.Us,Utilde)
         for jj in range(channels):
-            tmp=MM.mm(self.Us,Utilde,UF[len(evF)-jj-1,:])
-            EC.append(tmp.copy())
-
-        return EC, evF
+            ec=MM.mm(tmp,UF[len(evF)-jj-1,:])
+            EC.append(ec.copy())
+        return EC, evF[::-1] # reverse eigenvalues
 
     def calcEigChan(self,channels=10):
         if not self.OrthogonalDeviceRegion:
@@ -767,15 +767,11 @@ class GF:
         # Calculate Eigenchannels from left
         self.A1 = MM.mm(self.Gr,self.GamL,self.Ga)
         self.ECleft, self.EigTleft = self.__calcEigChan(self.A1,self.GamR,channels)
-        teig = list(self.EigTleft)
-        teig.reverse()
-        print 'NEGF.calcEigChan: Left eigenchannel transmissions [T1, ..., Tn]:\n',teig[:channels]
+        print 'NEGF.calcEigChan: Left eigenchannel transmissions [T1, ..., Tn]:\n',self.EigTleft[:channels]
         # Calculate Eigenchannels from right
         self.A2 = MM.mm(self.Gr,self.GamR,self.Ga)
         self.ECright, self.EigTright = self.__calcEigChan(self.A2,self.GamL,channels)
-        teig = list(self.EigTright)
-        teig.reverse()
-        print 'NEGF.calcEigChan: Right eigenchannel transmissions [T1, ..., Tn]:\n',teig[:channels]
+        print 'NEGF.calcEigChan: Right eigenchannel transmissions [T1, ..., Tn]:\n',self.EigTright[:channels]
 
 
 #############################################################################            

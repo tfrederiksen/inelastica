@@ -96,7 +96,8 @@ Voltage                         : %f
             AavR = N.zeros((DevGF.nuo,DevGF.nuo),N.complex)
             # Loops over k-points
             for ik in range(mesh.NNk):
-                DevGF.calcGF(ee+options.eta*1.0j,mesh.k[ik,:2],ispin=iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+                DevGF.calcGF(ee+options.eta*1.0j,mesh.k[ik,:2],ispin=iSpin,
+                             etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
                 # Transmission:
                 T,SN = DevGF.calcT(options.numchan)
                 for iw in range(len(mesh.w)):
@@ -106,8 +107,13 @@ Voltage                         : %f
                 SNkpt[ie,ik] = SN
                 # DOS calculation:
                 if options.dos:
-                    AavL += mesh.w[0,ik]*MM.mm(DevGF.AL,DevGF.S)
-                    AavR += mesh.w[0,ik]*MM.mm(DevGF.AR,DevGF.S)
+                    if options.SpectralCutoff>0.0:
+                        # perform matrix multiplication in most efficient order
+                        AavL += mesh.w[0,ik]*MM.mm(DevGF.S,DevGF.AL.L,DevGF.AL.R)
+                        AavR += mesh.w[0,ik]*MM.mm(DevGF.S,DevGF.AR.L,DevGF.AR.R)
+                    else:
+                        AavL += mesh.w[0,ik]*MM.mm(DevGF.AL,DevGF.S)
+                        AavR += mesh.w[0,ik]*MM.mm(DevGF.AR,DevGF.S)
             # Print calculated quantities
             err = (N.abs(Tavg[0,0]-Tavg[0,1])+N.abs(Tavg[0,0]-Tavg[0,2]))/2
             relerr = err/Tavg[0,0]

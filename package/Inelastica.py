@@ -53,9 +53,9 @@ def main(options):
     GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
                etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
     basis = SIO.BuildBasis(options.fn,options.DeviceAtoms[0],options.DeviceAtoms[1],GFp.HS.lasto)
-    TeF, SN = GFp.calcT(options.numchan)
-    GFp.TeF = TeF[0] # first index is total transmission
-    GFm.TeF = TeF[0]
+    TeF = N.trace(GFp.TT).real
+    GFp.TeF = TeF
+    GFm.TeF = TeF
     # Check consistency of PHrun vs TSrun inputs
     IntegrityCheck(options,GFp,basis,NCfile)   
     # Calculate trace factors one mode at a time

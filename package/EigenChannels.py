@@ -31,39 +31,19 @@ def main(options):
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
     DevGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
-    DevGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,etaLead=options.etaLead,useSigNCfiles=options.signc)
+    DevGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+                 etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
+    NEGF.SavedSig.close() # Make sure saved Sigma is written to file
 
     # Build basis
     options.nspin = DevGF.HS.nspin
     basis = SIO.BuildBasis(options.fn,options.DeviceAtoms[0],options.DeviceAtoms[1],DevGF.HS.lasto)
 
-    # Calculate transmission
-    # Matrix to save total and eigenchannel transmissions
-    # BEFORE ORTHOGO
-    T, SN = DevGF.calcT(options.numchan)
-    NEGF.SavedSig.close() # Make sure saved Sigma is written to file
-    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
-    for t in T:
-        print '%.9f '%t,
-    print
-
-    # Now orthogonalize in device region
-    DevGF.orthogonalize()
-
-    # Check that we get the same transmission:
-    T, SN = DevGF.calcT(options.numchan)
-    print 'Transmission T(E=%.4f) [Ttot, T1, T2, ... Tn]:'%options.energy
-    for t in T:
-        print '%.9f '%t,
-    print
-
     # Calculate Eigenchannels
-    DevGF.calcEigChan(options.numchan)
+    DevGF.calcEigChan(options.numchan) # Orthogonalization is performed in this function call
 
-    # Calculate Eigenchannels from left
+    # Eigenchannels from left
     ECleft, EigT = DevGF.ECleft, DevGF.EigTleft
-    for jj in range(options.numchan):
-        T[jj+1]=EigT[len(EigT)-jj-1]
 
     # Write wave functions
     for jj in range(options.numchan):
@@ -98,12 +78,10 @@ def main(options):
         for ii in range(len(ev)):
             if N.abs(ev[ii])<options.MolStates:
                 fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii,ev[ii])
-                writeWavefunction(options,geom,basis,MM.mm(DevGF.Us,es[:,ii]),fn=fn,
-                                  printNormalization=True)
-
+                writeWavefunction(options,geom,basis,MM.mm(DevGF.Us,es[:,ii]),fn=fn)
 
 ########################################################
-def calcWF(options,geom,basis,Y,printNormalization=False):
+def calcWF(options,geom,basis,Y):
     """
     Calculate wavefunction, returns:
     YY : complex wavefunction on regular grid
@@ -170,8 +148,7 @@ def calcWF(options,geom,basis,Y,printNormalization=False):
         YY[ixmin:ixmax,iymin:iymax,izmin:izmax]=YY[ixmin:ixmax,iymin:iymax,izmin:izmax]+\
                                                  RR*thisSphHar*Y[ii]
 
-    if printNormalization:
-        print "Normalization of wavefunction on real space grid:",N.sum(YY.conjugate()*YY)*dx*dy*dz
+    print "Wave function norm on real space grid:",N.sum(YY.conjugate()*YY)*dx*dy*dz
 
     return YY, options.res, origo, nx, ny, nz
 
@@ -404,7 +381,7 @@ def writeXSF(geom,fn,YY,nx,ny,nz,origo,dstep):
 
 
 ########################################################
-def writeWavefunction(options,geom,basis,Y,fn=None,printNormalization=False):
+def writeWavefunction(options,geom,basis,Y,fn=None):
     """
     Writes wave function to the specified output type
     Y: vector for wavefunction
@@ -429,7 +406,7 @@ def writeWavefunction(options,geom,basis,Y,fn=None,printNormalization=False):
         (basis.ii[ii],basis.atomnum[ii],basis.M[ii],basis.L[ii],abs(Y[ii])))
     foT.close()
 
-    YY, dstep, origo, nx, ny, nz = calcWF(options,geom,basis,Y,printNormalization=printNormalization)
+    YY, dstep, origo, nx, ny, nz = calcWF(options,geom,basis,Y)
 
     # Write wave function in specified file format
     if options.format.lower() == 'macu':
