@@ -639,7 +639,7 @@ class GF:
             tmp = MM.mm(self.GamL,self.Gr[0:nuoL,:])
             self.ALT = MM.SpectralMatrix(MM.mm(self.Ga[:,0:nuoL],tmp),cutoff=SpectralCutoff)
             self.AR = MM.SpectralMatrix(MM.mm(self.Gr[:,nuo-nuoR:nuo],self.GamR,self.Ga[nuo-nuoR:nuo,:]),cutoff=SpectralCutoff)
-            self.ARGLG = MM.mm(self.AR.full()[:,0:nuoL],tmp)
+            self.ARGLG = MM.mm(self.AR.L,self.AR.R[:,0:nuoL],tmp)
             self.A = self.AL+self.AR
             # transmission matrix AL.GamR
             self.TT = MM.mm(self.AL.R[:,nuo-nuoR:nuo],self.GamR,self.AL.L[nuo-nuoR:nuo,:])
@@ -652,6 +652,7 @@ class GF:
             self.A = self.AL+self.AR
             # transmission matrix AL.GamR
             self.TT = MM.mm(self.AL[nuo-nuoR:nuo,nuo-nuoR:nuo],self.GamR)
+        print 'NEGF.calcGF: Shape of transmission matrix (TT):', self.TT.shape
         
     def setkpoint(self,kpoint,ispin=0):
         # Initiate H, S to correct kpoint
@@ -686,7 +687,7 @@ class GF:
         self.OrthogonalDeviceRegion = False
 
 
-    def calcT(self,channels=3):
+    def calcTEIG(self,channels=10):
         # Transmission matrix (complex array)
         TT = self.TT
         Trans = N.trace(TT)
@@ -694,17 +695,18 @@ class GF:
                  "Transmission has large imaginary part")
         # Calculate eigenchannel transmissions too
         tval,tvec = LA.eig(TT)
-        #tval = sorted(tval,reverse=True) # Sort eigenvalues descending
         # Compute shot noise
         Smat = MM.mm(TT,N.identity(len(TT))-TT)
         sval = N.diag(MM.mm(MM.dagger(tvec),Smat,tvec))
         # set up arrays
-        T = [Trans.real]
-        SN = [N.trace(Smat).real]        
-        for i in range(channels):
-            T += [tval[i].real]
-            SN += [sval[i].real]
-        return N.array(T),N.array(SN)
+        T = N.zeros(channels+1)
+        SN = N.zeros(channels+1)
+        T[0] = Trans.real
+        SN[0] = N.trace(Smat).real
+        for i in range(min(channels,len(TT))):
+            T[i+1] = tval[i].real
+            SN[i+1] = sval[i].real
+        return T, SN
 
     def orthogonalize(self):
         print 'NEGF.GF.orthogonalize: Orthogonalizing device region quantities'

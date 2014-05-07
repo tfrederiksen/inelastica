@@ -98,8 +98,8 @@ Voltage                         : %f
             for ik in range(mesh.NNk):
                 DevGF.calcGF(ee+options.eta*1.0j,mesh.k[ik,:2],ispin=iSpin,
                              etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
-                # Transmission:
-                T,SN = DevGF.calcT(options.numchan)
+                # Transmission and shot noise
+                T,SN = DevGF.calcTEIG(options.numchan)
                 for iw in range(len(mesh.w)):
                     Tavg[:,iw] += T*mesh.w[iw,ik]
                     SNavg[:,iw] += SN*mesh.w[iw,ik]
@@ -108,9 +108,8 @@ Voltage                         : %f
                 # DOS calculation:
                 if options.dos:
                     if options.SpectralCutoff>0.0:
-                        # perform matrix multiplication in most efficient order
-                        AavL += mesh.w[0,ik]*MM.mm(DevGF.S,DevGF.AL.L,DevGF.AL.R)
-                        AavR += mesh.w[0,ik]*MM.mm(DevGF.S,DevGF.AR.L,DevGF.AR.R)
+                        AavL += mesh.w[0,ik]*MM.mm(DevGF.AL.L,DevGF.AL.R,DevGF.S)
+                        AavR += mesh.w[0,ik]*MM.mm(DevGF.AR.L,DevGF.AR.R,DevGF.S)
                     else:
                         AavL += mesh.w[0,ik]*MM.mm(DevGF.AL,DevGF.S)
                         AavR += mesh.w[0,ik]*MM.mm(DevGF.AR,DevGF.S)

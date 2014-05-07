@@ -99,7 +99,7 @@ def calcSTM():
     HS.GF.calcGF(Ef+general.eta*1j, general.kPoint[0:2], ispin=general.iSpin)
 
     # Calculate transmission with coupling L-R
-    transmission, SN = HS.GF.calcT()
+    transmission, SN = HS.GF.calcTEIG()
 
     # Remove coupling L-R
     H, S = HS.GF.H, HS.GF.S
