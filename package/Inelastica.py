@@ -19,10 +19,13 @@ import ValueCheck as VC
 def main(options):
     options.XV = '%s/%s.XV'%(options.head,options.systemlabel)
     options.geom = MG.Geom(options.XV)
+    # Voltage fraction over left-center interface
+    VfracL = options.VfracL # default is 0.5
+    print 'Inelastica: Voltage fraction over left-center interface: VfracL =',VfracL
     # Set up electrodes and device Greens function
-    elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
+    elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage*VfracL)
     elecL.scaling = options.scaleSigL
-    elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
+    elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,options.voltage*(VfracL-1.))
     elecR.scaling = options.scaleSigR
     # Read phonons
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
@@ -30,7 +33,7 @@ def main(options):
     hw = N.array(NCfile.variables['hw'][:])
     if NCfile.CurrentHWidx != len(hw):
         sys.exit('Inelastica: Error - not all phonon He-ph are calculated.')
-    # Work with GFs etc at two different energies: p=Ef+hw/2 and m=Ef-hw/2
+    # Work with GFs etc for positive (V>0: \mu_L>\mu_R) and negative (V<0: \mu_L<\mu_R) bias voltages
     GFp = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
     # Prepare lists for various trace factors
     #GF.dGnout = []
@@ -73,12 +76,18 @@ def main(options):
     else:
         # LOEscale=1.0 => Generalized LOE, PRB 89, 081405(R) (2014) [arXiv:1312.7625]
         for ihw in (hw>options.modeCutoff).nonzero()[0]:
-            GFp.calcGF(options.energy+hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+            GFp.calcGF(options.energy+hw[ihw]*options.LOEscale*VfracL+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
                        etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
-            GFm.calcGF(options.energy-hw[ihw]*options.LOEscale/2+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+            GFm.calcGF(options.energy+hw[ihw]*options.LOEscale*(VfracL-1.)+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
                        etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
             calcTraces(options,GFp,GFm,basis,NCfile,ihw)
+            if VfracL!=0.5:
+                GFp.calcGF(options.energy-hw[ihw]*options.LOEscale*(VfracL-1.)+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+                           etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
+                GFm.calcGF(options.energy-hw[ihw]*options.LOEscale*VfracL+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+                           etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
             calcTraces(options,GFm,GFp,basis,NCfile,ihw)
+            
     # Multiply traces with voltage-dependent functions
     calcIETS(options,GFp,GFm,basis,hw)
     NCfile.close()
@@ -406,22 +415,14 @@ def checkImPart(x):
 
 ########################################################
 def writeFGRrates(options,GF,hw,NCfile):
-    # Make human readable format
-
+    print 'Inelastica.writeFGRrates: Computing FGR rates'
     # Eigenchannels
     GF.calcEigChan(channels=options.numchan)
-
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Reading ',options.PhononNetCDF
 
-    options.iChan, options.iSide = 0, 2
-    print options.DestDir
-    print options.systemlabel
     outFile = file('%s/%s.IN.FGR'%(options.DestDir,options.systemlabel),'w')
     outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (PC.unitConv*GF.TeF,))
-
-    #tmp=N.sort(abs(N.array(GF.nHT[:])))
-    #SelectionMin=tmp[-options.numchan]        
 
     for ihw in range(len(hw)):
         SIO.printDone(ihw,len(hw),'Golden Rate') 
@@ -441,14 +442,6 @@ def writeFGRrates(options,GF,hw,NCfile):
                 if iL==iR: intra += rate[iL,iR]
                 else: inter += rate[iL,iR]
 
-        #if abs(GF.nHT[ihw])>=SelectionMin:
-        #    options.iChan = ihw
-        #    currOut, currIn = IETS.dGnout[ihw], IETS.dGnin[ihw]
-        #    options.iSide = 3
-        #    writeCurrent(currIn)
-        #    options.iSide = 4
-        #    writeCurrent(currOut)
-            
         outFile.write('\nPhonon mode %i : %f eV [Rates in units of (1/s/eV)]\n' % (ihw,hw[ihw]))
         outFile.write('eh-damp : %e (1/s) , heating %e (1/(sV)))\n' % (GF.P1T[ihw]*PC.unitConv*hw[ihw],GF.P2T[ihw]*PC.unitConv))
         outFile.write('eh-damp 1, 2 (MALMAL, MARMAR): %e (1/s) , %e (1/(s)))\n' % (GF.ehDampL[ihw]*PC.unitConv*hw[ihw],GF.ehDampR[ihw]*PC.unitConv*hw[ihw]))
