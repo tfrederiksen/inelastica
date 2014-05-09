@@ -88,6 +88,9 @@ Voltage                         : %f
         foSN=open(thisspinlabel+'.AVNOISE','write')
         foSN.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(mesh.type[0],mesh.Nk[0],mesh.type[1],mesh.Nk[1],options.eta,options.etaLead))
         foSN.write('# E   SNtot(E)   SNi(E)(i=1-%i)\n'%options.numchan)
+        foFF=open(thisspinlabel+'.FANO','write')
+        foFF.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(mesh.type[0],mesh.Nk[0],mesh.type[1],mesh.Nk[1],options.eta,options.etaLead))
+        foFF.write('# E   Fano factor \n')
         # Loop over energy
         for ie, ee in enumerate(options.Elist):
             Tavg = N.zeros((options.numchan+1,len(mesh.w)),N.float)
@@ -129,6 +132,7 @@ Voltage                         : %f
             transline += '%.2e '%relerr
             fo.write(transline)
             foSN.write(noiseline)
+            foFF.write('\n%.10f %.8e'%(ee,SNavg[0,0]/Tavg[0,0]))
             # Partial density of states:
             if options.dos:
                 DOSL[iSpin,ie,:] += N.diag(AavL).real/(2*N.pi)
@@ -138,6 +142,8 @@ Voltage                         : %f
         fo.close()
         foSN.write('\n')
         foSN.close()
+        foFF.write('\n')
+        foFF.close()
         
         # Write k-point-resolved transmission
         fo=open(thisspinlabel+'.TRANS','write')
