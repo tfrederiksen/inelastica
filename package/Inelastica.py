@@ -31,8 +31,11 @@ def main(options):
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Inelastica: Reading ',options.PhononNetCDF
     hw = N.array(NCfile.variables['hw'][:])
-    if NCfile.CurrentHWidx != len(hw):
-        sys.exit('Inelastica: Error - not all phonon He-ph are calculated.')
+    try:
+        if NCfile.CurrentHWidx != len(hw):
+            sys.exit('Inelastica: Error - not all phonon He-ph are calculated.')
+    except:
+        print 'Inelastica: WARNING: variable CurrentHWidx not found in',options.PhononNetCDF
     # Work with GFs etc for positive (V>0: \mu_L>\mu_R) and negative (V<0: \mu_L<\mu_R) bias voltages
     GFp = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
     # Prepare lists for various trace factors
@@ -99,6 +102,7 @@ def IntegrityCheck(options,GF,basis,NCfile):
     # PH and TS calculations by comparing coordinates
     # and atom numbers
     PH_dev = N.array(NCfile.variables['DeviceAtoms'][:])
+    PH_dyn = N.array(NCfile.variables['DynamicAtoms'][:])
     PH_xyz = N.array(NCfile.variables['GeometryXYZ'][:])
     PH_anr = N.array(NCfile.variables['AtomNumbers'][:])
     TS_dev = range(options.DeviceAtoms[0],options.DeviceAtoms[1]+1)
@@ -128,6 +132,11 @@ def IntegrityCheck(options,GF,basis,NCfile):
         else:
             s += ('---').center(36)
         print s
+        # Dynamic region
+        if PH_dev[0]+i+1 == PH_dyn[0]:
+            print '        -------------------- Dynamic region begins ---------------------'
+        if PH_dev[0]+i == PH_dyn[-1]:
+            print '        --------------------- Dynamic region ends ----------------------'
     # - check 1: Matrix sizes
     PH_H0 = N.array(NCfile.variables['H0'][:])
     if N.shape(PH_H0[0])==N.shape(GF.Gr):
