@@ -34,6 +34,7 @@ def main(options):
     DevGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
                  etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
+    print 'Transmission Ttot(%.4feV) = %.16f'%(options.energy,N.trace(DevGF.TT).real)
 
     # Build basis
     options.nspin = DevGF.HS.nspin
@@ -49,7 +50,7 @@ def main(options):
     for jj in range(options.numchan):
         options.iSide, options.iChan = 0, jj+1
         writeWavefunction(options,geom,basis,ECleft[jj])
-        Curr=calcCurrent(options,basis,DevGF.HNO,ECleft[jj])
+        Curr=calcCurrent(options,basis,DevGF.H,ECleft[jj])
         writeCurrent(options,geom,Curr)
                     
     # Calculate eigenchannels from right
@@ -58,27 +59,33 @@ def main(options):
         for jj in range(options.numchan):
             options.iSide, options.iChan = 1, jj+1
             writeWavefunction(options,geom,basis,ECright[jj])
-            Curr=calcCurrent(options,basis,DevGF.HNO,ECright[jj])
+            Curr=calcCurrent(options,basis,DevGF.H,ECright[jj])
             writeCurrent(options,geom,Curr)
-            
+
     # Calculate total "bond currents"
-    A1NO = MM.mm(DevGF.Us,DevGF.A1,DevGF.Us)
-    A2NO = MM.mm(DevGF.Us,DevGF.A2,DevGF.Us)
-    Curr=-calcCurrent(options,basis,DevGF.HNO,A1NO)
+    Curr=-calcCurrent(options,basis,DevGF.H,DevGF.AL)
     options.iChan, options.iSide = 0, 0
     writeCurrent(options,geom,Curr)
-    Curr=-calcCurrent(options,basis,DevGF.HNO,A2NO)
+    Curr=-calcCurrent(options,basis,DevGF.H,DevGF.AR)
     options.iSide = 1
     writeCurrent(options,geom,Curr)
 
     # Calculate eigenstates of device Hamiltonian
     if options.MolStates>0.0:
-        print 'calculating molecular eigenstates of folded, orthogonalized device hamiltonian'
-        ev, es = LA.eigh(DevGF.H)
-        for ii in range(len(ev)):
-            if N.abs(ev[ii])<options.MolStates:
-                fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii,ev[ii])
-                writeWavefunction(options,geom,basis,MM.mm(DevGF.Us,es[:,ii]),fn=fn)
+        #print 'calculating molecular eigenstates of folded, orthogonalized device hamiltonian'
+        #ev, es = LA.eigh(DevGF.H)
+        try:
+            import scipy.linalg as SLA
+            ev, es = SLA.eigh(DevGF.H,DevGF.S)
+            print 'EigenChannels: Eigenvalues (in eV) of computed molecular eigenstates:'
+            print ev
+            for ii in range(len(ev)):
+                if N.abs(ev[ii])<options.MolStates:
+                    fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii,ev[ii])
+                    writeWavefunction(options,geom,basis,es[:,ii],fn=fn)
+        except:
+            print 'You need to install scipy to solve the generalized eigenvalue problem'
+            print 'for the molecular eigenstates in the nonorthogonal basis'
 
 ########################################################
 def calcWF(options,geom,basis,Y):
@@ -204,7 +211,21 @@ def writeCurrent(options,geom,Curr):
             foC.write('%e '%(Curr[ii,jj]))
         foC.write('\n')
     foC.close()
-
+    # Current vector for atom i
+    Curr2 = N.zeros(geom.xyz.shape)
+    for i in range(len(Curr)):
+        for j in range(len(Curr)):
+            if i!=j:
+                R = N.zeros(3,N.float)
+                for k in range(-1,2): # Loop over neighbors
+                    for l in range(-1,2):
+                        r = xyz[i]-xyz[j]+k*geom.pbc[0]+l*geom.pbc[1]
+                        dr = N.dot(r,r)**.5 # Norm
+                        R += r*N.exp(-dr) # Exponential weighting
+                R = R/N.dot(R,R)**.5
+                Curr2[options.DeviceAtoms[0]-1+i] += Curr[i,j]*R/2
+    SIO.WriteAXSFFiles(fn+'.curr.AXSF',[geom],[Curr2])
+   
 ########################################################
 def writenetcdf(geom,fn,YY,nx,ny,nz,origo,dstep):
     """

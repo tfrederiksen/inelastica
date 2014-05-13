@@ -739,42 +739,34 @@ class GF:
         self.Gr = MM.mm(Usi,self.Gr,Usi)
         self.Ga = MM.dagger(self.Gr)
 
-    def __calcEigChan(self,A1,G2,channels=10):
+    def __calcEigChan(self,A1,G2,Left,channels=10):
         # Calculate Eigenchannels using recipe from PRB
         # For right eigenchannels, A1=A2, G2=G1 !!!
         ev, U = LA.eigh(A1)
         U = N.transpose(U)
-
         Utilde = N.empty(U.shape,U.dtype)
-
         for jj in range(len(ev)): # Problems with negative numbers
             if ev[jj]<0: ev[jj]=0
             Utilde[jj,:]=N.sqrt(ev[jj]/(2*N.pi))*U[jj,:]
         Utilde=N.transpose(Utilde)
-
-        tt=MM.mm(MM.dagger(Utilde),2*N.pi*G2,Utilde)
+        nuo,nuoL,nuoR = self.nuo, self.nuoL, self.nuoR
+        if Left:
+            tt=MM.mm(MM.dagger(Utilde)[:,nuo-nuoR:nuo],2*N.pi*G2,Utilde[nuo-nuoR:nuo,:])
+        else:
+            tt=MM.mm(MM.dagger(Utilde)[:,:nuoL],2*N.pi*G2,Utilde[:nuoL,:])
         evF, UF = LA.eigh(tt)
         UF = N.transpose(UF)
-
         EC=[]
-        tmp = MM.mm(self.Us,Utilde)
         for jj in range(channels):
-            ec=MM.mm(tmp,UF[len(evF)-jj-1,:])
+            ec=MM.mm(Utilde,UF[len(evF)-jj-1,:])
             EC.append(ec.copy())
         return EC, evF[::-1] # reverse eigenvalues
 
     def calcEigChan(self,channels=10):
-        if not self.OrthogonalDeviceRegion:
-            self.orthogonalize()
         # Calculate Eigenchannels from left
-        self.A1 = MM.mm(self.Gr,self.GamL,self.Ga)
-        self.ECleft, self.EigTleft = self.__calcEigChan(self.A1,self.GamR,channels)
+        self.ECleft, self.EigTleft = self.__calcEigChan(self.AL,self.GamR,True,channels)
         print 'NEGF.calcEigChan: Left eigenchannel transmissions [T1, ..., Tn]:\n',self.EigTleft[:channels]
         # Calculate Eigenchannels from right
-        self.A2 = MM.mm(self.Gr,self.GamR,self.Ga)
-        self.ECright, self.EigTright = self.__calcEigChan(self.A2,self.GamL,channels)
+        self.ECright, self.EigTright = self.__calcEigChan(self.AR,self.GamL,False,channels)
         print 'NEGF.calcEigChan: Right eigenchannel transmissions [T1, ..., Tn]:\n',self.EigTright[:channels]
-
-
-#############################################################################            
 
