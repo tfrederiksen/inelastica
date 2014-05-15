@@ -742,7 +742,10 @@ class GF:
     def __calcEigChan(self,A1,G2,Left,channels=10):
         # Calculate Eigenchannels using recipe from PRB
         # For right eigenchannels, A1=A2, G2=G1 !!!
-        ev, U = LA.eigh(A1)
+        if isinstance(A1,MM.SpectralMatrix):
+            ev, U = LA.eigh(MM.mm(A1.L,A1.R))
+        else:
+            ev, U = LA.eigh(A1)
         U = N.transpose(U)
         Utilde = N.empty(U.shape,U.dtype)
         for jj in range(len(ev)): # Problems with negative numbers

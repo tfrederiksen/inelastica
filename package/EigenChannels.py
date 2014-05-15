@@ -167,7 +167,8 @@ def calcCurrent(options,basis,H,Y):
     Y : complex scattering state or
     Y : A_l or A_r! (for total current)
     """
-    
+    if isinstance(Y,MM.SpectralMatrix):
+        Y = MM.mm(Y.L,Y.R)
     NN=len(H)
     NN2=options.DeviceAtoms[1]-options.DeviceAtoms[0]+1
     Curr=N.zeros((NN2,NN2),N.float)
