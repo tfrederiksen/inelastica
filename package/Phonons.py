@@ -149,15 +149,15 @@ def Analyze(FCwildcard,
 
     ### Write MKL- and xyz-files
     print '\nPhonons.Analyze: Writing geometry and phonons to files.'
-    SIO.WriteMKLFile('%s_FC%i-%i.mkl'%(outlabel,FCfirst,FClast),
-                     atomnumber,xyz,hw,U,FCfirst,FClast)
-    SIO.WriteMKLFile('%s_FC%i-%i.real-displacements.mkl'%(outlabel,FCfirst,FClast),
-                     atomnumber,xyz,hw,Udisp,FCfirst,FClast)
+    SIO.WriteMKLFile('%s.mkl'%outlabel,atomnumber,xyz,hw,U,FCfirst,FClast)
+    SIO.WriteMKLFile('%s.real-displ.mkl'%outlabel,atomnumber,xyz,hw,Udisp,FCfirst,FClast)
     SIO.WriteXYZFile('%s.xyz'%outlabel,atomnumber,xyz)
     WriteFreqFile('%s.freq'%outlabel,hw)
     WriteVibDOSFile('%s.fdos'%outlabel,hw)
-    WriteAXSFFiles('%s.axsf'%outlabel,xyz,atomnumber,hw,U,FCfirst, FClast)
-    WriteAXSFFiles('%s.real-displacements.axsf'%outlabel,xyz,atomnumber,hw,Udisp,FCfirst, FClast)
+    WriteAXSFFiles('%s.mol.axsf'%outlabel,xyz,atomnumber,hw,U,FCfirst,FClast)
+    WriteAXSFFiles('%s.mol.real-displ.axsf'%outlabel,xyz,atomnumber,hw,Udisp,FCfirst,FClast)
+    WriteAXSFFilesPer('%s.per.axsf'%outlabel,vectors,xyz,atomnumber,hw,U,FCfirst,FClast)
+    WriteAXSFFilesPer('%s.per.real-displ.axsf'%outlabel,vectors,xyz,atomnumber,hw,Udisp,FCfirst,FClast)
     
     ### Write data to NC-file
     print '\nPhonons.Analyze: Writing results to netCDF-file'
@@ -768,7 +768,7 @@ def WriteVibDOSFile(filename,hw,gam=0.001,type='Gaussian'):
     f.close()                                                                
 
 def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
-    'Writes the vibrational normal coordinates in xcrysden axsf-format'
+    'Writes the vibrational normal coordinates in xcrysden axsf-format (isolated molecule)'
     print 'Phonons.WriteAXSFFile: Writing',filename
     f = open(filename,'w')
     f.write('ANIMSTEPS %i\n'%len(hw))    
@@ -790,6 +790,29 @@ def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
             f.write(ln)
     f.close()
 
+def WriteAXSFFilesPer(filename,vectors,xyz,anr,hw,U,FCfirst,FClast):
+    'Writes the vibrational normal coordinates in xcrysden axsf-format (periodic structure)'
+    print 'Phonons.WriteAXSFFilePer: Writing',filename
+    VEC = N.zeros((len(hw),3*len(xyz)),N.float)
+    VEC[:,3*(FCfirst-1):3*FClast] = U
+    f = open(filename,'w')
+    f.write('ANIMSTEPS %i\nCRYSTAL\n'%len(hw))
+    for i in range(len(hw)):
+        f.write('PRIMVEC %i\n'%(i+1))
+        f.write('%.6f %.6f %.6f\n'%(vectors[0][0],vectors[0][1],vectors[0][2]))
+        f.write('%.6f %.6f %.6f\n'%(vectors[1][0],vectors[1][1],vectors[1][2]))
+        f.write('%.6f %.6f %.6f\n'%(vectors[2][0],vectors[2][1],vectors[2][2]))
+        f.write('PRIMCOORD %i\n'%(i+1))
+        f.write('%i 1\n'%(len(xyz)))
+        for j in range(len(xyz)):
+            ln = ' %i'%anr[j]
+            for k in range(3):
+                ln += ' %.6f'%xyz[j][k]
+            for k in range(3):
+                ln += ' %.6f'%VEC[i][3*j+k]
+            ln += '\n'
+            f.write(ln)
+    f.close()
 
 def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,
                       AuxNCfile,displacement,kpoint,SinglePrec,AbsEref):

@@ -34,6 +34,8 @@ def main(options):
     DevGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
                  etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
+
+    # Transmission
     print 'Transmission Ttot(%.4feV) = %.16f'%(options.energy,N.trace(DevGF.TT).real)
 
     # Build basis
@@ -41,12 +43,10 @@ def main(options):
     basis = SIO.BuildBasis(options.fn,options.DeviceAtoms[0],options.DeviceAtoms[1],DevGF.HS.lasto)
 
     # Calculate Eigenchannels
-    DevGF.calcEigChan(options.numchan) # Orthogonalization is performed in this function call
+    DevGF.calcEigChan(options.numchan)
 
     # Eigenchannels from left
     ECleft, EigT = DevGF.ECleft, DevGF.EigTleft
-
-    # Write wave functions
     for jj in range(options.numchan):
         options.iSide, options.iChan = 0, jj+1
         writeWavefunction(options,geom,basis,ECleft[jj])
