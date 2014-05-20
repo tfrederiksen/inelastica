@@ -38,27 +38,30 @@ _s("Lopez-Sancho-warning",1e-8)
 del _s
 
 def GetCheck(name):
+    global _check
     return _check[name]
 
 def EditCheck(name,value):
     """
-    Sets the check of "checkname" to the value "value".
+    Sets the check of "name" to the value "value".
     It will notify the user so that any log files will retain
     this information.
     """
+    global _check
     ov = "None"
-    if checkname in _check:
-        ov = _check[checkname]
-    _check[checkname] = abs(value)
-    print("WARNING: Overriding variable '{0}'".format(checkname))
+    if name in _check:
+        ov = _check[name]
+    _check[name] = value
+    print("WARNING: Overriding variable '{0}'".format(name))
     print("         Old value: {0}".format(ov))
-    print("         New value: {0}".format(abs(value)))
+    print("         New value: {0}".format(value))
     
 def Check(name,val,*msgs):
     """
     Checks the value and exits if the value "val" is
     above the one specified
     """
+    global _check
     if not name in _check:
         # the name hasn't been set
         # hence, it will always go through
