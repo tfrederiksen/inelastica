@@ -94,12 +94,18 @@ def Analyze(FCwildcard,
 
     # Make isotope substitutions 
     for ii,anr in Isotopes:
-        print 'Phonons.Analyse: Isotope substitution for atom index %i:'%ii
-        print '  ... atom type %i --> %i'%(atomnumber[ii-1],anr)
-        print '  ... atom mass %.4f --> %.4f'%(PC.AtomicMass[atomnumber[ii-1]],\
+        if ii>0 and ii<=len(atomnumber):
+            print 'Phonons.Analyse: Isotope substitution for atom %i (SIESTA numbering):'%ii
+            print '  ... atom type %i --> %i'%(atomnumber[ii-1],anr)
+            print '  ... atom mass %.4f --> %.4f'%(PC.AtomicMass[atomnumber[ii-1]],\
                                                PC.AtomicMass[anr])
-        atomnumber[ii-1] = anr
-    
+            atomnumber[ii-1] = anr
+
+    # Set atomic masses 
+    atommasses = N.empty(atomnumber.shape)
+    for ii in range(len(atomnumber)):
+        atommasses[ii] = PC.AtomicMass[atomnumber[ii-1]]
+
     DeviceFirst = max(DeviceFirst,1)
     DeviceLast = min(DeviceLast,len(xyz))
     print 'Phonons.Analyze: This run uses'
@@ -181,6 +187,7 @@ def Analyze(FCwildcard,
         Write2NetCDFFile(NCfile,vectors,'UnitCell',('dim3','dim3',),units='Ang')
         Write2NetCDFFile(NCfile,xyz,'GeometryXYZ',('NumTotAtoms','dim3',),units='Ang')
         Write2NetCDFFile(NCfile,atomnumber,'AtomNumbers',('NumTotAtoms',),units='Atomic Number')
+        Write2NetCDFFile(NCfile,atommasses,'AtomMasses',('NumTotAtoms',),units='Atomic masses')
         Write2NetCDFFile(NCfile,speciesnumber,'SpeciesNumbers',('NumTotAtoms',),units='Species Number')
         DeviceAtoms = range(DeviceFirst,DeviceLast+1)
         Write2NetCDFFile(NCfile,DeviceAtoms,'DeviceAtoms',('NumDevAtoms',),

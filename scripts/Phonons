@@ -1,4 +1,4 @@
-#!/scratch/thf/SOFTWARE/Python-2.6.5/bin/python
+#!/usr/bin/python
 
 from optparse import OptionParser
 import os, sys, subprocess
@@ -62,8 +62,10 @@ parser.add_option("-n", "--AuxNCfile",dest="AuxNCfile",
                   default=None)
 
 parser.add_option("-i", "--Isotopes",dest="Isotopes",
-                  help="List of substitutions [[i1, anr1],...], where atom index i1 (SIESTA numbering) is set to be of type anr1 [default=%default]",
+                  help="List of substitutions [[i1, anr1],...], where atom index i1 (SIESTA numbering) is set to be of type anr1. Alternatively, the argument can be a file with the input string [default=%default]",
                   default='[]')
+parser.add_option("--AtomicMass", dest='AtomicMass', default='[]',
+                  help="Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%default]")
 
 parser.add_option("-x","--k1", dest='k1', default=0.0,type='float',
                   help="k-point along a1 where e-ph couplings are evaluated [%default]")
@@ -99,6 +101,30 @@ from Inelastica import Phonons
 
 # k-point
 options.kPoint = N.array([options.k1,options.k2,options.k3],N.float)
+
+# Isotopes specified in separate file?
+if os.path.isfile(options.Isotopes):
+    f = open(options.Isotopes)
+    s = ''
+    for line in f.readlines():
+        s += line.replace('\n','').replace(' ','')
+    options.Isotopes = s
+    f.close()
+
+# Check if AtomicMasses are specified
+if options.AtomicMass!='[]':
+    from Inelastica import PhysicalConstants as PC
+    masslist = eval(options.AtomicMass.replace('\n','').replace(' ',''))
+    for elm in masslist:
+        anr = int(elm[0])
+        mass = float(elm[1])
+        PC.AtomicMass[anr] = mass
+        if len(elm)==3:
+            label = elm[2]
+            PC.PeriodicTable[anr] = label
+            PC.PeriodicTable[label] = anr
+    print 'AtomicMass =',PC.AtomicMass
+    print 'PeriodicTable =',PC.PeriodicTable
 
 # Calculate Phonons using specified inputs
 Phonons.Analyze(FCwildcard=options.FCwildcard,onlySdir=options.onlySdir,
