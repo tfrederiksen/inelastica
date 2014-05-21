@@ -159,7 +159,8 @@ def Analyze(FCwildcard,
     SIO.WriteMKLFile('%s.real-displ.mkl'%outlabel,atomnumber,xyz,hw,Udisp,FCfirst,FClast)
     SIO.WriteXYZFile('%s.xyz'%outlabel,atomnumber,xyz)
     WriteFreqFile('%s.freq'%outlabel,hw)
-    WriteVibDOSFile('%s.fdos'%outlabel,hw)
+    WriteVibDOSFile('%s.Gfdos'%outlabel,hw,type='Gaussian')
+    WriteVibDOSFile('%s.Lfdos'%outlabel,hw,type='Lorentzian')
     WriteAXSFFiles('%s.mol.axsf'%outlabel,xyz,atomnumber,hw,U,FCfirst,FClast)
     WriteAXSFFiles('%s.mol.real-displ.axsf'%outlabel,xyz,atomnumber,hw,Udisp,FCfirst,FClast)
     WriteAXSFFilesPer('%s.per.axsf'%outlabel,vectors,xyz,atomnumber,hw,U,FCfirst,FClast)
@@ -755,23 +756,30 @@ def WriteFreqFile(filename,hw):
         file.write('%i  %f \n'%(i,1000*hw[i]))
     file.close()
 
-def WriteVibDOSFile(filename,hw,gam=0.001,type='Gaussian'):
-    'Writes the vibrational frequencies as a Gaussian or Lorentzian broadened spectrum'
-    fmin = min(hw)
+def WriteVibDOSFile(filename,hw,type='Gaussian'):
+    'Vibrational DOS with Gaussian or Lorentzian broadening'
     fmax = max(hw)
-    erange = N.arange(fmin-40*gam,fmax+40*gam,gam/10)
-    spectrum = 0.0*erange
+    erng = N.linspace(0,1.2*fmax,1001)
+    eta = N.linspace(0.001,0.01,11)
+    ERNG = N.outer(erng,0*eta+1.)
+    ETA = N.outer(0*erng+1,eta)
+    spectrum = N.zeros((len(erng),len(eta)),N.float)
     for i in range(len(hw)):
         if type=='Gaussian':
-            spectrum += (2*N.pi)**(-.5)/gam*N.exp(N.clip(-1.0*(hw[i]-erange)**2/(2*gam**2),-300,300))
+            spectrum += (2*N.pi)**(-.5)/ETA*N.exp(N.clip(-1.0*(hw[i]-ERNG)**2/(2*ETA**2),-300,300))
+            spectrum -= (2*N.pi)**(-.5)/ETA*N.exp(N.clip(-1.0*(-hw[i]-ERNG)**2/(2*ETA**2),-300,300))
         elif type=='Lorentzian':
-            spectrum += 1/N.pi*gam/((hw[i]-erange)**2+gam**2)
+            spectrum += 1/N.pi*ETA/((hw[i]-ERNG)**2+ETA**2)
+            spectrum -= 1/N.pi*ETA/((-hw[i]-ERNG)**2+ETA**2)
     # Write data to file
     print 'Phonons.WriteVibDOSFile: Writing', filename
     f = open(filename,'w')
-    f.write('\n# energy/meV  VibDOS \n')
-    for i in range(len(erange)):
-        f.write('%.5e   %.5e\n'%(1000*erange[i],spectrum[i]))
+    f.write('\n# energy/eV  DOS/atom (eta=1,2,3,...,10meV) \n')
+    for i in range(len(erng)):
+        f.write('%.5e  '%(erng[i]))
+        for j in range(len(eta)):
+            f.write('%.5e '%(spectrum[i,j]*3/len(hw)))
+        f.write('\n')
     f.close()                                                                
 
 def WriteAXSFFiles(filename,xyz,anr,hw,U,FCfirst,FClast):
