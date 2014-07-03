@@ -16,8 +16,8 @@
 !                self.xij[self.listhptr[iuo]+jnz,:] = self.xij[self.listhptr[iuo]+jnz,:]-\
 !                    (self.xa[ja,:]-self.xa[ia,:])
 
-subroutine f90removeunitcellxij(nnzs, no_u, na_u, &
-     numh, xij, xa, listhptr, listh, atomindx, xijo)
+subroutine removeunitcellxij(nnzs, no_u, na_u, &
+     numh, xij, xa, listh, atomindx)
 
   implicit none
 
@@ -30,32 +30,29 @@ subroutine f90removeunitcellxij(nnzs, no_u, na_u, &
   integer, intent(in)  :: na_u                      
 ! Number of nonzero column elements
   integer, intent(in)  :: numh(no_u) 
-! Vector connecting unitcells 
-  real*8, intent(in) :: xij(nnzs,3)         
 ! Position of atom in unitcell 
-  real*8, intent(in) :: xa(na_u,3)         
-! Start of row in Sparse matrix
-  integer, intent(in)  :: listhptr(no_u)        
+  real(kind=8), intent(in) :: xa(3,na_u)
 ! Column number
   integer, intent(in)  :: listh(nnzs)         
 ! Corresponding orbital in unitcell
   integer, intent(in)  :: atomindx(no_u)
 
-! OUTPUT:
-! Output full matrix
-  real*8, intent(out) :: xijo(nnzs,3)         
+! Vector connecting unitcells 
+  real(kind=8), intent(inout) :: xij(3,nnzs)
+!f2py intent(in,out) :: xij
 
 ! Loop indecies
   integer :: iuo, j, ind, juo
-  
+
+  ind = 0
   do iuo = 1 , no_u
      do j = 1 , numh(iuo)
-        ind = listhptr(iuo) + j
+        ind = ind + 1
         juo = idxuo(listh(ind),no_u)
-        xijo(ind,:) = xij(ind,:) - &
-             (xa(atomindx(juo),:)-xa(atomindx(iuo),:))
-     enddo
-  enddo
+        xij(:,ind) = xij(:,ind) - &
+             (xa(:,atomindx(juo))-xa(:,atomindx(iuo)))
+     end do
+  end do
       
 contains
   
@@ -66,4 +63,4 @@ contains
     if ( uo == 0 ) uo = no_u
   end function idxuo
 
-end subroutine f90removeunitcellxij
+end subroutine removeunitcellxij

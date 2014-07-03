@@ -6,7 +6,7 @@ import sys, time
 
 def test_prereq():
     # Check for numpy.distutils.
-    print "# Testing : numpy f2py."
+    print "Testing : numpy f2py."
     try:
         import numpy as N
         import numpy.linalg as LA
@@ -26,7 +26,7 @@ def test_prereq():
         sys.exit(1)
 
     # Check for ScientificPython including netCDF.
-    print "# Testing : ScientificPython."
+    print "Testing : ScientificPython"
     try:
         import Scientific.IO.NetCDF as nc
     except:
@@ -35,26 +35,24 @@ def test_prereq():
         print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
         sys.exit(1)
 
-    print "# Testing : numpy speed."
+    print "Testing : numpy speed."
     # Make sure that numpy is compiled with optimized LAPACK/BLAS
-    st=time.time()
+    st = time.time()
 
     # For release 600!
-    a=N.ones((600,600),N.complex)
-    #a=N.ones((60,60),N.complex)
-    for ii in range(2):
-        b=N.dot(a,a)
+    a = N.ones((600,600),N.complex)
+    b = N.dot(a,a)
     c,d = LA.eigh(b)
-    en=time.time()
+    en = time.time()
+    print "A minimal test showed that your system takes %3.2f s"%(en-st)
     if en-st>4.0:
         print "#### Warning ####"
         print "numpy was compiled with a slow versions of BLAS/LAPACK."
-        print "A minimal test showed that your system takes %3.2f s"%(en-st)
         print "  (normal Xeon5430/ifort/mkl10 takes ~ 1 s)"
         print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
         tmp = raw_input("Press [enter] to continue.")
- 
-    print "# Testing passed!"
+
+    print "Testing passed!"
 
 test_prereq()
 
@@ -63,26 +61,27 @@ from numpy.distutils.system_info import get_info, NotFoundError
 import numpy.distutils.extension as Next
 
 # Fortran helper files
-F90ext = \
-    Next.Extension('Inelastica.F90helpers',\
-                       ['package/F90/distributegs.f90',
-                        'package/F90/readTSHS.f90',
-                        'package/F90/removeUnitCellXij.f90',
-                        'package/F90/setkpointhelper.f90'],
-                   )
+F90ext = Next.Extension('Inelastica.F90helpers',\
+                            ['package/F90/expansion_SE.f90',
+                             'package/F90/readTSHS.f90',
+                             'package/F90/removeUnitCellXij.f90',
+                             'package/F90/setkpointhelper.f90'],
+                        )
 
 # Retrieve the LAPACK-library...
 lapack_opt = get_info('lapack_opt')
 if not lapack_opt:
-    raise NotFoundError('no lapack/blas resources found')
-F90extLapack = \
-    Next.Extension('Inelastica.F90_lapack',\
-                       ['package/F90/surfaceGreen.f90'],
-                   **lapack_opt)
+    raise NotFoundError('No LAPACK/BLAS resources found')
+F90extLapack = Next.Extension('Inelastica.F90_lapack',\
+                                  ['package/F90/surfaceGreen.f90'],
+                              **lapack_opt)
 
 # Main setup of python modules
 setup(name='Inelastica',
-      version='1.1',
+      version='1.2',
+      # Define the requirements for Inelastica
+      # These probably needs to be adjusted...
+      install_requires = ['numpy>=1.6','ScientificPython>=2.6'],
       description='Python tools for SIESTA/TranSIESTA', 
       long_description="""
 Provides:

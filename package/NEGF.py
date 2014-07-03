@@ -195,62 +195,93 @@ class ElectrodeSelfEnergy:
             ispin=0
             print "Warning: Non-spinpolarized electrode calculation used for both spin up and down"
 
-        # Make list for the loop containing 
-        #       [iatom,i1,i2,SGFstart,SGFend,g0start,g0end] 
-        # where iatom is the atom number in g0 corresponding to g0start and g0end orbital
-        # i1 and i2 posision in the repeated lattice which together with iatom gives SGFstart/end
         NA1, NA2 = self.NA1, self.NA2
-        nua, lasto, nuo = self.HS.nua, self.HS.lasto, self.HS.nuo 
-        SGFstart, loop = 0, []
-        for ia in range(nua):         # Atoms in electrode
-            g0start , g0end = lasto[ia] , lasto[ia+1]-1
-            for i2 in range(NA2):     # Repetition NA2
-                for i1 in range(NA1): # Repetition NA1
-                    SGFend   = SGFstart+(g0end-g0start+1)-1      # add the number of orbitals in atom ia
-                    tmp=[ia,i1,i2,SGFstart,SGFend,g0start,g0end]
-                    loop.append(tmp)
-                    SGFstart = SGFend+1
+        nuo = self.HS.nuo
 
-        if SGFstart!=NA1*NA2*nuo:
-            raise ValueError("Error: Check of orbitals in making Sigma not correct")
+        # First make it easy
+        # If NA1*NA2 == 1 then no repetition is needed
+        if NA1 * NA2 == 1:
+            SGF = self.getg0(eeshifted+1j*etaLead,qp,
+                             left=left,ispin=ispin,UseF90=UseF90helpers)
+            if not Bulk:
+                # We only need to calculate this quantity
+                # if not bulk
+                ESH = eeshifted* self.S-self.H[ispin,:,:]
 
-        # Complete the full Gs with atoms copied out NA1*NA2
-        # To obtain Sigma we also need H expanded, i.e., 
-        # Gs = (E S - H - Sig)^-1 -> Sig = E S - H-SGF^-1 
-        # ESmH = E S - H
-        SGF = N.zeros((NA1*NA2*nuo,NA1*NA2*nuo),N.complex)
-        ESmH =N.zeros((NA1*NA2*nuo,NA1*NA2*nuo),N.complex) # Temporary E S00 - H00
-        for ik1 in range(NA1):
+        elif SIO.F90imported and UseF90helpers:
+                
+            g0   = N.empty((nuo,nuo,NA1*NA2),N.complex,order='F')
+            mESH = N.empty((nuo,nuo,NA1*NA2),N.complex,order='F')
+
+            iq = -1
             for ik2 in range(NA2):
-                kpoint=qp.copy()                     # Checked against 1x1 and 3x3 electrode calculation
-                kpoint[0]=kpoint[0]/NA1
-                kpoint[1]=kpoint[1]/NA2
-                kpoint[0]+=ik1*1.0/NA1
-                kpoint[1]+=ik2*1.0/NA2
-                # Surface GF with possible extra imaginary part (etaLead):
-                g0=self.getg0(eeshifted+1j*etaLead,kpoint,left=left,ispin=ispin,UseF90=UseF90helpers)
-                matESmH = eeshifted*self.S-self.H[ispin,:,:]
-                if SIO.F90imported and UseF90helpers:
-                    ESmH, SGF = SIO.F90.f90distributegs(loop=N.array(loop,N.int), nuo=nuo,\
-                                  nua=nua, na1=NA1, na2=NA2, kpoint=kpoint,\
-                                  matesmh=matESmH, g0=g0, esmh=ESmH, sgf=SGF)
-                else:
+                for ik1 in range(NA1):
+                    iq += 1
+                    kpoint = qp.copy() # Checked against 1x1 and 3x3 electrode calculation
+                    kpoint[0] = (kpoint[0]+float(ik1))/float(NA1)
+                    kpoint[1] = (kpoint[1]+float(ik2))/float(NA2)
+                    # Surface GF with possible extra imaginary part (etaLead):
+                    g0[:,:,iq] = self.getg0(eeshifted+1j*etaLead,kpoint,left=left,ispin=ispin,UseF90=UseF90helpers)
+                    mESH[:,:,iq] = eeshifted*self.S-self.H[ispin,:,:]
+
+            ESH, SGF = SIO.F90.expansion_se(no_u=nuo,no_s=nuo*NA1*NA2, \
+                                                na1=NA1,na2=NA2,\
+                                                kpt=qp, \
+                                                na_u=self.HS.nua, \
+                                                lasto=self.HS.lasto, \
+                                                esh=mESH, g0=g0)
+            # Clean up before calculating the self-energy
+            del g0, mESH
+
+        else:
+                
+            # Make list for the loop containing 
+            #       [iatom,i1,i2,SGFstart,SGFend,g0start,g0end] 
+            # where iatom is the atom number in g0 corresponding to g0start and g0end orbital
+            # i1 and i2 posision in the repeated lattice which together with iatom gives SGFstart/end
+            nua, lasto = self.HS.nua, self.HS.lasto
+            SGFstart, loop = 0, []
+            for ia in range(nua):         # Atoms in electrode
+                g0start , g0end = lasto[ia] , lasto[ia+1]-1
+                for i2 in range(NA2):     # Repetition NA2
+                    for i1 in range(NA1): # Repetition NA1
+                        SGFend   = SGFstart+(g0end-g0start+1)-1 # add the number of orbitals in atom ia
+                        loop.append([ia,i1,i2,SGFstart,SGFend,g0start,g0end])
+                        SGFstart = SGFend+1
+            if SGFstart!=NA1*NA2*nuo:
+                raise ValueError("Error: Check of orbitals in making Sigma not correct")
+            # Complete the full Gs with atoms copied out NA1*NA2
+            # To obtain Sigma we also need H expanded, i.e., 
+            # Gs = (E S - H - Sig)^-1 -> Sig = E S - H-SGF^-1 
+            # ESmH = E S - H
+            SGF = N.zeros((NA1*NA2*nuo,NA1*NA2*nuo),N.complex)
+            ESH = N.zeros((NA1*NA2*nuo,NA1*NA2*nuo),N.complex) # Temporary E S00 - H00
+            for ik2 in range(NA2):
+                for ik1 in range(NA1):
+                    kpoint=qp.copy() # Checked against 1x1 and 3x3 electrode calculation
+                    kpoint[0]=kpoint[0]/NA1
+                    kpoint[1]=kpoint[1]/NA2
+                    kpoint[0]+=ik1*1.0/NA1
+                    kpoint[1]+=ik2*1.0/NA2
+                    # Surface GF with possible extra imaginary part (etaLead):
+                    g0 = self.getg0(eeshifted+1j*etaLead,kpoint,left=left,ispin=ispin,UseF90=UseF90helpers)
+
+                    matESmH = eeshifted*self.S-self.H[ispin,:,:]
                     for ia, i1, i2, iSGFs, iSGFe, ig0s, ig0e in loop:
                         for ja, j1, j2, jSGFs, jSGFe, jg0s, jg0e in loop:
                             # Same convention as for H_ij above: exp(2 pi i k * (jatom-iatom))
                             # The phases etc have been checked by comparing the self-energy from 
                             # 1x1 and 3x3 electrode calculations
-                            phase = 1.0/(NA1*NA2)*N.exp(2.0j*N.pi*((j1-i1)*kpoint[0]+(j2-i2)*kpoint[1])) 
-                            ESmH[iSGFs:iSGFe+1,jSGFs:jSGFe+1]=ESmH[iSGFs:iSGFe+1,jSGFs:jSGFe+1]+\
-                                N.conjugate(phase)*matESmH[ig0s:ig0e+1,jg0s:jg0e+1]       
-                            SGF[iSGFs:iSGFe+1,jSGFs:jSGFe+1]=SGF[iSGFs:iSGFe+1,jSGFs:jSGFe+1]+\
-                                N.conjugate(phase)*g0[ig0s:ig0e+1,jg0s:jg0e+1]
-
+                            phase = 1.0/(NA1*NA2)*N.exp(-2.0j*N.pi*((j1-i1)*kpoint[0]+(j2-i2)*kpoint[1])) 
+                            ESH[iSGFs:iSGFe+1,jSGFs:jSGFe+1] += phase*matESmH[ig0s:ig0e+1,jg0s:jg0e+1]       
+                            SGF[iSGFs:iSGFe+1,jSGFs:jSGFe+1] += phase*g0[ig0s:ig0e+1,jg0s:jg0e+1]
+        
         # Calculate self-energy or inverse of SGF for Bulk: SGF^-1 = E S - H - Sig
         if Bulk:
             Sig = LA.inv(SGF) # SGF^1
         else:
-            Sig = ESmH-LA.inv(SGF)
+            Sig = ESH - LA.inv(SGF)
+
         if useSigNCfiles:
             SavedSig.addSig(self.path,self.hash,eeshifted,qp,left,ispin,etaLead,Sig)
         if self.scaling!=1.0:
@@ -332,8 +363,8 @@ class ElectrodeSelfEnergy:
         self.S01.shape = self.S.shape
         tmp = F90.surfacegreen(no=no,ze=ee,h00=self.H[ispin,:],s00=self.S,
                                h01=self.H01[ispin,:],s01=self.S01,accur=1.e-15,is_left=left)
-        tmp = N.ascontiguousarray(tmp)
         tmp.shape = oSs
+        tmp = N.require(tmp,requirements=['A','C'])
         self.H.shape = oHs
         self.S.shape = oSs
         self.H01.shape = oHs

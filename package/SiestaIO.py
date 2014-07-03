@@ -18,6 +18,7 @@ import PhysicalConstants as PC
 import ValueCheck as VC
 
 # For speed some routines can be linked as F90 code
+import F90helpers as F90
 try:
     import F90helpers as F90
     F90imported = True
@@ -1469,7 +1470,7 @@ class HS:
     Derived internal variables:
     listhptr(1:nuo) : Start of row-1 in sparse matrix 
     atomindx(1:nuo) : Atom index corresponding to orbital in unitcell
-    rcell(1:3,1:3) : Reciprocal lattice vectors (ixyz,ivec) (rcell^t . cell = I)
+    rcell(1:3,1:3) : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)
 
     For onlyS: Hsparse is not avalable and gamma point is assumed
         gamma: xij is set to 0 and indxuo set manually to 1:nou and -1 for nou+1:no to catch errors!
@@ -1488,15 +1489,18 @@ class HS:
             self.gamma, self.onlyS = self.gamma!=0, self.onlyS!=0
             # Arrays
             arr = F90.readtshs
-            self.lasto, self.numh, self.listh = \
-                arr.lasto.copy(), arr.numh.copy(), arr.listh.copy()
-            self.xa, self.isa, self.Ssparse, self.Hsparse, self.xij = \
-                arr.xa.copy(), arr.isa.copy(), arr.s.copy(), arr.h.copy(), arr.xij.copy()
-            # Fix units and indices
-            self.cell, self.xa = self.cell*PC.Bohr2Ang, N.transpose(self.xa*PC.Bohr2Ang)
-            self.xij, self.Hsparse = N.transpose(self.xij)*PC.Bohr2Ang, N.transpose(self.Hsparse)*PC.Rydberg2eV
-            self.ef = self.ef*PC.Rydberg2eV
-            # Clean up in fortran module (no need to have dead memory floating)
+            self.lasto    = arr.lasto.copy()
+            self.numh     = arr.numh.copy()
+            self.listh    = arr.listh.copy()
+            self.listhptr = arr.listhptr.copy()
+            self.Ssparse  = arr.s.copy()
+            self.xa       = arr.xa.copy()
+            self.xa = N.require(self.xa,requirements=['A','F'])
+            if not self.onlyS: 
+                self.Hsparse = arr.h.copy()
+                self.Hsparse = N.require(self.Hsparse,requirements=['A','F'])
+                self.xij = arr.xij.copy()
+                self.xij = N.require(self.xij,requirements=['A','F'])
             F90.readtshs.deallocate
         else:
             general, sparse, matrices = self.__ReadTSHSFile(fn)
@@ -1506,9 +1510,9 @@ class HS:
             self.lasto, self.numh, self.listh, self.indxuo = sparse
         
             if not self.onlyS:
-                self.xa, self.isa, self.cell, self.Ssparse, self.Hsparse, self.xij = matrices
+                self.xa, self.cell, self.Ssparse, self.Hsparse, self.xij = matrices
             else:
-                self.xa, self.isa, self.cell, self.Ssparse = matrices
+                self.xa, self.cell, self.Ssparse = matrices
 
         print "Found %i atoms, (%i, %i) orbitals in super-, unit-cell"%(self.nua, self.no, self.nuo)
         self.N = self.nuo
@@ -1543,7 +1547,8 @@ class HS:
         file = SIO_open(filename,'rb')
         nau,nou,nos,nspin,maxnh = ReadFortranBin(file,fortranLong,5)
         xa = N.reshape(N.array(ReadFortranBin(file,'d',3*nau)),(nau,3))*PC.Bohr2Ang
-        isa = N.array(ReadFortranBin(file,fortranLong,nau))
+        xa = N.require(xa.T,requirements=['A','F'])
+        isa = ReadFortranBin(file,fortranLong,nau) ; del isa
         ucell = N.transpose(N.reshape(N.array(ReadFortranBin(file,'d',9)),(3,3)))*PC.Bohr2Ang
         gamma = ReadFortranBin(file,'L',1)[0]!=0        # Read boolean (works with ifort)
         onlyS = ReadFortranBin(file,'L',1)[0]!=0        # Read boolean (works with ifort)
@@ -1561,6 +1566,7 @@ class HS:
             indxuo = N.concatenate((tmp1,tmp2))
         numhg = N.array(ReadFortranBin(file,fortranLong,nou))
         qtot, temp = ReadFortranBin(file,'d',2)
+        temp = temp * PC.Rydberg2eV
         ef = ReadFortranBin(file,'d',1)[0]*PC.Rydberg2eV
         listh = []
         for ii in range(nou):
@@ -1571,35 +1577,37 @@ class HS:
             Ssparse[cnt:cnt+numhg[ii]]=ReadFortranBin(file,'d',numhg[ii])
             cnt=cnt+numhg[ii]
         if not onlyS:
-            Hsparse = N.zeros((nspin,maxnh),N.float)
-            for iSpin in range(nspin):
+            Hsparse = N.zeros((nspin,maxnh),N.float,order='F')
+            for ispin in range(nspin):
                 cnt=0
                 for ii in range(nou):
-                    Hsparse[iSpin,cnt:cnt+numhg[ii]]=ReadFortranBin(file,'d',numhg[ii])
+                    Hsparse[ispin,cnt:cnt+numhg[ii]]=ReadFortranBin(file,'d',numhg[ii])
                     cnt=cnt+numhg[ii]
-            Hsparse=Hsparse*PC.Rydberg2eV         
+            Hsparse=Hsparse.T*PC.Rydberg2eV
+            Hsparse = N.require(Hsparse,requirements=['A','F'])
 
         if not gamma:
             # Read xij
-            xij = N.zeros((maxnh,3),N.float)
+            xij = N.zeros((maxnh,3),N.float,order='F')
             cnt=0
             for ii in range(nou):
                 tmp=ReadFortranBin(file,'d',numhg[ii]*3)
-                tmp=N.reshape(tmp,(3,numhg[ii]))
-                xij[cnt:cnt+numhg[ii],:]=N.transpose(tmp)
+                tmp = N.reshape(tmp,(3,numhg[ii]))
+                xij[cnt:cnt+numhg[ii],:] = tmp.T
                 cnt=cnt+numhg[ii]
-            xij=xij*PC.Bohr2Ang
+            xij=xij.T*PC.Bohr2Ang
+            xij = N.require(xij,requirements=['A','F'])
+
         else:
-            xij=N.zeros((maxnh,3),N.float)
+            xij=N.zeros((3,maxnh),N.float,order='F')
         file.close()
         
         general = [nau,nou,nos,nspin,maxnh,gamma,onlyS,istep,ia1,qtot,temp,ef]
         sparse = [lasto, numhg, listh, indxuo]
         if not onlyS:
-            matrices = [xa, isa, ucell, Ssparse, Hsparse, xij]
+            matrices = [xa, ucell, Ssparse, Hsparse, xij]
         else:
-            matrices = [xa, isa, ucell, Ssparse]
-
+            matrices = [xa, ucell, Ssparse]
         return general, sparse, matrices
 
 
@@ -1608,25 +1616,24 @@ class HS:
         Create derived internal variables:
         listhptr(1:nuo) : Start of row-1 in sparse matrix 
         atomindx(1:nuo) : Atom index corresponding to orbital in unitcell
-        rcell(1:3,1:3)  : Reciprocal lattice vectors (ixyz,ivec) (rcell^t . cell = I)
+        rcell(1:3,1:3)  : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)
         """
 
         # numh(1:nuo)  : Number of non-zero elements in row of H
-        self.listhptr = []
-        tmp = 0
-        for io in range(self.nuo):
-            self.listhptr.append(tmp)
-            tmp=tmp+self.numh[io]    
+        if not 'listhptr' in self.__dict__:
+            self.listhptr = N.empty(self.nuo,N.int)
+            self.listhptr[0]  = 0
+            self.listhptr[1:] = N.cumsum(self.numh[:-1])
         
         # lasto(0:nua) : Last orbital of atom in unitcell       
-        self.atomindx = []                                      
-        atom=0                                                  
-        for io in range(self.nuo):                              
-            while io>=self.lasto[atom]: atom=atom+1             
-            self.atomindx.append(atom)                          
+        self.atomindx = N.empty(self.nuo,N.int)
+        atom = 0
+        for io in range(self.nuo): 
+            while io>=self.lasto[atom]: atom=atom+1 
+            self.atomindx[io] = atom
 
         # Reciprocal cell
-        self.rcell = N.transpose(LA.inv(self.cell))
+        self.rcell = LA.inv(self.cell)
 
     def removeUnitCellXij(self,UseF90helpers=True):
         """
@@ -1640,13 +1647,13 @@ class HS:
         if F90imported and UseF90helpers:
             #      subroutine f90removeunitcellxij( maxnh, no, nuo, nua,
             # +     numh, xij, xa, listhptr, listh, atomindx, xijo)
-            self.xij=F90.f90removeunitcellxij(nnzs=self.maxnh,no_u=self.nuo,
-                                              na_u=self.nua,
-                                              numh=self.numh,
-                                              xij=self.xij,xa=self.xa,
-                                              listhptr=self.listhptr,
-                                              listh=self.listh,
-                                              atomindx=self.atomindx)
+            self.xij = F90.removeunitcellxij(nnzs=self.maxnh,no_u=self.nuo,
+                                                na_u=self.nua,
+                                                numh=self.numh,
+                                                xij=self.xij,
+                                                xa=self.xa,
+                                                listh=self.listh,
+                                                atomindx=self.atomindx)
         else:
             for iuo in range(self.nuo):
                 for jnz in range(self.numh[iuo]):
@@ -1655,8 +1662,8 @@ class HS:
                     ia,ja = self.atomindx[iuo]-1, self.atomindx[juo]-1
                     #if juo==jo and N.max(abs(self.xij[self.listhptr[iuo]+jnz,:]))>0.1:
                     #    print self.xij[self.listhptr[iuo]+jnz,:]
-                    self.xij[self.listhptr[iuo]+jnz,:] = self.xij[self.listhptr[iuo]+jnz,:]-\
-                        (self.xa[ja,:]-self.xa[ia,:])
+                    self.xij[:,self.listhptr[iuo]+jnz] = self.xij[:,self.listhptr[iuo]+jnz]-\
+                        (self.xa[:,ja]-self.xa[:,ia])
                     #if juo==jo and N.max(abs(self.xij[self.listhptr[iuo]+jnz,:]))>0.1:
                     #    print self.xij[self.listhptr[iuo]+jnz,:]
                     #if juo!=jo and N.max(abs(self.xij[self.listhptr[iuo]+jnz,:]))<0.1:
@@ -1672,11 +1679,12 @@ class HS:
             print "SiestaIO.HS.setkpoint: %s k =" % self.fn,kpoint
             self.kpoint = kpoint
             self.S = self.setkpointhelper(self.Ssparse,kpoint,UseF90helpers)
-            if not self.onlyS:    
+            if not self.onlyS:
                 self.H = N.empty((self.nspin,self.nuo,self.nuo),N.complex)
                 for ispin in range(self.nspin):
-                    self.H[ispin] = self.setkpointhelper(self.Hsparse[ispin,:],kpoint,UseF90helpers) \
+                    self.H[ispin] = self.setkpointhelper(self.Hsparse[:,ispin],kpoint,UseF90helpers) \
                         - self.ef * self.S
+
 
     def setkpointhelper(self, Sparse, kpoint,UseF90helpers=True):
         """
@@ -1693,18 +1701,16 @@ class HS:
         cd F90;source compile.bat
         """
         if UseF90helpers and F90imported:
-            Full=F90.f90setkpointhelper(nnzs=self.maxnh,sparse=Sparse, kpoint=kpoint, 
-                                        no_u=self.nuo, numh=self.numh, 
-                                        rcell=self.rcell, xij=self.xij, 
+            Full = N.empty((self.nuo,self.nuo),N.complex)
+            Full[:,:]=F90.setkpointhelper(nnzs=self.maxnh,sparse=Sparse,kpoint=kpoint, 
+                                        no_u=self.nuo,numh=self.numh, 
+                                        rcell=self.rcell,xij=self.xij, 
                                         listhptr=self.listhptr,
                                         listh=self.listh)
-            # This ensures that the array is in C-layout (row-major)
-            # returning from FORTRAN will make it column-major
-            Full = N.ascontiguousarray(Full) 
         else:
             Full = N.zeros((self.nuo,self.nuo),N.complex)
             # Phase factor 
-            tmp=N.dot(kpoint,N.dot(N.transpose(self.rcell),N.transpose(self.xij)))
+            tmp=N.dot(kpoint,N.dot(self.rcell,self.xij))
             phase=N.exp(2.0j*N.pi*tmp)    # exp(2 pi i k*(Rj-Ri)) where i,j from Hij
 
             for iuo in range(self.nuo):

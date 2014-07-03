@@ -1,7 +1,7 @@
   ! Calculates the surface Green's function for the electrodes
   ! Handles both the left and right one
   subroutine surfaceGreen(no,ZE,H00,S00,H01,S01,accur,is_left,GS)
-       
+
 ! ***************** INPUT **********************************************
 ! integer     no      : Number of orbitals in the electrode
 ! complex(dp) ZE      : The energy of the Green's function evaluation
@@ -14,40 +14,40 @@
 ! **********************************************************************
     implicit none
 
-    complex*16, parameter :: z_1  = dcmplx(1._8,0._8)
-    complex*16, parameter :: z_m1 = dcmplx(-1._8,0._8)
-    complex*16, parameter :: z_0  = dcmplx(0._8,0._8)
+    complex(kind=8), parameter :: z_1  = dcmplx(1._8,0._8)
+    complex(kind=8), parameter :: z_m1 = dcmplx(-1._8,0._8)
+    complex(kind=8), parameter :: z_0  = dcmplx(0._8,0._8)
 
 ! ***********************
 ! * INPUT variables     *
 ! ***********************
     integer,     intent(in) :: no
-    complex*16, intent(in) :: ZE 
-    complex*16, intent(in) :: H00(no*no),S00(no*no)
-    complex*16, intent(in) :: H01(no*no),S01(no*no)
+    complex(kind=8), intent(in) :: ZE 
+    complex(kind=8), intent(in) :: H00(no*no),S00(no*no)
+    complex(kind=8), intent(in) :: H01(no*no),S01(no*no)
 
-    real*8   , intent(in) :: accur
+    real(kind=8)   , intent(in) :: accur
     logical,     intent(in) :: is_left
 
 ! ***********************
 ! * OUTPUT variables    *
 ! ***********************
-    complex*16, intent(out) :: GS(no*no)
+    complex(kind=8), intent(out) :: GS(no*no)
 
 ! ***********************
 ! * LOCAL variables     *
 ! ***********************
-    complex*16, allocatable, target :: zwork(:)
+    complex(kind=8), allocatable, target :: zwork(:)
     integer :: nom1, no2, nosq
     integer :: ierr             !error in inversion
     integer :: i,j,ic,ic2
     logical :: LEFT, as_first
 
-    real*8 :: ro
+    real(kind=8) :: ro
 
     ! on the stack...
     integer :: ipvt(no)
-    complex*16, dimension(:), pointer :: rh,rh1,w,alpha,beta,gb
+    complex(kind=8), dimension(:), pointer :: rh,rh1,w,alpha,beta,gb
 
     ! The inelastica way is opposite, hence we have to reverse it here.
     LEFT = .not. is_left

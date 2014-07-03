@@ -6,8 +6,8 @@ import numpy as N
 import numpy.random as RA
 
 def main():
-    elec1=NEGF.ElectrodeSelfEnergy('Self-energy-FCC100/ELEC-1x1//ABAB.TSHS',3,3)
-    elec3=NEGF.ElectrodeSelfEnergy('Self-energy-FCC100/ELEC-3x3//ABAB.TSHS',1,1)
+    elec1=NEGF.ElectrodeSelfEnergy('Self-energy-FCC100/ELEC-1x1/ABAB.TSHS',3,3)
+    elec3=NEGF.ElectrodeSelfEnergy('Self-energy-FCC100/ELEC-3x3/ABAB.TSHS',1,1)
     maxerr=0.0
 
     for ii in range(10):
