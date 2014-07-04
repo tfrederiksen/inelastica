@@ -132,6 +132,10 @@ options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 
 options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'Inelastica')
 if options.UseBulk < 0:
     options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'Inelastica')
+options.bufferL = SIO.GetFDFlineWithDefault(options.fn,'TS.BufferAtomsLeft', int, 0, 'Inelastica')
+options.bufferR = SIO.GetFDFlineWithDefault(options.fn,'TS.BufferAtomsRight', int, 0, 'Inelastica')
+if options.bufferL!=0 or options.bufferR!=0:
+    sys.exit('Error: Buffer atoms not (yet) implemented!')
 
 # Device region
 if options.DeviceFirst<=0:

@@ -114,6 +114,11 @@ options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 
 if options.UseBulk < 0:
     options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'pyTBT')
 
+options.bufferL = SIO.GetFDFlineWithDefault(options.fn,'TS.BufferAtomsLeft', int, 0, 'pyTBT')
+options.bufferR = SIO.GetFDFlineWithDefault(options.fn,'TS.BufferAtomsRight', int, 0, 'pyTBT')
+if options.bufferL!=0 or options.bufferR!=0:
+    sys.exit('Error: Buffer atoms not (yet) implemented!')
+
 # Device region
 if options.DeviceFirst<=0:
     options.DeviceFirst = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom',int,1,'pyTBT')
