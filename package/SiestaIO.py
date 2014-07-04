@@ -1490,17 +1490,14 @@ class HS:
             # Arrays
             arr = F90.readtshs
             self.lasto    = arr.lasto.copy()
+            self.xa       = arr.xa.copy()
             self.numh     = arr.numh.copy()
             self.listh    = arr.listh.copy()
             self.listhptr = arr.listhptr.copy()
+            self.xij      = arr.xij.copy()
             self.Ssparse  = arr.s.copy()
-            self.xa       = arr.xa.copy()
-            self.xa = N.require(self.xa,requirements=['A','F'])
             if not self.onlyS: 
                 self.Hsparse = arr.h.copy()
-                self.Hsparse = N.require(self.Hsparse,requirements=['A','F'])
-                self.xij = arr.xij.copy()
-                self.xij = N.require(self.xij,requirements=['A','F'])
             F90.readtshs.deallocate
         else:
             general, sparse, matrices = self.__ReadTSHSFile(fn)
@@ -1510,9 +1507,14 @@ class HS:
             self.lasto, self.numh, self.listh, self.indxuo = sparse
         
             if not self.onlyS:
-                self.xa, self.cell, self.Ssparse, self.Hsparse, self.xij = matrices
+                self.xa, self.cell, self.xij, self.Ssparse, self.Hsparse = matrices
             else:
-                self.xa, self.cell, self.Ssparse = matrices
+                self.xa, self.cell, self.xij, self.Ssparse = matrices
+        # Adjust memory layout
+        self.xa  = N.require(self.xa,requirements=['A','F'])
+        self.xij = N.require(self.xij,requirements=['A','F'])
+        if not self.onlyS: 
+            self.Hsparse = N.require(self.Hsparse,requirements=['A','F'])
 
         print "Found %i atoms, (%i, %i) orbitals in super-, unit-cell"%(self.nua, self.no, self.nuo)
         self.N = self.nuo
@@ -1605,9 +1607,9 @@ class HS:
         general = [nau,nou,nos,nspin,maxnh,gamma,onlyS,istep,ia1,qtot,temp,ef]
         sparse = [lasto, numhg, listh, indxuo]
         if not onlyS:
-            matrices = [xa, ucell, Ssparse, Hsparse, xij]
+            matrices = [xa, ucell, xij, Ssparse, Hsparse]
         else:
-            matrices = [xa, ucell, Ssparse]
+            matrices = [xa, ucell, xij, Ssparse]
         return general, sparse, matrices
 
 
