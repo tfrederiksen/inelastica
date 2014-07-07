@@ -1684,7 +1684,7 @@ class HS:
             if not self.onlyS:
                 self.H = N.empty((self.nspin,self.nuo,self.nuo),N.complex)
                 for ispin in range(self.nspin):
-                    self.H[ispin] = self.setkpointhelper(self.Hsparse[:,ispin],kpoint,UseF90helpers) \
+                    self.H[ispin,:,:] = self.setkpointhelper(self.Hsparse[:,ispin],kpoint,UseF90helpers) \
                         - self.ef * self.S
 
 
@@ -1703,17 +1703,18 @@ class HS:
         cd F90;source compile.bat
         """
         if UseF90helpers and F90imported:
-            Full = N.empty((self.nuo,self.nuo),N.complex)
-            Full[:,:]=F90.setkpointhelper(nnzs=self.maxnh,sparse=Sparse,kpoint=kpoint, 
+            Full = F90.setkpointhelper(nnzs=self.maxnh,sparse=Sparse,kpoint=kpoint, 
                                         no_u=self.nuo,numh=self.numh, 
                                         rcell=self.rcell,xij=self.xij, 
                                         listhptr=self.listhptr,
                                         listh=self.listh)
+            # Ensure correct memory alignment
+            Full = N.require(Full,requirements=['A','C'])
         else:
             Full = N.zeros((self.nuo,self.nuo),N.complex)
             # Phase factor 
-            tmp=N.dot(kpoint,N.dot(self.rcell,self.xij))
-            phase=N.exp(2.0j*N.pi*tmp)    # exp(2 pi i k*(Rj-Ri)) where i,j from Hij
+            tmp = N.dot(kpoint,N.dot(self.rcell,self.xij))
+            phase = N.exp(2.0j*N.pi*tmp)    # exp(2 pi i k*(Rj-Ri)) where i,j from Hij
 
             for iuo in range(self.nuo):
                 for jz in range(self.numh[iuo]):

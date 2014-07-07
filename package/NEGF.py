@@ -444,27 +444,28 @@ class ElectrodeSelfEnergy:
         """
         # Save time by not repeating too often
         if N.max(abs(kpoint-self.kpoint))>1e-10:
-            self.kpoint=kpoint.copy()
+            self.kpoint = kpoint.copy()
             # Do the trick:
             # H(k=0)+H(kz=0.5) = H + H01 + H10 + H - H01 - H10 = 2 H 
-            kp=N.zeros((3),N.float)
-            kp[0:2]=kpoint
+            kp = N.zeros((3),N.float)
+
+            kp[0:2] = kpoint
             self.HS.setkpoint(kp)
-            tmpH1, tmpS1 = self.HS.H, self.HS.S
-            kp[2]=0.5
+            tmpH, tmpS = self.HS.H, self.HS.S
+
+            kp[2] = 0.5
             self.HS.setkpoint(kp)
-            tmpH2, tmpS2 = self.HS.H, self.HS.S
-            self.H, self.S = 0.5*(tmpH1+tmpH2), 0.5*(tmpS1+tmpS2)
+            self.H = 0.5 * (tmpH + self.HS.H)
+            self.S = 0.5 * (tmpS + self.HS.S)
 
             # Additional trick:
             # 1: -i*(H(kz=0.25)-H) = -i*(H + i*H01 - i*H10-H) = H01-H10 
             # 2: H(kz=0)-H  = H + H01 + H10 - H =  H01+H10
             # -> H10 = (-i*(H(kz=0.25)-H) + H(kz=0)-H)/2
-            kp[2]=0.25
+            kp[2] = 0.25
             self.HS.setkpoint(kp)
-            tmpH3, tmpS3 = self.HS.H, self.HS.S
-            self.H01, self.S01 = 0.5*(-1j*(tmpH3-self.H)+tmpH1-self.H),\
-                0.5*(-1j*(tmpS3-self.S)+tmpS1-self.S)
+            self.H01 = 0.5*( -1j*( self.HS.H - self.H ) + tmpH - self.H)
+            self.S01 = 0.5*( -1j*( self.HS.S - self.S ) + tmpS - self.S)
 
 #############################################################################            
             
@@ -690,12 +691,12 @@ class GF:
         nuo, nuoL, nuoR = self.nuo0, self.nuoL0, self.nuoR0
 
         kpoint3 = N.zeros((3),N.float)
-        kpoint3[0:2]=kpoint[:]
+        kpoint3[0:2] = kpoint[:]
         self.HS.setkpoint(kpoint3)
         # Remove PBC in z-direction
         if self.HS.gamma:
-            self.H0=self.HS.H[ispin,:,:].copy()
-            self.S0=self.HS.S.copy()
+            self.H0 = self.HS.H[ispin,:,:].copy()
+            self.S0 = self.HS.S.copy()
             # Remove direct left/right coupling 
             self.H0[0:nuoL,nuo-nuoR:nuo] = 0.
             self.H0[nuo-nuoR:nuo,0:nuoL] = 0.
@@ -704,15 +705,19 @@ class GF:
         else:
             # Do trick with kz
             tmpH1, tmpS1 = self.HS.H[ispin,:,:].copy(), self.HS.S.copy()
-            kpoint3[2]=0.5
+
+            kpoint3[2] = 0.5
             self.HS.setkpoint(kpoint3)
-            tmpH2, tmpS2 = self.HS.H[ispin,:,:].copy(), self.HS.S.copy()
-            self.H0, self.S0 = 0.5*(tmpH1+tmpH2), 0.5*(tmpS1+tmpS2)
+            self.H0 = 0.5 * (tmpH1 + self.HS.H)
+            self.S0 = 0.5 * (tmpS1 + self.HS.S)
         
         if self.FoldedL or self.FoldedR:
-            devSt,devEnd=self.DeviceOrbs[0],self.DeviceOrbs[1]
+            devSt,devEnd = self.DeviceOrbs[0],self.DeviceOrbs[1]
             self.H = self.H0[devSt-1:devEnd,devSt-1:devEnd]
             self.S = self.S0[devSt-1:devEnd,devSt-1:devEnd]
+            # Ensure consecutiveness
+            self.H = N.require(self.H,requirements=['A','C'])
+            self.S = N.require(self.S,requirements=['A','C'])
         else:
             self.H, self.S = self.H0, self.S0
         self.OrthogonalDeviceRegion = False

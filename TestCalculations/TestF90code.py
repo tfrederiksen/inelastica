@@ -40,12 +40,12 @@ def compare_H(HS1,HS2):
     if N.sum(N.abs(HS1.Ssparse-HS2.Ssparse)) > tol:
         print "Failed to give same results between python and fortran code for overlap!!!"
         kuk
+    if N.sum(N.abs(HS1.xij-HS2.xij))>tol:
+        print "Failed to give same results between python and fortran code for xij!!!"
+        kuk
     if not HS1.onlyS: # Not reading onlyS files
         if N.sum(N.abs(HS1.Hsparse-HS2.Hsparse))>tol:
             print "Failed to give same results between python and fortran code for Hamiltonian!!!"
-            kuk
-        if N.sum(N.abs(HS1.xij-HS2.xij))>tol:
-            print "Failed to give same results between python and fortran code for xij!!!"
             kuk
 
     print 'Reading of file %s vs. %s PASSED!\n'%(HS1.fn,HS2.fn)
