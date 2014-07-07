@@ -18,7 +18,6 @@ import PhysicalConstants as PC
 import ValueCheck as VC
 
 # For speed some routines can be linked as F90 code
-import F90helpers as F90
 try:
     import F90helpers as F90
     F90imported = True
@@ -1710,6 +1709,7 @@ class HS:
                                         listh=self.listh)
             # Ensure correct memory alignment
             Full = N.require(Full,requirements=['A','C'])
+            Full.shape = (self.nuo,self.nuo)
         else:
             Full = N.zeros((self.nuo,self.nuo),N.complex)
             # Phase factor 

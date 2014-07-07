@@ -451,7 +451,7 @@ class ElectrodeSelfEnergy:
 
             kp[0:2] = kpoint
             self.HS.setkpoint(kp)
-            tmpH, tmpS = self.HS.H, self.HS.S
+            tmpH, tmpS = self.HS.H.copy(), self.HS.S.copy()
 
             kp[2] = 0.5
             self.HS.setkpoint(kp)
@@ -521,6 +521,7 @@ class GF:
             self.setkpoint(kpoint,ispin=0) # At least for one spin
             
             devSt, devEnd = self.DeviceOrbs[0], self.DeviceOrbs[1]
+            print devSt,devEnd
             VC.Check("Device-Elec-overlap",N.abs(self.S0[0:devSt,devEnd:self.nuo0]),
                      "Too much overlap directly from left-top right",
                      "Make device region larger")
@@ -704,22 +705,20 @@ class GF:
             self.S0[nuo-nuoR:nuo,0:nuoL] = 0.
         else:
             # Do trick with kz
-            tmpH1, tmpS1 = self.HS.H[ispin,:,:].copy(), self.HS.S.copy()
+            tmpH, tmpS = self.HS.H[ispin,:,:].copy(), self.HS.S.copy()
 
             kpoint3[2] = 0.5
             self.HS.setkpoint(kpoint3)
-            self.H0 = 0.5 * (tmpH1 + self.HS.H)
-            self.S0 = 0.5 * (tmpS1 + self.HS.S)
+            self.H0 = 0.5 * (tmpH + self.HS.H[ispin,:,:])
+            self.S0 = 0.5 * (tmpS + self.HS.S)
         
         if self.FoldedL or self.FoldedR:
             devSt,devEnd = self.DeviceOrbs[0],self.DeviceOrbs[1]
             self.H = self.H0[devSt-1:devEnd,devSt-1:devEnd]
             self.S = self.S0[devSt-1:devEnd,devSt-1:devEnd]
-            # Ensure consecutiveness
-            self.H = N.require(self.H,requirements=['A','C'])
-            self.S = N.require(self.S,requirements=['A','C'])
         else:
             self.H, self.S = self.H0, self.S0
+
         self.OrthogonalDeviceRegion = False
 
 
