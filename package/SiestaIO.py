@@ -1474,7 +1474,7 @@ class HS:
     For onlyS: Hsparse is not avalable and gamma point is assumed
         gamma: xij is set to 0 and indxuo set manually to 1:nou and -1 for nou+1:no to catch errors!
     """
-    def __init__(self,fn,UseF90helpers=True):
+    def __init__(self,fn,BufferAtoms=N.empty((0,)),UseF90helpers=True):
         self.fn = fn
         if UseF90helpers and fn.endswith('.gz'):
             sys.exit('SiestaIO.HS.__init__: F90helpers do not support reading of gzipped TSHS-files. Please unzip and try again.\n')
@@ -1486,6 +1486,13 @@ class HS:
                 self.ts_gamma_scf, self.istep, self.ia1 = F90.readtshs.read(fn)
             # Logical 
             self.gamma, self.onlyS = self.gamma!=0, self.onlyS!=0
+            na = BufferAtoms.size
+            if na > 0:
+                # Remove any buffer-atoms
+                ns = self.no / self.nuo
+                self.nua, self.nuo, self.maxnh = F90.readtshs.remove_atoms(BufferAtoms)
+                self.no = self.nuo * ns
+                
             # Arrays
             arr = F90.readtshs
             self.lasto    = arr.lasto.copy()
@@ -1499,6 +1506,8 @@ class HS:
                 self.Hsparse = arr.h.copy()
             F90.readtshs.deallocate
         else:
+            if BufferAtoms.size > 0:
+                raise ValueError("Buffer atoms are not allowed when reading binary files from python")
             general, sparse, matrices = self.__ReadTSHSFile(fn)
             self.nua, self.nuo, self.no , self.nspin, self.maxnh, \
                 self.gamma, self.onlyS, self.istep, self.ia1, \
@@ -1726,3 +1735,74 @@ class HS:
                     Full[iuo,juo] += Sparse[si]*phase[si]       
         return Full
 
+# Easy method to read in number of atoms in a TSHS file
+def ReadTSHS(fn,**kwargs):
+    # return dictionary
+    d = {}
+    # Read in TSHS header (do not read in everything!)
+    nou,nos,nspin,nua,maxnh = F90.readtshs.read_size(fn)
+    if 'nua' in kwargs: d['nua'] = nua
+    if 'nuo' in kwargs: d['nuo'] = nuo
+    if 'nso' in kwargs: d['nso'] = nos
+    if 'nspin' in kwargs: d['nspin'] = nspin
+    if 'maxnh' in kwargs: d['maxnh'] = maxnh
+    return d
+
+def GetBufferAtomsList(fn,fdf):
+    d = ReadTSHS(fn,nua=True)
+    nua = d.pop('nua')
+    del d
+    bufL = GetFDFlineWithDefault(fdf,'TS.BufferAtomsLeft', int, 0,'GetBuffer')
+    bufR = GetFDFlineWithDefault(fdf,'TS.BufferAtomsRight', int, 0,'GetBuffer')
+    try:
+        data = GetFDFblock(fdf, 'TS.Atoms.Buffer')
+    except:
+        data = []
+    BufferAtoms = []
+    if len(data) > 0:
+        for sl in data:
+            if not sl[0].startswith('position'): continue
+            if sl[1] == 'from':
+                f = int(sl[2])
+                if f < 0: f = nua + f + 1
+                t = int(sl[4])
+                if t < 0: t = nua + t + 1
+                s = 1
+                if len(sl) > 5:
+                    try:
+                        s = int(sl[6])
+                    except:
+                        s = int(sl[5])
+                if f <= t:
+                    for i in range(f,t+1,s):
+                        BufferAtoms.append(int(i))
+                else:
+                    for i in range(f,t-1,s):
+                        BufferAtoms.append(int(i))
+            else:
+                for s in sl[1:]:
+                    BufferAtoms.append(int(s))
+    else:
+        for i in range(bufL):
+            BufferAtoms.append(i+1)
+        for i in range(nua-bufR,nua):
+            BufferAtoms.append(i+1)
+    if len(BufferAtoms) == 0:
+        return N.empty((0,)),0,0
+    # sort it
+    BufferAtoms.sort()
+    nbuf = N.array(BufferAtoms)
+    s = 0
+    e = nua + 1
+    # They must be consecutive
+    for i in range(nua+1):
+        if i+1 not in nbuf:
+            s = i
+            break
+    e = N.amin(nbuf[nbuf > s])
+    for i in range(e,nua+1):
+        if i not in nbuf:
+            raise ValueError('Buffer atoms must be consecutive, please correct')
+    if not N.all(nbuf > 0) and not N.all(nbuf <= nua):
+        raise ValueError('Buffer atoms does not exist in the TSHS file')
+    return nbuf,s,nua-e+1

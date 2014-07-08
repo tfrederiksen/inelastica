@@ -73,6 +73,10 @@ def readHS():
 
     options.systemlabel = SIO.GetFDFlineWithDefault("RUN.fdf",'SystemLabel', str, 'Systemlabel', 'Eigenchannels')       
     options.TSHS = './%s.TSHS'%(options.systemlabel)
+    
+    # Check for buffer atoms
+    options.buffer = SIO.GetBufferAtomsList(options.TSHS,"RUN.fdf")
+    if options.buffer.size >0: raise ValueError("You cannot use buffer atoms with STM")
 
     # Setup H, S and self-energies
     # Setup self-energies and device GF

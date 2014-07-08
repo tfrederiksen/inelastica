@@ -3,7 +3,7 @@ subroutine expansion_SE(no_u,no_s,NA1,NA2,kpt, &
 
   implicit none
   
-  real(kind=8), parameter :: Pi = 3.141592653589793238_8
+  real(kind=8), parameter :: Pi = 3.141592653589793238d0
 ! ********************
 ! * INPUT variables  *
 ! ********************

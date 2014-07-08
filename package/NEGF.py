@@ -155,7 +155,7 @@ class ElectrodeSelfEnergy:
     global SavedSig
     def __init__(self,fn,NA1,NA2,voltage=0.0,UseF90helpers=True):
         self.path = os.path.split(os.path.abspath(fn))[0]
-        self.HS=SIO.HS(fn,UseF90helpers=UseF90helpers)
+        self.HS=SIO.HS(fn,UseF90helpers=UseF90helpers) # An electrode HS
         self.hash=myHash([self.HS,NA1,NA2,voltage])
         SavedSig.add_hsfile(self.path)
         if self.HS.gamma:
@@ -361,9 +361,10 @@ class ElectrodeSelfEnergy:
         self.S.shape = (self.S.size,)
         self.H01.shape = self.H.shape
         self.S01.shape = self.S.shape
-        tmp = F90.surfacegreen(no=no,ze=ee,h00=self.H[ispin,:],s00=self.S,
-                               h01=self.H01[ispin,:],s01=self.S01,accur=1.e-15,is_left=left)
-        tmp.shape = oSs
+        tmp = F90.surfacegreen(no=no,ze=ee,h00=self.H[ispin],s00=self.S,
+                               h01=self.H01[ispin],s01=self.S01,
+                               accur=1.e-15,is_left=left)
+        tmp.shape = (no,no)
         tmp = N.require(tmp,requirements=['A','C'])
         self.H.shape = oHs
         self.S.shape = oSs
@@ -470,7 +471,7 @@ class ElectrodeSelfEnergy:
 #############################################################################            
             
 class GF:
-    def __init__(self, TSHSfile, elecL, elecR, Bulk=True, DeviceAtoms=[0,0]):
+    def __init__(self, TSHSfile, elecL, elecR, Bulk=True, DeviceAtoms=[0,0], BufferAtoms=N.empty((0,))):
         """
         Calculate Green's functions etc for TSHSfile connected to left/right 
         electrode (class ElectrodeSelfEnergy). 
@@ -487,9 +488,10 @@ class GF:
         FoldedL, FoldedR : True/False
         DeviceAtoms : start/end Siesta numbering of atoms included in device
         DeviceOrbs : Start/end of orbitals. Siesta ordering.
+        BufferAtoms: A list of buffer atoms
         """
         self.elecL, self.elecR, self.Bulk = elecL, elecR, Bulk
-        self.HS = SIO.HS(TSHSfile)
+        self.HS = SIO.HS(TSHSfile,BufferAtoms=BufferAtoms)
         print 'GF: UseBulk=',Bulk
         self.DeviceAtoms=DeviceAtoms
         if DeviceAtoms[0]<=1:
@@ -521,7 +523,6 @@ class GF:
             self.setkpoint(kpoint,ispin=0) # At least for one spin
             
             devSt, devEnd = self.DeviceOrbs[0], self.DeviceOrbs[1]
-            print devSt,devEnd
             VC.Check("Device-Elec-overlap",N.abs(self.S0[0:devSt,devEnd:self.nuo0]),
                      "Too much overlap directly from left-top right",
                      "Make device region larger")

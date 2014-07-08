@@ -90,7 +90,7 @@ class Geom:
        anr : list of atomic numbers
        natoms : number of atoms
     '''
-    def __init__(self,fn=""):
+    def __init__(self,fn="",BufferAtoms=N.empty((0,))):
         self.natoms=0
         self.xyz, self.anr, self.snr = [], [], []
         
@@ -105,10 +105,19 @@ class Geom:
                 self.readSTRUCT_OUT(fn)
             elif 'CONTCAR' in fn:
                 self.readCONTCAR(fn)
+
         try:
             self.constrained
         except:
             self.constrained = 0*N.array(self.xyz)
+
+        # Remove buffer atoms
+        if BufferAtoms.size > 0:
+            tmp = BufferAtoms.copy() - 1
+            self.xyz = N.delete(self.xyz,tmp,axis=0)
+            self.anr = N.delete(self.anr,tmp)
+            self.snr = N.delete(self.snr,tmp)
+            self.constrained = N.delete(self.constrained,tmp,axis=0)
 
     # BASIC FUNCTIONS
         

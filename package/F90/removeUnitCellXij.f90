@@ -23,17 +23,17 @@ subroutine removeunitcellxij(nnzs, no_u, na_u, &
 
 ! INPUT:
 ! Dimension of sparse matrix
-  integer, intent(in)  :: nnzs                    
+  integer, intent(in)  :: nnzs 
 ! Orbitals in unitcell
-  integer, intent(in)  :: no_u                     
+  integer, intent(in)  :: no_u 
 ! Atoms in unitcell
-  integer, intent(in)  :: na_u                      
+  integer, intent(in)  :: na_u 
 ! Number of nonzero column elements
   integer, intent(in)  :: numh(no_u) 
 ! Position of atom in unitcell 
   real(kind=8), intent(in) :: xa(3,na_u)
 ! Column number
-  integer, intent(in)  :: listh(nnzs)         
+  integer, intent(in)  :: listh(nnzs) 
 ! Corresponding orbital in unitcell
   integer, intent(in)  :: atomindx(no_u)
 

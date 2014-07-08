@@ -45,7 +45,9 @@ def calc(options):
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
-    DevGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
+    DevGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,
+                    DeviceAtoms=options.DeviceAtoms,
+                    BufferAtoms=options.buffer)
     nspin = DevGF.HS.nspin
 
     # k-sample only self-energies?
@@ -183,7 +185,13 @@ Voltage                         : %f
 
     if options.dos:
         # Read basis
-        basis = SIO.BuildBasis(options.fn,1,DevGF.HS.nua,DevGF.HS.lasto)
+        L = options.bufferL
+        # Pad lasto with zeroes to enable basis generation...
+        lasto = N.zeros((DevGF.HS.nua+L+1,),N.int)
+        lasto[L:] = DevGF.HS.lasto
+        basis = SIO.BuildBasis(options.fn,1+L,DevGF.HS.nua+L,
+                               lasto)
+        basis.ii -= L
         WritePDOS(outFile+'.PDOS.gz',options,DevGF,DOSL+DOSR,basis)
         WritePDOS(outFile+'.PDOSL.gz',options,DevGF,DOSL,basis)
         WritePDOS(outFile+'.PDOSR.gz',options,DevGF,DOSR,basis)

@@ -23,14 +23,16 @@ import PhysicalConstants as PC
 def main(options):
     # Read geometry
     XV = '%s/%s.XV'%(options.head,options.systemlabel)
-    geom = MG.Geom(XV)
+    geom = MG.Geom(XV,BufferAtoms=options.buffer)
 
     # Set up device Greens function
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecL.scaling = options.scaleSigL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
-    DevGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
+    DevGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,
+                    DeviceAtoms=options.DeviceAtoms,
+                    BufferAtoms=options.buffer)
     DevGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
                  etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
@@ -40,7 +42,14 @@ def main(options):
 
     # Build basis
     options.nspin = DevGF.HS.nspin
-    basis = SIO.BuildBasis(options.fn,options.DeviceAtoms[0],options.DeviceAtoms[1],DevGF.HS.lasto)
+    L = options.bufferL
+    # Pad lasto with zeroes to enable basis generation...
+    lasto = N.zeros((DevGF.HS.nua+L+1,),N.int)
+    lasto[L:] = DevGF.HS.lasto
+    basis = SIO.BuildBasis(options.fn,
+                           options.DeviceAtoms[0]+L,
+                           options.DeviceAtoms[1]+L,lasto)
+    basis.ii -= L
 
     # Calculate Eigenchannels
     DevGF.calcEigChan(options.numchan)

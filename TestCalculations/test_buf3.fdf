@@ -1,0 +1,5 @@
+%block TS.Atoms.Buffer
+       position from 1 to 3
+       position  5
+       position from -1 to -3 step -1
+%endblock TS.Atoms.Buffer

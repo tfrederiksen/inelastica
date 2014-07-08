@@ -18,7 +18,7 @@ import ValueCheck as VC
 ########################################################
 def main(options):
     options.XV = '%s/%s.XV'%(options.head,options.systemlabel)
-    options.geom = MG.Geom(options.XV)
+    options.geom = MG.Geom(options.XV,BufferAtoms=options.buffer)
     # Voltage fraction over left-center interface
     VfracL = options.VfracL # default is 0.5
     print 'Inelastica: Voltage fraction over left-center interface: VfracL =',VfracL
@@ -37,7 +37,9 @@ def main(options):
     except:
         print 'Inelastica: WARNING: variable CurrentHWidx not found in',options.PhononNetCDF
     # Work with GFs etc for positive (V>0: \mu_L>\mu_R) and negative (V<0: \mu_L<\mu_R) bias voltages
-    GFp = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
+    GFp = NEGF.GF(options.TSHS,elecL,elecR,
+                  Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms,
+                  BufferAtoms=options.buffer)
     # Prepare lists for various trace factors
     #GF.dGnout = []
     #GF.dGnin = []
@@ -48,7 +50,9 @@ def main(options):
     GFp.nHT = N.zeros(len(hw),N.float)     # non-Hilbert/Isym factor
     GFp.HT = N.zeros(len(hw),N.float)      # Hilbert/Iasym factor
     #
-    GFm = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms)
+    GFm = NEGF.GF(options.TSHS,elecL,elecR,
+                  Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms,
+                  BufferAtoms=options.buffer)
     GFm.P1T = N.zeros(len(hw),N.float)     # M.A.M.A (total e-h damping)
     GFm.P2T = N.zeros(len(hw),N.float)     # M.AL.M.AR (emission)
     GFm.ehDampL = N.zeros(len(hw),N.float) # M.AL.M.AL (L e-h damping)
@@ -58,7 +62,14 @@ def main(options):
     # Calculate transmission at Fermi level
     GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
                etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
-    basis = SIO.BuildBasis(options.fn,options.DeviceAtoms[0],options.DeviceAtoms[1],GFp.HS.lasto)
+    L = options.bufferL
+    # Pad lasto with zeroes to enable basis generation...
+    lasto = N.zeros((GFp.HS.nua+L+1,),N.int)
+    lasto[L:] = GFp.HS.lasto
+    basis = SIO.BuildBasis(options.fn,
+                           options.DeviceAtoms[0]+L,
+                           options.DeviceAtoms[1]+L,lasto)
+    basis.ii -= L
     TeF = N.trace(GFp.TT).real
     GFp.TeF = TeF
     GFm.TeF = TeF
@@ -139,12 +150,11 @@ def IntegrityCheck(options,GF,basis,NCfile):
             print '        --------------------- Dynamic region ends ----------------------'
     # - check 1: Matrix sizes
     PH_H0 = N.array(NCfile.variables['H0'][:])
-    if N.shape(PH_H0[0])==N.shape(GF.Gr):
+    check1 = N.shape(PH_H0[0])==N.shape(GF.Gr)
+    if check1:
         print '... Check 1 passed: Device orb. space matches'
-        check1 = True
     else:
         print '... Check 1 failed: Device orb. space do not match!!!'
-        check1 = False
     # - check 2&3: Geometry and atom number
     dist_xyz = 0.0
     dist_anr = 0.0
