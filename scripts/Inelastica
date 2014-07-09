@@ -1,167 +1,18 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
-from optparse import OptionParser, OptionGroup
-import numpy as N
-import os, sys, subprocess
-
+import sys
 from datetime import datetime
+
+from Inelastica import Inelastica as I
+
 start = datetime.now()
 
-usage = "usage: %prog [options] DestinationDirectory"
-description = """
-Inelastica script calculates and writes LOE quantities in ascii (Systemlabel.IN) and NetCDF (Systemlabel.IN.nc) 
-
-For help use --help!
-"""
-
-parser = OptionParser(usage,description=description)
-parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [default=%default]",
-                  type='int', default=4)
-parser.add_option("-F","--DeviceFirst", dest='DeviceFirst',default=0,type='int',
-                  help="First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]")
-parser.add_option("-L","--DeviceLast", dest='DeviceLast',default=0,type='int',
-                  help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
-parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
-                  help="Energy reference where Greens functions etc are evaluated [default=%default eV]")
-parser.add_option("--eta", dest='eta', default=0.000001,type='float',
-                  help="Tiny imag. part in Green's functions etc. [default=%default eV]")
-parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
-                  help="Input fdf-file for TranSIESTA calculations [default=%default]")
-parser.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
-                 help="Spin channel [default=%default]")
-parser.add_option("-x","--k1", dest='k1', default=0.0,type='float',
-                  help="k-point along a1 [default=%default]")
-parser.add_option("-y","--k2", dest='k2', default=0.0,type='float',
-                  help="k-point along a2 [default=%default]")
-parser.add_option("-p", "--PhononNetCDF", dest='PhononNetCDF', default='Output.nc',type='string',
-                  help="Electron-phonon coupling NetCDF [default=%default]")
-parser.add_option("-t", "--Temp", dest='Temp', default=4.2,type='float',
-                  help="Temperature [default=%default K]")
-parser.add_option("-b", "--BiasPoints", dest='biasPoints', default=801,type='int',
-                  help="Number of bias points [default=%default]")
-parser.add_option("-v", "--MaxBias", dest='MaxBias', default=0.4,type='float',
-                  help="Sets the IETS bias range (-MaxBias to MaxBias) [default=%default V]")
-parser.add_option("-c", "--ModeCutoff", dest='modeCutoff', default='0.0025',type='float',
-                  help="Ignore phonon modes with lower hw [default=%default eV]")
-parser.add_option("-V", "--Vrms", dest='Vrms', default='0.005',type='float',
-                  help="Lock in amplifier broadening [default=%default V]")
-parser.add_option("-H", "--Heating", dest='PhHeating', default=False,action='store_true',
-                  help="Include heating of vibrational modes [default=%default]")
-parser.add_option("-d", "--PhExtDamp", dest='PhExtDamp', default=1e-15,type='float',
-                  help="External damping [default=%default (?) TODO check unit!]")
-parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
-                  help="Use SigNCfiles [default=%default]")
-parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [default=%default eV]",
-                  type='float', default=0.0)
-parser.add_option("--SpectralCutoff", dest="SpectralCutoff", help="Cutoff value for SpectralMatrix functions (for ordinary matrix representation set cutoff<=0.0) [default=%default]",
-                  type='float', default=1e-8)
-
-# Electrode stuff
-parser.add_option("--bulk", dest='UseBulk',default=-1,action='store_true',
-                  help="Use bulk in electrodes. The Hamiltonian from the electrode calculation is inserted into the electrode region in the TranSIESTA cell [TS.UseBulkInElectrodes]")
-parser.add_option("--nobulk", dest='UseBulk',default=-1,action='store_false',
-                  help="Use only self-energies in the electrodes. The full Hamiltonian of the TranSIESTA cell is used in combination with self-energies for the electrodes [TS.UseBulkInElectrodes]")
-
-# Scale (artificially) the coupling to the electrodes
-parser.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to Sigma_L [default=%default]",
-                  type='float', default=1.0)
-parser.add_option("--scaleSigR", dest="scaleSigR", help="Scale factor applied to Sigma_R [default=%default]",
-                  type='float', default=1.0)
-
-# Which LOE method?
-parser.add_option("--LOEscale", dest="LOEscale", help="Scale factor to interpolate between LOE-WBA (0.0) and generalized LOE (1.0), see arXiv:1312.7625 [default=%default]",
-                  type='float', default=1.0)
-parser.add_option("--VfracL", dest="VfracL", help="Voltage fraction over the left-center interface [default=%default]",
-                  type='float', default=0.5)
-
-(options, args) = parser.parse_args()
-
-# Sanity checks
-if len(args)!=1:
-    parser.error('You need to specify a destination directory')
-else:
-    options.DestDir = args[0]
-if options.eta<0:
-    parser.error('eta must be a postive number')
-if options.etaLead<0:
-    parser.error('etaLead must be a postive number')
-if options.PhExtDamp<0:
-    parser.error('PhExtDamp must be a postive number')
-if options.biasPoints<6:
-    parser.error('BiasPoints must be at least 6')
-if options.iSpin<0 or options.iSpin>1:
-    parser.error('iSpin must be 0 or 1')
-if not os.path.isfile(options.fn):
-    parser.error('Input fdf-file for TranSIESTA not found')
-if not os.path.isfile(options.PhononNetCDF):
-    parser.error('Electron-phonon coupling NetCDF-file not found')
-
-# Destination directory
-if not os.path.isdir(options.DestDir):
-    print '\nInelastica: Creating folder %s' %options.DestDir
-    os.mkdir(options.DestDir)
-
-# Log output to file 
-sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
-tee = subprocess.Popen(["tee", options.DestDir+"/Output.log"], stdin=subprocess.PIPE)
-os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
-os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
+options = I.GetOptions(sys.argv[1:])
 
 # Write function call
-print
-for arg in sys.argv: print arg,
-print '\n'
+print '\n' + ' '.join(sys.argv) + '\n'
 
-# Load Inelastica stuff
-from Inelastica import Inelastica
-from Inelastica import SiestaIO as SIO
-
-# Read SIESTA files
-options.head,tail = os.path.split(options.fn)
-print "Inelastica: Reading keywords from %s \n"%options.fn
-
-options.systemlabel = SIO.GetFDFlineWithDefault(options.fn,'SystemLabel', str, 'Systemlabel', 'Inelastica')
-options.TSHS = '%s/%s.TSHS'%(options.head,options.systemlabel)
-
-# Electrodes
-options.fnL  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileLeft', str, None, 'Inelastica')
-options.NA1L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Left', int, 1, 'Inelastica')
-options.NA2L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Left', int, 1, 'Inelastica')
-options.fnR  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileRight', str, None, 'Inelastica')
-options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 1, 'Inelastica')
-options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'Inelastica')
-if options.UseBulk < 0:
-    options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'Inelastica')
-options.buffer,L,R = SIO.GetBufferAtomsList(options.TSHS,options.fn)
-options.bufferL = L
-options.bufferR = R
-
-# Device region
-if options.DeviceFirst<=0:
-    options.DeviceFirst = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom',int,1,'Inelastica')
-options.DeviceFirst -= L
-if options.DeviceLast<=0:
-    options.DeviceLast = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo',int,1e10,'Inelastica')
-options.DeviceLast -= L
-options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,1e10,'Inelastica')
-options.NumberOfAtoms -= L + R
-if options.DeviceLast<options.DeviceFirst:
-    parser.error('DeviceLast<DeviceFirst not allowed.')
-options.DeviceAtoms = [max(options.DeviceFirst,1),min(options.DeviceLast,options.NumberOfAtoms)]
-
-# Voltage
-options.voltage = SIO.GetFDFlineWithDefault(options.fn,'TS.Voltage', float, 0.0, 'Inelastica')
-if options.VfracL < 0.0 or options.VfracL > 1.0:
-    parser.error('Option VfracL must be a value in the range [0,1].')
-
-# Bias range
-options.minBias = -1.0*abs(options.MaxBias)
-options.maxBias = abs(options.MaxBias)
-
-# k-point
-options.kPoint = N.array([options.k1,options.k2,0.0],N.float)
-
-Inelastica.main(options)
+I.main(options)
 
 # Timing
 dT = datetime.now()-start

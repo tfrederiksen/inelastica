@@ -13,6 +13,91 @@ import PhysicalConstants as PC
 import time
 import ValueCheck as VC
 
+# For doing loops with Inelastica we encourage the usage of this function
+# By creating the parser locally we can actually pass down these informations easily.
+# DIRECTLY in python
+def GetOptions(argv,**kwargs):
+    import optparse as o
+    d = """Inelastica script calculates and writes LOE quantities in ascii (Systemlabel.IN) and NetCDF (Systemlabel.IN.nc) 
+
+For help use --help!"""
+    p = o.OptionParser("usage: %prog [options] DestinationDirectory",description=d)
+    p.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [default=%default]",
+                 type='int', default=4)
+    p.add_option("-F","--DeviceFirst", dest='DeviceFirst',default=0,type='int',
+                 help="First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]")
+    p.add_option("-L","--DeviceLast", dest='DeviceLast',default=0,type='int',
+                 help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
+    p.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
+                 help="Energy reference where Greens functions etc are evaluated [default=%default eV]")
+    p.add_option("--eta", dest='eta', default=0.000001,type='float',
+                 help="Tiny imag. part in Green's functions etc. [default=%default eV]")
+    p.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
+                 help="Input fdf-file for TranSIESTA calculations [default=%default]")
+    p.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
+                 help="Spin channel [default=%default]")
+    p.add_option("-x","--k1", dest='k1', default=0.0,type='float',
+                 help="k-point along a1 [default=%default]")
+    p.add_option("-y","--k2", dest='k2', default=0.0,type='float',
+                 help="k-point along a2 [default=%default]")
+    p.add_option("-p", "--PhononNetCDF", dest='PhononNetCDF', default='Output.nc',type='string',
+                 help="Electron-phonon coupling NetCDF [default=%default]")
+    p.add_option("-t", "--Temp", dest='Temp', default=4.2,type='float',
+                 help="Temperature [default=%default K]")
+    p.add_option("-b", "--BiasPoints", dest='biasPoints', default=801,type='int',
+                 help="Number of bias points [default=%default]")
+    p.add_option("-v", "--MaxBias", dest='maxBias', default=0.4,type='float',
+                 help="Sets the IETS bias range (-MaxBias to MaxBias) [default=%default V]")
+    p.add_option("-c", "--ModeCutoff", dest='modeCutoff', default='0.0025',type='float',
+                 help="Ignore phonon modes with lower hw [default=%default eV]")
+    p.add_option("-V", "--Vrms", dest='Vrms', default='0.005',type='float',
+                 help="Lock in amplifier broadening [default=%default V]")
+    p.add_option("-H", "--Heating", dest='PhHeating', default=False,action='store_true',
+                 help="Include heating of vibrational modes [default=%default]")
+    p.add_option("-d", "--PhExtDamp", dest='PhExtDamp', default=1e-15,type='float',
+                 help="External damping [default=%default (?) TODO check unit!]")
+    p.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
+                 help="Use SigNCfiles [default=%default]")
+    p.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [default=%default eV]",
+                 type='float', default=0.0)
+    p.add_option("--SpectralCutoff", dest="SpectralCutoff", help="Cutoff value for SpectralMatrix functions (for ordinary matrix representation set cutoff<=0.0) [default=%default]",
+                 type='float', default=1e-8)
+
+    # Electrode stuff
+    p.add_option("--bulk", dest='UseBulk',default=-1,action='store_true',
+                 help="Use bulk in electrodes. The Hamiltonian from the electrode calculation is inserted into the electrode region in the TranSIESTA cell [TS.UseBulkInElectrodes]")
+    p.add_option("--nobulk", dest='UseBulk',default=-1,action='store_false',
+                 help="Use only self-energies in the electrodes. The full Hamiltonian of the TranSIESTA cell is used in combination with self-energies for the electrodes [TS.UseBulkInElectrodes]")
+
+    # Scale (artificially) the coupling to the electrodes
+    p.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to Sigma_L [default=%default]",
+                 type='float', default=1.0)
+    p.add_option("--scaleSigR", dest="scaleSigR", help="Scale factor applied to Sigma_R [default=%default]",
+                 type='float', default=1.0)
+
+    # Which LOE method?
+    p.add_option("--LOEscale", dest="LOEscale", help="Scale factor to interpolate between LOE-WBA (0.0) and generalized LOE (1.0), see arXiv:1312.7625 [default=%default]", type='float', default=1.0)
+    p.add_option("--VfracL", dest="VfracL", help="Voltage fraction over the left-center interface [default=%default]",
+                 type='float', default=0.5)
+
+    # Parse the options
+    (options, args) = p.parse_args(argv)
+
+    # Get the last positional argument
+    options.DestDir = VC.GetPositional(args,"You need to specify a destination directory")
+
+    # With this one can overwrite the logging information
+    if "log" in kwargs:
+        VC.CreatePipeOutput(options.DestDir+'/'+kwargs["log"])
+    else:
+        VC.CreatePipeOutput(options.DestDir+'/Inelastica.log')
+
+    # Check the options given to Inelastica    
+    VC.OptionsCheck(options,'Inelastica')
+
+    return options
+
+
 ########################################################
 ##################### Main routine #####################
 ########################################################

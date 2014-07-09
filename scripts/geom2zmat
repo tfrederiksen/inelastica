@@ -1,4 +1,4 @@
-#!/scratch/thf/bin/python
+#!/usr/bin/env python
 
 import Inelastica.MakeGeom as MG
 from optparse import OptionParser

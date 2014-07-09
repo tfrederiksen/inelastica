@@ -1,144 +1,20 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
-import numpy as N
-import os, sys, subprocess
-from optparse import OptionParser, OptionGroup
-
+import sys
 from datetime import datetime
+
+from Inelastica import EigenChannels as E
+
 start = datetime.now()
 
-usage = "usage: %prog [options] DestinationDirectory"
-description = """
-Eigenchannels script that calculates:
-1) Eigenchannels, Paulsson et al. PRB 76, 115117 (2007).
-2) Bond currents.
-
-For help use --help!
-"""
-
-parser = OptionParser(usage,description=description)
-parser.add_option("-F","--DeviceFirst", dest='DeviceFirst',default=0,type='int',
-                  help="First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]")
-parser.add_option("-L","--DeviceLast", dest='DeviceLast',default=0,type='int',
-                  help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
-parser.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [%default]", 
-                  type='int', default=4)
-parser.add_option("-B", "--BothSides", dest='bothsides', default=False,action='store_true',
-                  help="Calculate eigenchannels from both sides [%default]")
-parser.add_option("-M", "--MolecularStates", dest='MolStates', default=0.0, type='float',
-                  help="Calculate eigenstates of device Hamiltonian within [%default] eV from Ef")
-parser.add_option("-r", "--Res", dest='res', default=0.4,type='float',
-                  help="Resolution [%default Ang]")
-parser.add_option("-w", "--format", dest='format', default='macu',type='string',
-                  help="Wavefunction format (macu, cube, XSF, or nc) [%default]")
-parser.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
-                  help="Energy where eigenchannel scattering states are evaluated [%default eV]")
-parser.add_option("--eta", dest="eta", help="Imaginary part added to all energies (device and leads) [%default eV]",
-                  type='float', default=0.000001)
-parser.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
-                  type='float', default=0.0)
-parser.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
-                  help="Input fdf-file for TranSIESTA calculations [%default]")
-parser.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
-                  help="Spin channel [%default]")
-parser.add_option("-x","--k1", dest='k1', default=0.0,type='float',
-                  help="k-point along a1 [%default]")
-parser.add_option("-y","--k2", dest='k2', default=0.0,type='float',
-                  help="k-point along a2 [%default]")
-parser.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
-                  help="Use SigNCfiles [%default]")
-
-# Electrode stuff
-parser.add_option("--bulk", dest='UseBulk',default=-1,action='store_true',
-                  help="Use bulk in electrodes. The Hamiltonian from the electrode calculation is inserted into the electrode region in the TranSIESTA cell [TS.UseBulkInElectrodes]")
-parser.add_option("--nobulk", dest='UseBulk',default=-1,action='store_false',
-                  help="Use only self-energies in the electrodes. The full Hamiltonian of the TranSIESTA cell is used in combination with self-energies for the electrodes [TS.UseBulkInElectrodes]")
-
-# Scale (artificially) the coupling to the electrodes
-parser.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to Sigma_L [default=%default]",
-                  type='float', default=1.0)
-parser.add_option("--scaleSigR", dest="scaleSigR", help="Scale factor applied to Sigma_R [default=%default]",
-                  type='float', default=1.0)
-
-# Use spectral matrices? 
-parser.add_option("--SpectralCutoff", dest="SpectralCutoff", help="Cutoff value for SpectralMatrix functions (for ordinary matrix representation set cutoff<=0.0) [default=%default]",
-                  type='float', default=0.0)
-
-(options, args) = parser.parse_args()
-
-# Destination directory
-if len(args)!=1:
-    parser.error('ERROR: You need to specify a destination directory')
-else:
-    options.DestDir = args[0]
-if not os.path.isdir(options.DestDir):
-    print '\nEigenChannels: Creating folder %s' %options.DestDir
-    os.mkdir(options.DestDir)
-
-# Log output to file                                                                                                                                                                                                
-sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
-tee = subprocess.Popen(["tee", options.DestDir+"/Output.log"], stdin=subprocess.PIPE)
-os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
-os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
+options = E.GetOptions(sys.argv[1:])
 
 # Write function call
-print
-for arg in sys.argv: print arg,
-print '\n'
+print '\n' + ' '.join(sys.argv) + '\n'
 
-# Load Inelastica stuff
-from Inelastica import EigenChannels
-from Inelastica import SiestaIO as SIO
-    
-# Read SIESTA files
-options.head,tail = os.path.split(options.fn)
-print "EigenChannels: Reading keywords from %s \n"%options.fn
+E.main(options)
 
-options.systemlabel = SIO.GetFDFlineWithDefault(options.fn,'SystemLabel', str, 'Systemlabel', 'Eigenchannels')       
-options.TSHS = '%s/%s.TSHS'%(options.head,options.systemlabel)
-
-# Electrodes
-options.fnL  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileLeft', str, None, 'EigenChannels')
-options.NA1L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Left', int, 1, 'EigenChannels')
-options.NA2L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Left', int, 1, 'EigenChannels')
-options.fnR  = options.head+'/'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileRight', str, None, 'EigenChannels')
-options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 1, 'EigenChannels')
-options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'EigenChannels')
-if options.UseBulk < 0:
-    options.UseBulk = SIO.GetFDFlineWithDefault(options.fn,'TS.UseBulkInElectrodes', bool, True, 'EigenChannels')
-
-# Read in number of buffer atoms
-options.buffer,L,R = SIO.GetBufferAtomsList(options.TSHS,options.fn)
-options.bufferL = L
-options.bufferR = R
-
-# Device region
-if options.DeviceFirst<=0:
-    options.DeviceFirst = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSFrom',int,1,'EigenChannels')
-options.DeviceFirst -= L
-if options.DeviceLast<=0:
-    options.DeviceLast = SIO.GetFDFlineWithDefault(options.fn,'TS.TBT.PDOSTo',int,1e10,'EigenChannels')
-options.DeviceLast -= L
-options.NumberOfAtoms = SIO.GetFDFlineWithDefault(options.fn,'NumberOfAtoms',int,1e10,'EigenChannels')
-options.NumberOfAtoms -= L + R
-if options.DeviceLast<options.DeviceFirst:
-    print 'EigenChannels error: DeviceLast<DeviceFirst not allowed. Setting DeviceLast=DeviceFirst'
-    options.DeviceLast = options.DeviceFirst
-options.DeviceAtoms = [max(options.DeviceFirst,1),min(options.DeviceLast,options.NumberOfAtoms)]
-
-# Voltage
-options.voltage = SIO.GetFDFlineWithDefault(options.fn,'TS.Voltage', float, 0.0, 'EigenChannels')
-
-# Check k-point input
-options.kPoint = N.array([options.k1,options.k2,0.0],N.float)
-
-# Check for Siesta input file
-if not os.path.exists(options.fn):
-    parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
-
-EigenChannels.main(options)
-
-# Timing                                                                                                                                                                                                            
+# Timing
 dT = datetime.now()-start
 hours = dT.days/24.+(dT.seconds+dT.microseconds*1.e-6)/60.**2
 minutes = hours*60.

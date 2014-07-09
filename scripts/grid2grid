@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 """
 Read DRHO, RHO, VT, VH and TOCH files from siesta and output reasonable file formats.
 """

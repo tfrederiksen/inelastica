@@ -1,4 +1,4 @@
-#!/scratch/thf/SOFTWARE/Python-2.6.5/bin/python
+#!/usr/bin/env python
 
 ###########################################################################
 #   Function bands2xmgr                                                   #

@@ -1,4 +1,4 @@
-#!/scratch/thf/bin/python
+#!/usr/bin/env python
 
 from Inelastica import VaspIO as VIO
 from Inelastica import SiestaIO as SIO
