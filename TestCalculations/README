@@ -1,10 +1,13 @@
-Script to test the Fortran-90 code:
+# Script to test the Fortran-90 code:
 
-    python TestF90code.py 
+python TestF90code.py 
 
-
-
-Scripts to test self-energy calculations (compare 1x1 with 3x3 setup)
+# Scripts to test self-energy calculations (compare 1x1 with 3x3 setup)
     
-    python TestFCC100.py
-    python TestFCC111.py
+python TestFCC100.py
+python TestFCC111.py
+
+
+# Script to test reading buffer atoms from FDF
+
+python TestFDF.py
