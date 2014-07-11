@@ -1593,7 +1593,7 @@ class HS:
                 for ii in range(nou):
                     Hsparse[ispin,cnt:cnt+numhg[ii]]=ReadFortranBin(file,'d',numhg[ii])
                     cnt=cnt+numhg[ii]
-            Hsparse=Hsparse.T*PC.Rydberg2eV
+            Hsparse = Hsparse.T*PC.Rydberg2eV
             Hsparse = N.require(Hsparse,requirements=['A','F'])
 
         if not gamma:
@@ -1605,11 +1605,11 @@ class HS:
                 tmp = N.reshape(tmp,(3,numhg[ii]))
                 xij[cnt:cnt+numhg[ii],:] = tmp.T
                 cnt=cnt+numhg[ii]
-            xij=xij.T*PC.Bohr2Ang
+            xij = xij.T*PC.Bohr2Ang
             xij = N.require(xij,requirements=['A','F'])
 
         else:
-            xij=N.zeros((3,maxnh),N.float,order='F')
+            xij = N.zeros((3,maxnh),N.float,order='F')
         file.close()
         
         general = [nau,nou,nos,nspin,maxnh,gamma,onlyS,istep,ia1,qtot,temp,ef]

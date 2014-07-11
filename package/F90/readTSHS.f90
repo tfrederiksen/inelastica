@@ -232,8 +232,7 @@ CONTAINS
                 tm(:) = offsets(:,indxs(ind))
                 xij(:,ind) = ucell(:,1) * tm(1) &
                      + ucell(:,2) * tm(2) &
-                     + ucell(:,3) * tm(3) &
-                     + xa(:,ja) - xa(:,ia)
+                     + ucell(:,3) * tm(3) + xa(:,ja) - xa(:,ia)
                 
              end do
           end do
@@ -310,7 +309,7 @@ CONTAINS
     integer, allocatable :: nlasto(:)
     
     integer :: ona, ono, na
-    integer :: i, ind, j, io, no, ia, jo, a, nind
+    integer :: i, ind, j, io, no, ia, jo, a, nind, is, diffo
     logical :: has_H
     
     if ( .not. allocated(S) ) stop 'Your arrays have not been populated!'
@@ -343,6 +342,9 @@ CONTAINS
     if ( j /= na_u ) stop 'Hello!!! Error in number of atoms'
     no_u = nlasto(na_u)
 
+    ! Calculate difference in orbitals
+    diffo = ono - no_u
+
     allocate(nnumh(no_u),nlisthptr(no_u))
     nlisthptr(1) = 0
 
@@ -350,7 +352,6 @@ CONTAINS
     do io = 1 , ono
        ! Count number of orbitals not in the buffer atoms
        if ( remove(io,ona,lasto,na,list) ) cycle
-
        no = 0
        do ind = listhptr(io) + 1 , listhptr(io) + numh(io)
           i = ucorb(listh(ind),ono)
@@ -396,7 +397,11 @@ CONTAINS
           ! Update index
           nind = nind + 1 
 
-          nlisth(nind) = listh(ind)
+          ! supercell index, we need to correct for the supercell
+          ! offset
+          is = (listh(ind)-1)/ono
+
+          nlisth(nind) = listh(ind) - diffo * is ! copy over column
           do a = 1 , na
              ia = list(a)
              if ( i > lasto(ia) ) then
@@ -406,10 +411,10 @@ CONTAINS
           end do
 
           nxij(:,nind) = xij(:,ind)
+          nS(nind) = S(ind)
           if ( has_H ) then
              nH(nind,:) = H(ind,:)
           end if
-          nS(nind) = S(ind)
 
        end do
 

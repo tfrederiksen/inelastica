@@ -183,10 +183,12 @@ def OptionsCheck(opts,exe):
 
         # Create list of energies
         opts.dE = (opts.Emax-opts.Emin)/float(opts.NPoints-1)
-        opts.Elist = _np.arange(opts.Emin,opts.Emax,opts.dE)
         if opts.NPoints == 1:
             opts.dE = 0.
             opts.Elist = _np.array((opts.Emin,),_np.float)
+        else:
+            # Linspace is just what we need
+            opts.Elist = _np.linspace(opts.Emin,opts.Emax,opts.NPoints)
 
 
 def GetPositional(args,msg="You have not specified any positional argument"):
