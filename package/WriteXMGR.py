@@ -373,16 +373,10 @@ class Graph:
     
     def SetWorld(self,xmin=False,xmax=False,ymin=False,ymax=False):
         "Sets the graph world (defining the axis limits)."
-        if not xmin: xmin = self.world[0]
-        if not xmax: xmax = self.world[2]
-        if not ymin: ymin = self.world[1]
-        if not ymax: ymax = self.world[3]
-        if xmin < xmax:
-          self.world[0] = xmin
-          self.world[2] = xmax
-        if ymin < ymax:
-          self.world[1] = ymin
-          self.world[3] = ymax 
+        if xmin: self.world[0] = xmin
+        if xmax: self.world[2] = xmax
+        if ymin: self.world[1] = ymin
+        if ymax: self.world[3] = ymax
 
     def GetWorldOfDatasets(self):
         "Returns tuple (xmin,ymin,xmax,ymax) of the data included in the graph."

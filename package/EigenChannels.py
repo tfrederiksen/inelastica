@@ -15,13 +15,13 @@ import numpy.linalg as LA
 import Scientific.IO.NetCDF as NC
 import sys, string, struct, glob, os
 import PhysicalConstants as PC
+import ValueCheck as VC
 
 # For doing loops with Eigenchannels we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.
 # DIRECTLY in python
 def GetOptions(argv,**kwargs):
     import optparse as o
-    import ValueCheck as VC
 
     d = """Eigenchannels script that calculates:
 1) Eigenchannels, Paulsson et al. PRB 76, 115117 (2007).
@@ -85,12 +85,9 @@ For help use --help!
 
     # With this one can overwrite the logging information
     if "log" in kwargs:
-        VC.CreatePipeOutput(options.DestDir+'/'+kwargs["log"])
+        options.Logfile = kwargs["log"]
     else:
-        VC.CreatePipeOutput(options.DestDir+'/EigenChannels.log')
-
-    # Check the options given to EigenChannels 
-    VC.OptionsCheck(options,'EigenChannels')
+        options.Logfile = 'EigenChannels.log'
 
     return options
 
@@ -98,6 +95,13 @@ For help use --help!
 ##################### Main routine #####################
 ########################################################
 def main(options):
+    # Pipe output to file
+    VC.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    print 'Options =', options
+
+    # Check the options given to EigenChannels 
+    VC.OptionsCheck(options,'EigenChannels')
+
     # Read geometry
     XV = '%s/%s.XV'%(options.head,options.systemlabel)
     geom = MG.Geom(XV,BufferAtoms=options.buffer)

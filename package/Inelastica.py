@@ -88,12 +88,9 @@ For help use --help!"""
 
     # With this one can overwrite the logging information
     if "log" in kwargs:
-        VC.CreatePipeOutput(options.DestDir+'/'+kwargs["log"])
+        options.Logfile = kwargs["log"]
     else:
-        VC.CreatePipeOutput(options.DestDir+'/Inelastica.log')
-
-    # Check the options given to Inelastica    
-    VC.OptionsCheck(options,'Inelastica')
+        options.Logfile = 'Inelastica.log'
 
     return options
 
@@ -102,6 +99,13 @@ For help use --help!"""
 ##################### Main routine #####################
 ########################################################
 def main(options):
+    # Pipe output to file
+    VC.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    print 'Options =',options
+
+    # Check the options
+    VC.OptionsCheck(options,'Inelastica')
+
     options.XV = '%s/%s.XV'%(options.head,options.systemlabel)
     options.geom = MG.Geom(options.XV,BufferAtoms=options.buffer)
     # Voltage fraction over left-center interface

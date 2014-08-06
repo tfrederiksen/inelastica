@@ -21,21 +21,120 @@ import ValueCheck as VC
 mm = MM.mm
 dagger = MM.dagger
 
-def Analyze(FCwildcard,
-            onlySdir='../onlyS',
-            DeviceFirst=1,DeviceLast=1e3,
-            FCfirst=1,FClast=1e3,
-            PBCFirst=-1,PBCLast=-1,
-            outlabel='Out',
-            CalcCoupl=True,
-            PrintSOrbitals=False,
-            AbsEref=False,
-            AuxNCfile=None,
-            Isotopes=[],
-            kpoint=[0,0,0],
-            PhBandStruct="None",
-            PhBandRadie=0.0,
-            AuxNCUseSinglePrec=False):
+def GetOptions(argv,**kwargs):
+    import optparse as o
+
+    usage = "usage: %prog [options] DestinationDirectory"
+    description = "Methods to calculate vibrations and e-ph couplings from SIESTA output"
+
+    p = o.OptionParser(description=description,usage=usage)
+
+    p.add_option("-c", "--CalcCoupl",dest="CalcCoupl",
+                 help="Calculate e-ph couplings [default=%default]",
+                 action="store_true",default=False)
+    
+    p.add_option("-F","--DeviceFirst",dest="DeviceFirst",
+                 help="First device atom index (in the electronic basis) [default=%default]",
+                 type="int",default=1)
+    p.add_option("-L","--DeviceLast",dest="DeviceLast",
+                 help="Last device atom index (in the electronic basis) [default=%default]",
+                 type="int",default=1000)
+    
+    p.add_option("--FCfirst",dest="FCfirst",
+                 help="First FC atom index [default=%default]",
+                 type="int",default=1)
+    p.add_option("--FClast", dest="FClast",
+                 help="Last FC atom index [default=%default]" ,
+                 type="int",default=1000)
+    
+    p.add_option("--PBCFirst", dest="PBCFirst",\
+                 help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
+                 type="int",default=1)
+    p.add_option("--PBCLast", dest="PBCLast",\
+                 help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
+                 type="int",default=1000)
+    
+    p.add_option("--FCwildcard",dest="FCwildcard",
+                 help="Wildcard for FC directories [default=%default]",
+                 type="str",default="./FC*")
+    
+    p.add_option("--OSdir",dest="onlySdir",
+                 help="Location of OnlyS directory [default=%default]",
+                 type="str",default="./OSrun")
+    
+    p.add_option("-s", "--PrintSOrbitals",dest="PrintSOrbitals",
+                 help="Print s-orbital part of device matrices [default=%default]",
+                 action="store_true",default=False)
+    
+    p.add_option("-a", "--AbsoluteEnergyReference",dest="AbsEref",
+                help="Use an absolute energy reference (Fermi energy of equilibrium structure) for displaced Hamiltonians (e.g., when eF is not well-defined) instead of the instantaneous Fermi energy for the displaced geometries, cf. Eq.(17) in PRB 75, 205413 (2007) [default=%default]",action="store_true",default=False)
+    
+    p.add_option("-n", "--AuxNCfile",dest="AuxNCfile",
+                 help="Optional filename for storing matrices in netcdf file instead of in memory [default=%default]",
+                 default=None)
+    
+    p.add_option("-i", "--Isotopes",dest="Isotopes",
+                 help="List of substitutions [[i1, anr1],...], where atom index i1 (SIESTA numbering) is set to be of type anr1. Alternatively, the argument can be a file with the input string [default=%default]",default=[])
+    p.add_option("--AtomicMass", dest='AtomicMass', default='[]',
+                 help="Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%default]")
+    
+    p.add_option("-x","--k1", dest='k1', default=0.0,type='float',
+                 help="k-point along a1 where e-ph couplings are evaluated [%default]")
+    p.add_option("-y","--k2", dest='k2', default=0.0,type='float',
+                 help="k-point along a2 where e-ph couplings are evaluated [%default]")
+    p.add_option("-z","--k3", dest='k3', default=0.0,type='float',
+                 help="k-point along a3 where e-ph couplings are evaluated [%default]")
+
+    p.add_option("-b", "--PhBandStruct",dest="PhBandStruct",
+                 help="Compute phonon band structure [default=%default]",
+                 action="store_true",default=False)
+    p.add_option("--PhBandRadie",dest="PhBandRadie",
+                 help="Force cutoff radius [default=%default]",
+                 type="float",default=0.0)
+    
+    (options, args) = p.parse_args(argv)
+
+    # Get the last positional argument
+    options.DestDir = VC.GetPositional(args,"You need to specify a destination directory")
+
+    # With this one can overwrite the logging information
+    if "log" in kwargs:
+        options.Logfile = kwargs["log"]
+    else:
+        options.Logfile = 'Phonons.log'
+
+    # k-point
+    options.kpoint = N.array([options.k1,options.k2,options.k3],N.float)
+ 
+    # Isotopes specified in separate file?
+    if type(options.Isotopes)!=type([]): # i.e., not a list
+        if os.path.isfile(options.Isotopes):
+            f = open(options.Isotopes)
+            s = ''
+            for line in f.readlines():
+                s += line.replace('\n','').replace(' ','')
+            options.Isotopes = s
+            f.close()
+
+    # Check if AtomicMasses are specified
+    if options.AtomicMass!='[]':
+        from Inelastica import PhysicalConstants as PC
+        masslist = eval(options.AtomicMass.replace('\n','').replace(' ',''))
+        for elm in masslist:
+            anr = int(elm[0])
+            mass = float(elm[1])
+            PC.AtomicMass[anr] = mass
+            if len(elm)==3:
+                label = elm[2]
+                PC.PeriodicTable[anr] = label
+                PC.PeriodicTable[label] = anr
+        print 'AtomicMass =',PC.AtomicMass
+        print 'PeriodicTable =',PC.PeriodicTable
+    
+    return options
+
+
+def main(options):
     """
     Determine vibrations and electron-phonon couplings from SIESTA calculations
     Needs two types of SIESTA calculations :
@@ -65,23 +164,28 @@ def Analyze(FCwildcard,
                       "POLYMER" etc
     -  PhBandRadie : Optional max distance for forces. 0.0 -> Automatically choosen
     """
-    
+    VC.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    print 'Options =', options
+
+    # Check the options
+    #VC.OptionsCheck(options,'Phonons')
+
     print '=========================================================================='
     print '                         Calculating Phonons'
     print '=========================================================================='
 
     ### Get file lists
     print '\nPhonons.Analyze: Searching file structure.'
-    tree,XVfiles,FCfirstMIN,FClastMAX = GetFileLists(FCwildcard)
-    FCfirst = max(FCfirst,FCfirstMIN)
-    FClast  = min(FClast,FClastMAX)
+    tree,XVfiles,FCfirstMIN,FClastMAX = GetFileLists(options.FCwildcard)
+    FCfirst = max(options.FCfirst,FCfirstMIN)
+    FClast  = min(options.FClast,FClastMAX)
 
     ### Correct and check geometry in XV-files
     print '\nPhonons.Analyze: Checking XV-files:'
     corrXVfiles = []
-    for file in XVfiles:
-        file, displacement = CorrectXVfile(file)
-        corrXVfiles.append(file)
+    for xv in XVfiles:
+        xv, displacement = CorrectXVfile(xv)
+        corrXVfiles.append(xv)
     if len(corrXVfiles)>1:
         CheckForIdenticalXVfiles(corrXVfiles)
 
@@ -93,12 +197,13 @@ def Analyze(FCwildcard,
     orbitalIndices,nao = GetOrbitalIndices(tree[0][2],speciesnumber)
 
     # Make isotope substitutions 
-    for ii,anr in Isotopes:
+    print options.Isotopes
+    for ii,anr in options.Isotopes:
         if ii>0 and ii<=len(atomnumber):
             print 'Phonons.Analyse: Isotope substitution for atom %i (SIESTA numbering):'%ii
             print '  ... atom type %i --> %i'%(atomnumber[ii-1],anr)
             print '  ... atom mass %.4f --> %.4f'%(PC.AtomicMass[atomnumber[ii-1]],\
-                                               PC.AtomicMass[anr])
+                                                   PC.AtomicMass[anr])
             atomnumber[ii-1] = anr
 
     # Set atomic masses 
@@ -106,8 +211,8 @@ def Analyze(FCwildcard,
     for ii in range(len(atomnumber)):
         atommasses[ii] = PC.AtomicMass[atomnumber[ii-1]]
 
-    DeviceFirst = max(DeviceFirst,1)
-    DeviceLast = min(DeviceLast,len(xyz))
+    DeviceFirst = max(options.DeviceFirst,1)
+    DeviceLast = min(options.DeviceLast,len(xyz))
     print 'Phonons.Analyze: This run uses'
     print '  ... DeviceFirst = %4i, DeviceLast = %4i, Device atoms  = %4i'\
           %(DeviceFirst,DeviceLast,DeviceLast-DeviceFirst+1)
@@ -115,12 +220,12 @@ def Analyze(FCwildcard,
           %(FCfirst,FClast,FClast-FCfirst+1)
 
     ### Make sure PBC is sensible numbers
-    if PBCFirst<1:
-        PBCFirst=DeviceFirst
-    if PBCLast<1 or PBCLast>DeviceLast:
-        PBCLast=DeviceLast
+    if options.PBCFirst<1:
+        options.PBCFirst=DeviceFirst
+    if options.PBCLast<1 or options.PBCLast>DeviceLast:
+        options.PBCLast=DeviceLast
     print '  ... PBC First   = %4i, PBC Last   = %4i, Device atoms  = %4i'\
-          %(PBCFirst,PBCLast,PBCLast-PBCFirst+1)
+          %(options.PBCFirst,options.PBCLast,options.PBCLast-options.PBCFirst+1)
 
     ### Build FC-matrix
     print '\nPhonons.Analyze: Building FC matrix:'
@@ -132,19 +237,20 @@ def Analyze(FCwildcard,
     FCmean = (FCm+FCp)/2
 
     ### Write FC-matrix to file
-    OutputFC(FCmean,filename='%s.FC'%outlabel)
+    label = options.DestDir+'/Output'
+    OutputFC(FCmean,filename='%s.FC'%label)
     
     ### Calculate phonon bandstructure
-    if PhBandStruct!="None":
+    if options.PhBandStruct:
         CalcBandStruct(vectors,speciesnumber,xyz,FCmean,\
-                           FCfirst,FClast,PhBandStruct,atomnumber,\
-                           PhBandRadie)
+                       FCfirst,FClast,options.PhBandStruct,atomnumber,\
+                       options.PhBandRadie)
     
     ### Calculate phonon frequencies and modes
     print '\nPhonons.Analyze: Calculating phonons from FCmean, FCm, FCp:'
     # Mean
     FC2 = ReduceAndSymmetrizeFC(FCmean,FCfirstMIN,FClastMAX,FCfirst,FClast)
-    OutputFC(FC2,filename='%s.reduced.FC'%outlabel)
+    OutputFC(FC2,filename='%s.reduced.FC'%label)
     hw,U,Udisp = CalcPhonons(FC2,atomnumber,FCfirst,FClast)
     # FCm
     FC2 = ReduceAndSymmetrizeFC(FCm,FCfirstMIN,FClastMAX,FCfirst,FClast)
@@ -155,16 +261,16 @@ def Analyze(FCwildcard,
 
     ### Write MKL- and xyz-files
     print '\nPhonons.Analyze: Writing geometry and phonons to files.'
-    SIO.WriteMKLFile('%s.mkl'%outlabel,atomnumber,xyz,hw,U,FCfirst,FClast)
-    SIO.WriteMKLFile('%s.real-displ.mkl'%outlabel,atomnumber,xyz,hw,Udisp,FCfirst,FClast)
-    SIO.WriteXYZFile('%s.xyz'%outlabel,atomnumber,xyz)
-    WriteFreqFile('%s.freq'%outlabel,hw)
-    WriteVibDOSFile('%s.Gfdos'%outlabel,hw,type='Gaussian')
-    WriteVibDOSFile('%s.Lfdos'%outlabel,hw,type='Lorentzian')
-    WriteAXSFFiles('%s.mol.axsf'%outlabel,xyz,atomnumber,hw,U,FCfirst,FClast)
-    WriteAXSFFiles('%s.mol.real-displ.axsf'%outlabel,xyz,atomnumber,hw,Udisp,FCfirst,FClast)
-    WriteAXSFFilesPer('%s.per.axsf'%outlabel,vectors,xyz,atomnumber,hw,U,FCfirst,FClast)
-    WriteAXSFFilesPer('%s.per.real-displ.axsf'%outlabel,vectors,xyz,atomnumber,hw,Udisp,FCfirst,FClast)
+    SIO.WriteMKLFile('%s.mkl'%label,atomnumber,xyz,hw,U,FCfirst,FClast)
+    SIO.WriteMKLFile('%s.real-displ.mkl'%label,atomnumber,xyz,hw,Udisp,FCfirst,FClast)
+    SIO.WriteXYZFile('%s.xyz'%label,atomnumber,xyz)
+    WriteFreqFile('%s.freq'%label,hw)
+    WriteVibDOSFile('%s.Gfdos'%label,hw,type='Gaussian')
+    WriteVibDOSFile('%s.Lfdos'%label,hw,type='Lorentzian')
+    WriteAXSFFiles('%s.mol.axsf'%label,xyz,atomnumber,hw,U,FCfirst,FClast)
+    WriteAXSFFiles('%s.mol.real-displ.axsf'%label,xyz,atomnumber,hw,Udisp,FCfirst,FClast)
+    WriteAXSFFilesPer('%s.per.axsf'%label,vectors,xyz,atomnumber,hw,U,FCfirst,FClast)
+    WriteAXSFFilesPer('%s.per.real-displ.axsf'%label,vectors,xyz,atomnumber,hw,Udisp,FCfirst,FClast)
     
     ### Write data to NC-file
     print '\nPhonons.Analyze: Writing results to netCDF-file'
@@ -173,8 +279,8 @@ def Analyze(FCwildcard,
         tmp1.append(orbitalIndices[ii,0]-orbitalIndices[DeviceFirst-1,0])
         tmp2.append(orbitalIndices[ii,1]-orbitalIndices[DeviceFirst-1,0])
     naoDev = orbitalIndices[DeviceLast-1][1]-orbitalIndices[DeviceFirst-1][0]+1
-    NCfile,newNCfile = OpenNetCDFFile('%s.nc'%outlabel,
-                            naoDev,xyz,DeviceFirst,DeviceLast,FCfirst,FClast,AuxNCfile)
+    NCfile,newNCfile = OpenNetCDFFile('%s.nc'%label,
+                            naoDev,xyz,DeviceFirst,DeviceLast,FCfirst,FClast,options.AuxNCfile)
     if newNCfile:
         Write2NetCDFFile(NCfile,tmp1,'FirstOrbital',('NumDevAtoms',),
                          description='Orbital index for the first orbital on the atoms (counting from 0)')
@@ -197,40 +303,40 @@ def Analyze(FCwildcard,
         Write2NetCDFFile(NCfile,N.array(range(FCfirst,FClast+1),N.float),'DynamicAtoms',('NumFCAtoms',),
                          description='Range of atomic indices (counting from 1)')
 
-    if CalcCoupl:
-        print '\nPhonons.Analyze: AbsEref =',AbsEref
-    if CalcCoupl and AuxNCfile:
+    if options.CalcCoupl:
+        print '\nPhonons.Analyze: AbsEref =',options.AbsEref
+    if options.CalcCoupl and options.AuxNCfile:
         # Heph couplings utilizing netcdf-file
-        if not os.path.isfile(AuxNCfile):
-            GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,
-                              AuxNCfile,displacement,kpoint,AuxNCUseSinglePrec,AbsEref)
+        if not os.path.isfile(options.AuxNCfile):
+            GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,options.onlySdir,options.PBCFirst,options.PBCLast,
+                              options.AuxNCfile,displacement,options.kpoint,AuxNCUseSinglePrec,options.AbsEref)
         else:
-            print 'Phonons.Analyze: Reading from AuxNCfile =', AuxNCfile
+            print 'Phonons.Analyze: Reading from AuxNCfile =', options.AuxNCfile
         H0,S0,Heph = CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
-                                    hw,U,NCfile,AuxNCfile,kpoint,AuxNCUseSinglePrec)
-    elif CalcCoupl:
+                                    hw,U,NCfile,options.AuxNCfile,options.kpoint,AuxNCUseSinglePrec)
+    elif options.CalcCoupl:
         # Old way to calculate Heph (reading everything into the memory)
         print '\nPhonons.Analyze: Reading (H0,S0,dH) from .TSHS and .onlyS files:'
         # Read electronic structure from files
-        eF,H0,S0,dH = GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref)
+        eF,H0,S0,dH = GetH0S0dH(tree,FCfirst,FClast,displacement,options.kpoint,options.AbsEref)
         # Correct dH for change in basis states with displacement
-        dH = CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,kpoint)
+        dH = CorrectdH(options.onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,options.kpoint)
         # Downfold matrices to the subspace of the device atoms
         H0,S0,dH = Downfold2Device(orbitalIndices,H0,S0,dH,DeviceFirst,DeviceLast,
-                                   FCfirst,FClast,PBCFirst,PBCLast)
+                                   FCfirst,FClast,options.PBCFirst,options.PBCLast)
         # Calculate e-ph couplings
         print '\nPhonons.Analyze: Calculating electron-phonon couplings:'
         Heph = CalcHeph(dH,hw,U,atomnumber,FCfirst)
         # If CalcCoupl, count the actual number of atomic orbitals
         NCfile.createDimension('NSpin',len(H0))
-        print '\nPhonons.Analyze: Setting kpoint =',kpoint
-        Write2NetCDFFile(NCfile,kpoint,'kpoint',('dim3',))
+        print '\nPhonons.Analyze: Setting kpoint =',options.kpoint
+        Write2NetCDFFile(NCfile,options.kpoint,'kpoint',('dim3',))
         # Write real part
         Write2NetCDFFile(NCfile,H0.real,'H0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
         Write2NetCDFFile(NCfile,S0.real,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
         Write2NetCDFFile(NCfile,Heph.real,'He_ph',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
         # Write imaginary part
-        GammaPoint = N.dot(kpoint,kpoint)<1e-7
+        GammaPoint = N.dot(options.kpoint,options.kpoint)<1e-7
         if not GammaPoint:
             Write2NetCDFFile(NCfile,H0.imag,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
             Write2NetCDFFile(NCfile,S0.imag,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
@@ -239,7 +345,7 @@ def Analyze(FCwildcard,
         NCfile.CurrentHWidx = len(hw)
         NCfile.sync()
 
-    if CalcCoupl and PrintSOrbitals:
+    if options.CalcCoupl and options.PrintSOrbitals:
         # Print e-ph coupling matrices in s-orbital subspace
         for iSpin in range(len(H0)):
             print '\nPhonons.Analyze: Hamiltonian H0.real (in s-orbital subspace) Spin=',iSpin
@@ -255,7 +361,7 @@ def Analyze(FCwildcard,
                 print '\nPhonons.Analyze: Coupling matrix Heph[%i].real (in s-orbital subspace) Spin=%i'%(i,iSpin)
                 ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
                                        DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].real)
-                if N.dot(kpoint,kpoint)>1e-7:
+                if N.dot(options.kpoint,options.kpoint)>1e-7:
                     print '\nPhonons.Analyze: Coupling matrix Heph[%i].imag (in s-orbital subspace) Spin=%i'%(i,iSpin)
                     ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
                                            DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].imag)
@@ -264,7 +370,7 @@ def Analyze(FCwildcard,
     print '=========================================================================='
     print '  Program finished:  %s '%time.ctime()
     print '=========================================================================='
-    if CalcCoupl:
+    if options.CalcCoupl:
         return hw,Heph
     else:
         return hw,0.0

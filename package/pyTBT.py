@@ -26,13 +26,13 @@ import MiscMath as MM
 import NEGF
 import numpy as N
 import Kmesh
+import ValueCheck as VC
 
 # For doing loops with pyTBT we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.
 # DIRECTLY in python
 def GetOptions(argv,**kwargs):
     import optparse as o
-    import ValueCheck as VC
 
     d = """pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge.
 For help use --help!
@@ -104,20 +104,24 @@ For help use --help!
 
     # With this one can overwrite the logging information
     if "log" in kwargs:
-        VC.CreatePipeOutput(options.DestDir+'/'+kwargs["log"])
+        options.Logfile = kwargs["log"]
     else:
-        VC.CreatePipeOutput(options.DestDir+'/pyTBT.log')
+        options.Logfile = 'pyTBT.log'
 
-    # Check the options given to EigenChannels 
+    return options
+
+
+def main(options):
+    # Pipe output to file
+    VC.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    print 'Options =', options
+ 
+    # Check the options
     VC.OptionsCheck(options,'pyTBT')
 
     # Print out energy list
     print 'pyTBT: options.Elist =\n',options.Elist
     
-    return options
-
-
-def main(options):
     # K-points
     if options.Gk1>1:
         Nk1,t1 = options.Gk1,'GK'

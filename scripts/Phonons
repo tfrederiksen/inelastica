@@ -1,144 +1,18 @@
 #!/usr/bin/env python
 
-from optparse import OptionParser
-import os, sys, subprocess
-import numpy as N
-
+import sys
 from datetime import datetime
+
+from Inelastica import Phonons as PH
+
 start = datetime.now()
 
-usage = "usage: %prog [options] DestinationDirectory"
-
-description = "Methods to calculate vibrations and e-ph couplings from SIESTA output"
-
-parser = OptionParser(description=description,usage=usage)
-
-parser.add_option("-c", "--CalcCoupl",dest="CalcCoupl",
-                  help="Calculate e-ph couplings [default=%default]",
-                  action="store_true",default=False)
-
-parser.add_option("-l", "--label",dest="label",
-                  help="Label for output files [default=%default]",
-                  type="str",default="Output")
-
-parser.add_option("-F","--DeviceFirst",dest="DeviceFirst",
-                  help="First device atom index (in the electronic basis) [default=%default]",
-                  type="int",default=1)
-parser.add_option("-L","--DeviceLast",dest="DeviceLast",
-                  help="Last device atom index (in the electronic basis) [default=%default]",
-                  type="int",default=1000)
-
-parser.add_option("--FCfirst",dest="FCfirst",
-                  help="First FC atom index [default=%default]",
-                  type="int",default=1)
-parser.add_option("--FClast", dest="FClast",
-                  help="Last FC atom index [default=%default]" ,
-                  type="int",default=1000)
-
-parser.add_option("--PBCFirst", dest="PerBoundCorrFirst",\
-                  help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
-                  type="int",default=1)
-parser.add_option("--PBCLast", dest="PerBoundCorrLast",\
-                  help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
-                  type="int",default=1000)
-
-parser.add_option("--FCwildcard",dest="FCwildcard",
-                  help="Wildcard for FC directories [default=%default]",
-                  type="str",default="./FC*")
-
-parser.add_option("--OSdir",dest="onlySdir",
-                  help="Location of OnlyS directory [default=%default]",
-                  type="str",default="./OSrun")
-
-parser.add_option("-s", "--PrintSOrbitals",dest="PrintSOrbitals",
-                  help="Print s-orbital part of device matrices [default=%default]",
-                  action="store_true",default=False)
-
-parser.add_option("-a", "--AbsoluteEnergyReference",dest="AbsEref",
-                  help="Use an absolute energy reference (Fermi energy of equilibrium structure) for displaced Hamiltonians (e.g., when eF is not well-defined) instead of the instantaneous Fermi energy for the displaced geometries, cf. Eq.(17) in PRB 75, 205413 (2007) [default=%default]",action="store_true",default=False)
-
-parser.add_option("-n", "--AuxNCfile",dest="AuxNCfile",
-                  help="Optional filename for storing matrices in netcdf file instead of in memory [default=%default]",
-                  default=None)
-
-parser.add_option("-i", "--Isotopes",dest="Isotopes",
-                  help="List of substitutions [[i1, anr1],...], where atom index i1 (SIESTA numbering) is set to be of type anr1. Alternatively, the argument can be a file with the input string [default=%default]",
-                  default='[]')
-parser.add_option("--AtomicMass", dest='AtomicMass', default='[]',
-                  help="Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%default]")
-
-parser.add_option("-x","--k1", dest='k1', default=0.0,type='float',
-                  help="k-point along a1 where e-ph couplings are evaluated [%default]")
-parser.add_option("-y","--k2", dest='k2', default=0.0,type='float',
-                  help="k-point along a2 where e-ph couplings are evaluated [%default]")
-parser.add_option("-z","--k3", dest='k3', default=0.0,type='float',
-                  help="k-point along a3 where e-ph couplings are evaluated [%default]")
-
-(options, args) = parser.parse_args()
-
-# Destination directory
-if len(args)!=1:
-    parser.error('ERROR: You need to specify a destination directory')
-else:
-    options.DestDir = args[0]
-if not os.path.isdir(options.DestDir):
-    print '\nInelastica: Creating folder %s' %options.DestDir
-    os.mkdir(options.DestDir)
-
-# Log output to file                                                                                                                                                                                                
-sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
-tee = subprocess.Popen(["tee", options.DestDir+"/%s.log"%options.label], stdin=subprocess.PIPE)
-os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
-os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
+options = PH.GetOptions(sys.argv[1:])
 
 # Write function call
-print
-for arg in sys.argv: print arg,
-print '\n'
+print '\n' + ' '.join(sys.argv) + '\n'
 
-# Load Inelastica stuff
-from Inelastica import Phonons
-
-# k-point
-options.kPoint = N.array([options.k1,options.k2,options.k3],N.float)
-
-# Isotopes specified in separate file?
-if os.path.isfile(options.Isotopes):
-    f = open(options.Isotopes)
-    s = ''
-    for line in f.readlines():
-        s += line.replace('\n','').replace(' ','')
-    options.Isotopes = s
-    f.close()
-
-# Check if AtomicMasses are specified
-if options.AtomicMass!='[]':
-    from Inelastica import PhysicalConstants as PC
-    masslist = eval(options.AtomicMass.replace('\n','').replace(' ',''))
-    for elm in masslist:
-        anr = int(elm[0])
-        mass = float(elm[1])
-        PC.AtomicMass[anr] = mass
-        if len(elm)==3:
-            label = elm[2]
-            PC.PeriodicTable[anr] = label
-            PC.PeriodicTable[label] = anr
-    print 'AtomicMass =',PC.AtomicMass
-    print 'PeriodicTable =',PC.PeriodicTable
-
-# Calculate Phonons using specified inputs
-Phonons.Analyze(FCwildcard=options.FCwildcard,onlySdir=options.onlySdir,
-                DeviceFirst=options.DeviceFirst,DeviceLast=options.DeviceLast,
-                FCfirst=options.FCfirst,FClast=options.FClast,
-                PBCFirst=options.PerBoundCorrFirst,
-                PBCLast=options.PerBoundCorrLast,
-                outlabel=options.DestDir+'/'+options.label,
-                CalcCoupl=options.CalcCoupl,
-                PrintSOrbitals=options.PrintSOrbitals,
-                AbsEref=options.AbsEref,
-                AuxNCfile=options.AuxNCfile,
-                Isotopes=eval(options.Isotopes),
-                kpoint=options.kPoint)
+PH.main(options)
 
 # Timing
 dT = datetime.now()-start
