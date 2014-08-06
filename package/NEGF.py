@@ -731,6 +731,9 @@ class GF:
                  "Transmission has large imaginary part")
         # Calculate eigenchannel transmissions too
         tval,tvec = LA.eig(TT)
+        idx = (tval.real).argsort()[::-1] # sort from largest to smallest
+        tval = tval[idx]
+        tvec = tvec[:,idx]
         # Compute shot noise
         Smat = MM.mm(TT,N.identity(len(TT))-TT)
         sval = N.diag(MM.mm(MM.dagger(tvec),Smat,tvec))
