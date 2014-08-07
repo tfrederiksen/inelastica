@@ -115,16 +115,10 @@ For help use --help!
 
 
 def main(options):
-    # Pipe output to file
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    CF.PrintMainHeader('pyTBT',vinfo,options)
- 
-    # Check the options
     VC.OptionsCheck(options,'pyTBT')
+    CF.PrintMainHeader('pyTBT',vinfo,options)
 
-    # Print out energy list
-    print 'pyTBT: options.Elist =\n',options.Elist
-    
     # K-points
     if options.Gk1>1:
         Nk1,t1 = options.Gk1,'GK'

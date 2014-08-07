@@ -95,6 +95,11 @@ For help use --help!"""
     else:
         options.Logfile = 'Inelastica.log'
 
+
+    # k-point                                                                                                                                                                                                       
+    options.kpoint = N.array([options.k1,options.k2,0.0],N.float)
+    del options.k1,options.k2
+
     return options
 
 
@@ -102,12 +107,9 @@ For help use --help!"""
 ##################### Main routine #####################
 ########################################################
 def main(options):
-    # Pipe output to file
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    CF.PrintMainHeader('Inelastica',vinfo,options)
-
-    # Check the options
     VC.OptionsCheck(options,'Inelastica')
+    CF.PrintMainHeader('Inelastica',vinfo,options)
 
     options.XV = '%s/%s.XV'%(options.head,options.systemlabel)
     options.geom = MG.Geom(options.XV,BufferAtoms=options.buffer)
@@ -152,7 +154,7 @@ def main(options):
     GFm.nHT = N.zeros(len(hw),N.float)     # non-Hilbert/Isym factor
     GFm.HT = N.zeros(len(hw),N.float)      # Hilbert/Iasym factor
     # Calculate transmission at Fermi level
-    GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+    GFp.calcGF(options.energy+options.eta*1.0j,options.kpoint[0:2],ispin=options.iSpin,
                etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
     L = options.bufferL
     # Pad lasto with zeroes to enable basis generation...
@@ -171,9 +173,9 @@ def main(options):
     print 'Inelastica: LOEscale =',options.LOEscale
     if options.LOEscale==0.0:
         # LOEscale=0.0 => Original LOE-WBA method, PRB 72, 201101(R) (2005) [cond-mat/0505473].
-        GFp.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+        GFp.calcGF(options.energy+options.eta*1.0j,options.kpoint[0:2],ispin=options.iSpin,
                    etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
-        GFm.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+        GFm.calcGF(options.energy+options.eta*1.0j,options.kpoint[0:2],ispin=options.iSpin,
                    etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
         for ihw in (hw>options.modeCutoff).nonzero()[0]:
             calcTraces(options,GFp,GFm,basis,NCfile,ihw)
@@ -182,15 +184,15 @@ def main(options):
     else:
         # LOEscale=1.0 => Generalized LOE, PRB 89, 081405(R) (2014) [arXiv:1312.7625]
         for ihw in (hw>options.modeCutoff).nonzero()[0]:
-            GFp.calcGF(options.energy+hw[ihw]*options.LOEscale*VfracL+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+            GFp.calcGF(options.energy+hw[ihw]*options.LOEscale*VfracL+options.eta*1.0j,options.kpoint[0:2],ispin=options.iSpin,
                        etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
-            GFm.calcGF(options.energy+hw[ihw]*options.LOEscale*(VfracL-1.)+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+            GFm.calcGF(options.energy+hw[ihw]*options.LOEscale*(VfracL-1.)+options.eta*1.0j,options.kpoint[0:2],ispin=options.iSpin,
                        etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
             calcTraces(options,GFp,GFm,basis,NCfile,ihw)
             if VfracL!=0.5:
-                GFp.calcGF(options.energy-hw[ihw]*options.LOEscale*(VfracL-1.)+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+                GFp.calcGF(options.energy-hw[ihw]*options.LOEscale*(VfracL-1.)+options.eta*1.0j,options.kpoint[0:2],ispin=options.iSpin,
                            etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
-                GFm.calcGF(options.energy-hw[ihw]*options.LOEscale*VfracL+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+                GFm.calcGF(options.energy-hw[ihw]*options.LOEscale*VfracL+options.eta*1.0j,options.kpoint[0:2],ispin=options.iSpin,
                            etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
             calcTraces(options,GFm,GFp,basis,NCfile,ihw)
             
@@ -515,7 +517,7 @@ def calcIETS(options,GFp,GFm,basis,hw):
     # Write k-point
     outNC.createDimension('vector',3)
     tmp=outNC.createVariable('kpoint','d',('vector',))
-    tmp[:]=N.array(options.kPoint)
+    tmp[:]=N.array(options.kpoint)
     outNC.close()
 
     

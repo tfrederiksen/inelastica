@@ -93,18 +93,19 @@ For help use --help!
     else:
         options.Logfile = 'EigenChannels.log'
 
+    # k-point                                                                                                                                                                                                       
+    options.kpoint = N.array([options.k1,options.k2,0.0],N.float)
+    del options.k1,options.k2
+
     return options
 
 ########################################################
 ##################### Main routine #####################
 ########################################################
 def main(options):
-    # Pipe output to file
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    CF.PrintMainHeader('EigenChannels',vinfo,options)
-
-    # Check the options given to EigenChannels 
     VC.OptionsCheck(options,'EigenChannels')
+    CF.PrintMainHeader('EigenChannels',vinfo,options)
 
     # Read geometry
     XV = '%s/%s.XV'%(options.head,options.systemlabel)
@@ -118,7 +119,7 @@ def main(options):
     DevGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,
                     DeviceAtoms=options.DeviceAtoms,
                     BufferAtoms=options.buffer)
-    DevGF.calcGF(options.energy+options.eta*1.0j,options.kPoint[0:2],ispin=options.iSpin,
+    DevGF.calcGF(options.energy+options.eta*1.0j,options.kpoint[0:2],ispin=options.iSpin,
                  etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
 
@@ -554,8 +555,8 @@ def fileName(options):
         fn += ['UP','DOWN'][options.iSpin]
     if options.energy!=0.0:
         fn += '_E%.3f'%options.energy
-    if options.kPoint[0]!=0.0 or options.kPoint[1]!=0.0:
-        fn += '_kx%.3f_ky%.3f'%(options.kPoint[0],options.kPoint[1])
+    if options.kpoint[0]!=0.0 or options.kpoint[1]!=0.0:
+        fn += '_kx%.3f_ky%.3f'%(options.kpoint[0],options.kpoint[1])
     return options.DestDir+'/'+fn
 
 

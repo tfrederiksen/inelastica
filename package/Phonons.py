@@ -76,6 +76,9 @@ def GetOptions(argv,**kwargs):
     p.add_option("-n", "--AuxNCfile",dest="AuxNCfile",
                  help="Optional filename for storing matrices in netcdf file instead of in memory [default=%default]",
                  default=None)
+    p.add_option( "--AuxNCUseSinglePrec",dest="AuxNCUseSinglePrec",
+                  help="Use single precision for auxiliary netcdf file",
+                  action="store_true",default=False)
     
     p.add_option("-i", "--Isotopes",dest="Isotopes",
                  help="List of substitutions [[i1, anr1],...], where atom index i1 (SIESTA numbering) is set to be of type anr1. Alternatively, the argument can be a file with the input string [default=%default]",default=[])
@@ -109,6 +112,7 @@ def GetOptions(argv,**kwargs):
 
     # k-point
     options.kpoint = N.array([options.k1,options.k2,options.k3],N.float)
+    del options.k1,options.k2,options.k3
  
     # Isotopes specified in separate file?
     if type(options.Isotopes)!=type([]): # i.e., not a list
@@ -134,7 +138,7 @@ def GetOptions(argv,**kwargs):
                 PC.PeriodicTable[label] = anr
         print 'AtomicMass =',PC.AtomicMass
         print 'PeriodicTable =',PC.PeriodicTable
-    
+
     return options
 
 
@@ -169,10 +173,8 @@ def main(options):
     -  PhBandRadie : Optional max distance for forces. 0.0 -> Automatically choosen
     """
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    #VC.OptionsCheck(options,'Phonons') 
     CF.PrintMainHeader('Phonons',vinfo,options)
-
-    # Check the options
-    #VC.OptionsCheck(options,'Phonons')
 
     ### Get file lists
     print '\nPhonons.Analyze: Searching file structure.'
@@ -309,11 +311,11 @@ def main(options):
         # Heph couplings utilizing netcdf-file
         if not os.path.isfile(options.AuxNCfile):
             GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,options.onlySdir,options.PBCFirst,options.PBCLast,
-                              options.AuxNCfile,displacement,options.kpoint,AuxNCUseSinglePrec,options.AbsEref)
+                              options.AuxNCfile,displacement,options.kpoint,options.AuxNCUseSinglePrec,options.AbsEref)
         else:
             print 'Phonons.Analyze: Reading from AuxNCfile =', options.AuxNCfile
         H0,S0,Heph = CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
-                                    hw,U,NCfile,options.AuxNCfile,options.kpoint,AuxNCUseSinglePrec)
+                                    hw,U,NCfile,options.AuxNCfile,options.kpoint,options.AuxNCUseSinglePrec)
     elif options.CalcCoupl:
         # Old way to calculate Heph (reading everything into the memory)
         print '\nPhonons.Analyze: Reading (H0,S0,dH) from .TSHS and .onlyS files:'
@@ -596,7 +598,9 @@ def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref):
                 dH.append((TSHSp.H-TSHSm.H)/(2*displacement))
                 # don't wait for the garbage collector...
                 del TSHSm, TSHSp
-    return TSHS0.ef,TSHS0.H,TSHS0.S,N.array(dH)
+        data = TSHS0.ef,TSHS0.H,TSHS0.S,N.array(dH)        
+        del TSHS0
+    return data
 
     
 def OpenNetCDFFile(filename,nao,xyz,DeviceFirst,DeviceLast,FCfirst,FClast,AuxNCfile):
@@ -939,20 +943,13 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                       AuxNCfile,displacement,kpoint,SinglePrec,AbsEref):
     if SinglePrec: precision = 'f'
     else: precision = 'd'
-    SIO.HS.setkpoint2=SIO.HS.setkpoint
-    def mysetk(self,kpt):
-        if N.dot(kpt,kpt)<1e-7: 
-            if SinglePrec: type = N.float32
-            else: type = N.float
-        else:
-            if SinglePrec: type = N.complex64
-            else: type = N.complex
-        self.setkpoint2(kpt)
-        try: self.H = N.array(self.H,type)
-        except: pass
-        self.S = N.array(self.S,type)
-    SIO.HS.setkpoint=mysetk
     GammaPoint = N.dot(kpoint,kpoint)<1e-7
+    if GammaPoint:
+        if SinglePrec: atype = N.float32
+        else: atype = N.float
+    else:
+        if SinglePrec: atype = N.complex64
+        else: atype = N.complex
 
     index = 0
     # Read TSHSfiles
@@ -965,7 +962,7 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
                      ' PROGRAM STOPPED!!!')
         # The first TSHSfile in a folder is the one corresponding to no displacement
         TSHS0 = SIO.HS(HSfiles[0])
-        TSHS0.setkpoint(kpoint) # Here eF is moved to zero
+        TSHS0.setkpoint(kpoint,atype=atype) # Here eF is moved to zero
         if TSHS0.istep!=0: # the first TSHS file should have istep=0
             print "Phonons.GenerateAuxNETCDF: Assumption on file order not right ",HSfiles[0]
             raise IOError("File order not good")
@@ -973,9 +970,9 @@ def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,P
             if TSHS0.ia1+j/3 >= FCfirst and TSHS0.ia1+j/3 <= FClast:
                 # Read TSHS file since it is within (FCfirst,FClast)
                 TSHSm = SIO.HS(HSfiles[2*j+1])
-                TSHSm.setkpoint(kpoint) # Here eF is moved to zero of HSm
+                TSHSm.setkpoint(kpoint,atype=atype) # Here eF is moved to zero of HSm
                 TSHSp = SIO.HS(HSfiles[2*j+2])
-                TSHSp.setkpoint(kpoint) # Here eF is moved to zero of HSp
+                TSHSp.setkpoint(kpoint,atype=atype) # Here eF is moved to zero of HSp
                 if AbsEref:
                     # Measure energies wrt. TSHS0.ef (absolute energy ref).
                     for iSpin in range(len(TSHS0.H)):

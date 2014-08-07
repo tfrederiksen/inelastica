@@ -1680,7 +1680,7 @@ class HS:
                     #if juo!=jo and N.max(abs(self.xij[self.listhptr[iuo]+jnz,:]))<0.1:
                     #    print self.xij[self.listhptr[iuo]+jnz,:]
 
-    def setkpoint(self,kpoint,UseF90helpers=True):
+    def setkpoint(self,kpoint,UseF90helpers=True,atype=N.complex):
         "Make full matrices from sparse for specific k-point"
         kpoint = N.array(kpoint,N.float)
         if self.gamma:
@@ -1689,15 +1689,15 @@ class HS:
         if N.any(N.abs(self.kpoint-kpoint) > VC.GetCheck("same-kpoint")):
             print "SiestaIO.HS.setkpoint: %s k =" % self.fn,kpoint
             self.kpoint = kpoint
-            self.S = self.setkpointhelper(self.Ssparse,kpoint,UseF90helpers)
+            self.S = self.setkpointhelper(self.Ssparse,kpoint,UseF90helpers,atype=atype)
             if not self.onlyS:
-                self.H = N.empty((self.nspin,self.nuo,self.nuo),N.complex)
+                self.H = N.empty((self.nspin,self.nuo,self.nuo),atype)
                 for ispin in range(self.nspin):
-                    self.H[ispin,:,:] = self.setkpointhelper(self.Hsparse[:,ispin],kpoint,UseF90helpers) \
+                    self.H[ispin,:,:] = self.setkpointhelper(self.Hsparse[:,ispin],kpoint,UseF90helpers,atype=atype) \
                         - self.ef * self.S
 
 
-    def setkpointhelper(self, Sparse, kpoint,UseF90helpers=True):
+    def setkpointhelper(self,Sparse,kpoint,UseF90helpers=True,atype=N.complex):
         """
         Make full matrices from sparse for specific k-point
         NOTE: Assumption for Fourier transform                     
@@ -1721,7 +1721,7 @@ class HS:
             Full = N.require(Full,requirements=['A','C'])
             Full.shape = (self.nuo,self.nuo)
         else:
-            Full = N.zeros((self.nuo,self.nuo),N.complex)
+            Full = N.zeros((self.nuo,self.nuo),atype)
             # Phase factor 
             tmp = N.dot(kpoint,N.dot(self.rcell,self.xij))
             phase = N.exp(2.0j*N.pi*tmp)    # exp(2 pi i k*(Rj-Ri)) where i,j from Hij
@@ -1734,7 +1734,7 @@ class HS:
                 #    if phase[si]!=1.0+0.0j:
                 #        print "hej"
                     Full[iuo,juo] += Sparse[si]*phase[si]       
-        return Full
+        return N.array(Full,atype)
 
 # Easy method to read in number of atoms in a TSHS file
 def ReadTSHS(fn,**kwargs):

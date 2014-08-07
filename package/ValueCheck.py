@@ -147,10 +147,6 @@ def OptionsCheck(opts,exe):
     # Here comes some specifics related to different executables:
     #############
 
-    if "k1" in opts.__dict__:
-        # Check k-point input
-        opts.kPoint = _np.array([opts.k1,opts.k2,0.0],_np.float)
-
     if "VfracL" in opts.__dict__:
         if opts.VfracL < 0.0 or opts.VfracL > 1.0:
             raise RuntimeError('Option VfracL must be a value in the range [0,1].')
