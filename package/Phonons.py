@@ -26,6 +26,9 @@ mm = MM.mm
 dagger = MM.dagger
 
 def GetOptions(argv,**kwargs):
+    # if text string is specified, convert to list
+    if type(argv)==type(''): argv = argv.split()
+
     import optparse as o
 
     usage = "usage: %prog [options] DestinationDirectory"

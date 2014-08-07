@@ -35,6 +35,9 @@ vinfo = [version,SIO.version,MM.version,NEGF.version,VC.version,CF.version]
 # By creating the parser locally we can actually pass down these informations easily.
 # DIRECTLY in python
 def GetOptions(argv,**kwargs):
+    # if text string is specified, convert to list
+    if type(argv)==type(''): argv = argv.split()
+
     import optparse as o
 
     d = """pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge.

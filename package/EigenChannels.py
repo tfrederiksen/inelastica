@@ -25,6 +25,9 @@ vinfo = [version,NEGF.version,SIO.version,MG.version,MM.version,PC.version,VC.ve
 # By creating the parser locally we can actually pass down these informations easily.
 # DIRECTLY in python
 def GetOptions(argv,**kwargs):
+    # if text string is specified, convert to list
+    if type(argv)==type(''): argv = argv.split()
+
     import optparse as o
 
     d = """Eigenchannels script that calculates:
