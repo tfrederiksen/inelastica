@@ -200,10 +200,11 @@ def main(options):
             calcTraces(options,GFm,GFp,basis,NCfile,ihw)
             
     # Multiply traces with voltage-dependent functions
-    calcIETS(options,GFp,GFm,basis,hw)
+    data = calcIETS(options,GFp,GFm,basis,hw)
     NCfile.close()
     NEGF.SavedSig.close()
     CF.PrintMainFooter('Inelastica')
+    return data
 
 ########################################################
 def IntegrityCheck(options,GF,basis,NCfile):
@@ -522,6 +523,8 @@ def calcIETS(options,GFp,GFm,basis,hw):
     tmp=outNC.createVariable('kpoint','d',('vector',))
     tmp[:]=N.array(options.kpoint)
     outNC.close()
+
+    return V, I, dI, ddI, BdI, BddI
 
     
 ########################################################

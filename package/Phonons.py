@@ -375,9 +375,9 @@ def main(options):
     CF.PrintMainFooter('Phonons')
 
     if options.CalcCoupl:
-        return hw,Heph
+        return H0,S0,hw,Heph
     else:
-        return hw,0.0
+        return 0.,0.,hw,0.
 
 
 def OutputFC(FC,filename='FC.matrix'):
