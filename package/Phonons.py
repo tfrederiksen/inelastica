@@ -1,4 +1,5 @@
-print "SVN $Id$"
+version = "SVN $Id$"
+print version
 
 """
 Routines to calculate vibrational frequencies and e-ph coupling.
@@ -17,6 +18,9 @@ import WriteXMGR as XMGR
 import Symmetry
 import MiscMath as MM
 import ValueCheck as VC
+import CommonFunctions as CF
+
+vinfo = [version,SIO.version,PC.version,MM.version,Symmetry.version,VC.version,CF.version]
 
 mm = MM.mm
 dagger = MM.dagger
@@ -164,15 +168,11 @@ def main(options):
                       "POLYMER" etc
     -  PhBandRadie : Optional max distance for forces. 0.0 -> Automatically choosen
     """
-    VC.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    print 'Options =', options
+    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    CF.PrintMainHeader('Phonons',vinfo,options)
 
     # Check the options
     #VC.OptionsCheck(options,'Phonons')
-
-    print '=========================================================================='
-    print '                         Calculating Phonons'
-    print '=========================================================================='
 
     ### Get file lists
     print '\nPhonons.Analyze: Searching file structure.'
@@ -367,13 +367,13 @@ def main(options):
                                            DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].imag)
     NCfile.close()
 
-    print '=========================================================================='
-    print '  Program finished:  %s '%time.ctime()
-    print '=========================================================================='
+    CF.PrintMainFooter('Phonons')
+
     if options.CalcCoupl:
         return hw,Heph
     else:
         return hw,0.0
+
 
 def OutputFC(FC,filename='FC.matrix'):
     print 'Phonons.OutputFC: Writing',filename

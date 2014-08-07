@@ -1,4 +1,5 @@
-print "SVN $Id$"
+version = "SVN $Id$"
+print version
 
 """
 Routines for IO in different formats:

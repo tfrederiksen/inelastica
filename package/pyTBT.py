@@ -1,4 +1,5 @@
-print "SVN $Id$"
+version = "SVN $Id$"
+print version
 
 """
 ################################################################
@@ -20,13 +21,15 @@ print "SVN $Id$"
 ################################################################
 """
 
-
 import SiestaIO as SIO
 import MiscMath as MM
 import NEGF
 import numpy as N
 import Kmesh
 import ValueCheck as VC
+import CommonFunctions as CF
+
+vinfo = [version,SIO.version,MM.version,NEGF.version,VC.version,CF.version]
 
 # For doing loops with pyTBT we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.
@@ -113,8 +116,8 @@ For help use --help!
 
 def main(options):
     # Pipe output to file
-    VC.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    print 'Options =', options
+    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    CF.PrintMainHeader('pyTBT',vinfo,options)
  
     # Check the options
     VC.OptionsCheck(options,'pyTBT')
@@ -149,23 +152,6 @@ def main(options):
         elecL.mesh = mesh
         mesh = Kmesh.kmesh(3,3,1)
 
-    print """
-##############################################################
-pyTBT
-
-Energy [eV]                     : %f:%f:%f
-kpoints                         : %i, %i 
-eta [eV]                        : %f
-etaLead [eV]                    : %f
-Device [Atoms Siesta numbering] : %i:%i 
-Bulk                            : %s
-SpinPolarization                : %i
-Voltage                         : %f
-##############################################################
-
-"""%(options.Emin,options.dE,options.Emax,mesh.Nk[0],mesh.Nk[1],options.eta,options.etaLead,\
-         options.DeviceAtoms[0],options.DeviceAtoms[1],options.UseBulk,nspin,options.voltage)
-        
     if options.dos:
         DOSL=N.zeros((nspin,len(options.Elist),DevGF.nuo),N.float)
         DOSR=N.zeros((nspin,len(options.Elist),DevGF.nuo),N.float)
@@ -289,6 +275,8 @@ Voltage                         : %f
         WritePDOS(outFile+'.PDOS.gz',options,DevGF,DOSL+DOSR,basis)
         WritePDOS(outFile+'.PDOSL.gz',options,DevGF,DOSL,basis)
         WritePDOS(outFile+'.PDOSR.gz',options,DevGF,DOSR,basis)
+
+    CF.PrintMainFooter('pyTBT')
     
 
 def WritePDOS(fn,options,DevGF,DOS,basis):

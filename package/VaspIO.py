@@ -1,4 +1,5 @@
-print "SVN $Id$"
+version = "SVN $Id$"
+print version
 
 import numpy as N
 import numpy.linalg as LA

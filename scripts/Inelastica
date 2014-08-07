@@ -3,20 +3,14 @@
 import sys
 from datetime import datetime
 
-from Inelastica import Inelastica as I
+from Inelastica import Inelastica as Module
+from Inelastica import CommonFunctions as CF
 
 start = datetime.now()
 
-options = I.GetOptions(sys.argv[1:])
+options = Module.GetOptions(sys.argv[1:])
+Module.main(options)
 
-# Write function call
-print '\n' + ' '.join(sys.argv) + '\n'
-
-I.main(options)
-
-# Timing
 dT = datetime.now()-start
-hours = dT.days/24.+(dT.seconds+dT.microseconds*1.e-6)/60.**2
-minutes = hours*60.
-seconds = minutes*60.
-print 'Total walltime %.2f hrs = %.2f min = %.2f sec'%(hours,minutes,seconds)
+
+CF.PrintScriptSummary(sys.argv,dT)

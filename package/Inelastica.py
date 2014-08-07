@@ -1,4 +1,4 @@
-print "SVN $Id$"
+version = "SVN $Id$"
 
 import NEGF
 import SiestaIO as SIO
@@ -12,6 +12,9 @@ import sys
 import PhysicalConstants as PC
 import time
 import ValueCheck as VC
+import CommonFunctions as CF
+
+vinfo = [version,NEGF.version,SIO.version,MG.version,NCDF.version,PC.version,VC.version,CF.version]
 
 # For doing loops with Inelastica we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.
@@ -100,8 +103,8 @@ For help use --help!"""
 ########################################################
 def main(options):
     # Pipe output to file
-    VC.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    print 'Options =',options
+    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    CF.PrintMainHeader('Inelastica',vinfo,options)
 
     # Check the options
     VC.OptionsCheck(options,'Inelastica')
@@ -195,6 +198,7 @@ def main(options):
     calcIETS(options,GFp,GFm,basis,hw)
     NCfile.close()
     NEGF.SavedSig.close()
+    CF.PrintMainFooter('Inelastica')
 
 ########################################################
 def IntegrityCheck(options,GF,basis,NCfile):

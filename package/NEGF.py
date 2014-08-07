@@ -1,4 +1,5 @@
-print "SVN $Id$"
+version = "SVN $Id$"
+print version
 
 import SiestaIO as SIO
 import MiscMath as MM

@@ -1,4 +1,5 @@
-print "SVN $Id$"
+version = "SVN $Id$"
+print version
 
 """
 Eigenchannels:
@@ -16,6 +17,9 @@ import Scientific.IO.NetCDF as NC
 import sys, string, struct, glob, os
 import PhysicalConstants as PC
 import ValueCheck as VC
+import CommonFunctions as CF
+
+vinfo = [version,NEGF.version,SIO.version,MG.version,MM.version,PC.version,VC.version,CF.version]
 
 # For doing loops with Eigenchannels we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.
@@ -96,8 +100,8 @@ For help use --help!
 ########################################################
 def main(options):
     # Pipe output to file
-    VC.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    print 'Options =', options
+    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    CF.PrintMainHeader('EigenChannels',vinfo,options)
 
     # Check the options given to EigenChannels 
     VC.OptionsCheck(options,'EigenChannels')
@@ -176,6 +180,8 @@ def main(options):
         except:
             print 'You need to install scipy to solve the generalized eigenvalue problem'
             print 'for the molecular eigenstates in the nonorthogonal basis'
+
+    CF.PrintMainFooter('EigenChannels')
 
 ########################################################
 def calcWF(options,geom,basis,Y):

@@ -12,4 +12,4 @@ Provides:
 
 """
 
-
+__version__ = filter(str.isdigit, "$Revision: 13 $")

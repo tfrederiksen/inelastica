@@ -1,3 +1,6 @@
+version = "SVN $Id$"
+print version
+
 """
 Contains general quantities that are used to do checks in the 
 Inelastica package.
@@ -196,38 +199,3 @@ def GetPositional(args,msg="You have not specified any positional argument"):
         raise ValueError(msg)
     pos = args.pop(0)
     return pos
-
-# Save the stdout pipes
-_default_stdout = s.stdout
-_default_stderr = s.stderr
-def CreatePipeOutput(f):
-    global _default_stdout, _default_stderr
-    import subprocess, os, os.path as osp, errno
-
-    # First ensure that the path to the file exists
-    # In case one wishes to create a log folder this should
-    # not be limited.
-    head, tail = osp.split(f)
-    try:
-        # Create directory tree
-        os.makedirs(head)
-    except OSError as exc:
-        if exc.errno == errno.EEXIST and osp.isdir(head):
-            pass
-        else: raise # forward error...
-
-    class TeeLog(object):
-        def __init__(self,f,term):
-            self.term = term
-            self.log = open(f,'w') # Consider doing this optionally appending?
-        def write(self,message):
-            self.term.write(message)
-            self.log.write(message)
-        def flush(self):
-            self.term.flush()
-            self.log.flush()
-
-    # Overwrite the std-out and std-err
-    s.stdout = TeeLog(f,_default_stdout)
-    s.stderr = TeeLog(f,_default_stderr)
-
