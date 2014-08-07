@@ -181,14 +181,15 @@ def OptionsCheck(opts,exe):
             opts.NPoints = SIO.GetFDFlineWithDefault(opts.fn,'TS.TBT.NPoints', int, 1, 'pyTBT')
 
         # Create list of energies
-        opts.dE = (opts.Emax-opts.Emin)/float(opts.NPoints-1)
-        if opts.NPoints == 1:
-            opts.dE = 0.
-            opts.Elist = _np.array((opts.Emin,),_np.float)
-        else:
-            # Linspace is just what we need
-            opts.Elist = _np.linspace(opts.Emin,opts.Emax,opts.NPoints)
-
+        try:
+            opts.Elist
+            # Do not overwrite if some Elist is already specified
+        except:
+            if opts.NPoints == 1:
+                opts.Elist = _np.array((opts.Emin,),_np.float)
+            else:
+                # Linspace is just what we need
+                opts.Elist = _np.linspace(opts.Emin,opts.Emax,opts.NPoints)
 
 def GetPositional(args,msg="You have not specified any positional argument"):
     if len(args) < 1:
