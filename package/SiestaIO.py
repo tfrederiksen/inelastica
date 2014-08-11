@@ -1496,6 +1496,10 @@ class HS:
                 
             # Arrays
             arr = F90.readtshs
+            try:
+                self.version = arr.version.copy()
+            except:
+                self.version = 0
             self.lasto    = arr.lasto.copy()
             self.xa       = arr.xa.copy()
             self.numh     = arr.numh.copy()
@@ -1524,12 +1528,11 @@ class HS:
         self.xij = N.require(self.xij,requirements=['A','F'])
         if not self.onlyS: 
             self.Hsparse = N.require(self.Hsparse,requirements=['A','F'])
-
         print "Found %i atoms, (%i, %i) orbitals in super-, unit-cell"%(self.nua, self.no, self.nuo)
         self.N = self.nuo
         self.makeDerivedQuant()
-        if not self.gamma and not self.onlyS:
-            self.removeUnitCellXij(UseF90helpers)       # Remove phase change in unitcell
+        if not self.gamma and not self.onlyS and self.version == 0:
+            self.removeUnitCellXij(UseF90helpers) # Remove phase change in unitcell
         self.resetkpoint() # save time by not repeating
 
     def resetkpoint(self):
@@ -1554,6 +1557,7 @@ class HS:
         xij[nr,xyz]
         """
         print 'SiestaIO.__ReadTSHSFile: Reading',filename
+        self.version = 0
         # Open binary Fortran file
         file = SIO_open(filename,'rb')
         nau,nou,nos,nspin,maxnh = ReadFortranBin(file,fortranLong,5)

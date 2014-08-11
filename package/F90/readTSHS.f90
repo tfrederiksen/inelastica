@@ -17,6 +17,7 @@ module readTSHS
 
   public
 
+  integer :: version = 0
   real(kind=8), allocatable :: S(:)
   real(kind=8), allocatable :: H(:,:)
   real(kind=8), allocatable :: xij(:,:)
@@ -42,8 +43,7 @@ CONTAINS
     character(len=*), intent(in) :: fname
     integer, intent(out) :: no_u, nspin
     integer, intent(out) ::  na_u, no_s, maxnh
-    integer :: iu
-    integer :: version
+    integer :: iu, version
     logical :: exist
 
     ! Get file version
@@ -101,19 +101,19 @@ CONTAINS
 
 !     Local variables:
     integer :: iu, is, ind, io, i, j, ia, ja
-    integer :: version, tm(3)
+    integer :: tm(3)
     logical :: exist
     integer :: n_s
-    integer, allocatable :: offsets(:,:), indxs(:)
+    integer, allocatable :: offsets(:,:)
 
-    ! Get file version
+    ! Get file version (global variable)
     version = tshs_version(fname)
 
     select case ( version )
     case ( 0 , 1 )
        ! do nothing
     case default
-       stop 'Unsupported TSHS version file'
+       stop 'Unsupported TSHS version file, convert to 0,1'
     end select
     inquire(file=fname,exist=exist)
     if ( .not. exist ) then
@@ -139,6 +139,7 @@ CONTAINS
        read(iu) ! iza
        read(iu) ucell
     else if ( version == 1 ) then
+       read(iu) ! nsc
        read(iu) ucell, xa
     end if
     xa = xa * Bohr2Ang
@@ -161,7 +162,7 @@ CONTAINS
     allocate(lasto(0:na_u))
     read(iu) lasto
 
-    if ( .not. Gamma ) then
+    if ( version == 0 .and. .not. Gamma ) then
        read(iu) ! indxuo
     endif
 
@@ -217,28 +218,27 @@ CONTAINS
                   xij(:,listhptr(i)+1:listhptr(i)+numh(i)) * Bohr2Ang
           end do
        else if ( version == 1 ) then
-
-          allocate(indxs(maxnh))
-          read(iu) n_s, indxs
-          allocate(offsets(3,n_s))
+          n_s = no_s / no_u
+          allocate(offsets(3,0:n_s-1))
           read(iu) offsets
-          
           do io = 1 , no_u
              ia = iaorb(io,lasto)
              do j = 1 , numh(io)
                 ind = listhptr(io) + j
                 ja = iaorb(ucorb(listh(ind),no_u),lasto)
                 
-                tm(:) = offsets(:,indxs(ind))
+                ! supercell index
+                is = (listh(ind)-1)/no_u
+                tm(:) = offsets(:,is)
                 xij(:,ind) = ucell(:,1) * tm(1) &
                      + ucell(:,2) * tm(2) &
-                     + ucell(:,3) * tm(3) + xa(:,ja) - xa(:,ia)
+                     + ucell(:,3) * tm(3)
                 
              end do
           end do
           
           ! clean-up
-          deallocate(offsets,indxs)
+          deallocate(offsets)
           
        end if
     end if
