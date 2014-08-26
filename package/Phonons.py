@@ -2,28 +2,40 @@ version = "SVN $Id$"
 print version
 
 """
-Routines to calculate vibrational frequencies and e-ph coupling.
+A completely rewritten Phonons.py script with various improvements
+and additional flexibility:
 
+* The dynamic atoms no longer need to be a complete range(FCfirst,FClast+1).
+  Any arbitrary list of atoms (options.DynamicAtoms) can now be specified.
+
+* The displacement amplitude in the various FCrun and OSrun directories
+  may correspond to different values.
+
+* The code accepts that some atoms may have been displaced in several FCrun directories.
+  Only the first instance (first FCrun directory) encountered is read/used.
+
+* The auxiliary NetCDF file has been eliminated by simply interchanging 
+  the loops over gradients and phonon modes. Thus, only one gradient
+  need to be present in the memory at one time.
+
+Thomas Frederiksen, August 2014
 """
 
-import os, os.path, glob, string, time, sys
-import Scientific.IO.NetCDF as nc
+import SiestaIO as SIO
+import Symmetry
+import CommonFunctions as CF
+import MakeGeom as MG
+import PhysicalConstants as PC
+import MiscMath as MM
+import WriteNetCDF as NCDF
+import ValueCheck as VC
+
 import numpy as N
 import numpy.linalg as LA
-import SiestaIO as SIO
-import gzip
-import copy
-import PhysicalConstants as PC
-import WriteXMGR as XMGR
-import Symmetry
-import MiscMath as MM
-import ValueCheck as VC
-import CommonFunctions as CF
+import glob, os,sys,string
 
-vinfo = [version,SIO.version,PC.version,MM.version,Symmetry.version,VC.version,CF.version]
-
-mm = MM.mm
-dagger = MM.dagger
+vinfo = [version,SIO.version,Symmetry.version,CF.version,
+         MG.version,PC.version,MM.version,NCDF.version,VC.version]
 
 def GetOptions(argv,**kwargs):
     # if text string is specified, convert to list
@@ -69,22 +81,12 @@ def GetOptions(argv,**kwargs):
                  help="Location of OnlyS directory [default=%default]",
                  type="str",default="./OSrun")
     
-    p.add_option("-s", "--PrintSOrbitals",dest="PrintSOrbitals",
-                 help="Print s-orbital part of device matrices [default=%default]",
-                 action="store_true",default=False)
-    
     p.add_option("-a", "--AbsoluteEnergyReference",dest="AbsEref",
                 help="Use an absolute energy reference (Fermi energy of equilibrium structure) for displaced Hamiltonians (e.g., when eF is not well-defined) instead of the instantaneous Fermi energy for the displaced geometries, cf. Eq.(17) in PRB 75, 205413 (2007) [default=%default]",action="store_true",default=False)
     
-    p.add_option("-n", "--AuxNCfile",dest="AuxNCfile",
-                 help="Optional filename for storing matrices in netcdf file instead of in memory [default=%default]",
-                 default=None)
-    p.add_option( "--AuxNCUseSinglePrec",dest="AuxNCUseSinglePrec",
-                  help="Use single precision for auxiliary netcdf file",
-                  action="store_true",default=False)
-    
     p.add_option("-i", "--Isotopes",dest="Isotopes",
                  help="List of substitutions [[i1, anr1],...], where atom index i1 (SIESTA numbering) is set to be of type anr1. Alternatively, the argument can be a file with the input string [default=%default]",default=[])
+
     p.add_option("--AtomicMass", dest='AtomicMass', default='[]',
                  help="Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%default]")
     
@@ -95,13 +97,6 @@ def GetOptions(argv,**kwargs):
     p.add_option("-z","--k3", dest='k3', default=0.0,type='float',
                  help="k-point along a3 where e-ph couplings are evaluated [%default]")
 
-    p.add_option("-b", "--PhBandStruct",dest="PhBandStruct",
-                 help="Compute phonon band structure [default=%default]",
-                 action="store_true",default=False)
-    p.add_option("--PhBandRadie",dest="PhBandRadie",
-                 help="Force cutoff radius [default=%default]",
-                 type="float",default=0.0)
-    
     (options, args) = p.parse_args(argv)
 
     # Get the last positional argument
@@ -116,7 +111,17 @@ def GetOptions(argv,**kwargs):
     # k-point
     options.kpoint = N.array([options.k1,options.k2,options.k3],N.float)
     del options.k1,options.k2,options.k3
+
+    # Dynamic atoms
+    options.DynamicAtoms = range(options.FCfirst,options.FClast+1)
+    del options.FCfirst, options.FClast
  
+    # PBCFirst/PBCLast
+    if options.PBCFirst<options.DeviceFirst:
+        options.PBCFirst = options.DeviceFirst
+    if options.PBCLast>options.DeviceLast:
+        options.PBCLast = options.DeviceLast
+
     # Isotopes specified in separate file?
     if type(options.Isotopes)!=type([]): # i.e., not a list
         if os.path.isfile(options.Isotopes):
@@ -143,720 +148,400 @@ def GetOptions(argv,**kwargs):
         print 'PeriodicTable =',PC.PeriodicTable
 
     return options
+  
 
+class FCrun():
 
-def main(options):
-    """
-    Determine vibrations and electron-phonon couplings from SIESTA calculations
-    Needs two types of SIESTA calculations :
-    -  FC calculations, may be in several subdirectories ...
-    -  onlyS calculation in subdirectory onlyS (to get derivative of
-        overlap...)
-    Input:
-    -  FCwildcard : String specifying all FC directories to be used
-    -  DeviceFirst: Restrict Heph etc to the basis orbitals of these atoms
-    -  DeviceLast : - (can be a subset of the SIESTA basis)   
-    -  FCfirst    : Restrict FC matrix to these atoms
-    -  FClast     : - (can be a subset of the SIESTA FC calculations)
-    -  PBCFirst : Prevent interactions through periodic boundary
-                    conditions (defaults to DeviceFirst)
-    -  PBCLast : Defaults to DeviceLast
-    -  CalcCoupl  : Whether or not to calculate e-ph couplings
-    -  PrintSOrbitals : Print e-ph couplings in the s-orbital space
-    -  CorrectFermiShifts : Use instantaneous Fermi energy as reference in finite-difference scheme
-    -  AuxNCfile  : An optional auxillary netcdf-file used for read/writing dH matrix arrays
-                    (useful for large systems where loading dH matrices to the memory becomes
-                    an issue)
-    -  Isotopes   : [[ii1, anr1], ...] substitute atom number ii1 to be of type anr1 etc.,
-                    e.g., to substitute hydrogen with deuterium (anr 1001).
-    -  kpoint     : Electronic k-point where e-ph couplings are evaluated (Gamma default).
-    -  PhBandStruct: = != None -> Calculate bandstructure. 
-                      String "AUTO", "BCC", "FCC", "CUBIC", "GRAPHENE", 
-                      "POLYMER" etc
-    -  PhBandRadie : Optional max distance for forces. 0.0 -> Automatically choosen
-    """
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    #VC.OptionsCheck(options,'Phonons') 
-    CF.PrintMainHeader('Phonons',vinfo,options)
+    def __init__(self,runfdf):
+        self.fdf = runfdf
+        self.directory,self.tail =  os.path.split(runfdf)
+        self.systemlabel = SIO.GetFDFlineWithDefault(runfdf,'SystemLabel', str, 'Systemlabel','Phonons')
+        FCfirst = SIO.GetFDFlineWithDefault(runfdf,'MD.FCfirst',int,0,'Phonons')
+        FClast = SIO.GetFDFlineWithDefault(runfdf,'MD.FClast',int,0,'Phonons')
+        # Finite-displacement amplitude
+        ampl,unit = SIO.GetFDFline(runfdf,KeyWord='MD.FCDispl')
+        if unit.upper()=='ANG':
+            self.Displ = float(ampl)
+        elif unit.upper()=='BOHR':
+            self.Displ = float(ampl)*PC.Bohr2Ang
+        print 'Displacement = %.6f Ang'%self.Displ
+        # Read geometry
+        self.geom = MG.Geom(runfdf)
+        # Compare with XV file corrected for last displacement
+        XV = self.directory+'/%s.XV'%self.systemlabel
+        geomXV = MG.Geom(XV)
+        geomXV.xyz[FClast-1,2] -= self.Displ
+        if not N.allclose(geomXV.xyz,self.geom.xyz):
+            sys.exit('Error: Geometries %s and %s should differ ONLY by displacement of atom %s in z'\
+                     %(runfdf,XV,FClast))
+        # Set up FC[i,a,j,b]: Force constant (eV/A^2) from moved atom i, axis a to atom j, axis b
+        natoms = self.geom.natoms
+        self.m = N.zeros((FClast-FCfirst+1,3,natoms,3), N.float)
+        self.p = N.zeros((FClast-FCfirst+1,3,natoms,3), N.float)
+        fc = N.array(SIO.ReadFCFile(self.directory+'/%s.FC'%self.systemlabel))
+        for i in range(FClast-FCfirst+1):
+            for j in range(3):
+                self.m[i,j] = fc[2*(3*i+j)*natoms:(2*(3*i+j)+1)*natoms]
+                self.p[i,j] = fc[(2*(3*i+j)+1)*natoms:(2*(3*i+j)+2)*natoms]
+        # Correct force constants for the moved atom
+        # Cf. Eq. (13) in Frederiksen et al. PRB 75, 205413 (2007)
+        for i in range(FClast-FCfirst+1):
+            for j in range(3):
+                self.m[i,j,FCfirst-1+i,:] = 0.0
+                self.m[i,j,FCfirst-1+i,:] = -N.sum(self.m[i,j],axis=0)
+                self.p[i,j,FCfirst-1+i,:] = 0.0
+                self.p[i,j,FCfirst-1+i,:] = -N.sum(self.p[i,j],axis=0)
+        # Determine TSHS files
+        files = glob.glob(self.directory+'/%s*.TSHS'%self.systemlabel)
+        files.sort()
+        if (FClast-FCfirst+1)*6+1 != len(files):
+            sys.exit('Phonons.GetFileLists: WARNING - Inconsistent number of *.TSHS files in %s'%self.directory)
+        self.DynamicAtoms = range(FCfirst,FClast+1)
+        # Build dictionary over TSHS files and corresponding displacement amplitudes
+        self.TSHS = {}
+        self.TSHS[0] = files[0] # Equilibrium TSHS
+        for i,v in enumerate(self.DynamicAtoms):
+            for j in range(3):
+                # Shifted TSHS files (atom,axis,direction)
+                self.TSHS[v,j,-1] = files[1+6*i+2*j]
+                self.TSHS[v,j,1] = files[1+6*i+2*j+1]
 
-    ### Get file lists
-    print '\nPhonons.Analyze: Searching file structure.'
-    tree,XVfiles,FCfirstMIN,FClastMAX = GetFileLists(options.FCwildcard)
-    FCfirst = max(options.FCfirst,FCfirstMIN)
-    FClast  = min(options.FClast,FClastMAX)
+    def GetOrbitalIndices(self):
+        import Scientific.IO.NetCDF as nc
+        # Determine snr (siesta number) for each label
+        csl = SIO.GetFDFblock(self.fdf, KeyWord = 'ChemicalSpeciesLabel')
+        csl2snr = {}
+        for set in csl:
+            csl2snr[set[2]] = set[0]
+        # Determine nao (number of orbitals) for each snr
+        ionNCfiles = glob.glob(self.directory+'/*.ion.nc*')
+        snr2nao = {}
+        for ionfile in ionNCfiles:
+            if ionfile.endswith('.gz'):
+                print 'Phonons.GetOrbitalIndices: Unzipping',ionfile
+                os.system('gunzip '+ionfile)
+                ionfile = ionfile[:-3]
+            file = nc.NetCDFFile(ionfile,'r')
+            thissnr = csl2snr[file.Label]
+            snr2nao[int(thissnr)] = int(file.Number_of_orbitals[0])
+            file.close()
+        print 'Phonons.GetOrbitalIndices: Dictionary snr2nao =',snr2nao
+        # Determine which orbital indices that belongs to a certain atom
+        orbitalIndices = []
+        tmpOrb = 0
+        for num in self.geom.snr:
+            nao = snr2nao[num]
+            orbitalIndices.append([tmpOrb,tmpOrb+int(nao)-1])
+            tmpOrb+=nao
+        self.orbitalIndices = N.array(orbitalIndices)
+        self.nao = tmpOrb # total number of orbitals
+        self.snr2nao = snr2nao # orbitals per species
+        return self.orbitalIndices,self.nao
 
-    ### Correct and check geometry in XV-files
-    print '\nPhonons.Analyze: Checking XV-files:'
-    corrXVfiles = []
-    for xv in XVfiles:
-        xv, displacement = CorrectXVfile(xv)
-        corrXVfiles.append(xv)
-    if len(corrXVfiles)>1:
-        CheckForIdenticalXVfiles(corrXVfiles)
-
-    ### Read geometry
-    print '\nPhonons.Analyze: Reading geometry:'
-    vectors,speciesnumber,atomnumber,xyz = SIO.ReadXVFile(corrXVfiles[0])
-
-    # Determine correspondence between speciesnumber and orbital-indices
-    orbitalIndices,nao = GetOrbitalIndices(tree[0][2],speciesnumber)
-
-    # Make isotope substitutions 
-    print options.Isotopes
-    for ii,anr in options.Isotopes:
-        if ii>0 and ii<=len(atomnumber):
-            print 'Phonons.Analyse: Isotope substitution for atom %i (SIESTA numbering):'%ii
-            print '  ... atom type %i --> %i'%(atomnumber[ii-1],anr)
-            print '  ... atom mass %.4f --> %.4f'%(PC.AtomicMass[atomnumber[ii-1]],\
-                                                   PC.AtomicMass[anr])
-            atomnumber[ii-1] = anr
-
-    # Set atomic masses 
-    atommasses = N.empty(atomnumber.shape)
-    for ii in range(len(atomnumber)):
-        atommasses[ii] = PC.AtomicMass[atomnumber[ii-1]]
-
-    DeviceFirst = max(options.DeviceFirst,1)
-    DeviceLast = min(options.DeviceLast,len(xyz))
-    print 'Phonons.Analyze: This run uses'
-    print '  ... DeviceFirst = %4i, DeviceLast = %4i, Device atoms  = %4i'\
-          %(DeviceFirst,DeviceLast,DeviceLast-DeviceFirst+1)
-    print '  ... FCfirst     = %4i, FClast     = %4i, Dynamic atoms = %4i'\
-          %(FCfirst,FClast,FClast-FCfirst+1)
-
-    ### Make sure PBC is sensible numbers
-    if options.PBCFirst<1:
-        options.PBCFirst=DeviceFirst
-    if options.PBCLast<1 or options.PBCLast>DeviceLast:
-        options.PBCLast=DeviceLast
-    print '  ... PBC First   = %4i, PBC Last   = %4i, Device atoms  = %4i'\
-          %(options.PBCFirst,options.PBCLast,options.PBCLast-options.PBCFirst+1)
-
-    ### Build FC-matrix
-    print '\nPhonons.Analyze: Building FC matrix:'
-    # First, build FC on the full [FCfirstMIN,FCfirstMAX] space
-    FCm,FCp = GetFCMatrices(tree,FCfirstMIN,FClastMAX,len(xyz))
-    # Correct for egg-box effect
-    FCm = CorrectFCMatrix(FCm,FCfirstMIN,FClastMAX,len(xyz))
-    FCp = CorrectFCMatrix(FCp,FCfirstMIN,FClastMAX,len(xyz))
-    FCmean = (FCm+FCp)/2
-
-    ### Write FC-matrix to file
-    label = options.DestDir+'/Output'
-    OutputFC(FCmean,filename='%s.FC'%label)
-    
-    ### Calculate phonon bandstructure
-    if options.PhBandStruct:
-        CalcBandStruct(vectors,speciesnumber,xyz,FCmean,\
-                       FCfirst,FClast,options.PhBandStruct,atomnumber,\
-                       options.PhBandRadie)
-    
-    ### Calculate phonon frequencies and modes
-    print '\nPhonons.Analyze: Calculating phonons from FCmean, FCm, FCp:'
-    # Mean
-    FC2 = ReduceAndSymmetrizeFC(FCmean,FCfirstMIN,FClastMAX,FCfirst,FClast)
-    OutputFC(FC2,filename='%s.reduced.FC'%label)
-    hw,U,Udisp = CalcPhonons(FC2,atomnumber,FCfirst,FClast)
-    # FCm
-    FC2 = ReduceAndSymmetrizeFC(FCm,FCfirstMIN,FClastMAX,FCfirst,FClast)
-    CalcPhonons(FC2,atomnumber,FCfirst,FClast)
-    # FCp
-    FC2 = ReduceAndSymmetrizeFC(FCp,FCfirstMIN,FClastMAX,FCfirst,FClast)
-    CalcPhonons(FC2,atomnumber,FCfirst,FClast)
-
-    ### Write MKL- and xyz-files
-    print '\nPhonons.Analyze: Writing geometry and phonons to files.'
-    SIO.WriteMKLFile('%s.mkl'%label,atomnumber,xyz,hw,U,FCfirst,FClast)
-    SIO.WriteMKLFile('%s.real-displ.mkl'%label,atomnumber,xyz,hw,Udisp,FCfirst,FClast)
-    SIO.WriteXYZFile('%s.xyz'%label,atomnumber,xyz)
-    WriteFreqFile('%s.freq'%label,hw)
-    WriteVibDOSFile('%s.Gfdos'%label,hw,type='Gaussian')
-    WriteVibDOSFile('%s.Lfdos'%label,hw,type='Lorentzian')
-    WriteAXSFFiles('%s.mol.axsf'%label,xyz,atomnumber,hw,U,FCfirst,FClast)
-    WriteAXSFFiles('%s.mol.real-displ.axsf'%label,xyz,atomnumber,hw,Udisp,FCfirst,FClast)
-    WriteAXSFFilesPer('%s.per.axsf'%label,vectors,xyz,atomnumber,hw,U,FCfirst,FClast)
-    WriteAXSFFilesPer('%s.per.real-displ.axsf'%label,vectors,xyz,atomnumber,hw,Udisp,FCfirst,FClast)
-    
-    ### Write data to NC-file
-    print '\nPhonons.Analyze: Writing results to netCDF-file'
-    tmp1, tmp2 = [], []
-    for ii in range(DeviceFirst-1,DeviceLast):
-        tmp1.append(orbitalIndices[ii,0]-orbitalIndices[DeviceFirst-1,0])
-        tmp2.append(orbitalIndices[ii,1]-orbitalIndices[DeviceFirst-1,0])
-    naoDev = orbitalIndices[DeviceLast-1][1]-orbitalIndices[DeviceFirst-1][0]+1
-    NCfile,newNCfile = OpenNetCDFFile('%s.nc'%label,
-                            naoDev,xyz,DeviceFirst,DeviceLast,FCfirst,FClast,options.AuxNCfile)
-    if newNCfile:
-        Write2NetCDFFile(NCfile,tmp1,'FirstOrbital',('NumDevAtoms',),
-                         description='Orbital index for the first orbital on the atoms (counting from 0)')
-        Write2NetCDFFile(NCfile,tmp2,'LastOrbital',('NumDevAtoms',),
-                         description='Orbital index for the last orbital on the atoms (counting from 0)')
-        Write2NetCDFFile(NCfile,hw,'hw',('PhononModes',),units='eV')
-        Write2NetCDFFile(NCfile,U,'U',('PhononModes','PhononModes',),
-                         description='Normal coordinates U[i,j] where i is mode index and j atom displacement')
-        Write2NetCDFFile(NCfile,Udisp,'Udisp',('PhononModes','PhononModes',),
-                         description='Real displacements Udisp[i,j] where i is mode index and j atom displacement')
-        Write2NetCDFFile(NCfile,vectors,'UnitCell',('dim3','dim3',),units='Ang')
-        Write2NetCDFFile(NCfile,xyz,'GeometryXYZ',('NumTotAtoms','dim3',),units='Ang')
-        Write2NetCDFFile(NCfile,atomnumber,'AtomNumbers',('NumTotAtoms',),units='Atomic Number')
-        Write2NetCDFFile(NCfile,atommasses,'AtomMasses',('NumTotAtoms',),units='Atomic masses')
-        Write2NetCDFFile(NCfile,speciesnumber,'SpeciesNumbers',('NumTotAtoms',),units='Species Number')
-        DeviceAtoms = range(DeviceFirst,DeviceLast+1)
-        Write2NetCDFFile(NCfile,DeviceAtoms,'DeviceAtoms',('NumDevAtoms',),
-                         description='Range of atomic indices (counting from 1)')
-        del DeviceAtoms
-        Write2NetCDFFile(NCfile,N.array(range(FCfirst,FClast+1),N.float),'DynamicAtoms',('NumFCAtoms',),
-                         description='Range of atomic indices (counting from 1)')
-
-    if options.CalcCoupl:
-        print '\nPhonons.Analyze: AbsEref =',options.AbsEref
-    if options.CalcCoupl and options.AuxNCfile:
-        # Heph couplings utilizing netcdf-file
-        if not os.path.isfile(options.AuxNCfile):
-            GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,options.onlySdir,options.PBCFirst,options.PBCLast,
-                              options.AuxNCfile,displacement,options.kpoint,options.AuxNCUseSinglePrec,options.AbsEref)
+class OSrun:
+    def __init__(self,onlySdir,kpoint):
+        print 'Phonons.GetOnlyS: Reading from', onlySdir
+        onlySfiles = glob.glob(onlySdir+'/*.onlyS*')
+        onlySfiles.sort()
+        if len(onlySfiles)<1:
+            sys.exit('Phonons.GetOnlyS: No .onlyS file found!')
+        if len(onlySfiles)!=6:
+            sys.exit('Phonons.GetOnlyS: Wrong number of onlyS files found!')
         else:
-            print 'Phonons.Analyze: Reading from AuxNCfile =', options.AuxNCfile
-        H0,S0,Heph = CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
-                                    hw,U,NCfile,options.AuxNCfile,options.kpoint,options.AuxNCUseSinglePrec)
-    elif options.CalcCoupl:
-        # Old way to calculate Heph (reading everything into the memory)
-        print '\nPhonons.Analyze: Reading (H0,S0,dH) from .TSHS and .onlyS files:'
-        # Read electronic structure from files
-        eF,H0,S0,dH = GetH0S0dH(tree,FCfirst,FClast,displacement,options.kpoint,options.AbsEref)
-        # Correct dH for change in basis states with displacement
-        dH = CorrectdH(options.onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,options.kpoint)
-        # Downfold matrices to the subspace of the device atoms
-        H0,S0,dH = Downfold2Device(orbitalIndices,H0,S0,dH,DeviceFirst,DeviceLast,
-                                   FCfirst,FClast,options.PBCFirst,options.PBCLast)
-        # Calculate e-ph couplings
-        print '\nPhonons.Analyze: Calculating electron-phonon couplings:'
-        Heph = CalcHeph(dH,hw,U,atomnumber,FCfirst)
-        # If CalcCoupl, count the actual number of atomic orbitals
-        NCfile.createDimension('NSpin',len(H0))
-        print '\nPhonons.Analyze: Setting kpoint =',options.kpoint
-        Write2NetCDFFile(NCfile,options.kpoint,'kpoint',('dim3',))
-        # Write real part
-        Write2NetCDFFile(NCfile,H0.real,'H0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-        Write2NetCDFFile(NCfile,S0.real,'S0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
-        Write2NetCDFFile(NCfile,Heph.real,'He_ph',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-        # Write imaginary part
-        GammaPoint = N.dot(options.kpoint,options.kpoint)<1e-7
-        if not GammaPoint:
-            Write2NetCDFFile(NCfile,H0.imag,'ImH0',('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-            Write2NetCDFFile(NCfile,S0.imag,'ImS0',('AtomicOrbitals','AtomicOrbitals',),units='eV')
-            Write2NetCDFFile(NCfile,Heph.imag,'ImHe_ph',('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-        # Ensure it is complete
-        NCfile.CurrentHWidx = len(hw)
-        NCfile.sync()
-
-    if options.CalcCoupl and options.PrintSOrbitals:
-        # Print e-ph coupling matrices in s-orbital subspace
-        for iSpin in range(len(H0)):
-            print '\nPhonons.Analyze: Hamiltonian H0.real (in s-orbital subspace) Spin=',iSpin
-            ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,H0[iSpin,:,:].real)
-            print '\nPhonons.Analyze: Hamiltonian H0.imag (in s-orbital subspace) Spin=',iSpin
-            ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,H0[iSpin,:,:].imag)
-        print '\nPhonons.Analyze: Overlap matrix S0.real (in s-orbital subspace)'
-        ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,S0.real)
-        print '\nPhonons.Analyze: Overlap matrix S0.imag (in s-orbital subspace)'
-        ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,S0.imag)
-        for iSpin in range(len(H0)):
-            for i in range(len(hw)):
-                print '\nPhonons.Analyze: Coupling matrix Heph[%i].real (in s-orbital subspace) Spin=%i'%(i,iSpin)
-                ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
-                                       DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].real)
-                if N.dot(options.kpoint,options.kpoint)>1e-7:
-                    print '\nPhonons.Analyze: Coupling matrix Heph[%i].imag (in s-orbital subspace) Spin=%i'%(i,iSpin)
-                    ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,
-                                           DeviceFirst,DeviceLast,Heph[i,iSpin,:,:].imag)
-    NCfile.close()
-
-    CF.PrintMainFooter('Phonons')
-
-    if options.CalcCoupl:
-        return H0,S0,hw,Heph
-    else:
-        return 0.,0.,hw,0.
+            onlyS = {}
+            Displ = {}
+            for file in onlySfiles:
+                thisHS = SIO.HS(file)
+                thisHS.setkpoint(kpoint)
+                S = thisHS.S
+                del thisHS
+                nao = len(S)/2
+                S0 = S[0:nao,0:nao].copy()
+                dmat=S[0:nao,nao:nao*2].copy()
+                if file.endswith('_1.onlyS'):
+                    onlyS[0,-1] = dmat
+                elif file.endswith('_2.onlyS'):
+                    onlyS[0,1] = dmat
+                elif file.endswith('_3.onlyS'):
+                    onlyS[1,-1] = dmat
+                elif file.endswith('_4.onlyS'):
+                    onlyS[1,1] = dmat
+                elif file.endswith('_5.onlyS'):
+                    onlyS[2,-1] = dmat
+                elif file.endswith('_6.onlyS'):
+                    onlyS[2,1] = dmat
+            # Loop over the 6 doubled geometries and determine the displacement
+            for i in range(1,7):
+                thisd = 1e10
+                xyz = N.array(SIO.Getxyz(onlySdir+'/RUN_%i.fdf'%i))
+                for j in range(1,len(xyz)):
+                    thisd = min(thisd,(N.dot(xyz[0]-xyz[j],xyz[0]-xyz[j]))**.5)
+                Displ[(i-1)/2,1-2*(i%2)] = thisd
+                print 'Phonons.GetOnlyS: OnlyS-displacement (min) = %.5f Ang'%thisd
+            # Construct dS array
+            self.S0 = S0
+            self.dS = N.empty((3,)+dmat.shape,dtype=dmat.dtype)
+            for j in range(3):
+                self.dS[j] = (onlyS[j,1]-onlyS[j,-1])/(Displ[j,-1]+Displ[j,1])
+            self.Displ = Displ
 
 
-def OutputFC(FC,filename='FC.matrix'):
-    print 'Phonons.OutputFC: Writing',filename
-    f = open(filename,'w')
-    s = N.shape(FC)
-    for i in range(s[0]):
-        for j in range(s[1]):
-            if len(s)==2:
-                f.write(string.rjust('%.4e'%FC[i,j],12))
-            elif len(s)==3:
-                for k in range(s[2]):
-                    f.write(string.rjust('%.4e'%FC[i,j,k],12))
-        f.write('\n')
-    f.close()
+class DynamicalMatrix():
 
-def ShowInSOrbitalSubspace(orbitalIndices,FCfirst,FClast,DeviceFirst,DeviceLast,A):
-    # Print matrix A defined on the electronic subspace [FCfirst,FClast]
-    # FirstOrbital refers to the element A[0,0]
-    FirstOrbital = orbitalIndices[DeviceFirst-1][0]
-    sIndices = []
-    for i in range(FCfirst,FClast+1):
-        sIndices.append(orbitalIndices[i-1][0]-FirstOrbital)
-    #print 'sIndices =',sIndices
-    for i in sIndices:
-        print '    ',
-        for j in sIndices[:10]:
-            print string.rjust('%.6f '%A[i,j].real,10),
-        if len(sIndices)>10: print ' ...'
-        else: print
+    def __init__(self,fdfs,DynamicAtoms=None):
+        self.fdfs = fdfs
+        self.FCRs = [FCrun(f) for f in fdfs]
+        self.geom = self.FCRs[0].geom # assume identical geometries
+        if DynamicAtoms:
+            self.SetDynamicAtoms(DynamicAtoms)
 
+    def SetDynamicAtoms(self,DynamicAtoms):        
+        self.DynamicAtoms = DynamicAtoms
+        NN = len(DynamicAtoms)
+        self.m = N.zeros((NN,3,self.geom.natoms,3),N.complex)
+        self.p = N.zeros((NN,3,self.geom.natoms,3),N.complex)
+        self.Displ = {}
+        self.TSHS = {}
+        self.TSHS[0] = self.FCRs[0].TSHS[0]
+        for i,v in enumerate(DynamicAtoms):
+            for fcr in self.FCRs:
+                if v in fcr.DynamicAtoms:
+                    j = fcr.DynamicAtoms.index(v)
+                    print 'Reading FC data for dynamic atom %i from %s' %(v,fcr.fdf)
+                    self.Displ[v] = fcr.Displ
+                    self.m[i] = fcr.m[j]
+                    self.p[i] = fcr.p[j]
+                    for k in range(3):
+                        self.TSHS[v,k,-1] = fcr.TSHS[v,k,-1]
+                        self.TSHS[v,k,1] = fcr.TSHS[v,k,1]
+                    break
+            # Check that we really found the required atom
+            if len(self.Displ)<=i:
+                sys.exit('Error: Did not find FC data for a dynamic atom %i'%v)
+        self.mean = (self.m+self.p)/2
 
-def GetOrbitalIndices(dirname,speciesnumber):
-    # Determine snr (siesta number) for each label
-    csl = SIO.GetFDFblock(dirname+'/RUN.fdf', KeyWord = 'ChemicalSpeciesLabel')
-    csl2snr = {}
-    for set in csl:
-        csl2snr[set[2]] = set[0]
-    # Determine nao (number of orbitals) for each snr
-    ionNCfiles = glob.glob(dirname+'/*.ion.nc*')
-    snr2nao = {}
-    for ionfile in ionNCfiles:
-        if ionfile.endswith('.gz'):
-            print 'Phonons.GetOrbitalIndices: Unzipping',ionfile
-            os.system('gunzip '+ionfile)
-            ionfile = ionfile[:-3]
-        file = nc.NetCDFFile(ionfile,'r')
-        thissnr = csl2snr[file.Label]
-        snr2nao[int(thissnr)] = int(file.Number_of_orbitals[0])
-        file.close()
-    print 'Phonons.GetOrbitalIndices: Dictionary snr2nao =',snr2nao
-    # Determine which orbital indices that belongs to a certain atom
-    orbitalIndices = []
-    tmpOrb = 0
-    for num in speciesnumber:
-        nao = snr2nao[num]
-        orbitalIndices.append([tmpOrb,tmpOrb+int(nao)-1])
-        tmpOrb+=nao
-    return N.array(orbitalIndices),tmpOrb
+    def SetMasses(self,Isotopes=[]):
+        self.Masses = []
+        # Set default masses
+        for i,v in enumerate(self.DynamicAtoms):
+            self.Masses.append( PC.AtomicMass[self.geom.anr[v-1]] )
+        # Override with specified Isotopes?
+        for ii,anr in Isotopes:
+            if ii in self.DynamicAtoms:
+                j = self.DynamicAtoms.index(ii)
+                print 'Phonons.Analyse: Isotope substitution for atom %i (SIESTA numbering):'%ii
+                print '  ... atom type %i --> %i'%(self.geom.anr[ii-1],anr)
+                print '  ... atom mass %.4f --> %.4f'%(PC.AtomicMass[self.geom.anr[ii-1]],\
+                                                       PC.AtomicMass[anr])
+                self.Masses[j] = PC.AtomicMass[anr]
 
-         
-def Downfold2Device(orbitalIndices,H0,S0,dH,DeviceFirst,DeviceLast,FCfirst,FClast,PBCFirst,PBCLast):
-    # Remove Periodic Boundary terms
-    PBCorbFirst = orbitalIndices[PBCFirst-1][0]
-    PBCorbLast  = orbitalIndices[PBCLast-1][1]
-    if FCfirst < PBCFirst:
-        # we have something to remove...
-        print 'Warning: Setting certain elements in dH to zero because FCfirst<PBCFirst'
-        bb = (PBCFirst - FCfirst) * 3
-        dH[:bb,:,PBCorbLast+1:TSHS0.nuo,:] = 0.0
-        dH[:bb,:,:,PBCorbLast+1:TSHS0.nuo] = 0.0
-    if PBCLast < FClast:
-        print 'Warning: Setting certain elements in dH to zero because PBCLast<FClast'
-        aa = (PBCLast - FCfirst) * 3
-        dH[aa:,:,:PBCorbFirst-1,:] = 0.0
-        dH[aa:,:,:,:PBCorbFirst-1] = 0.0
+    def ApplySumRule(self,FC):
+        FC0 = FC.copy()
+        # Correct force constants for the moved atom
+        # Cf. Eq. (13) in Frederiksen et al. PRB 75, 205413 (2007)
+        for i,v in enumerate(self.DynamicAtoms):
+            for j in range(3):
+                FC[i,j,v-1,:] = 0.0
+                FC[i,j,v-1,:] = -N.sum(FC[i,j],axis=0)
+        print 'Total sumrule change in FC: %.3e eV/Ang' % N.sum(abs(FC0)-abs(FC))
+        return FC
 
-    # Downfold to device subspace        
-    first,last = orbitalIndices[DeviceFirst-1][0],orbitalIndices[DeviceLast-1][1]
-    h0 = H0[:,first:last+1,first:last+1].copy()
-    s0 = S0[first:last+1,first:last+1].copy()
-    dh = []
-    for i in range(len(dH)):
-        dh.append(dH[i][:,first:last+1,first:last+1])
-    return h0,s0,N.array(dh)
+    def ComputePhononModes(self,FC):
+        dyn = len(self.DynamicAtoms)
+        FCtilde = N.zeros((dyn,3,dyn,3),N.complex)
+        # Symmetrize and mass-scale
+        for i,v in enumerate(self.DynamicAtoms):
+            for j,w in enumerate(self.DynamicAtoms):
+                FCtilde[i,:,j,:] = 0.5*(FC[i,:,w-1,:]+MM.dagger(FC[j,:,v-1,:]))\
+                                   /(self.Masses[i]*self.Masses[j])**0.5
+        # Solve eigenvalue problem with symmetric FCtilde
+        FCtilde = FCtilde.reshape((3*dyn,3*dyn),order='C')
+        evalue,evec = LA.eigh(FCtilde)
+        #evalue,evec = LA.eig(FCtilde)
+        evec = N.transpose(evec)
+        evalue = N.array(evalue,N.complex)
+        # Calculate frequencies
+        const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
+        hw = const*evalue**0.5 # Units in eV
+        for i in range(3*dyn):
+            # Real eigenvalues are defined as positive, imaginary eigenvalues as negative
+            hw[i] = hw[i].real - abs(hw[i].imag)
+        hw = hw.real
+        # Normalize eigenvectors
+        U = evec.copy()
+        for i in range(3*dyn):
+            U[i] = U[i]/(N.dot(N.conjugate(U[i]),U[i])**0.5)
+        # Sort in order descending mode energies
+        #hw = hw[::-1] # reverse array
+        #U = U[::-1] # reverse array
+        indx = N.argsort(hw)[::-1] # reverse
+        hw = hw[indx]
+        U = U[indx]
+        # Print mode frequencies
+        print 'Phonons.CalcPhonons: Frequencies in meV:'
+        for i in range(3*dyn):
+            print string.rjust('%.3f'%(1000*hw[i]),9),
+            if (i-5)%6==0: print
+        if (i-5)%6!=0: print
+        #print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
+        #for i in range(3*dyn):
+        #    print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
+        #    if (i-5)%6==0: print
+        #if (i-5)%6!=0: print
 
+        # Compute real displacement vectors
+        Udisp = U.copy()
+        for i in range(3*dyn):
+            # Eigenvectors after division by sqrt(mass)
+            Udisp[:,i] = U[:,i]/self.Masses[i/3]**.5
 
-def CalcHeph(dH,hw,U,atomnumber,FCfirst):
-    print 'Phonons.CalcHeph: Calculating...\n',
-    const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-    Heph = N.zeros(dH.shape,dH.dtype)
-    for i in range(len(hw)):
-        # Loop over modes
-        SIO.printDone(i, len(hw),'Calculating Heph')
-        if hw[i]>0:
-            for j in range(len(hw)):
-                # Loop over atomic coordinates
-                Heph[i] += const*dH[j]*U[i,j]/(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
-        else:
-            print 'Phonons.CalcHeph: Nonpositive frequency --> Zero-valued coupling matrix' 
-            # already zero
-        #Check that Heph is Hermitian
-        for iSpin in range(len(dH[0])):
-            if not N.allclose(Heph[i,iSpin,:,:],dagger(Heph[i,iSpin,:,:]),atol=1e-6):
-                print 'Phonons.CalcHeph: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
-    print '  ... Done!'
-    return Heph
+        # Expand vectors to full geometry
+        UU = N.zeros((len(hw),self.geom.natoms,3),N.complex)
+        UUdisp = N.zeros((len(hw),self.geom.natoms,3),N.complex)
+        for i in range(len(hw)):
+            for j,v in enumerate(self.DynamicAtoms):
+                UU[i,v-1,:] = [U[i,3*j],U[i,3*j+1],U[i,3*j+2]]
+                UUdisp[i,v-1,:] = [Udisp[i,3*j],Udisp[i,3*j+1],Udisp[i,3*j+2]]
+        self.hw = hw        
+        self.U = U
+        self.Udisp = Udisp
+        self.UU = UU
+        self.UUdisp = UUdisp
 
+        
+    def PrepareGradients(self,onlySdir,kpoint,DeviceFirst,DeviceLast,AbsEref):
+        print '\nPhonons.PrepareGradients: Setting up various arrays'
+        self.kpoint = kpoint
+        self.OrbIndx,nao = self.FCRs[0].GetOrbitalIndices()
+        OS = OSrun(onlySdir,kpoint)
+        self.dS = OS.dS
+        self.TSHS0 = SIO.HS(self.TSHS[0])
+        self.TSHS0.setkpoint(kpoint)
+        self.invS0H0 = N.empty((2,)+self.TSHS0.H.shape,dtype=self.TSHS0.H.dtype)
+        invS0 = LA.inv(OS.S0)
+        self.nspin = len(self.TSHS0.H)
+        for iSpin in range(self.nspin):
+            self.invS0H0[0,iSpin,:,:] = MM.mm(invS0,self.TSHS0.H[iSpin,:,:])
+            self.invS0H0[1,iSpin,:,:] = MM.mm(self.TSHS0.H[iSpin,:,:],invS0)
+        del invS0
+        # don't re-create the array every time... too expensive    
+        self.dSdij = N.zeros((nao,nao),N.complex)
 
-def CorrectdH(onlySdir,orbitalIndices,nao,eF,H0,S0,dH,FCfirst,displacement,kpoint):
-    print 'Phonons.CorrectdH: Applying correction to dH...'
-    onlyS0,dS = GetOnlyS(onlySdir,nao,displacement,kpoint)
-    invS0H0 = N.empty((2,)+H0.shape,dtype=H0.dtype)
-    invS0 = LA.inv(S0)
-    for iSpin in range(len(H0)):
-        invS0H0[0,iSpin,:,:] = mm(invS0,H0[iSpin,:,:])
-        invS0H0[1,iSpin,:,:] = mm(H0[iSpin,:,:],invS0)
-    del invS0
-    # don't re-create the array every time... too expensive
-    dSdij = N.zeros((nao,nao),N.complex)
-    for i in range(len(dH)):
-        SIO.printDone(i, len(dH),'Correcting dH')
-        first,last = orbitalIndices[FCfirst-1+i/3]
-        dSdij[:,first:last+1] = dS[i%3,:,first:last+1]
-        for iSpin in range(len(H0)):
-            dH[i,iSpin,:,:] -= mm(dagger(dSdij),invS0H0[0,iSpin,:,:]) + mm(invS0H0[1,iSpin,:,:],dSdij)
-        dSdij[:,first:last+1] = 0. # reset
-    del invS0H0
-    print '  ... Done!'
-    return dH
+        # Take Device region 
+        self.DeviceAtoms = range(DeviceFirst,DeviceLast+1)
+        first,last = self.OrbIndx[DeviceFirst-1][0],self.OrbIndx[DeviceLast-1][1]
+        self.h0 = self.TSHS0.H[:,first:last+1,first:last+1]
+        self.s0 = self.TSHS0.S[first:last+1,first:last+1]
+        self.DeviceFirst = DeviceFirst
+        self.DeviceLast = DeviceLast
+        self.AbsEref = AbsEref
+        
+    def GetGradient(self,Atom,Axis,AbsEref=False):
+        print 'Phonons.GetGradient: Computing dH[%i,%i]'%(Atom,Axis)
+        # Read TSHS files
+        TSHSm = SIO.HS(self.TSHS[Atom,Axis,-1])
+        TSHSm.setkpoint(self.kpoint)
+        TSHSp = SIO.HS(self.TSHS[Atom,Axis,1])
+        TSHSp.setkpoint(self.kpoint)
+        # Use Fermi energy of equilibrium calculation as energy reference?
+        if self.AbsEref:
+            print 'Computing gradient with absolute energy reference'
+            for iSpin in range(self.nspin):
+                TSHSm.H[iSpin,:,:] += (TSHSm.ef-self.TSHS0.ef)*TSHSm.S
+                TSHSp.H[iSpin,:,:] += (TSHSp.ef-self.TSHS0.ef)*TSHSp.S
+        # Compute direct gradient
+        dH = (TSHSp.H-TSHSm.H)/(2*self.Displ[Atom])
+        del TSHSm, TSHSp
+        # Orbital range for the displaced atom:
+        f,l = self.OrbIndx[Atom-1]
+        self.dSdij[:,f:l+1] = self.dS[Axis,:,f:l+1]
+        # Apply Pulay-type corrections
+        for iSpin in range(self.nspin):
+            dH[iSpin,:,:] -= MM.mm(MM.dagger(self.dSdij),self.invS0H0[0,iSpin,:,:]) \
+                             + MM.mm(self.invS0H0[1,iSpin,:,:],self.dSdij)
+        self.dSdij[:,f:l+1] = 0. # reset
+        return dH
 
+    def ComputeEPHcouplings(self,PBCFirst,PBCLast):
+        first,last = self.OrbIndx[self.DeviceFirst-1][0],self.OrbIndx[self.DeviceLast-1][1]
+        rednao = last+1-first
+        const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
+        Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),N.complex)
+        # Loop over dynamic atoms
+        for i,v in enumerate(self.DynamicAtoms):
+            # Loop over axes
+            for j in range(3):
+                # Compute gradient
+                dH = self.GetGradient(v,j)
+                # Remove Periodic Boundary terms
+                nuo = len(dH[0])
+                pbcf = self.OrbIndx[PBCFirst-1][0]
+                pbcl  = self.OrbIndx[PBCLast-1][1]
+                if v < PBCFirst:
+                    # we have something to remove...
+                    print 'Warning: Setting certain elements in dH[%i,%i] to zero because %i<PBCFirst'%(v,j,v)
+                    #bb = (PBCFirst - FCfirst) * 3
+                    dH[:,pbcl+1:nuo,:] = 0.0
+                    dH[:,:,pbcl+1:nuo] = 0.0
+                if PBCLast < v:
+                    print 'Warning: Setting certain elements in dH[%i,%i] to zero because PBCLast<%i'%(v,j,v)
+                    #aa = (PBCLast - FCfirst) * 3
+                    dH[:,:pbcf-1,:] = 0.0
+                    dH[:,:,:pbcf-1] = 0.0
+                # Device part
+                dh = dH[:,first:last+1,first:last+1]
+                # Loop over modes and throw away the gradient (to save memory)
+                for m in range(len(self.hw)):
+                    Heph[m] += const*dh*self.UU[m,v-1,j]/(2*self.Masses[i]*self.hw[m])**.5
+        del dH, dh
+        self.heph = Heph
 
-def GetOnlyS(onlySdir,nao,displacement,kpoint):
-    print 'Phonons.GetOnlyS: Reading from', onlySdir
-    onlySfiles = glob.glob(onlySdir+'/*.onlyS*')
-    onlySfiles.sort()
-    if len(onlySfiles)<1:
-        sys.exit('Phonons.GetOnlyS: No .onlyS file found!')
-    # nao is number of orbitals in the original (not-doubled) structure
-    # S0 = N.zeros((nao,nao),N.float)
-    # dxm,dxp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float)
-    # dym,dyp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float)
-    # dzm,dzp = N.zeros((nao,nao),N.float),N.zeros((nao,nao),N.float) 
-    if len(onlySfiles)!=6:
-        sys.exit('Phonons.GetOnlyS: Wrong number of onlyS files found!')
-    else:
-        for file in onlySfiles:
-            #S = SIO.ReadOnlyS(file)
-            thisHS = SIO.HS(file)
-            thisHS.setkpoint(kpoint)
-            S = thisHS.S
-            del thisHS
-            orbitals = len(S)/2
-            if orbitals!=nao:
-                print 'nao=%i,  orbitals=%i'%(nao,orbitals)
-                sys.exit('Phonons.GetOnlyS: Error assigning orbitals to atoms!')    
-            S0 = S[0:nao,0:nao].copy()
-            dmat=S[0:nao,nao:nao*2].copy()
-            if file.endswith('_1.onlyS'):
-                dxm = dmat
-            elif file.endswith('_2.onlyS'):
-                dxp = dmat
-            elif file.endswith('_3.onlyS'):
-                dym = dmat
-            elif file.endswith('_4.onlyS'):
-                dyp = dmat
-            elif file.endswith('_5.onlyS'):
-                dzm = dmat
-            elif file.endswith('_6.onlyS'):
-                dzp = dmat
-        thisd = 1e10
-        for i in range(1,7):
-            xyz = N.array(SIO.Getxyz(onlySdir+'/RUN_%i.fdf'%i))
-            for j in range(1,len(xyz)):
-                thisd = min(thisd,(N.dot(xyz[0]-xyz[j],xyz[0]-xyz[j]))**.5)
-    # Check that onlyS-directory also corresponds to the same displacement
-    print 'Phonons.GetOnlyS: OnlyS-displacement (min) = %.5f Ang'%thisd
-    print 'Phonons.GetOnlyS: FC-displacement          = %.5f Ang'%displacement
-    VC.Check("displacement-tolerance",abs(thisd-displacement)/displacement,
-             "Phonons.GetOnlyS: OnlyS-displacement different from FC-displacement")
-    dS = N.empty((3,)+dxp.shape,dtype=dxp.dtype)
-    dS[0] = (dxp-dxm)/(2.*displacement)
-    dS[1] = (dyp-dym)/(2.*displacement)
-    dS[2] = (dzp-dzm)/(2.*displacement)
-    return S0 , dS
-
-
-def GetH0S0dH(tree,FCfirst,FClast,displacement,kpoint,AbsEref):
-    dH = []
-    for i in range(len(tree)):
-        # Go through each subdirectory
-        first,last,dir = tree[i][0],tree[i][1],tree[i][2]
-        HSfiles = tree[i][4]
-        if len(HSfiles)!=(last-first+1)*6+1:
-            sys.exit('Phonons.GetH0S0dH: Wrong number of *.TSHS files in %s\n'+\
-                     'PROGRAM STOPPED!!!'%dir)
-        # The first file is the one corresponding to no displacement
-        TSHS0 = SIO.HS(HSfiles[0])
-        TSHS0.setkpoint(kpoint) # Here eF is moved to zero
-        # Check that H0 is Hermitian
-        for iSpin in range(len(TSHS0.H)):
-            if not N.allclose(TSHS0.H[iSpin,:,:],dagger(TSHS0.H[iSpin,:,:]),atol=1e-6):
-                print 'Phonons.GetH0S0dH: WARNING: Hamiltonian H0 not Hermitian!'
-        if not N.allclose(TSHS0.S,dagger(TSHS0.S),atol=1e-6):
-            print 'Phonons.GetH0S0dH: WARNING: Overlap matrix S0 not Hermitian!'
-        if TSHS0.istep!=0: # the first TSHS file should have istep=0
-            print "Phonons.GetH0S0dH: Assumption on file order not right ",HSfiles[0]
-            raise IOError("Files not in order")
-        for j in range(len(HSfiles)/2):
-            if TSHS0.ia1+j/3 >= FCfirst and TSHS0.ia1+j/3 <= FClast:
-                # Read TSHS file since it is within (FCfirst,FClast)
-                TSHSm = SIO.HS(HSfiles[2*j+1])
-                TSHSm.setkpoint(kpoint) # Here eF is moved to zero of HSm
-                TSHSp = SIO.HS(HSfiles[2*j+2])
-                TSHSp.setkpoint(kpoint) # Here eF is moved to zero of HSp
-                if AbsEref:
-                    # Measure energies wrt. TSHS0.ef (absolute energy ref).
-                    for iSpin in range(len(TSHS0.H)):
-                        TSHSm.H[iSpin,:,:] += (TSHSm.ef-TSHS0.ef)*TSHSm.S 
-                        TSHSp.H[iSpin,:,:] += (TSHSp.ef-TSHS0.ef)*TSHSp.S
-                dH.append((TSHSp.H-TSHSm.H)/(2*displacement))
-                # don't wait for the garbage collector...
-                del TSHSm, TSHSp
-        data = TSHS0.ef,TSHS0.H,TSHS0.S,N.array(dH)        
-        del TSHS0
-    return data
-
-    
-def OpenNetCDFFile(filename,nao,xyz,DeviceFirst,DeviceLast,FCfirst,FClast,AuxNCfile):
-    print 'Phonons.WriteNetCDFFile: Writing', filename
-    # If no auxillary file, we *MUST* create the regular one
-    i_f = False
-    if AuxNCfile: i_f = os.path.isfile(filename)
-    if i_f:
-        # We will try and append to the file instead of reading it
-        file = nc.NetCDFFile(filename,'a')
-        i_f = i_f and file.dimensions['AtomicOrbitals'] == int(nao)
-        i_f = i_f and file.dimensions['PhononModes'] == (FClast-FCfirst+1)*3
-        i_f = i_f and file.dimensions['NumTotAtoms'] == len(xyz)
-        i_f = i_f and file.dimensions['NumDevAtoms'] == DeviceLast-DeviceFirst+1
-        i_f = i_f and file.dimensions['NumFCAtoms']  == FClast-FCfirst+1
-        if i_f: return file,False
-    try:
-        # Use 64 bit format
-        file = nc.NetCDFFile(filename,'wl',
-                             'Created '+time.ctime(time.time()))
-    except:
-        file = nc.NetCDFFile(filename,'w','Created '+time.ctime(time.time()))
-    file.title = 'Output from Phonons.py'
-    file.createDimension('AtomicOrbitals',int(nao))
-    file.createDimension('dim3',3)
-    file.createDimension('dim1',1)
-    file.createDimension('PhononModes',(FClast-FCfirst+1)*3)
-    file.createDimension('NumTotAtoms',len(xyz))
-    file.createDimension('NumDevAtoms',DeviceLast-DeviceFirst+1)
-    file.createDimension('NumFCAtoms',FClast-FCfirst+1)
-    file.CurrentHWidx = 0
-    return file,True
-
-
-def Write2NetCDFFile(file,var,varLabel,dimensions,units=None,description=None):
-    print 'Phonons.Write2NetCDFFile:', varLabel, dimensions
-    tmp = file.createVariable(varLabel,'d',dimensions)
-    tmp[:] = var
-    if units: tmp.units = units
-    if description: tmp.description = description
-
-
-def CalcPhonons(FC,atomnumber,FCfirst,FClast):
-    NumberOfAtoms = len(atomnumber)
-    DynamicAtoms = FClast-FCfirst+1
-    FCtilde = N.zeros((DynamicAtoms*3,DynamicAtoms*3),N.complex)
-    for i in range(DynamicAtoms*3):
-        for j in range(DynamicAtoms):
-            for k in range(3):
-                FCtilde[i,3*j+k] = FC[i,j,k]/ \
-                  ( PC.AtomicMass[atomnumber[FCfirst-1+i/3]] * PC.AtomicMass[atomnumber[FCfirst-1+j]] )**0.5
-    # Solve eigenvalue problem with symmetric FCtilde
-    evalue,evec = LA.eigh(FCtilde)
-    evec=N.transpose(evec)
-    evalue=N.array(evalue,N.complex)
-    # Calculate frequencies
-    const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-    hw = const*evalue**0.5 # Units in eV
-    for i in range(DynamicAtoms*3):
-        # Real eigenvalues are defined as positive, imaginary eigenvalues as negative
-        hw[i] = hw[i].real - abs(hw[i].imag)
-    hw = hw.real
-    # Normalize eigenvectors
-    U = evec.real.copy()
-    for i in range(DynamicAtoms*3):
-        U[i] = U[i]/(N.dot(U[i],U[i])**0.5)
-    # Sort in order descending mode energies
-    hw = hw[::-1] # reverse array
-    U = U[::-1] # reverse array
-    # Compute real displacement vectors
-    Udisp = U.copy()
-    for i in range(DynamicAtoms*3):
-        # Eigenvectors after division by sqrt(mass)
-        Udisp[:,i] = U[:,i]/(PC.AtomicMass[atomnumber[FCfirst-1+i/3]]**.5)
-    # Print mode frequencies
-    print 'Phonons.CalcPhonons: Frequencies in meV:'
-    for i in range(DynamicAtoms*3):
-        print string.rjust('%.3f'%(1000*hw[i]),9),
-        if (i-5)%6==0: print
-    if (i-5)%6!=0: print
-    print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
-    for i in range(DynamicAtoms*3):
-        print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
-        if (i-5)%6==0: print
-    if (i-5)%6!=0: print
-    return hw,U,Udisp
-
-
-def GetFCMatrices(tree,FCfirst,FClast,NumberOfAtoms):
-    'Returns FC matrices (minus,plus) in units eV/Ang^2'
-    FCm = N.zeros(((FClast-FCfirst+1)*3,NumberOfAtoms,3), N.float)
-    FCp = N.zeros(((FClast-FCfirst+1)*3,NumberOfAtoms,3), N.float)
-    # Positive/Negative displacement FC matrices
-    for i in range(len(tree)): # Go through separate FC runs
-        localFCfirst,localFClast = tree[i][0],tree[i][1]
-        FC = N.array(SIO.ReadFCFile(tree[i][3]))
-        LocalMoves = 3*(localFClast-localFCfirst+1)
-        for j in range(LocalMoves):
-            thisAtom = localFCfirst+j/3
-            if thisAtom >= FCfirst and thisAtom <= FClast:
-                FCm[3*(localFCfirst-FCfirst)+j] = FC[2*j*NumberOfAtoms:(2*j+1)*NumberOfAtoms]
-                FCp[3*(localFCfirst-FCfirst)+j] = FC[(2*j+1)*NumberOfAtoms:(2*j+2)*NumberOfAtoms]
-    return FCm,FCp
-    
-    
-def CorrectFCMatrix(FC,FCfirst,FClast,NumberOfAtoms):
-    TotalMoves = 3*(FClast-FCfirst+1)
-    FCcorr = FC.copy()
-    for i in range(TotalMoves): # Go through each displacement calc.
-        subFC = FC[i].copy()
-        movedAtomIndex = FCfirst-1+i/3 # Which atom was moved?
-        subFC[movedAtomIndex] = N.array([0,0,0],N.float)
-        subFC[movedAtomIndex] = -1*N.sum(N.array(subFC),axis=0)
-        FCcorr[i] = subFC
-    print 'Phonons.CorrectFCMatrix: Done'
-    return FCcorr
-
-
-def ReduceAndSymmetrizeFC(FC,FCfirstMIN,FClastMAX,FCfirst,FClast):
-    # Reduce FC Matrix from Device-space to FC-space
-    a = 3*(FCfirst-FCfirstMIN)
-    b = 3*(FClast-FCfirstMIN+1)
-    FC2 = FC[a:b,FCfirst-1:FClast].copy() # Python counts from 0
-    FC3 = FC[a:b,FCfirst-1:FClast].copy() # Python counts from 0
-    DynamicAtoms = len(FC2[0])
-    # Symmetrize square FC2 Matrix
-    for i in range(DynamicAtoms):
-        for j in range(3):
-            for k in range(DynamicAtoms):
-                for l in range(3):
-                    FC3[3*i+j,k,l] = (FC2[3*i+j,k,l]+FC2[3*k+l,i,j])/2
-    print 'Phonons.ReduceAndSymmetrizeFC: Done'
-    return FC3
-
-
-def GetFileLists(FCwildcard):
-    "Returns absolute paths to (FCfiles,TSHSfiles,XVfiles) matching the FCwildcard"
-    dirs,tree,FCfiles,HSfiles,XVfiles = [],[],[],[],[]
-    FCfirst,FClast = 1e10,-1e10
-    # Find FCwildcard directories
-    for elm in glob.glob(FCwildcard):
-        if os.path.isdir(elm):
-            dirs.append(elm)
-    dirs.sort()
-    for dir in dirs:
-        localFCs,localHSs,localXVs = [],[],[]
-        localFCfirst,localFClast = 1e10,-1e10
-        # Find FCfiles in FCwildcard directories
-        FCglob = glob.glob(dir+'/*.FC*')
-        FCglob.sort()
-        for elm in FCglob:
-            if os.path.isfile(elm):
-                FCfiles.append(elm)
-                localFCs.append(elm)
-        if len(FCglob)!=1:
-            print 'Phonons.GetFileLists: Not exactly one *.FC file in directory',dir
-        # Determine FCfirst and FClast without TSHS files
-        localFCfirst = int(SIO.GetFDFline(dir+'/RUN.fdf',KeyWord='MD.FCfirst')[0])
-        localFClast = int(SIO.GetFDFline(dir+'/RUN.fdf',KeyWord='MD.FClast')[0])
-        FCfirst = min(FCfirst,localFCfirst)
-        FClast = max(FClast,localFClast)
-        # Find TSHSfiles in FCwildcard directories
-        HSglob = glob.glob(dir+'/*.TSHS*')
-        HSglob.sort()
-        for elm in HSglob:
-            if elm.endswith('.TSHS.gz'):
-                # We are reading gzipped *.TSHS.gz files
-                firstatom = string.atoi(elm[-16:-12])
-                step = string.atoi(elm[-12:-8])
-            elif elm.endswith('.TSHS'):
-                # We are reading unzipped *.TSHS files
-                firstatom = string.atoi(elm[-13:-9])
-                step = string.atoi(elm[-9:-5])
-            FCfirst = min(FCfirst,firstatom)
-            FClast = max(FClast,firstatom+step/6-1)
-            localFCfirst = min(localFCfirst,firstatom)
-            localFClast = max(localFClast,firstatom+step/6-1)
-            HSfiles.append(elm)
-            localHSs.append(elm)
-        if (localFClast-localFCfirst+1)*6+1 != len(HSglob):
-            print 'Phonons.GetFileLists: WARNING - Inconsistent number of *.TSHS files in directory %s\n'%dir
-        # Find XVfiles in FCwildcard directories
-        for elm in glob.glob(dir+'/*.XV*'):
-            if elm.endswith('.XV') or elm.endswith('.XV.gz'):
-                XVfiles.append(elm)
-        # Collect local directory information
-        if len(localFCs)==1:
-            tree.append([localFCfirst,localFClast,dir,localFCs[0],localHSs])
-        else: print 'Phonons.GetFileLists: Two FC files in a directory encountered.'
-    print 'Phonons.GetFileLists: %i folder(s) match FCwildcard %s' %(len(dirs),FCwildcard)
-    print 'Phonons.GetFileLists: FCfirstMIN=%i, FClastMAX=%i, DynamicAtoms=%i' \
-          %(FCfirst,FClast,FClast-FCfirst+1)
-    tree.sort(),FCfiles.sort(),HSfiles.sort(),XVfiles.sort()
-    return tree,XVfiles,FCfirst,FClast
-
-
-def CorrectXVfile(XVfile):
-    dir,file = os.path.split(XVfile)
-    FCfirst, FClast = 1e10,-1e10
-    # Determine FCfirst and FClast without TSHS files
-    localFCfirst = int(SIO.GetFDFline(dir+'/RUN.fdf',KeyWord='MD.FCfirst')[0])
-    localFClast = int(SIO.GetFDFline(dir+'/RUN.fdf',KeyWord='MD.FClast')[0])
-    FCfirst = min(FCfirst,localFCfirst)
-    FClast = max(FClast,localFClast)
-    #Old way based on the HS filenames
-    #for elm in glob.glob(dir+'/*.HS'):
-    #    if os.path.isfile(elm):
-    #        firstatom = string.atoi(elm[-9:-6])
-    #        step = string.atoi(elm[-6:-3])
-    #        FCfirst = min(FCfirst,firstatom)
-    #        FClast = max(FClast,firstatom+step/6-1)
-    vectors,speciesnumber,atomnumber,xyz = SIO.ReadXVFile(XVfile,InUnits='Bohr',OutUnits='Ang')
-    # Determine the displacement
-    try:
-        list = SIO.GetFDFline(dir+'/RUN.fdf','MD.FCDispl')
-        d, unit = list[0], list[1]
-        if unit=='Bohr' or unit=='bohr':
-            displacement = float(d)*PC.Bohr2Ang
-        elif unit=='Ang' or unit=='ang':
-            displacement = float(d)
-        print 'Phonons.CorrectXVfile: displacement %s %s found from RUN.fdf'%(d,unit)
-    except:
-        print 'Phonons.CorrectXVfile: displacement set to 0.04*PC.Bohr2Ang (default)'
-        displacement = 0.04*PC.Bohr2Ang
-    print 'Phonons.CorrectXVfile: Correcting z-coord for atom %i (by %f Ang) \n  ... in %s' \
-          %(FClast,displacement,XVfile)
-    xyz[FClast-1][2] -= displacement # Python counts from 0
-    NewXVfile = XVfile.replace('.XV','.XV2')
-    SIO.WriteXVFile(NewXVfile,vectors,speciesnumber,atomnumber,xyz,InUnits='Ang',OutUnits='Bohr')
-    return NewXVfile,displacement
-
-
-def CheckForIdenticalXVfiles(XVfileList):
-    err = 'Phonons.CheckForIdenticalXVfiles: Error encounted in\n'
-    count = 0
-    for i in range(len(XVfileList)-1):
-        vectors1,speciesnumber1,atomnumber1,xyz1 = SIO.ReadXVFile(XVfileList[i])
-        vectors2,speciesnumber2,atomnumber2,xyz2 = SIO.ReadXVFile(XVfileList[i+1])
-        if not N.allclose(vectors1,vectors2,1e-7):
-            count += 1
-            print err, XVfileList[i],XVfileList[i+1], '(vectors) WARNING'
-        if not N.allclose(speciesnumber1,speciesnumber2,1e-7):
-            count += 1
-            print err, XVfileList[i],XVfileList[i+1], '(speciesnumber) WARNING'
-        if not N.allclose(atomnumber1,atomnumber2,1e-7):
-            count += 1
-            print err, XVfileList[i],XVfileList[i+1], '(atomnumber) WARNING'
-        if not N.allclose(xyz1,xyz2,1e-7):
-            count += 1
-            print err, XVfileList[i],XVfileList[i+1], '(xyz) WARNING'
-            print '... max(abs(N.array(xyz1)-N.array(xyz2))) =',N.max(N.absolute(N.array(xyz1)-N.array(xyz2)))
-    if count == 0:
-        print 'Phonons.CheckForIdenticalXVfiles: XV-files in list are identical'
+    def WriteOutput(self,label):
+        ### Write MKL- and xyz-files
+        natoms = self.geom.natoms
+        hw = self.hw
+        # Write only real part of eigenvectors
+        UU = self.UU.reshape(len(hw),3*natoms).real 
+        UUdisp = self.UUdisp.reshape(len(hw),3*natoms).real
+        
+        SIO.WriteMKLFile('%s.mkl'%label,self.geom.anr,self.geom.xyz,hw,UU,1,natoms)
+        SIO.WriteMKLFile('%s.real-displ.mkl'%label,self.geom.anr,self.geom.xyz,hw,UUdisp,1,natoms)
+        SIO.WriteXYZFile('%s.xyz'%label,self.geom.anr,self.geom.xyz)
+        WriteFreqFile('%s.freq'%label,hw)
+        WriteVibDOSFile('%s.Gfdos'%label,hw,type='Gaussian')
+        WriteVibDOSFile('%s.Lfdos'%label,hw,type='Lorentzian')
+        WriteAXSFFiles('%s.mol.axsf'%label,self.geom.xyz,self.geom.anr,hw,UU,1,natoms)
+        WriteAXSFFiles('%s.mol.real-displ.axsf'%label,self.geom.xyz,self.geom.anr,hw,UUdisp,1,natoms)
+        WriteAXSFFilesPer('%s.per.axsf'%label,self.geom.pbc,self.geom.xyz,self.geom.anr,hw,UU,1,natoms)
+        WriteAXSFFilesPer('%s.per.real-displ.axsf'%label,self.geom.pbc,self.geom.xyz,self.geom.anr,\
+                             hw,UUdisp,1,natoms)
+        # Netcdf format
+        NCDF.write('%s.nc'%label,hw,'hw')
+        NCDF.write('%s.nc'%label,UU,'U')
+        NCDF.write('%s.nc'%label,UUdisp,'Udisp')
+        NCDF.write('%s.nc'%label,self.geom.pbc,'CellVectors')
+        NCDF.write('%s.nc'%label,self.geom.xyz,'GeometryXYZ')
+        NCDF.write('%s.nc'%label,self.geom.anr,'AtomNumbers')
+        NCDF.write('%s.nc'%label,self.geom.snr,'SpeciesNumbers')
+        NCDF.write('%s.nc'%label,self.Masses,'Masses')
+        NCDF.write('%s.nc'%label,self.DynamicAtoms,'DynamicAtoms')
+        try:
+            NCDF.write('%s.nc'%label,self.DeviceAtoms,'DeviceAtoms')
+            NCDF.write('%s.nc'%label,self.kpoint,'kpoint')
+            NCDF.write('%s.nc'%label,self.h0.real,'H0')
+            NCDF.write('%s.nc'%label,self.s0.real,'S0')
+            GammaPoint = N.dot(self.kpoint,self.kpoint)<1e-7
+            if not GammaPoint:
+                NCDF.write('%s.nc'%label,self.h0.imag,'ImH0')
+                NCDF.write('%s.nc'%label,self.s0.imag,'ImS0')
+        except:
+            print 'Hamiltonian etc not found'
+        try:
+            NCDF.write('%s.nc'%label,self.heph.real,'He_ph')
+            if not GammaPoint:
+                NCDF.write('%s.nc'%label,self.heph.imag,'ImHe_ph')
+        except:
+            print 'EPH couplings etc not found'
 
 def WriteFreqFile(filename,hw):
     print 'Phonons.WriteFreqFile: Writing',filename
@@ -941,389 +626,35 @@ def WriteAXSFFilesPer(filename,vectors,xyz,anr,hw,U,FCfirst,FClast):
             ln += '\n'
             f.write(ln)
     f.close()
-
-def GenerateAuxNETCDF(tree,FCfirst,FClast,orbitalIndices,nao,onlySdir,PBCFirst,PBCLast,
-                      AuxNCfile,displacement,kpoint,SinglePrec,AbsEref):
-    if SinglePrec: precision = 'f'
-    else: precision = 'd'
-    GammaPoint = N.dot(kpoint,kpoint)<1e-7
-    if GammaPoint:
-        if SinglePrec: atype = N.float32
-        else: atype = N.float
-    else:
-        if SinglePrec: atype = N.complex64
-        else: atype = N.complex
-
-    index = 0
-    # Read TSHSfiles
-    for i in range(len(tree)):
-        # Go through each subdirectory
-        first,last,dir = tree[i][0],tree[i][1],tree[i][2]
-        HSfiles = tree[i][4]
-        if len(HSfiles)!=(last-first+1)*6+1:
-            sys.exit('Phonons.GenerateAuxNETCDF: Wrong number of *.TSHS files in %s\n'%dir+\
-                     ' PROGRAM STOPPED!!!')
-        # The first TSHSfile in a folder is the one corresponding to no displacement
-        TSHS0 = SIO.HS(HSfiles[0])
-        TSHS0.setkpoint(kpoint,atype=atype) # Here eF is moved to zero
-        if TSHS0.istep!=0: # the first TSHS file should have istep=0
-            print "Phonons.GenerateAuxNETCDF: Assumption on file order not right ",HSfiles[0]
-            raise IOError("File order not good")
-        for j in range(len(HSfiles)/2):
-            if TSHS0.ia1+j/3 >= FCfirst and TSHS0.ia1+j/3 <= FClast:
-                # Read TSHS file since it is within (FCfirst,FClast)
-                TSHSm = SIO.HS(HSfiles[2*j+1])
-                TSHSm.setkpoint(kpoint,atype=atype) # Here eF is moved to zero of HSm
-                TSHSp = SIO.HS(HSfiles[2*j+2])
-                TSHSp.setkpoint(kpoint,atype=atype) # Here eF is moved to zero of HSp
-                if AbsEref:
-                    # Measure energies wrt. TSHS0.ef (absolute energy ref).
-                    for iSpin in range(len(TSHS0.H)):
-                        TSHSm.H[iSpin,:,:] += (TSHSm.ef-TSHS0.ef)*TSHSm.S
-                        TSHSp.H[iSpin,:,:] += (TSHSp.ef-TSHS0.ef)*TSHSp.S
-                # Calculate differences
-                tmpdH = (TSHSp.H-TSHSm.H)/(2*displacement)
-                del TSHSm, TSHSp
-                try:
-                    RedH[index,:] = tmpdH.real
-                    if not GammaPoint: ImdH[index,:] = tmpdH.imag
-                    index += 1
-                except:
-                    # First time a netcdf-file is created
-                    print 'Phonons.GenerateAuxNETCDF: Generating', AuxNCfile
-                    try:
-                        # Use 64 bit format
-                        NCfile2 = nc.NetCDFFile(AuxNCfile,'wl','Created '+time.ctime(time.time()))
-                    except:
-                        NCfile2 = nc.NetCDFFile(AuxNCfile,'w','Created '+time.ctime(time.time()))
-                    NCfile2.createDimension('Index',None)
-                    NCfile2.createDimension('NSpin',TSHS0.nspin)
-                    NCfile2.createDimension('AtomicOrbitals',TSHS0.nuo)
-                    NCfile2.createDimension('dim1',1)
-                    NCfile2.createDimension('dim3',3)
-                    FCfirsttmp = NCfile2.createVariable('FCfirst','d',('dim1',))
-                    FCfirsttmp[:] = FCfirst
-                    FClasttmp = NCfile2.createVariable('FClast','d',('dim1',))
-                    FClasttmp[:] = FClast
-                    kpointtmp = NCfile2.createVariable('kpoint','d',('dim3',))
-                    kpointtmp[:] = kpoint
-                    # Write real part of matrices
-                    ReH = NCfile2.createVariable('H0',precision,('NSpin','AtomicOrbitals','AtomicOrbitals',))
-                    print 'Phonons.GenerateAuxNETCDF: Precision=', precision
-                    print 'Phonons.GenerateAuxNETCDF: TSHS0.H.dtype=', TSHS0.H.dtype
-                    ReH[:] = TSHS0.H.real
-                    ReS = NCfile2.createVariable('S0',precision,('AtomicOrbitals','AtomicOrbitals',))
-                    ReS[:] = TSHS0.S.real
-                    RedH = NCfile2.createVariable('dH',precision,('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
-                    RedH[index,:] = tmpdH.real
-                    # Write imag part of matrices
-                    if not GammaPoint:
-                        ImH = NCfile2.createVariable('ImH0',precision,('NSpin','AtomicOrbitals','AtomicOrbitals',))
-                        ImH[:] = TSHS0.H.imag
-                        ImS = NCfile2.createVariable('ImS0',precision,('AtomicOrbitals','AtomicOrbitals',))
-                        ImS[:] = TSHS0.S.imag
-                        ImdH = NCfile2.createVariable('ImdH',precision,('Index','NSpin','AtomicOrbitals','AtomicOrbitals',))
-                        ImdH[index,:] = tmpdH.imag
-                    index += 1
-    NCfile2.sync()
-    print 'Phonons.GenerateAuxNETCDF: len(dH) =',index
     
-    # Correct dH
-    onlyS0,dS = GetOnlyS(onlySdir,nao,displacement,kpoint)
-    invS0H0 = N.empty((2,)+TSHS0.H.shape,dtype=TSHS0.H.dtype)
-    invS0 = LA.inv(TSHS0.S)
-    for iSpin in range(TSHS0.nspin):
-        invS0H0[0,iSpin,:,:] = mm(invS0,TSHS0.H[iSpin,:,:])
-        invS0H0[1,iSpin,:,:] = mm(TSHS0.H[iSpin,:,:],invS0)
-    del invS0
-    # don't re-create the array every time... too expensive
-    if SinglePrec:
-        dSdij = N.zeros((nao,nao),N.complex64)
-    else:
-        dSdij = N.zeros((nao,nao),N.complex)
-    for i in range(index):
-        SIO.printDone(i,index,'Correcting dH')
-        first,last = orbitalIndices[FCfirst-1+i/3]
-        dSdij[:,first:last+1] = dS[i%3,:,first:last+1]
-        for iSpin in range(TSHS0.nspin):
-            tmp = mm(dagger(dSdij),invS0H0[0,iSpin,:,:]) + mm(invS0H0[1,iSpin,:,:],dSdij)
-            RedH[i,iSpin,:] -= tmp.real
-            if not GammaPoint: 
-                ImdH[i,iSpin,:] -= tmp.imag
-        dSdij[:,first:last+1] = 0. # reset
-    del tmp
-    print '  ... Done!'
-    NCfile2.sync()
-    
-    # Remove Periodic Boundary terms
-    PBCorbFirst = orbitalIndices[PBCFirst-1][0]
-    PBCorbLast  = orbitalIndices[PBCLast-1][1]
-    if FCfirst < PBCFirst:
-        # we have something to remove...
-        print 'Warning: Setting certain elements in dH to zero because FCfirst<PBCFirst'
-        bb = (PBCFirst - FCfirst) * 3
-        RedH[:bb,:,PBCorbLast+1:TSHS0.nuo,:] = 0.
-        RedH[:bb,:,:,PBCorbLast+1:TSHS0.nuo] = 0.
-        if not GammaPoint:
-            ImdH[aa:bb,:,PBCorbLast+1:TSHS0.nuo,:] = 0.
-            ImdH[aa:bb,:,:,PBCorbLast+1:TSHS0.nuo] = 0.
-    if PBCLast < FClast:
-        print 'Warning: Setting certain elements in dH to zero because PBCLast<FClast'
-        aa = (PBCLast - FCfirst) * 3
-        RedH[aa:,:,:PBCorbFirst-1,:] = 0.
-        RedH[aa:,:,:,:PBCorbFirst-1] = 0.
-        if not GammaPoint:
-            ImdH[aa:,:,:PBCorbFirst-1,:] = 0.
-            ImdH[aa:,:,:,:PBCorbFirst-1] = 0.
+def main(options):
+    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    CF.PrintMainHeader('Phonons',vinfo,options)
 
-    NCfile2.close()
-    print 'Phonons.GenerateAuxNETCDF: File %s written.'%AuxNCfile
+    # Determine SIESTA input fdf files in FCruns
+    fdf = glob.glob(options.FCwildcard+'/RUN.fdf')
 
+    print 'Phonons.Analyze: This run uses'
+    FCfirst,FClast = min(options.DynamicAtoms),max(options.DynamicAtoms)
+    print '  ... FCfirst     = %4i, FClast     = %4i, Dynamic atoms = %4i'\
+          %(FCfirst,FClast,len(options.DynamicAtoms))
+    print '  ... DeviceFirst = %4i, DeviceLast = %4i, Device atoms  = %4i'\
+          %(options.DeviceFirst,options.DeviceLast,options.DeviceLast-options.DeviceFirst+1)
+    print '  ... PBC First   = %4i, PBC Last   = %4i, Device atoms  = %4i'\
+          %(options.PBCFirst,options.PBCLast,options.PBCLast-options.PBCFirst+1)
 
-def CalcHephNETCDF(orbitalIndices,FCfirst,FClast,atomnumber,DeviceFirst,DeviceLast,
-                   hw,U,NCfile,AuxNCfile,kpoint,SinglePrec):
-    if SinglePrec:
-        precision = 'f'
-    else:
-        precision = 'd'
-    GammaPoint = N.dot(kpoint,kpoint)<1e-7
-    # Read AuxNCfile and downfold to device
-    first,last = orbitalIndices[DeviceFirst-1][0],orbitalIndices[DeviceLast-1][1]
-    NCfile2 = nc.NetCDFFile(AuxNCfile,'r')
-    ReH0 = N.array(NCfile2.variables['H0'])[:,first:last+1,first:last+1]
-    ReS0 = N.array(NCfile2.variables['S0'])[first:last+1,first:last+1]
-    RedH = NCfile2.variables['dH']
-    if not GammaPoint:
-        ImH0 = N.array(NCfile2.variables['ImH0'])[:,first:last+1,first:last+1]
-        ImS0 = N.array(NCfile2.variables['ImS0'])[first:last+1,first:last+1]
-        ImdH = NCfile2.variables['ImdH']
-    auxkpoint = NCfile2.variables['kpoint'][:]
-    print '   ... kpoint from %s ='%AuxNCfile,auxkpoint
-    VC.Check("same-kpoint",N.abs(auxkpoint-kpoint),
-             "Aux. file does not match specified k-point.",
-             "Delete {0} and try again!".format(AuxNCfile))
-    newNCfile = NCfile.CurrentHWidx == 0
-    if newNCfile:
-        NCfile.createDimension('NSpin',len(ReH0))
-        Write2NetCDFFile(NCfile,ReH0,'H0',
-                         ('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-        Write2NetCDFFile(NCfile,ReS0,'S0',
-                         ('AtomicOrbitals','AtomicOrbitals',),units='eV')
-        if not GammaPoint:
-            Write2NetCDFFile(NCfile,ImH0,'ImH0',
-                             ('NSpin','AtomicOrbitals','AtomicOrbitals',),units='eV')
-            Write2NetCDFFile(NCfile,ImS0,'ImS0',
-                             ('AtomicOrbitals','AtomicOrbitals',),units='eV')
-            Write2NetCDFFile(NCfile,kpoint,'kpoint',('dim3',))
-    else:
-        if NCfile.dimensions['NSpin'] != len(ReH0):
-            sys.exit('Phonons.CalcHephNETCDF: Current %s does not correspond to correct spin-component, please delete file'%(NCfile))
+    # Build Dynamical Matrix
+    DM = DynamicalMatrix(fdf,options.DynamicAtoms)
+    DM.SetMasses(options.Isotopes)
+    # Compute modes
+    DM.ComputePhononModes(DM.mean)
+    # Compute e-ph coupling
+    DM.PrepareGradients(options.onlySdir,options.kpoint,
+                        options.DeviceFirst,options.DeviceLast,options.AbsEref)
+    DM.ComputeEPHcouplings(options.PBCFirst,options.PBCLast)
+    # Write data to files
+    DM.WriteOutput(options.DestDir+'/Output')
 
+    CF.PrintMainFooter('Phonons')
 
-    # Check AuxNCfile
-    if FCfirst != int(NCfile2.variables['FCfirst'][0]):
-        sys.exit('Phonons.CalcHephNETCDF: AuxNCfile %s does not correspond to FCfirst = %i'%(AuxNCfile,FCfirst))
-    if FClast != int(NCfile2.variables['FClast'][0]):
-        sys.exit('Phonons.CalcHephNETCDF: AuxNCfile %s does not correspond to FClast = %i'%(AuxNCfile,FClast))
-        
-    # CalcHeph
-    print 'Phonons.CalcHephNETCDF: Calculating...\n',
-    const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-    if newNCfile:
-        ReHeph  = NCfile.createVariable('He_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
-        if not GammaPoint: 
-            ImHeph  = NCfile.createVariable('ImHe_ph',precision,('PhononModes','NSpin','AtomicOrbitals','AtomicOrbitals',))
-        NCfile.sync()
-    else:
-        # Retrieve the data points as we are appending
-        ReHeph = NCfile.variables['He_ph']
-        if not GammaPoint: 
-            ImHeph = NCfile.variables['ImHe_ph']
-
-    # Instead of operation in disk-memory
-    # we create a temporary array (real and imaginary)
-    # This will only matter if the default chunking size
-    # is smaller than the array-size used below (default around 
-    # 10mb~2000 orbitals)
-    Nspin = len(ReH0)
-    els = last + 1 - first
-    RI = 1 # Real-imaginary index size
-    if not GammaPoint: RI = 2
-    if SinglePrec:
-        tmp = N.empty((RI,Nspin,els,els),N.float32)
-    else:
-        tmp = N.empty((RI,Nspin,els,els),N.float64)
-
-    for i in range(len(hw)):
-        # skip already calculated contributions
-        if i < NCfile.CurrentHWidx: continue
-
-        # Loop over modes
-        SIO.printDone(i, len(hw),'Calculating Heph')
-
-        if hw[i] > 0:
-            UcOam = const*U[i,0]/(2*PC.AtomicMass[atomnumber[FCfirst-1+0/3]]*hw[i])**.5
-            tmp[0,:,:,:] = UcOam * RedH[0][:,first:last+1,first:last+1]
-            if not GammaPoint:
-                tmp[1,:,:,:] = UcOam * ImdH[0][:,first:last+1,first:last+1]
-            for j in range(1,len(hw)):
-                # Loop over atomic coordinates
-                UcOam = const*U[i,j]/(2*PC.AtomicMass[atomnumber[FCfirst-1+j/3]]*hw[i])**.5
-                tmp[0,:,:,:] += UcOam * RedH[j][:,first:last+1,first:last+1]
-                if not GammaPoint:
-                    tmp[1,:,:,:] += UcOam * ImdH[j][:,first:last+1,first:last+1]
-            
-            # Check that Heph is Hermitian
-            for iSpin in range(Nspin):
-                # the real part
-                herm = N.allclose(tmp[0,iSpin,:,:],
-                                  N.transpose(tmp[0,iSpin,:,:]),atol=1e-5)
-                
-                if not GammaPoint:
-                    # the imaginary part (no need to create the temporary
-                    # complex matrix)
-                    herm = herm and \
-                        N.allclose(tmp[1,iSpin,:,:],
-                                   N.transpose(-tmp[1,iSpin,:,:]),atol=1e-5)
-                if not herm:
-                    print 'Phonons.CalcHephNETCDF: WARNING: Coupling matrix Heph[%i,%i] not Hermitian!'%(i,iSpin)
-
-            ReHeph[i,:] = tmp[0,:,:,:]
-            if not GammaPoint:
-                ImHeph[i,:] = tmp[1,:,:,:]
-        else:
-            ReHeph[i,:] = 0.
-            if not GammaPoint: 
-                ImHeph[i,:] = 0.
-            print 'Phonons.CalcHephNETCDF: Nonpositive frequency --> Zero-valued coupling matrix' 
-
-        # Update ref-counter
-        NCfile.CurrentHWidx = i + 1
-        NCfile.sync()
-    del tmp
-    print '  ... Done!'
-    #NCfile2.close() # Leave open for later access...
-    return ReH0,ReS0,ReHeph
-
-########### Phonon bandstructure ##########################################
-def CalcBandStruct(vectors,speciesnumber,xyz,FCmean,FCfirst,FClast,\
-                       LatticeType,atomnumber,PhBandRadie):
-    print """
-    PhBandStruct:
-    """    
-    # Symmetrize forces
-    Sym = Symmetry.Symmetry()
-    Sym.setupGeom(vectors, speciesnumber, atomnumber, xyz)
-    FCsym = Sym.symmetrizeFC(FCmean,FCfirst,FClast,radi=PhBandRadie)
-    FCsym = CorrectFCMatrix(FCsym,FCfirst,FClast,Sym.NN)
-
-    if Sym.basis.NN!=FClast-FCfirst+1:
-        raise ValueError("Phonons: ERROR: FCfirst/last do not fit with the number of atoms in the basis (%i)."%Sym.basis.NN)
-    
-    # a_i : real space lattice vectors
-    a1,a2,a3 = Sym.a1,Sym.a2,Sym.a3
-    numBasis =  Sym.basis.NN
-    
-    # Use automatically determined lattice type or override
-    if LatticeType != "AUTO":
-        Sym.latticeType = LatticeType
-        print "Symmetry: Using lattice \"%s\" for phonon bands."%LatticeType
-
-    # Calculate lattice vectors for phase factors
-    # The closest cell might be different depending on which atom is moved
-    sxyz = Sym.xyz.copy()
-    xyz = N.zeros((FClast-FCfirst+1,Sym.NN,3),N.float)
-    for i0 in range(FClast-FCfirst+1):
-        ii = FCfirst-1+i0
-        micxyz = Symmetry.moveIntoClosest(\
-                sxyz-sxyz[ii,:],Sym.pbc[0],Sym.pbc[1],Sym.pbc[2])
-        for jj in range(Sym.NN):
-            xyz[i0,jj,:] = micxyz[jj,:]+sxyz[ii,:]-\
-                sxyz[FCfirst-1+Sym.basisatom[jj],:]
-
-    # Mass scaled dynamical matrix
-    MSFC = FCsym.copy()
-    for ii in range(len(MSFC[:,0])):
-        for jj in range(len(MSFC[0,:])):
-            MSFC[ii,jj,:]=MSFC[ii,jj,:]/N.sqrt(\
-                PC.AtomicMass[atomnumber[FCfirst-1+ii/3]]*\
-                    PC.AtomicMass[atomnumber[jj]])
-
-    # Get bandlines
-    what = Sym.what()
-
-    bands, datasets, kdist = [], [], []
-    for elem in what:
-        kdist += [N.dot(elem[1],elem[1])**.5]
-        # Calculate bands
-        bands+=[ calcPhBands(MSFC, a1, a2, a3, xyz,\
-                                 elem[1], elem[2], elem[3], numBasis,\
-                                 Sym.basisatom)]
-        f=open(elem[0]+'.dat','w')
-        for ii,data in enumerate(bands[-1]):
-            f.write("%i "%ii)
-            for jj in data:
-                f.write("%e "%(jj.real))
-            f.write("\n")
-        f.close()
-        xx = N.array(range(elem[3]),N.float)/(elem[3]-1.0)
-        #datasets += [[XMGR.XYDYset(xx,bands[-1][:,ii].real,bands[-1][:,ii].imag/2,Lcolor=ii+1) for ii in range(len(bands[-1][0,:]))]]
-        datasets += [[XMGR.XYset(xx,bands[-1][:,ii].real,Lcolor=1,Lwidth=2) for ii in range(len(bands[-1][0,:]))]]
-
-    maxEnergy = N.max(bands).real
-    munit = 50.0
-    maxEnergy = int(1.05*maxEnergy/munit)*munit+munit
-
-    # Compute x-axis widths in the final plot
-    widths = N.array(kdist)/N.sum(kdist)
-
-    gg=[]
-    xmin = 0.15
-    for jj, ii in enumerate(datasets):
-        g =XMGR.Graph()
-        for data in ii:
-            g.AddDatasets(data)
-        g.SetSubtitle(what[jj][0])
-        g.SetXaxis(label='',majorUnit=1.0,minorUnit=1.0,max=1,min=0,useticklabels=False)     
-        if jj==0:
-            g.SetYaxis(label='Phonon energy (meV)',majorUnit=munit,minorUnit=munit/5,max=maxEnergy,min=0)
-        else:
-            g.SetYaxis(label='',majorUnit=munit,minorUnit=munit/5,max=maxEnergy,min=0,useticklabels=False)
-        # Place graph on canvas
-        xmax = xmin + widths[jj]
-        g.SetView(xmin=xmin,xmax=xmax,ymin=0.15,ymax=0.85)    
-        xmin = 1*xmax
-        gg+=[g]
-
-    p = XMGR.Plot('PhononBands_%.2f.agr'%PhBandRadie,gg[0])
-    
-    for ii in range(1,len(gg)):
-        p.AddGraphs(gg[ii])
-    #p.ArrangeGraphs(nx=len(gg),ny=1,hspace=0.0,vspace=0.0)
-
-    # Finally, write the plot file
-    #p.ShowTimestamp()
-    p.WriteFile()
-    p.Print2File('PhononBands_%.2f.eps'%PhBandRadie)
-
-
-def calcPhBands(FCmean, a1, a2, a3, xyz, kdir, korig, Nk, Nbasis, basisatom):
-    NN = 3*Nbasis
-    Band = N.zeros((Nk, NN),N.complex)
-    units = PC.eV2Joule*1e20/PC.amu2kg*(PC.hbar2SI/PC.eV2Joule)**2*1e6
-    for ik in range(Nk):
-        kvec = kdir*ik/float(Nk-1)+korig
-        #k1, k2, k3 = N.dot(a1,kvec), N.dot(a2,kvec), N.dot(a3,kvec)
-        FCk = N.zeros((NN,NN),N.complex)
-        for ii in range(Nbasis):
-            for jj in range(len(xyz[0,:])):
-                tmp=FCmean[ii*3:(ii+1)*3,jj,:]*N.exp(2.0j*N.pi*\
-                       (N.dot(kvec,xyz[ii,jj,:])))
-                FCk[ii*3:(ii+1)*3,(basisatom[jj])*3:(basisatom[jj]+1)*3]+=N.transpose(tmp)
-        
-        #print N.max(N.abs((FCk-N.conjugate(N.transpose(FCk)))))/N.max(N.abs(FCk))
-        FCk = (FCk+dagger(FCk))/2
-        a,b = LA.eig(FCk*units)
-        Band[ik,:] = N.sort(N.sqrt(a))
-    return Band
-
+    return DM.h0,DM.s0,DM.hw,DM.heph

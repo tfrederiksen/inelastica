@@ -50,7 +50,7 @@ class Symmetry:
         self.accuracy=accuracy
         if fn!=None:
             self.readXV(fn,onlyLatticeSym)
-        pass
+        
     
     ###########################################################
     # Init
@@ -104,11 +104,15 @@ class Symmetry:
             kuk
 
         # Rearrange to FC_ia,jb, force from atom j, axis b to atom i, axis a
-        FCn = N.zeros((NFC, 3, self.NN, 3))
-        for ii in range(NFC):
-            for jj in range(3):
-                FCn[ii, jj, :, :] = FC[ii*3+jj, :, :]
-        FC = FCn
+        if len(FC.shape)==3:
+            FCreshape = True
+            FCn = N.zeros((NFC, 3, self.NN, 3))
+            for ii in range(NFC):
+                for jj in range(3):
+                    FCn[ii, jj, :, :] = FC[ii*3+jj, :, :]
+            FC = FCn
+        else:
+            FCreshape = False
         
         # Rearange basis to fit FCfirst...FClast order in Siesta FC file
         basisxyz = moveIntoCell(self.xyz[FCfirst-1:FClast],\
@@ -247,10 +251,11 @@ class Symmetry:
             print "Symmetry: WARNING: large relative difference"
 
         # Change format back ...
-        FC = N.zeros((NFC*3, self.NN, 3))
-        for ii in range(NFC):
-            for jj in range(3):
-                FC[ii*3+jj, :, :] = FCs[ii, jj, :, :] 
+        if FCreshape:
+            FC = N.zeros((NFC*3, self.NN, 3))
+            for ii in range(NFC):
+                for jj in range(3):
+                    FC[ii*3+jj, :, :] = FCs[ii, jj, :, :] 
         
         return FC
 
