@@ -1268,13 +1268,13 @@ def ReadIonNCFile(filename,printnorm=False):
     ion.numorb = file.Number_of_orbitals[0]
 
     # Variables
-    ion.L = N.array(file.variables['orbnl_l'],N.int)
-    ion.N = N.array(file.variables['orbnl_n'],N.int)
-    ion.Z = N.array(file.variables['orbnl_z'],N.int)
-    ion.ispol = N.array(file.variables['orbnl_ispol'],N.int)
-    ion.orb = N.array(file.variables['orb'],N.float)
-    ion.cutoff = N.array(file.variables['cutoff'],N.float)
-    ion.delta = N.array(file.variables['delta'],N.float)
+    ion.L = N.array(file.variables['orbnl_l'][:],N.int)
+    ion.N = N.array(file.variables['orbnl_n'][:],N.int)
+    ion.Z = N.array(file.variables['orbnl_z'][:],N.int)
+    ion.ispol = N.array(file.variables['orbnl_ispol'][:],N.int)
+    ion.orb = N.array(file.variables['orb'][:],N.float)
+    ion.cutoff = N.array(file.variables['cutoff'][:],N.float)
+    ion.delta = N.array(file.variables['delta'][:],N.float)
     
     print '   Element: %s   Atom number: %i,  L-orbs '% (ion.element,ion.atomnum), ion.L
     for i in range(len(ion.L)):
