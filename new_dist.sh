@@ -27,10 +27,13 @@ function dist_tar {
 rm -rf $tmp_dir
 mkdir $tmp_dir
 
-exp_clean Inelastica
-dist_tar $pack_name Inelastica
+#exp_clean Inelastica
+#dist_tar $pack_name Inelastica
 
-exp_clean Inelastica-DEV
-dist_tar $pack_name-$r Inelastica-DEV
+#exp_clean Inelastica-DEV
+#dist_tar $pack_name-DEV Inelastica-DEV
+
+exp_clean Inelastica-$r
+dist_tar $pack_name-$r Inelastica-$r
 
 rm -rf $tmp_dir
