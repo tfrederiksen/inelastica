@@ -211,7 +211,7 @@ CONTAINS
 
     if ( Gamma ) then
 
-       xij(:,:) = 0._8
+       xij(:,:) = 0._dp
 
     else
 
