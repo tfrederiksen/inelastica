@@ -294,10 +294,58 @@ class ElectrodeSelfEnergy:
         self.setupHS(kpoint)
         #print "NEGF.getg0: Constructing surface GF at (ReE,ImE) = (%.6e,%6e)"%(ee.real,ee.imag)
 
+        if not left: 
+            if F90_lapack_imp and UseF90:
+                return self.F90calcg0(ee,left=left,ispin=ispin)
+            
+            return self.calcg0_old(ee,left=left,ispin=ispin)
+        
+        print "Using TWISTED scheme:",self.path
+        tmpH,tmpS,tmpH01,tmpS01 = N.copy(self.H),N.copy(self.S),N.copy(self.H01),N.copy(self.S01)
+        nuoH = self.HS.nuo / 2
+        print "Maximum difference UL-LR:"
+        print N.amax(N.abs(tmpH[ispin,0:nuoH,0:nuoH]-tmpH[ispin,nuoH:2*nuoH,nuoH:2*nuoH]))
+        self.HS.nuo = nuoH
+        s = (1,nuoH,nuoH)
+        self.H   = tmpH[ispin,0:nuoH,0:nuoH]
+        self.H.shape = s
+        self.S   = tmpS[0:nuoH,0:nuoH]
+        self.H01 = tmpH01[ispin,0:nuoH,0:nuoH]
+        self.H01.shape = s
+        self.S01 = tmpS01[0:nuoH,0:nuoH]
+        # Ensure that it is not a view we are creating
+        self.H   = N.require(self.H,requirements=['A','C'])
+        self.S   = N.require(self.S,requirements=['A','C'])
+        self.H01 = N.require(self.H01,requirements=['A','C'])
+        self.S01 = N.require(self.S01,requirements=['A','C'])
+        tmpG = N.zeros(tmpS.shape,N.complex)
         if F90_lapack_imp and UseF90:
-            return self.F90calcg0(ee,left=left,ispin=ispin)
+            tmpG[0:nuoH,0:nuoH] = self.F90calcg0(ee,left=left,ispin=0)
+        else:
+            tmpG[0:nuoH,0:nuoH] = self.calcg0_old(ee,left=left,ispin=0)
+            
+        self.H   = tmpH[ispin,nuoH:2*nuoH,nuoH:2*nuoH]
+        self.H.shape = s
+        self.S   = tmpS[nuoH:2*nuoH,nuoH:2*nuoH]
+        self.H01 = tmpH01[ispin,nuoH:2*nuoH,nuoH:2*nuoH]
+        self.H01.shape = s
+        self.S01 = tmpS01[nuoH:2*nuoH,nuoH:2*nuoH]
+        self.H   = N.require(self.H,requirements=['A','C'])
+        self.S   = N.require(self.S,requirements=['A','C'])
+        self.H01 = N.require(self.H01,requirements=['A','C'])
+        self.S01 = N.require(self.S01,requirements=['A','C'])
+        if F90_lapack_imp and UseF90:
+            tmpG[nuoH:2*nuoH,nuoH:2*nuoH] = self.F90calcg0(ee,left=left,ispin=0)
+        else:
+            tmpG[nuoH:2*nuoH,nuoH:2*nuoH] = self.calcg0_old(ee,left=left,ispin=0)
+        self.H    = tmpH
+        self.S    = tmpS
+        self.H01  = tmpH01
+        self.S01  = tmpS01
+        self.HS.nuo = nuoH * 2
+        tmpG = N.require(tmpG,requirements=['A','C'])
+        return tmpG
 
-        return self.calcg0_old(ee,left=left,ispin=ispin)
         #Potentially faster method but seems to have numerical instability
         #if hasSciPy and :
         #    return self.calcg0(ee,left=left,ispin=ispin)
