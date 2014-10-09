@@ -207,9 +207,13 @@ CONTAINS
        end do
     end if  ! onlyS
 
-    if ( .not. Gamma ) then
-       
-       allocate(xij(3,maxnh))
+    allocate(xij(3,maxnh))
+
+    if ( Gamma ) then
+
+       xij(:,:) = 0._dp
+
+    else
 
        if ( version == 0 ) then
           do i = 1 , no_u
