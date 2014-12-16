@@ -654,8 +654,9 @@ def GetFDFline(infile, KeyWord = '', printAlot=True):
         infile = FDF input file
         KeyWord = line to find"""
     lines = ReadFDFLines(infile, printAlot=printAlot)
+    kwl = KeyWord.lower()
     for i in range(len(lines)):
-        if lines[i][0]==KeyWord:
+        if lines[i][0].lower() == kwl:
             return lines[i][1:]
 
 def GetFDFlineWithDefault(infile, key, type, default, error):
@@ -672,36 +673,36 @@ def GetFDFlineWithDefault(infile, key, type, default, error):
         else:
             return default
     else:
-        data=data[0]
+        data = data[0]
         # Boolean is tricky!
         if type!=bool:
             return type(data)
         else:
-            if data=='True' or data=='T' or data=='true' or data=='t' or data=='.true.' or data=='.True.':
+            if data.lower() in ['true','t','.true.']:
                 return True
+            elif data.lower() in ['false','f','.false.']:
+                return False
             else:
-                if data=='False' or data=='F' or data=='false' or data=='f' or data=='.false.' or data=='.False.':
-                    return False
-                else:
-                    print """ERROR :: GetFDFlineWithDefault failed to convert '%s' to boolean 
+                print """ERROR :: GetFDFlineWithDefault failed to convert '%s' to boolean 
        from key '%s' in file '%s'"""%(data,key,infile)
-                    kuk                
+                kuk                
         
 def GetFDFblock(infile, KeyWord = ''):
     """Finds the walues in a block as strings
        infile = FDF input file
        KeyWord = block to find"""
     lines = ReadFDFLines(infile)
+    kwl = KeyWord.lower()
     data = []
     for i in range(len(lines)):
         tmp = lines[i]
-        if tmp[0] == '%block':
-            if tmp[1] == KeyWord:
+        if tmp[0].lower() == '%block':
+            if tmp[1].lower() == kwl:
                 start = i+1
                 break
     for i in range(len(lines)):
         tmp = lines[i+start]
-        if tmp[0] != '%endblock':
+        if tmp[0].lower() != '%endblock':
             data.append(tmp)
         else: break
     return data
@@ -1295,7 +1296,7 @@ def BuildBasis(FDFfile,FirstAtom,LastAtom,lasto):
     class basis:
         pass
     CSL = GetFDFblock(FDFfile,'ChemicalSpeciesLabel')
-    systemlabel = GetFDFlineWithDefault(FDFfile,'SystemLabel', str, 'Systemlabel', 'SiestaIO')
+    systemlabel = GetFDFlineWithDefault(FDFfile,'SystemLabel', str, 'siesta', 'SiestaIO')
     head,tail =  os.path.split(FDFfile)
     XVfile = '%s/%s.XV'%(head,systemlabel)
     try:

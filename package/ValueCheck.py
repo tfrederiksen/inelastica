@@ -102,7 +102,7 @@ def OptionsCheck(opts,exe):
     opts.head,tail = osp.split(opts.fn)
     print(exe+": Reading keywords from {0} \n".format(opts.fn))
 
-    opts.systemlabel = SIO.GetFDFlineWithDefault(opts.fn,'SystemLabel', str, 'Systemlabel', exe) 
+    opts.systemlabel = SIO.GetFDFlineWithDefault(opts.fn,'SystemLabel', str, 'siesta', exe) 
     opts.TSHS = '%s/%s.TSHS'%(opts.head,opts.systemlabel)
 
     # Electrodes

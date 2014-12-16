@@ -71,7 +71,7 @@ def readHS():
     options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 1, 'pyTBT')
     options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'pyTBT')
 
-    options.systemlabel = SIO.GetFDFlineWithDefault("RUN.fdf",'SystemLabel', str, 'Systemlabel', 'Eigenchannels')       
+    options.systemlabel = SIO.GetFDFlineWithDefault("RUN.fdf",'SystemLabel', str, 'siesta', 'Eigenchannels')       
     options.TSHS = './%s.TSHS'%(options.systemlabel)
     
     # Check for buffer atoms

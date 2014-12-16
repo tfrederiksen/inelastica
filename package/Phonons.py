@@ -155,7 +155,7 @@ class FCrun():
     def __init__(self,runfdf):
         self.fdf = runfdf
         self.directory,self.tail =  os.path.split(runfdf)
-        self.systemlabel = SIO.GetFDFlineWithDefault(runfdf,'SystemLabel', str, 'Systemlabel','Phonons')
+        self.systemlabel = SIO.GetFDFlineWithDefault(runfdf,'SystemLabel', str, 'siesta','Phonons')
         FCfirst = SIO.GetFDFlineWithDefault(runfdf,'MD.FCfirst',int,0,'Phonons')
         FClast = SIO.GetFDFlineWithDefault(runfdf,'MD.FClast',int,0,'Phonons')
         # Finite-displacement amplitude
