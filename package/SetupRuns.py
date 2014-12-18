@@ -724,11 +724,11 @@ def UnitConvertTBOutput(TBncfile,newTBncfile):
     infile = nc.NetCDFFile(TBncfile,'r')
     En = PC.Rydberg2eV*N.array(infile.variables['En'][:,0]) \
          + 1j*PC.Rydberg2eV*N.array(infile.variables['En'][:,1])
-    H = PC.Rydberg2eV*N.array(infile.variables['H'])
-    S = N.array(infile.variables['S'])
+    H = PC.Rydberg2eV*N.array(infile.variables['H'][:])
+    S = N.array(infile.variables['S'][:])
     try:
-        ImH = PC.Rydberg2eV*N.array(infile.variables['ImH'])
-        ImS = N.array(infile.variables['ImS'])
+        ImH = PC.Rydberg2eV*N.array(infile.variables['ImH'][:])
+        ImS = N.array(infile.variables['ImS'][:])
         ImHSexist = True
     except:
         ImHSexist = False
