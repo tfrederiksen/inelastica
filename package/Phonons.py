@@ -649,12 +649,15 @@ def main(options):
     # Compute modes
     DM.ComputePhononModes(DM.mean)
     # Compute e-ph coupling
-    DM.PrepareGradients(options.onlySdir,options.kpoint,
-                        options.DeviceFirst,options.DeviceLast,options.AbsEref)
-    DM.ComputeEPHcouplings(options.PBCFirst,options.PBCLast)
-    # Write data to files
-    DM.WriteOutput(options.DestDir+'/Output')
+    if options.CalcCoupl:
+       DM.PrepareGradients(options.onlySdir,options.kpoint,options.DeviceFirst,options.DeviceLast,options.AbsEref)
+       DM.ComputeEPHcouplings(options.PBCFirst,options.PBCLast)
+       # Write data to files
+       DM.WriteOutput(options.DestDir+'/Output')
+       CF.PrintMainFooter('Phonons')
+       return DM.h0,DM.s0,DM.hw,DM.heph
+    else:
+       DM.WriteOutput(options.DestDir+'/Output')
+       CF.PrintMainFooter('Phonons')
+       return DM.hw
 
-    CF.PrintMainFooter('Phonons')
-
-    return DM.h0,DM.s0,DM.hw,DM.heph
