@@ -395,18 +395,30 @@ class DynamicalMatrix():
             # Eigenvectors after division by sqrt(mass)
             Udisp[:,i] = U[:,i]/self.Masses[i/3]**.5
 
+        # Compute displacement vectors scaled for the characteristic length
+        Ucl = U.copy()
+        for j in range(3*dyn):
+            for i in range(3*dyn):
+                # Eigenvectors after multiplication by characteristic length
+                Ucl[:,i] = U[:,i]*(1/(self.Masses[i/3]*(hw[j]/(2*PC.Rydberg2eV)))**.5)
+
         # Expand vectors to full geometry
         UU = N.zeros((len(hw),self.geom.natoms,3),N.complex)
         UUdisp = N.zeros((len(hw),self.geom.natoms,3),N.complex)
+        UUcl = N.zeros((len(hw),self.geom.natoms,3),N.complex)
         for i in range(len(hw)):
             for j,v in enumerate(self.DynamicAtoms):
                 UU[i,v-1,:] = [U[i,3*j],U[i,3*j+1],U[i,3*j+2]]
                 UUdisp[i,v-1,:] = [Udisp[i,3*j],Udisp[i,3*j+1],Udisp[i,3*j+2]]
+                UUcl[i,v-1,:] = [Ucl[i,3*j],Ucl[i,3*j+1],Ucl[i,3*j+2]]
         self.hw = hw        
         self.U = U
         self.Udisp = Udisp
+        self.Ucl = Ucl 
         self.UU = UU
         self.UUdisp = UUdisp
+        self.UUcl = UUcl
+
 
         
     def PrepareGradients(self,onlySdir,kpoint,DeviceFirst,DeviceLast,AbsEref):
@@ -503,6 +515,7 @@ class DynamicalMatrix():
         # Write only real part of eigenvectors
         UU = self.UU.reshape(len(hw),3*natoms).real 
         UUdisp = self.UUdisp.reshape(len(hw),3*natoms).real
+        UUcl = self.UUcl.reshape(len(hw),3*natoms).real
         
         SIO.WriteMKLFile('%s.mkl'%label,self.geom.anr,self.geom.xyz,hw,UU,1,natoms)
         SIO.WriteMKLFile('%s.real-displ.mkl'%label,self.geom.anr,self.geom.xyz,hw,UUdisp,1,natoms)
@@ -512,9 +525,12 @@ class DynamicalMatrix():
         WriteVibDOSFile('%s.Lfdos'%label,hw,type='Lorentzian')
         WriteAXSFFiles('%s.mol.axsf'%label,self.geom.xyz,self.geom.anr,hw,UU,1,natoms)
         WriteAXSFFiles('%s.mol.real-displ.axsf'%label,self.geom.xyz,self.geom.anr,hw,UUdisp,1,natoms)
+        WriteAXSFFiles('%s.mol.charlength-displ.axsf'%label,self.geom.xyz,self.geom.anr,hw,UUcl,1,natoms)
         WriteAXSFFilesPer('%s.per.axsf'%label,self.geom.pbc,self.geom.xyz,self.geom.anr,hw,UU,1,natoms)
         WriteAXSFFilesPer('%s.per.real-displ.axsf'%label,self.geom.pbc,self.geom.xyz,self.geom.anr,\
                              hw,UUdisp,1,natoms)
+        WriteAXSFFilesPer('%s.per.charlength-displ.axsf'%label,self.geom.pbc,self.geom.xyz,self.geom.anr,\
+                             hw,UUcl,1,natoms)
         # Netcdf format
         NCDF.write('%s.nc'%label,hw,'hw')
         NCDF.write('%s.nc'%label,UU,'U')
