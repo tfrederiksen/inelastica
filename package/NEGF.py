@@ -469,6 +469,9 @@ class ElectrodeSelfEnergy:
             self.H01 = 0.5*( -1j*( self.HS.H - self.H ) + tmpH - self.H)
             self.S01 = 0.5*( -1j*( self.HS.S - self.S ) + tmpS - self.S)
 
+            self.HS.resetkpoint()
+            del tmpH, tmpS
+
 #############################################################################            
             
 class GF:

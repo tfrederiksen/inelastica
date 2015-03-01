@@ -1542,10 +1542,12 @@ class HS:
         The garbage collector cannot tell if H or S will be used subsequently
         """
         self.kpoint = N.array([1e10,1e10,1e10],N.float)
-        if "H" in self.__dict__:
+        try:
             del self.H
-        if "S" in self.__dict__:
+        except: pass
+        try:
             del self.S
+        except: pass
 
     def __ReadTSHSFile(self,filename):
         """
