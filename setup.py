@@ -103,7 +103,7 @@ Provides:
                   'scripts/pyTBT',
                   'scripts/geom2geom',
                   'scripts/geom2zmat',
-                  'scripts/BandStruct',
+                  'scripts/Bandstructures',
                   'scripts/siesta_cleanup',
                   'scripts/STMimage',
                   'scripts/Vasp2Siesta',
