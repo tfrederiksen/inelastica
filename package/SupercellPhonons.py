@@ -53,17 +53,9 @@ def GetOptions(argv,**kwargs):
                  help="Location of OnlyS directory [default=%default]",
                  type="str",default="./OSrun")
     
-    p.add_option("--FCfirst",dest="FCfirst",
-                 help="First FC atom index (must be first atom) [default=%default]",
-                 type="int",default=1)
-
-    p.add_option("--FClast", dest="FClast",
-                 help="Last FC atom index (must be last atom in the basis) [default=%default]" ,
-                 type="int",default=1000)
-
     p.add_option("-r","--radius", dest="radius",
-                 help="Cutoff radius in Angstroms [default=%default]" ,
-                 type="float",default=10.)
+                 help="Force cutoff radius in Angstroms [default=%default]" ,
+                 type="float",default=0.)
 
     p.add_option("--AtomicMass", dest='AtomicMass', default='[]',
                  help="Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%default]")
@@ -82,10 +74,6 @@ def GetOptions(argv,**kwargs):
     else:
         options.Logfile = 'Bandstructures.log'
 
-    # Dynamic atoms
-    options.DynamicAtoms = range(options.FCfirst,options.FClast+1)
-    del options.FCfirst, options.FClast
- 
     # Check if AtomicMasses are specified
     if options.AtomicMass!='[]':
         masslist = eval(options.AtomicMass.replace('\n','').replace(' ',''))
@@ -111,51 +99,44 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         Sym = Symmetry.Symmetry()
         # Find lattice symmetries
         Sym.setupGeom(self.geom.pbc,self.geom.snr,self.geom.anr,self.geom.xyz,onlyLatticeSym=True)
-        FCfirst,FClast = min(self.DynamicAtoms),max(self.DynamicAtoms)
-        if Sym.basis.NN!=FClast-FCfirst+1:
-            self.supercell = False
-            raise ValueError("Phonons: ERROR: FCfirst/last do not fit with the number of atoms in the basis (%i)."%Sym.basis.NN)
-        else:
-            # A primitive cell was found
-            Sym.pointGroup()
-            Sym.findIrreducible()
-            # Proceed symmetrizing FC
-            print '\nComputing symmetrized force constants'
-            self.mean_sym = Sym.symmetrizeFC(self.mean,FCfirst,FClast,radi=radius)
-            self.mean_sym = self.ApplySumRule(self.mean_sym)
-            # Calculate lattice vectors for phase factors
-            # The closest cell might be different depending on which atom is moved
-            sxyz = Sym.xyz.copy()
-            latticevectors = N.zeros((Sym.NN,Sym.NN,3),N.float)
-            for ii in range(Sym.NN):
-                micxyz = Symmetry.moveIntoClosest(sxyz-sxyz[ii],Sym.pbc[0],Sym.pbc[1],Sym.pbc[2])
-                for jj in range(Sym.NN):
-                    latticevectors[ii,jj] = micxyz[jj]+sxyz[Sym.basisatom[ii]]-sxyz[Sym.basisatom[jj]]           
-            self.latticevectors = latticevectors
-            self.supercell = True
-        self.Symmetry = Sym
-        self.First = FCfirst
-        self.Last = FClast
+        # A primitive cell was found
+        Sym.pointGroup()
+        Sym.findIrreducible()
+        self.SetDynamicAtoms(range(1,Sym.basis.NN+1))
+        print '\nComputing symmetrized force constants'
+        self.mean_sym = Sym.symmetrizeFC(self.mean,1,Sym.basis.NN,radi=radius)
+        self.mean_sym = self.ApplySumRule(self.mean_sym)
+        # Calculate lattice vectors for phase factors
+        # The closest cell might be different depending on which atom is moved
+        sxyz = Sym.xyz.copy()
+        latticevectors = N.zeros((Sym.NN,Sym.NN,3),N.float)
+        for ii in range(Sym.NN):
+            micxyz = Symmetry.moveIntoClosest(sxyz-sxyz[ii],Sym.pbc[0],Sym.pbc[1],Sym.pbc[2])
+            for jj in range(Sym.NN):
+                latticevectors[ii,jj] = micxyz[jj]+sxyz[Sym.basisatom[ii]]-sxyz[Sym.basisatom[jj]]           
+        self.latticevectors = latticevectors
+        self.supercell = True
+        self.Sym = Sym
 
     def ComputePhononModes_q(self,qpoint):
         # Compute phonon vectors
         print '\nSupercellPhonons.SetQ: Computing force constants at q=',qpoint
-        NN = len(self.DynamicAtoms)
+        NN = self.Sym.basis.NN
         self.q = N.zeros((NN,3,NN,3),N.complex)
         # Loop over basis atoms
-        for n in range(self.Symmetry.basis.NN):
+        for n in range(NN):
             # Loop over all atoms in the supercell
             for m in range(len(self.latticevectors[n])):
                 #print 'CV=',self.latticevectors[n,m]
                 # exp( - i q R0m )
                 R0m = self.latticevectors[n,m]
                 phase = N.exp(-2.0j*N.pi*N.dot(qpoint,R0m))
-                self.q[n,:,self.Symmetry.basisatom[m],:] += phase*self.mean_sym[n,:,m,:]
+                self.q[n,:,self.Sym.basisatom[m],:] += phase*self.mean_sym[n,:,m,:]
         # Now compute modes using standard module
         self.ComputePhononModes(self.q)
         # Expand U and Udispl to the whole supercell
         for n in range(len(self.latticevectors)):
-            j = self.Symmetry.basisatom[n]
+            j = self.Sym.basisatom[n]
             R0n = self.latticevectors[0,n]
             phase = N.exp(-2.0j*N.pi*N.dot(qpoint,R0n))
             self.UU[:,n,:] = phase*self.U[:,3*j:3*j+3]
@@ -169,14 +150,14 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         sh[-1],sh[-2] = self.rednao,self.rednao
         H_k = N.zeros(tuple(sh),N.complex)
         # Loop over basis atoms
-        for n in range(self.Symmetry.basis.NN):
+        for n in range(self.Sym.basis.NN):
             # Loop over all atoms in the supercell
             fn,ln = self.OrbIndx[n]
-            fnb,lnb = self.OrbIndx[self.Symmetry.basisatom[n]] 
+            fnb,lnb = self.OrbIndx[self.Sym.basisatom[n]] 
             #print 'n=%i, fn=%i, ln=%i, fnb=%i, lnb=%i'%(n,fn,ln,fnb,lnb)
             for m in range(len(self.latticevectors[n])):
                 fm,lm = self.OrbIndx[m]
-                fmb,lmb = self.OrbIndx[self.Symmetry.basisatom[m]]
+                fmb,lmb = self.OrbIndx[self.Sym.basisatom[m]]
                 #print 'm=%i, fm=%i, lm=%i, fmb=%i, lmb=%i'%(m,fm,lm,fmb,lmb)
                 # exp( i k R0m )
                 R0m = self.latticevectors[n,m]
@@ -200,17 +181,17 @@ def main(options):
     CF.PrintMainHeader('Bandstructures',vinfo,options)
 
     fdf = glob.glob(options.FCwildcard+'/RUN.fdf')  
-    SCDM = Supercell_DynamicalMatrix(fdf,options.DynamicAtoms)
-    SCDM.SetMasses()
+    SCDM = Supercell_DynamicalMatrix(fdf)
     SCDM.CheckSymmetries(radius=options.radius)
+    SCDM.SetMasses()
 
     # Prepare Hamiltonian etc in Gamma for whole supercell
     natoms = SIO.GetFDFlineWithDefault(fdf[0],'NumberOfAtoms',int,-1,'Error')
     SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),
                           1,natoms,AbsEref=False)
     SCDM.nao = SCDM.h0.shape[-1]
-    SCDM.FirstOrb = SCDM.OrbIndx[SCDM.First-1][0]
-    SCDM.LastOrb = SCDM.OrbIndx[SCDM.Last-1][1]
+    SCDM.FirstOrb = SCDM.OrbIndx[0][0] # First atom = 1
+    SCDM.LastOrb = SCDM.OrbIndx[SCDM.Sym.basis.NN-1][1] # Last atom = Sym.NN
     SCDM.rednao = SCDM.LastOrb+1-SCDM.FirstOrb
 
     # Loop over k-points
@@ -226,13 +207,13 @@ def main(options):
             ev,evec = SCDM.ComputeElectronStates(k)
             fel.write('%i '%i)
             for j in ev:
-                fel.write('%.3e '%j.real)
+                fel.write('%.8e '%j.real)
             fel.write('\n')
             # Compute phonon eigenvalues
             hw,U = SCDM.ComputePhononModes_q(k)
             fph.write('%i '%i)
             for j in hw:
-                fph.write('%.4f '%j.real)
+                fph.write('%.8e '%j.real)
             fph.write('\n')
             i += 1
 
