@@ -252,12 +252,13 @@ class Symmetry:
 
         # Change format back ...
         if FCreshape:
-            FC = N.zeros((NFC*3, self.NN, 3))
+            FCout = N.zeros((NFC*3, self.NN, 3))
             for ii in range(NFC):
                 for jj in range(3):
-                    FC[ii*3+jj, :, :] = FCs[ii, jj, :, :] 
+                    FCout[ii*3+jj, :, :] = FCs[ii, jj, :, :] 
+            FCs = FCout
         
-        return FC
+        return FCs
 
     ###########################################################
     # Find irreducible symmetry operations and print
