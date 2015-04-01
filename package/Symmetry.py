@@ -252,11 +252,11 @@ class Symmetry:
 
         # Change format back ...
         if FCreshape:
-            FCout = N.zeros((NFC*3, self.NN, 3))
+            FC = N.zeros((NFC*3, self.NN, 3))
             for ii in range(NFC):
                 for jj in range(3):
-                    FCout[ii*3+jj, :, :] = FCs[ii, jj, :, :] 
-            FCs = FCout
+                    FC[ii*3+jj, :, :] = FCs[ii, jj, :, :] 
+            FCs = FC
         
         return FCs
 
