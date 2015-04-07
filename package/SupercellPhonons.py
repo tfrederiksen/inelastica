@@ -3,16 +3,18 @@ print version
 
 """
 A simple interface to evaluate electron and phonon bands on 
-a set of k-points defined in range [0,1.0] (or [-0.5,0.5])
-for each of the three reciprocal lattice vectors, i.e., 
-k-space corresponds here to the mathematical orthogonal
-space that is Fourier transformed).
+a set of points in reciprocal space.
 
-The input file format with N k-points is simply:
-  k0(0) k0(1) k0(2)
-  k1(0) k1(1) k1(2)
+The input file format with N points is simply:
+
+  kx(1) ky(1) kz(1)
+  kx(2) ky(2) kz(2)
 ...
-  kN(0) kN(1) kN(2)
+  kx(N) ky(N) kz(N)
+
+Units: 2pi/Ang.
+
+Phase factors defined as: exp(2pi i k.r)
 
 Thomas Frederiksen, March 2015
 """
@@ -22,8 +24,8 @@ import Symmetry
 import CommonFunctions as CF
 import Phonons as PH
 import PhysicalConstants as PC
-#import MiscMath as MM
-#import WriteNetCDF as NCDF
+import MiscMath as MM
+import WriteNetCDF as NCDF
 import ValueCheck as VC
 
 import numpy as N
@@ -32,7 +34,7 @@ import glob, os,sys,string
 import scipy.linalg as SLA
 
 vinfo = [version,SIO.version,Symmetry.version,CF.version,
-         PH.version,PC.version,#MM.version,NCDF.version,
+         PH.version,PC.version,MM.version,NCDF.version,
          VC.version]
 
 def GetOptions(argv,**kwargs):
@@ -124,7 +126,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
 
     def ComputePhononModes_q(self,qpoint):
         # Compute phonon vectors
-        print '\nSupercellPhonons.SetQ: Computing force constants at q=',qpoint
+        print '\nSupercellPhonons.SetQ: Computing force constants at q = ',qpoint,'(2pi/Ang)'
         NN = self.Sym.basis.NN
         self.q = N.zeros((NN,3,NN,3),N.complex)
         # Loop over basis atoms
@@ -170,7 +172,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         return H_k
 
     def ComputeElectronStates(self,kpoint):
-        print 'SupercellPhonons.ComputeElectronStates: k =',kpoint
+        print 'SupercellPhonons.ComputeElectronStates: k = ',kpoint,'(2pi/Ang)'
         # Fold onto primitive cell
         self.h0_k = self.Fold2PrimitiveCell(self.h0,kpoint)
         self.s0_k = self.Fold2PrimitiveCell(self.s0,kpoint)
@@ -225,14 +227,10 @@ def main(options):
     SCDM.FirstOrb = SCDM.OrbIndx[0][0] # First atom = 1
     SCDM.LastOrb = SCDM.OrbIndx[SCDM.Sym.basis.NN-1][1] # Last atom = Sym.NN
     SCDM.rednao = SCDM.LastOrb+1-SCDM.FirstOrb
-
-    # Read k- and q-points
-    kpts,dk = ReadKpoints(options.kfile)
-    WriteKpoints(options.DestDir+'/kpoints',kpts)
-    qpts,dq = ReadKpoints(options.qfile)
-    WriteKpoints(options.DestDir+'/qpoints',qpts)
     
     # Compute electron eigenvalues
+    kpts,dk = ReadKpoints(options.kfile)
+    WriteKpoints(options.DestDir+'/kpoints',kpts)
     fel = open(options.DestDir+'/ebands.dat','w')
     elist = []
     for i,k in enumerate(kpts):
@@ -246,6 +244,8 @@ def main(options):
     elist = N.array(elist)
 
     # Compute phonon eigenvalues
+    qpts,dq = ReadKpoints(options.qfile)
+    WriteKpoints(options.DestDir+'/qpoints',qpts)
     fph = open(options.DestDir+'/phbands.dat','w')
     phlist = []
     for i,q in enumerate(qpts):
@@ -257,6 +257,13 @@ def main(options):
         fph.write('\n')
     fph.close()
     phlist = N.array(phlist)
+    
+    # Write data to NetCDF 
+    ncf = options.DestDir+'/Output.nc'
+    NCDF.write(ncf,kpts,'kpts')
+    NCDF.write(ncf,elist,'ebands')
+    NCDF.write(ncf,qpts,'qpts')
+    NCDF.write(ncf,phlist,'phbands')
 
     # Make xmgrace plots
     import WriteXMGR as XMGR
