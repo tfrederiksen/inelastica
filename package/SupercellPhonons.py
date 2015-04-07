@@ -32,7 +32,7 @@ import glob, os,sys,string
 import scipy.linalg as SLA
 
 vinfo = [version,SIO.version,Symmetry.version,CF.version,
-         PC.version,#MM.version,NCDF.version,
+         PH.version,PC.version,#MM.version,NCDF.version,
          VC.version]
 
 def GetOptions(argv,**kwargs):
@@ -62,10 +62,10 @@ def GetOptions(argv,**kwargs):
                  help="Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%default]")
     
     p.add_option("-k","--kpointfile",dest='kfile',
-                 help="Text file with k-points for which the band structures will be computed")
+                 help="Input file with k-points for the electron band structure")
 
-    p.add_option("-s","--skipelectrons",dest='ebands',default=True,action="store_false",
-                 help="Skip calculation of the electron band structure")
+    p.add_option("-q","--qpointfile",dest='qfile',
+                 help="Input file with q-points for the phonon band structure")
 
     (options, args) = p.parse_args(argv)
 
@@ -170,12 +170,42 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         return H_k
 
     def ComputeElectronStates(self,kpoint):
+        print 'SupercellPhonons.ComputeElectronStates: k =',kpoint
         # Fold onto primitive cell
         self.h0_k = self.Fold2PrimitiveCell(self.h0,kpoint)
         self.s0_k = self.Fold2PrimitiveCell(self.s0,kpoint)
         ev, evec = SLA.eigh(self.h0_k[0],self.s0_k)
         #evecd = MM.dagger(evec)
         return ev,evec
+
+def ReadKpoints(filename):
+    klist = []
+    dklist = []
+    f = open(filename,'r')
+    for ln in f.readlines():
+        i = len(klist)
+        s = ln.split()
+        if len(s)==3:
+            klist += [N.array([N.float(s[0]),N.float(s[1]),N.float(s[2])])]
+            if i==0:
+                dk = N.zeros(3,N.float)
+                dklist += [N.dot(dk,dk)**.5]
+            else:
+                dk = klist[i]-klist[i-1]
+                dklist += [dklist[i-1]+N.dot(dk,dk)**.5]
+    f.close()
+    print 'SupercellPhonons.ReadKpoints: Read %i points from %s'%(len(klist),filename)
+    return N.array(klist),N.array(dklist)
+
+def WriteKpoints(filename,klist):
+    f = open(filename,'w')
+    for i in range(len(klist)):
+        k = klist[i]
+        for j in range(3):
+            f.write('%.8e '%k[j])
+        f.write('\n')
+    f.close()
+    print 'SupercellPhonons.WriteKpoints: Wrote %i points to %s'%(len(klist),filename)
 
 def main(options):
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
@@ -190,68 +220,67 @@ def main(options):
 
     # Prepare Hamiltonian etc in Gamma for whole supercell
     natoms = SIO.GetFDFlineWithDefault(fdf[0],'NumberOfAtoms',int,-1,'Error')
-    SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),
-                          1,natoms,AbsEref=False)
+    SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),1,natoms,AbsEref=False)
     SCDM.nao = SCDM.h0.shape[-1]
     SCDM.FirstOrb = SCDM.OrbIndx[0][0] # First atom = 1
     SCDM.LastOrb = SCDM.OrbIndx[SCDM.Sym.basis.NN-1][1] # Last atom = Sym.NN
     SCDM.rednao = SCDM.LastOrb+1-SCDM.FirstOrb
 
-    # Loop over k-points
-    fk = open(options.kfile,'r')
-    os.system('cp %s %s/kpoints'%(options.kfile,options.DestDir))
-    if options.ebands:
-        fel = open(options.DestDir+'/ebands.dat','w')
-    fph = open(options.DestDir+'/phbands.dat','w')
-    xlist = []
+    # Read k- and q-points
+    kpts,dk = ReadKpoints(options.kfile)
+    WriteKpoints(options.DestDir+'/kpoints',kpts)
+    qpts,dq = ReadKpoints(options.qfile)
+    WriteKpoints(options.DestDir+'/qpoints',qpts)
+    
+    # Compute electron eigenvalues
+    fel = open(options.DestDir+'/ebands.dat','w')
     elist = []
+    for i,k in enumerate(kpts):
+        ev,evec = SCDM.ComputeElectronStates(k)
+        elist += [ev]
+        fel.write('%i '%i)
+        for j in ev:
+            fel.write('%.8e '%j.real)
+        fel.write('\n')
+    fel.close()
+    elist = N.array(elist)
+
+    # Compute phonon eigenvalues
+    fph = open(options.DestDir+'/phbands.dat','w')
     phlist = []
-    i = 0
-    x = 0.0
-    for ln in fk.readlines():
-        s = ln.split()
-        if len(s)==3:
-            k = N.array([N.float(s[0]),N.float(s[1]),N.float(s[2])])
-            # Compute dk
-            if i==0:
-                k0 = k
-            dk = N.dot(k-k0,k-k0)**.5
-            k0 = k
-            x += dk
-            xlist += [x]
-            # Compute electron eigenvalues
-            if options.ebands:
-                ev,evec = SCDM.ComputeElectronStates(k)
-                elist += [ev]
-                fel.write('%i '%i)
-                for j in ev:
-                    fel.write('%.8e '%j.real)
-                fel.write('\n')
-            # Compute phonon eigenvalues
-            hw,U = SCDM.ComputePhononModes_q(k)
-            phlist += [hw]
-            fph.write('%i '%i)
-            for j in hw:
-                fph.write('%.8e '%j.real)
-            fph.write('\n')
-            i += 1
-    # Make nice plots
+    for i,q in enumerate(qpts):
+        hw,U = SCDM.ComputePhononModes_q(q)
+        phlist += [hw]
+        fph.write('%i '%i)
+        for j in hw:
+            fph.write('%.8e '%j.real)
+        fph.write('\n')
+    fph.close()
+    phlist = N.array(phlist)
+
+    # Make xmgrace plots
     import WriteXMGR as XMGR
-    x = N.array([xlist])/xlist[-1]
+
     # Electron bands
-    if options.ebands:
-        e = N.array(elist)
-        e = N.concatenate((x,e.T)).T
-        es = XMGR.Array2XYsets(e,Lwidth=2,Lcolor=1)
-        ge = XMGR.Graph(es)
-        ge.SetXaxis(useticks=False,useticklabels=False,autoscale=True)
-        ge.SetYaxis(autoscale=True)
-        ge.SetYaxis(majorUnit=5.0)
-        pe = XMGR.Plot(options.DestDir+'/Electrons.agr',ge)
-        pe.WriteFile()
-    # Phonon bands
-    p = N.array(phlist)
-    p = N.concatenate((x,p.T)).T
+    if len(dk)>1:
+        x = N.array([dk/max(dk)])
+    else:
+        x = N.array([[0.0]])
+    e = N.concatenate((x,elist.T)).T    
+    es = XMGR.Array2XYsets(e,Lwidth=2,Lcolor=1)
+    ge = XMGR.Graph(es)
+    ge.SetXaxis(useticks=False,useticklabels=False,autoscale=True)
+    ge.SetYaxis(autoscale=True)
+    ge.SetYaxis(majorUnit=5.0)
+    pe = XMGR.Plot(options.DestDir+'/Electrons.agr',ge)
+    pe.WriteFile()
+    
+    # Phonon band
+    if len(dq)>1:
+        x = N.array([dq/max(dq)])
+    else:
+        x = N.array([[0.0]])
+    p = N.concatenate((x,phlist.T)).T
     ps = XMGR.Array2XYsets(p,Lwidth=2,Lcolor=1)
     gp = XMGR.Graph(ps)
     gp.SetXaxis(useticks=False,useticklabels=False,autoscale=True)
