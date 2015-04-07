@@ -22,7 +22,6 @@ Thomas Frederiksen, August 2014
 """
 
 import SiestaIO as SIO
-import Symmetry
 import CommonFunctions as CF
 import MakeGeom as MG
 import PhysicalConstants as PC
@@ -34,7 +33,7 @@ import numpy as N
 import numpy.linalg as LA
 import glob, os,sys,string
 
-vinfo = [version,SIO.version,Symmetry.version,CF.version,
+vinfo = [version,SIO.version,CF.version,
          MG.version,PC.version,MM.version,NCDF.version,VC.version]
 
 def GetOptions(argv,**kwargs):
