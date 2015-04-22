@@ -249,8 +249,7 @@ def calcWF(options,geom,basis,Y):
         m = basis.M[ii]
         if l==3:
             print 'f-shell : l=%i, m=%i (NOT TESTED!!)'%(l,m)
-        SphHar = MM.sphericalHarmonics(sinth,costh,sinfi,cosfi)
-        thisSphHar = SphHar[l][m+l]
+        thisSphHar = MM.sphericalHarmonics(l,m,costh,sinfi,cosfi)
 
         YY[ixmin:ixmax,iymin:iymax,izmin:izmax]=YY[ixmin:ixmax,iymin:iymax,izmin:izmax]+\
                                                  RR*thisSphHar*Y[ii]
