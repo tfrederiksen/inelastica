@@ -4,13 +4,16 @@ print version
 import numpy as N
 import Scientific.IO.NetCDF as NC
 
-def write(fn,array,label):
+def write(fn,array,label,SinglePrec):
     """
     The simplest possible way to write an array to
     a new or existing NetCDF file
     """
     nc = NCfile(fn)
-    nc.write(array,label)
+    if label == 'He_ph' and SinglePrec:
+       nc.writef(array,label)
+    else:
+       nc.writed(array,label)
     nc.close()
 
 class NCfile:
@@ -30,7 +33,17 @@ class NCfile:
         "Closes the file instance"
         self.file.close()
     
-    def write(self,A,label,vartype='d'):
+    def writef(self,A,label,vartype='f'):
+        "Writes numpy array to file"
+        dim = self.__checkDimensions(A)
+        print 'WriteNetCDF: Writing variable %s to file %s'%(label,self.fn)
+        try:
+            self.file.createVariable(label,vartype,dim)
+        except:
+            print '  ...variable %s already exist. Overwriting!!!'%label
+        self.variables[label][:] = N.array(A)
+
+    def writed(self,A,label,vartype='d'):
         "Writes numpy array to file"
         dim = self.__checkDimensions(A)
         print 'WriteNetCDF: Writing variable %s to file %s'%(label,self.fn)
