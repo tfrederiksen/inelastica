@@ -20,20 +20,35 @@ and additional flexibility:
 
 Thomas Frederiksen, August 2014
 """
+"""
+Additional improvements to facilitate large-scale calcuations:
 
+* The code allows to specify the range of dynamic atoms for which the 
+  electron-phonon coupling elements are evaluated (flags:--EPHfirst,--EPHlast)
+
+* It is possible to restart the code (flag:--Restart) by using the NetCDF output obtained 
+  from a previous calculation as checkpoint file (flag:--CheckPointNetCDF)
+
+* The matrix of electron-phonon coupling elements can be evaluated in 
+  single precision to reduce disk space usage (flag:--SinglePrec).
+
+Daniele Stradi, April 2015
+"""
 import SiestaIO as SIO
+import Symmetry
 import CommonFunctions as CF
 import MakeGeom as MG
 import PhysicalConstants as PC
 import MiscMath as MM
 import WriteNetCDF as NCDF
 import ValueCheck as VC
+import Scientific.IO.NetCDF as NC
 
 import numpy as N
 import numpy.linalg as LA
 import glob, os,sys,string
 
-vinfo = [version,SIO.version,CF.version,
+vinfo = [version,SIO.version,Symmetry.version,CF.version,
          MG.version,PC.version,MM.version,NCDF.version,VC.version]
 
 def GetOptions(argv,**kwargs):
@@ -50,6 +65,18 @@ def GetOptions(argv,**kwargs):
     p.add_option("-c", "--CalcCoupl",dest="CalcCoupl",
                  help="Calculate e-ph couplings [default=%default]",
                  action="store_true",default=False)
+
+    p.add_option("-r", "--Restart",dest="Restart",
+                 help="Restart from a previous run [default=%default]",
+                 action="store_true",default=False)
+
+    p.add_option("--CheckPointNetCDF", dest='CheckPointNetCDF',
+                 help="Old NetCDF file used for restart [default=%default]",
+                 type='str',default="None")
+
+    p.add_option("-s", "--SinglePrec",dest="SinglePrec",
+                 help="Calculate e-ph couplings using single precision arrays [default=%default]",
+                 action="store_true",default=False)
     
     p.add_option("-F","--DeviceFirst",dest="DeviceFirst",
                  help="First device atom index (in the electronic basis) [default=%default]",
@@ -65,6 +92,13 @@ def GetOptions(argv,**kwargs):
                  help="Last FC atom index [default=%default]" ,
                  type="int",default=1000)
     
+    p.add_option("--EPHfirst",dest="EPHfirst",
+                 help="First atom index for which the e-ph. couplings are evaluated [default=%default]",
+                 type="int",default=1)
+    p.add_option("--EPHlast", dest="EPHlast",
+                 help="Last atom index for which the e-ph. couplings are evaluated [default=%default]" ,
+                 type="int",default=1000)
+
     p.add_option("--PBCFirst", dest="PBCFirst",\
                  help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
                  type="int",default=1)
@@ -115,6 +149,10 @@ def GetOptions(argv,**kwargs):
     options.DynamicAtoms = range(options.FCfirst,options.FClast+1)
     del options.FCfirst, options.FClast
  
+    # EPH atoms
+    options.EPHAtoms = range(options.EPHfirst,options.EPHlast+1)
+    del options.EPHfirst, options.EPHlast
+
     # PBCFirst/PBCLast
     if options.PBCFirst<options.DeviceFirst:
         options.PBCFirst = options.DeviceFirst
@@ -399,10 +437,7 @@ class DynamicalMatrix():
         for j in range(3*dyn):
             for i in range(3*dyn):
                 # Eigenvectors after multiplication by characteristic length
-                if hw[j]>0.0: # Require positive frequency
-                    Ucl[:,i] = U[:,i]*(1/(self.Masses[i/3]*(hw[j]/(2*PC.Rydberg2eV)))**.5)
-                else:
-                    Ucl[:,i] = 0.0*U[:,i]
+                Ucl[:,i] = U[:,i]*(1/(self.Masses[i/3]*(hw[j]/(2*PC.Rydberg2eV)))**.5)
 
         # Expand vectors to full geometry
         UU = N.zeros((len(hw),self.geom.natoms,3),N.complex)
@@ -423,7 +458,7 @@ class DynamicalMatrix():
 
 
         
-    def PrepareGradients(self,onlySdir,kpoint,DeviceFirst,DeviceLast,AbsEref):
+    def PrepareGradients(self,onlySdir,kpoint,DeviceFirst,DeviceLast,AbsEref,SinglePrec):
         print '\nPhonons.PrepareGradients: Setting up various arrays'
         self.kpoint = kpoint
         self.OrbIndx,nao = self.FCRs[0].GetOrbitalIndices()
@@ -439,7 +474,17 @@ class DynamicalMatrix():
             self.invS0H0[1,iSpin,:,:] = MM.mm(self.TSHS0.H[iSpin,:,:],invS0)
         del invS0
         # don't re-create the array every time... too expensive    
-        self.dSdij = N.zeros((nao,nao),N.complex)
+        GammaPoint = N.dot(self.kpoint,self.kpoint)<1e-7
+        if GammaPoint:
+           if SinglePrec:
+              self.dSdij = N.zeros((nao,nao),N.float32)
+           else:
+              self.dSdij = N.zeros((nao,nao),N.float64)
+        else:
+           if SinglePrec:
+              self.dSdij = N.zeros((nao,nao),N.complex64)
+           else:
+              self.dSdij = N.zeros((nao,nao),N.complex128)
 
         # Take Device region 
         self.DeviceAtoms = range(DeviceFirst,DeviceLast+1)
@@ -476,13 +521,34 @@ class DynamicalMatrix():
         self.dSdij[:,f:l+1] = 0. # reset
         return dH
 
-    def ComputeEPHcouplings(self,PBCFirst,PBCLast):
+    def ComputeEPHcouplings(self,PBCFirst,PBCLast,EPHAtoms,Restart,CheckPointNetCDF,SinglePrec):
         first,last = self.OrbIndx[self.DeviceFirst-1][0],self.OrbIndx[self.DeviceLast-1][1]
         rednao = last+1-first
         const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-        Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),N.complex)
+
+        if Restart:
+              if not os.path.exists(CheckPointNetCDF):
+                 print "ERROR!!! You have enforced a restart but you have not provided any checkpoint NetCDF file!"
+                 sys.exit()
+              else:
+                 print "Restart e-ph. calculation. Partial information read from file:", CheckPointNetCDF
+                 RNCfile = NC.NetCDFFile(CheckPointNetCDF,'r')
+                 Heph = N.array(RNCfile.variables['He_ph'])
+        else:
+           print "Start e-ph. calculation from scratch"
+           GammaPoint = N.dot(self.kpoint,self.kpoint)<1e-7
+           if GammaPoint:
+              if SinglePrec:
+                 Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),N.float32)
+              else:
+                 Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),N.float64)
+           else:
+              if SinglePrec:
+                 Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),N.complex64)
+              else:
+                 Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),N.complex128)
         # Loop over dynamic atoms
-        for i,v in enumerate(self.DynamicAtoms):
+        for i,v in enumerate(EPHAtoms):
             # Loop over axes
             for j in range(3):
                 # Compute gradient
@@ -510,7 +576,7 @@ class DynamicalMatrix():
         del dH, dh
         self.heph = Heph
 
-    def WriteOutput(self,label):
+    def WriteOutput(self,label,SinglePrec):
         ### Write MKL- and xyz-files
         natoms = self.geom.natoms
         hw = self.hw
@@ -534,30 +600,30 @@ class DynamicalMatrix():
         WriteAXSFFilesPer('%s.per.charlength-displ.axsf'%label,self.geom.pbc,self.geom.xyz,self.geom.anr,\
                              hw,UUcl,1,natoms)
         # Netcdf format
-        NCDF.write('%s.nc'%label,hw,'hw')
-        NCDF.write('%s.nc'%label,UU,'U')
-        NCDF.write('%s.nc'%label,UUdisp,'Udisp')
-        NCDF.write('%s.nc'%label,self.geom.pbc,'CellVectors')
-        NCDF.write('%s.nc'%label,self.geom.xyz,'GeometryXYZ')
-        NCDF.write('%s.nc'%label,self.geom.anr,'AtomNumbers')
-        NCDF.write('%s.nc'%label,self.geom.snr,'SpeciesNumbers')
-        NCDF.write('%s.nc'%label,self.Masses,'Masses')
-        NCDF.write('%s.nc'%label,self.DynamicAtoms,'DynamicAtoms')
+        NCDF.write('%s.nc'%label,hw,'hw',SinglePrec)
+        NCDF.write('%s.nc'%label,UU,'U',SinglePrec)
+        NCDF.write('%s.nc'%label,UUdisp,'Udisp',SinglePrec)
+        NCDF.write('%s.nc'%label,self.geom.pbc,'CellVectors',SinglePrec)
+        NCDF.write('%s.nc'%label,self.geom.xyz,'GeometryXYZ',SinglePrec)
+        NCDF.write('%s.nc'%label,self.geom.anr,'AtomNumbers',SinglePrec)
+        NCDF.write('%s.nc'%label,self.geom.snr,'SpeciesNumbers',SinglePrec)
+        NCDF.write('%s.nc'%label,self.Masses,'Masses',SinglePrec)
+        NCDF.write('%s.nc'%label,self.DynamicAtoms,'DynamicAtoms',SinglePrec)
         try:
-            NCDF.write('%s.nc'%label,self.DeviceAtoms,'DeviceAtoms')
-            NCDF.write('%s.nc'%label,self.kpoint,'kpoint')
-            NCDF.write('%s.nc'%label,self.h0.real,'H0')
-            NCDF.write('%s.nc'%label,self.s0.real,'S0')
+            NCDF.write('%s.nc'%label,self.DeviceAtoms,'DeviceAtoms',SinglePrec)
+            NCDF.write('%s.nc'%label,self.kpoint,'kpoint',SinglePrec)
+            NCDF.write('%s.nc'%label,self.h0.real,'H0',SinglePrec)
+            NCDF.write('%s.nc'%label,self.s0.real,'S0',SinglePrec)
             GammaPoint = N.dot(self.kpoint,self.kpoint)<1e-7
             if not GammaPoint:
-                NCDF.write('%s.nc'%label,self.h0.imag,'ImH0')
-                NCDF.write('%s.nc'%label,self.s0.imag,'ImS0')
+                NCDF.write('%s.nc'%label,self.h0.imag,'ImH0',SinglePrec)
+                NCDF.write('%s.nc'%label,self.s0.imag,'ImS0',SinglePrec)
         except:
             print 'Hamiltonian etc not found'
         try:
-            NCDF.write('%s.nc'%label,self.heph.real,'He_ph')
+            NCDF.write('%s.nc'%label,self.heph.real,'He_ph',SinglePrec)
             if not GammaPoint:
-                NCDF.write('%s.nc'%label,self.heph.imag,'ImHe_ph')
+                NCDF.write('%s.nc'%label,self.heph.imag,'ImHe_ph',SinglePrec)
         except:
             print 'EPH couplings etc not found'
 
@@ -668,14 +734,14 @@ def main(options):
     DM.ComputePhononModes(DM.mean)
     # Compute e-ph coupling
     if options.CalcCoupl:
-       DM.PrepareGradients(options.onlySdir,options.kpoint,options.DeviceFirst,options.DeviceLast,options.AbsEref)
-       DM.ComputeEPHcouplings(options.PBCFirst,options.PBCLast)
+       DM.PrepareGradients(options.onlySdir,options.kpoint,options.DeviceFirst,options.DeviceLast,options.AbsEref,options.SinglePrec)
+       DM.ComputeEPHcouplings(options.PBCFirst,options.PBCLast,options.EPHAtoms,options.Restart,options.CheckPointNetCDF,options.SinglePrec)
        # Write data to files
-       DM.WriteOutput(options.DestDir+'/Output')
+       DM.WriteOutput(options.DestDir+'/Output',options.SinglePrec)
        CF.PrintMainFooter('Phonons')
        return DM.h0,DM.s0,DM.hw,DM.heph
     else:
-       DM.WriteOutput(options.DestDir+'/Output')
+       DM.WriteOutput(options.DestDir+'/Output',options.SinglePrec)
        CF.PrintMainFooter('Phonons')
        return DM.hw
 
