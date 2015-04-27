@@ -19,8 +19,7 @@ and additional flexibility:
   need to be present in the memory at one time.
 
 Thomas Frederiksen, August 2014
-"""
-"""
+
 Additional improvements to facilitate large-scale calcuations:
 
 * The code allows to specify the range of dynamic atoms for which the 
@@ -433,7 +432,7 @@ class DynamicalMatrix():
             Udisp[:,i] = U[:,i]/self.Masses[i/3]**.5
 
         # Compute displacement vectors scaled for the characteristic length
-        Ucl = U.copy()
+        Ucl = np.empty_like(U)
         for j in range(3*dyn):
             for i in range(3*dyn):
                 # Eigenvectors after multiplication by characteristic length
