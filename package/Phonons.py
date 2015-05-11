@@ -432,7 +432,7 @@ class DynamicalMatrix():
             Udisp[:,i] = U[:,i]/self.Masses[i/3]**.5
 
         # Compute displacement vectors scaled for the characteristic length
-        Ucl = np.empty_like(U)
+        Ucl = N.empty_like(U)
         for j in range(3*dyn):
             for i in range(3*dyn):
                 # Eigenvectors after multiplication by characteristic length
