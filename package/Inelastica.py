@@ -414,27 +414,42 @@ def calcIETS(options,GFp,GFm,basis,hw):
     # Current: Add Landauer part, GFm.TeF = GFp.TeF
     InH += GFp.TeF*Vl # Vgrid
 
-    # Current: Hilbert part
-    IH = N.zeros((NN,),N.float)
-    IasymF = N.zeros((NN,),N.float)
-    # Prepare box/window function on array
-    Vl2 = N.outer(Vl,N.ones(Egrid.shape)) 
-    Egrid2 = N.outer(N.ones(Vl.shape),Egrid)
-    # Box/window function nF(E-Vl2)-nF(E-0):
-    kasse = MM.box(0,-Vl2,Egrid2,kT) # (Vgrid,Egrid)
-    ker = None
-    for i in (hw>options.modeCutoff).nonzero()[0]:
-        # Box/window function nF(E-hw)-nF(E+hw)
-        tmp = MM.box(-hw[i],hw[i],Egrid,kT)
-        hilb, ker = MM.Hilbert(tmp,ker) # Egrid
-        # Calculate Iasym for each bias point
-        for j in range(len(Vl)):
-            Iasym = MM.trapez(Egrid,kasse[j]*hilb,equidistant=True).real/2
-            IasymF[j] += Iasym
-            if Vl[j]>0:
-                IH[j] += GFp.HT[i]*Iasym
-            else:
-                IH[j] += GFm.HT[i]*Iasym
+    # Current: Asymmetric/Hilbert part (IH)
+    try:
+        import scipy.special as SS
+        print "Inelastica: Computing asymmetric term using digamma function, see Bevilacqua et al."
+        IH = N.zeros((NN,),N.float)
+        IasymF = N.zeros((NN,),N.float)
+        for i in (hw>options.modeCutoff).nonzero()[0]:
+            v0 = hw[i]/(2*N.pi*kT)
+            vp = (hw[i]+Vl)/(2*N.pi*kT)
+            vm = (hw[i]-Vl)/(2*N.pi*kT)
+            Iasym = kT*(2*v0*SS.psi(1.j*v0)-vp*SS.psi(1.j*vp)-vm*SS.psi(1.j*vm)).real
+            IasymF += Iasym
+            IH += GFp.HT[i]*N.array(Vl>0.0,dtype=int)*Iasym
+            IH += GFm.HT[i]*N.array(Vl<0.0,dtype=int)*Iasym
+    except:
+        print "Computing using explit Hilbert transformation"
+        IH = N.zeros((NN,),N.float)
+        IasymF = N.zeros((NN,),N.float)
+        # Prepare box/window function on array
+        Vl2 = N.outer(Vl,N.ones(Egrid.shape)) 
+        Egrid2 = N.outer(N.ones(Vl.shape),Egrid)
+        # Box/window function nF(E-Vl2)-nF(E-0):
+        kasse = MM.box(0,-Vl2,Egrid2,kT) # (Vgrid,Egrid)
+        ker = None
+        for i in (hw>options.modeCutoff).nonzero()[0]:
+            # Box/window function nF(E-hw)-nF(E+hw)
+            tmp = MM.box(-hw[i],hw[i],Egrid,kT)
+            hilb, ker = MM.Hilbert(tmp,ker) # Egrid
+            # Calculate Iasym for each bias point
+            for j in range(len(Vl)):
+                Iasym = MM.trapez(Egrid,kasse[j]*hilb,equidistant=True).real/2
+                IasymF[j] += Iasym
+                if Vl[j]>0:
+                    IH[j] += GFp.HT[i]*Iasym
+                else:
+                    IH[j] += GFm.HT[i]*Iasym
 
     # Get the right units for gamma_eh, gamma_heat
     gamma_eh_p=N.zeros((len(hw),),N.float)
