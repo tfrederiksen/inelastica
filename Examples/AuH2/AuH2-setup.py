@@ -29,12 +29,19 @@ OSPBSsubs = [['$NODES$','1:ppn=1'],['$MEM$','1gb'],['$WALLTIME$',  '1:00:00']]
 
 T, F = True, False
 
-CG = F
-FC = T
-OS = T
-TS = T
-PH = T
+# Step 1
+CG = T
 
+# Step 2
+FC = F
+OS = F
+TS = F
+
+# Step 3
+PH = F
+
+# Step 4
+IN = F
 
 if CG:
     # Stretch device and start geometry relaxation
@@ -44,7 +51,7 @@ if CG:
                overwrite=False,submitJob=submitJob,PBSsubs=TSPBSsubs)                    
 
 # For the remaining runs we will explore the L = 10.00 Ang case
-geom = './L9.68'
+geom = './L10.00'
 head,tail = os.path.split(geom)   
 
 if FC:
@@ -64,21 +71,13 @@ if TS:
                AtomsPerLayer=1,BlockSize=2,
                LayersLeft=1,LayersRight=1,
                AddLeftList=[],AddRightList=[],
-               overwrite=False,submitJob=submitJob,PBSsubs=TSPBSsubs)                        
-    
-if PH:
-    # Device region (Hamiltonian subspace)
-    DF,DL = 10,13    
-    SetupPHrun(geom+'/PHrun','../FCrun*',onlySdir='../OSrun',
-               DeviceFirst=DF,DeviceLast=DL,
-               outlabel=('Dev_%.2i-%.2i'%(DF,DL)),
-               overwrite=False,submitJob=submitJob,PBSsubs=PYPBSsubs)
+               overwrite=False,submitJob=submitJob,PBSsubs=TSPBSsubs)
 
-#if IN:
-#    # This does not work at the moment! Use the command line "Inelastica"
-#    # instead.
-#    SetupInelastica(geom+'./Inelastica/',geom+'/Inelastica_Dev+1',
-#                    geom+'/TSrun',geom+'/TemplateInelasticaInput.py',
-#                    tail+'2_Dev+1.py',
-#                    geom+'./PhononCalcDev+1/%sDev+1.nc'%tail,
-#                    submitJob=submitJob)
+if PH:
+    print "Try:"
+    print "Phonons -c -F 9 -L 14 --FCfirst=11 --FClast=12 --EPHfirst=11 --EPHlast=12 PHrun"
+
+if IN:
+    print "Try:"
+    print "Inelastica -F 10 -L 15 -p ../PHrun/Output.nc --LOEscale=0.0 INrun"
+
