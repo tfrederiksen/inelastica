@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import Inelastica.SetupRuns as SR
+from optparse import OptionParser
+
+usage = "usage: %prog <CGrun> <FCrun> [options]"
+description = """
+Tool for generating a FCrun folder starting from CGrun
+"""
+parser = OptionParser(usage,description=description)
+parser.add_option("-F", "--FCfirst",dest="FCfirst",help="First dynamic atom", type='int', default=1)
+parser.add_option("-L", "--FClast",dest="FClast",help="Last dynamic atom", type='int', default=1)
+parser.add_option("-d", "--displacement",dest="displacement",help="Finite displacement amplitude", type='float', default=0.02)
+
+(general, args) = parser.parse_args()
+
+if len(args)<2:
+    print description
+    parser.error('You need to supply two directories.')
+else:
+    SR.SetupFCrun(args[0],args[1],general.FCfirst,general.FClast,general.displacement)

@@ -51,7 +51,18 @@ def test_prereq():
         print "A minimal test showed that your system takes %3.2f s"%(en-st)
         print "numpy was compiled with a slow versions of BLAS/LAPACK."
         print "  (normal Xeon5430/ifort/mkl10 takes ~ 1 s)"
-        print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
+        print "Please see http://dipc.ehu.es/frederiksen/inelastica/index.php"
+        print "#### Warning ####"
+
+    try:
+        import scipy
+        import scipy.linalg as SLA
+        import scipy.special as SS
+    except:
+        print "#### Warning ####"
+        print 'Some modules will not work without the scipy package'
+        print '(needed for solving generalized eigenvalue problems'
+        print 'and spherical harmonics)'
         print "#### Warning ####"
 
 test_prereq()
@@ -78,7 +89,7 @@ F90extLapack = Next.Extension('Inelastica.F90_lapack',
 
 # Main setup of python modules
 setup(name='Inelastica',
-      version='1.2',
+      version='1.2-rc',
       # Define the requirements for Inelastica
       # These probably needs to be adjusted... 
       install_requires = ['python>=2.5','numpy>=1.6','ScientificPython>=2.6'],
@@ -110,7 +121,9 @@ Provides:
                   'scripts/bands2xmgr',
                   'scripts/Phonons',
                   'scripts/NEB',
-                  'scripts/grid2grid'
+                  'scripts/grid2grid',
+                  'scripts/setupFCrun',
+                  'scripts/setupOSrun'
                   ],
       packages=['Inelastica'],
       ext_modules=[F90ext,F90extLapack],
