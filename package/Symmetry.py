@@ -850,11 +850,22 @@ class Symmetry:
         else:
             print "Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType
             kuk
-        print "Symmetry: calculate along k-directions"
+        kpts = []
+        labels = []
         for elem in what:
             print elem[0]
             print "From ",N.round(elem[2]*1e4)/1e4," to ",N.round(1e4*(elem[2]+elem[1]))/1e4 
-
+            for i in range(elem[3]):
+                ki = elem[2]+elem[1]*i/elem[3]
+                if i==0:
+                    # Append label for high-symmetry point
+                    labels += [elem[0]]
+                else:
+                    labels += ['']
+                kpts.append(ki)
+        import SupercellPhonons as SP
+        self.kpathfn = self.latticeType+'.kpath'
+        SP.WriteKpoints(self.kpathfn,kpts,labels)
         return what
 
 ###########################################################

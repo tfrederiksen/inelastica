@@ -63,11 +63,11 @@ def GetOptions(argv,**kwargs):
     p.add_option("--AtomicMass", dest='AtomicMass', default='[]',
                  help="Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%default]")
     
-    p.add_option("-k","--kpointfile",dest='kfile',
-                 help="Input file with k-points for the electron band structure")
+    p.add_option("-k","--kpointfile",dest='kfile',default=None,
+                 help="Optional input file with k-points for the electron band structure [default=path in 1BZ determined by lattice type]")
 
-    p.add_option("-q","--qpointfile",dest='qfile',
-                 help="Input file with q-points for the phonon band structure")
+    p.add_option("-q","--qpointfile",dest='qfile',default=None,
+                 help="Optional input file with q-points for the phonon band structure [default=path in 1BZ determined by lattice type]")
 
     (options, args) = p.parse_args(argv)
 
@@ -108,6 +108,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         # A primitive cell was found
         Sym.pointGroup()
         Sym.findIrreducible()
+        Sym.what()
         self.SetDynamicAtoms(range(1,Sym.basis.NN+1))
         print '\nComputing symmetrized force constants'
         self.mean_sym = Sym.symmetrizeFC(self.mean,1,Sym.basis.NN,radi=radius)
@@ -183,11 +184,13 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
 def ReadKpoints(filename):
     klist = []
     dklist = []
+    labels = []
+    ticks = []
     f = open(filename,'r')
     for ln in f.readlines():
         i = len(klist)
         s = ln.split()
-        if len(s)==3:
+        if len(s)==3 or len(s)==4:
             klist += [N.array([N.float(s[0]),N.float(s[1]),N.float(s[2])])]
             if i==0:
                 dk = N.zeros(3,N.float)
@@ -195,16 +198,23 @@ def ReadKpoints(filename):
             else:
                 dk = klist[i]-klist[i-1]
                 dklist += [dklist[i-1]+N.dot(dk,dk)**.5]
+            if len(s)==4:
+                labels += [s[3]]
+                ticks += [[dklist[i],s[3]]]
+            else:
+                labels += ['']
     f.close()
     print 'SupercellPhonons.ReadKpoints: Read %i points from %s'%(len(klist),filename)
-    return N.array(klist),N.array(dklist)
+    return N.array(klist),N.array(dklist),labels,ticks
 
-def WriteKpoints(filename,klist):
+def WriteKpoints(filename,klist,labels=None):
     f = open(filename,'w')
     for i in range(len(klist)):
         k = klist[i]
         for j in range(3):
             f.write('%.8e '%k[j])
+        if labels:
+            f.write(labels[i])
         f.write('\n')
     f.close()
     print 'SupercellPhonons.WriteKpoints: Wrote %i points to %s'%(len(klist),filename)
@@ -222,15 +232,16 @@ def main(options):
 
     # Prepare Hamiltonian etc in Gamma for whole supercell
     natoms = SIO.GetFDFlineWithDefault(fdf[0],'NumberOfAtoms',int,-1,'Error')
-    SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),1,natoms,AbsEref=False)
+    SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),1,natoms,AbsEref=False,SinglePrec=True)
     SCDM.nao = SCDM.h0.shape[-1]
     SCDM.FirstOrb = SCDM.OrbIndx[0][0] # First atom = 1
     SCDM.LastOrb = SCDM.OrbIndx[SCDM.Sym.basis.NN-1][1] # Last atom = Sym.NN
     SCDM.rednao = SCDM.LastOrb+1-SCDM.FirstOrb
     
     # Compute electron eigenvalues
-    kpts,dk = ReadKpoints(options.kfile)
-    WriteKpoints(options.DestDir+'/kpoints',kpts)
+    if not options.kfile: options.kfile = SCDM.Sym.kpathfn
+    kpts,dk,klabels,kticks = ReadKpoints(options.kfile)
+    WriteKpoints(options.DestDir+'/kpoints',kpts,klabels)
     fel = open(options.DestDir+'/ebands.dat','w')
     elist = []
     for i,k in enumerate(kpts):
@@ -239,13 +250,14 @@ def main(options):
         fel.write('%i '%i)
         for j in ev:
             fel.write('%.8e '%j.real)
-        fel.write('\n')
+        fel.write(klabels[i]+'\n')
     fel.close()
     elist = N.array(elist)
 
     # Compute phonon eigenvalues
-    qpts,dq = ReadKpoints(options.qfile)
-    WriteKpoints(options.DestDir+'/qpoints',qpts)
+    if not options.qfile: options.qfile = SCDM.Sym.kpathfn
+    qpts,dq,qlabels,qticks = ReadKpoints(options.qfile)
+    WriteKpoints(options.DestDir+'/qpoints',qpts,qlabels)
     fph = open(options.DestDir+'/phbands.dat','w')
     phlist = []
     for i,q in enumerate(qpts):
@@ -254,7 +266,7 @@ def main(options):
         fph.write('%i '%i)
         for j in hw:
             fph.write('%.8e '%j.real)
-        fph.write('\n')
+        fph.write(qlabels[i]+'\n')
     fph.close()
     phlist = N.array(phlist)
     
@@ -270,28 +282,35 @@ def main(options):
 
     # Electron bands
     if len(dk)>1:
-        x = N.array([dk/max(dk)])
+        x = N.array([dk])
     else:
         x = N.array([[0.0]])
     e = N.concatenate((x,elist.T)).T    
     es = XMGR.Array2XYsets(e,Lwidth=2,Lcolor=1)
     ge = XMGR.Graph(es)
-    ge.SetXaxis(useticks=False,useticklabels=False,autoscale=True)
+    ge.SetXaxisSpecialTicks(kticks)
+    ge.SetXaxis(max=dk[-1],majorGridlines=True)
     ge.SetYaxis(autoscale=True)
-    ge.SetYaxis(majorUnit=5.0)
+    ge.SetYaxis(label='E-E\sF\N (eV)',majorUnit=5.0)
     pe = XMGR.Plot(options.DestDir+'/Electrons.agr',ge)
     pe.WriteFile()
     
     # Phonon band
     if len(dq)>1:
-        x = N.array([dq/max(dq)])
+        x = N.array([dq])
     else:
         x = N.array([[0.0]])
-    p = N.concatenate((x,phlist.T)).T
+    p = N.concatenate((x,1000*phlist.T)).T
     ps = XMGR.Array2XYsets(p,Lwidth=2,Lcolor=1)
     gp = XMGR.Graph(ps)
-    gp.SetXaxis(useticks=False,useticklabels=False,autoscale=True)
-    gp.SetYaxis(autoscale=True)
-    gp.SetYaxis(majorUnit=.050)
+    gp.SetXaxisSpecialTicks(kticks)
+    gp.SetXaxis(max=dk[-1],majorGridlines=True)
+    maxy = 1000*N.amax(phlist)
+    if maxy<20: mu,mx = 5,20
+    elif maxy<50: mu,mx = 10,50
+    elif maxy<100: mu,mx = 20,100
+    elif maxy<200: mu,mx = 50,200
+    elif maxy<500: mu,mx = 100,500
+    gp.SetYaxis(label='h\\f{Symbol}w\\f{} (meV)',majorUnit=mu,min=0.0,max=mx)
     pp = XMGR.Plot(options.DestDir+'/Phonons.agr',gp)
     pp.WriteFile()
