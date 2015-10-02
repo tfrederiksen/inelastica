@@ -1,3 +1,11 @@
+### Lines written Fri Oct  2 18:17:38 2015 
+TS.onlyS .true.
+SystemName STRUCT_3
+SystemLabel STRUCT_3
+
+%include ./STRUCT_3.fdf
+
+### Lines from RUN.fdf 
 MD.TypeOfRun  FC
 MD.FCfirst   1
 MD.FClast    1
@@ -22,5 +30,5 @@ SpinPolarized       F
 WriteCoorStep              T     # Default value
 WriteCoorInitial           T     # Default value
 
-%include STRUCT.fdf
+%include STRUCT_3.fdf
 %include Default.fdf

@@ -1,11 +1,19 @@
+### Lines written Fri Oct  2 18:18:25 2015 
+TS.onlyS .true.
+SystemName STRUCT_2
+SystemLabel STRUCT_2
+
+%include ./STRUCT_2.fdf
+
+### Lines from RUN.fdf 
 MD.TypeOfRun  FC
-MD.FCfirst   1
-MD.FClast    1
+MD.FCfirst    1
+MD.FClast     1
 TS.SaveHS    True
 MD.FCDispl   0.02 Ang
 
-SystemName          AuFCC
-SystemLabel         AuFCC
+SystemName          NaCl
+SystemLabel         NaCl
 
 SpinPolarized       F
 
@@ -16,11 +24,12 @@ SpinPolarized       F
 %endblock kgrid_Monkhorst_Pack
 
 %block ChemicalSpeciesLabel
- 1   79   Au_pbr
+ 1 11   Na
+ 2 17   Cl
 %endblock ChemicalSpeciesLabel
 
 WriteCoorStep              T     # Default value
 WriteCoorInitial           T     # Default value
 
-%include STRUCT.fdf
+%include STRUCT_2.fdf
 %include Default.fdf

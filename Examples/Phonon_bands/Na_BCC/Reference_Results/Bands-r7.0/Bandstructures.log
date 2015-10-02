@@ -1,0 +1,2761 @@
+/scratch/thf/SOFTWARE/python/2.7.10/gcc-4.9.2/packages/inelastica/DEV/intel-15.0.2/lib/python2.7/site-packages/Inelastica/Phonons.py:439: RuntimeWarning: invalid value encountered in double_scalars
+  Ucl[:,i] = U[:,i]*(1/(self.Masses[i/3]*(hw[j]/(2*PC.Rydberg2eV)))**.5)
+
+     SVN $Id: Symmetry.py 341 2015-04-01 15:50:13Z tfrederiksen $
+     SVN $Id: CommonFunctions.py 318 2014-08-07 09:00:10Z tfrederiksen $
+     SVN $Id: Phonons.py 350 2015-05-11 12:06:17Z zerothi $
+     SVN $Id: PhysicalConstants.py 318 2014-08-07 09:00:10Z tfrederiksen $
+     SVN $Id: MiscMath.py 346 2015-04-22 11:11:02Z magnuspaulsson $
+     SVN $Id: WriteNetCDF.py 349 2015-04-27 13:25:38Z zerothi $
+     SVN $Id: ValueCheck.py 332 2014-12-16 13:37:53Z zerothi $
+
+OPTIONS:
+     AtomicMass --> []
+     DestDir --> Bands-r7.0
+     FCwildcard --> ./FC*
+     Logfile --> Bandstructures.log
+     kfile --> None
+     onlySdir --> ./OSrun
+     qfile --> None
+     radius --> 7.0
+
+=======================================================================
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/RUN.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/STRUCT.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/Default.fdf
+Displacement = 0.020000 Ang
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/RUN.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/STRUCT.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/RUN.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/STRUCT.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/RUN.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/STRUCT.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/RUN.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/STRUCT.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/RUN.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/STRUCT.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/RUN.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/STRUCT.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/RUN.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/STRUCT.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/RUN.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/STRUCT.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/RUN.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/STRUCT.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/Default.fdf
+SiestaIO.ReadXVFile: Reading ./FCrun/NaBCC.XV
+SiestaIO.ReadFCFile: Reading ./FCrun/NaBCC.FC
+
+Performing symmetry analysis
+Symmetry: Lattice structure
+1 atoms in the basis
+a1 = (-2.115000,2.115000,2.115000), N1=7
+a2 = (2.115000,-2.115000,2.115000), N2=7
+a3 = (2.115000,2.115000,-2.115000), N3=7
+Shifting coordinates by :  [  2.22044605e-15   2.22044605e-15   3.99680289e-15]
+Lattice angles  = [71.0, 71.0, 71.0]
+Lattice lengths = [ 3.66328746  3.66328746  3.66328746]
+Symmetry: Lattice  = BCC
+Symmetry: 48 point symmetry operations found for lattice
+Symmetry: rank * determinant
+[ 2. -4. -2.  3.  3. -4. -2.  2.  2. -6. -6.  2.  2. -2. -6.  4.  4. -6.
+ -6.  4.  2. -6. -2.  4. -4.  2.  3. -2. -4.  3.  3. -4. -4.  3.  2. -2.
+ -2.  3.  3. -2. -2.  1.  4. -6. -6.  2.  4. -2.]
+Checking basis symmetries :   0 % done
+Checking basis symmetries :  10 % done
+Checking basis symmetries :  20 % done
+Checking basis symmetries :  30 % done
+Checking basis symmetries :  40 % done
+Checking basis symmetries :  50 % done
+Checking basis symmetries :  60 % done
+Checking basis symmetries :  70 % done
+Checking basis symmetries :  80 % done
+Checking basis symmetries :  90 % done
+Checking basis symmetries : 100 % done
+Symmetry: 47 point symmetry operations (with rotation centers) found for lattice+basis (some are unnecessary "duplicates").
+Symmetry: rank*det
+[ 2. -4. -2.  3.  3. -4. -2.  2.  2. -6. -6.  2.  2. -2. -6.  4.  4. -6.
+ -6.  4.  2. -6. -2.  4. -4.  2.  3. -2. -4.  3.  3. -4. -4.  3.  2. -2.
+ -2.  3.  3. -2. -2.  4. -6. -6.  2.  4. -2.]
+Symmetry: Irreducible point operations around 0.000000 0.000000 0.000000
+Ranks*determinant :  [-6. -6.  4.]
+G-H
+From  [ 0.  0.  0.]  to  [ 0.2364  0.      0.    ]
+H-N
+From  [ 0.2364  0.      0.    ]  to  [ 0.1182  0.1182  0.    ]
+N-G
+From  [ 0.1182  0.1182  0.    ]  to  [ 0.  0.  0.]
+G-P
+From  [ 0.  0.  0.]  to  [ 0.1182  0.1182  0.1182]
+P-H
+From  [ 0.1182  0.1182  0.1182]  to  [ 0.2364  0.      0.    ]
+SupercellPhonons.WriteKpoints: Wrote 505 points to BCC.kpath
+Reading FC data for dynamic atom 1 from ./FCrun/RUN.fdf
+
+Computing symmetrized force constants
+Symmetry: Longest range of forces 7.000000 Ang.
+Symmetry: Iterative application of symmetries
+Symmetry: max change between old and symmetrized = 3.632350e-03
+Symmetry: relative change = 4.719653e-03
+
+Symmetry: max change between old and symmetrized = 2.775558e-17
+Symmetry: relative change = 3.606389e-17
+
+Total sumrule change in FC: 2.575e-02 eV/Ang
+
+Phonons.PrepareGradients: Setting up various arrays
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/RUN.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/STRUCT.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/FCrun/Default.fdf
+Phonons.GetOrbitalIndices: Dictionary snr2nao = {1: 4}
+Phonons.GetOnlyS: Reading from ./OSrun
+SiestaIO.HS.__init__: Reading ./OSrun/STRUCT_1.onlyS
+Found 686 atoms, (2744, 2744) orbitals in super-, unit-cell
+SiestaIO.HS.setkpoint: ./OSrun/STRUCT_1.onlyS k = [ 0.  0.  0.]
+SiestaIO.HS.__init__: Reading ./OSrun/STRUCT_2.onlyS
+Found 686 atoms, (2744, 2744) orbitals in super-, unit-cell
+SiestaIO.HS.setkpoint: ./OSrun/STRUCT_2.onlyS k = [ 0.  0.  0.]
+SiestaIO.HS.__init__: Reading ./OSrun/STRUCT_3.onlyS
+Found 686 atoms, (2744, 2744) orbitals in super-, unit-cell
+SiestaIO.HS.setkpoint: ./OSrun/STRUCT_3.onlyS k = [ 0.  0.  0.]
+SiestaIO.HS.__init__: Reading ./OSrun/STRUCT_4.onlyS
+Found 686 atoms, (2744, 2744) orbitals in super-, unit-cell
+SiestaIO.HS.setkpoint: ./OSrun/STRUCT_4.onlyS k = [ 0.  0.  0.]
+SiestaIO.HS.__init__: Reading ./OSrun/STRUCT_5.onlyS
+Found 686 atoms, (2744, 2744) orbitals in super-, unit-cell
+SiestaIO.HS.setkpoint: ./OSrun/STRUCT_5.onlyS k = [ 0.  0.  0.]
+SiestaIO.HS.__init__: Reading ./OSrun/STRUCT_6.onlyS
+Found 686 atoms, (2744, 2744) orbitals in super-, unit-cell
+SiestaIO.HS.setkpoint: ./OSrun/STRUCT_6.onlyS k = [ 0.  0.  0.]
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_1.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_1.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_1.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_1.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_1.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_1.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_1.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_1.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_1.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+Phonons.GetOnlyS: OnlyS-displacement (min) = 0.02000 Ang
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_2.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_2.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_2.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_2.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_2.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_2.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_2.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_2.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_2.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+Phonons.GetOnlyS: OnlyS-displacement (min) = 0.02000 Ang
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_3.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_3.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_3.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_3.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_3.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_3.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_3.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_3.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_3.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+Phonons.GetOnlyS: OnlyS-displacement (min) = 0.02000 Ang
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_4.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_4.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_4.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_4.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_4.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_4.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_4.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_4.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_4.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+Phonons.GetOnlyS: OnlyS-displacement (min) = 0.02000 Ang
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_5.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_5.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_5.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_5.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_5.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_5.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_5.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_5.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_5.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+Phonons.GetOnlyS: OnlyS-displacement (min) = 0.02000 Ang
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_6.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_6.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_6.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_6.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_6.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_6.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/RUN_6.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_6.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/STRUCT_6.fdf
+SiestaIO.ReadFDFLines: Reading /scratch/thf/CALC/EPH/Phonon_bands/Na_BCC/OSrun/Default.fdf
+Phonons.GetOnlyS: OnlyS-displacement (min) = 0.02000 Ang
+SiestaIO.HS.__init__: Reading ./FCrun/NaBCC.00000.TSHS
+Found 343 atoms, (1372, 1372) orbitals in super-, unit-cell
+SiestaIO.HS.setkpoint: ./FCrun/NaBCC.00000.TSHS k = [ 0.  0.  0.]
+SupercellPhonons.ReadKpoints: Read 505 points from BCC.kpath
+SupercellPhonons.WriteKpoints: Wrote 505 points to Bands-r7.0/kpoints
+SupercellPhonons.ComputeElectronStates: k =  [ 0.  0.  0.] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00234066  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00468132  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00702198  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00936264  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0117033  0.         0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01404396  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01638462  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01872528  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02106594  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0234066  0.         0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02574726  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02808792  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03042857  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03276923  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03510989  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03745055  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03979121  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04213187  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04447253  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04681319  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04915385  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05149451  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05383517  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05617583  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05851649  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06085715  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06319781  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06553847  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06787913  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07021979  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07256045  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07490111  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07724177  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07958243  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08192309  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08426375  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08660441  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08894506  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09128572  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09362638  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09596704  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0983077  0.         0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10064836  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10298902  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10532968  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10767034  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.110011  0.        0.      ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11235166  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11469232  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11703298  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11937364  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1217143  0.         0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12405496  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12639562  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12873628  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13107694  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1334176  0.         0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13575826  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13809892  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14043958  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14278024  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14512089  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14746155  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14980221  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15214287  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15448353  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15682419  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15916485  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16150551  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16384617  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16618683  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16852749  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17086815  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17320881  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17554947  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17789013  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18023079  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18257145  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18491211  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18725277  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18959343  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19193409  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19427475  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19661541  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19895607  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20129673  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20363739  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20597804  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.2083187  0.         0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21065936  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21300002  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21534068  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21768134  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.220022  0.        0.      ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22236266  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22470332  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22704398  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22938464  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.2317253  0.         0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.23406596  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.23640662  0.          0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.23523629  0.00117033  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.23406596  0.00234066  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.23289563  0.00351099  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.2317253   0.00468132  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.23055497  0.00585165  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22938464  0.00702198  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22821431  0.00819231  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22704398  0.00936264  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22587365  0.01053297  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22470332  0.0117033   0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22353299  0.01287363  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22236266  0.01404396  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22119233  0.01521429  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.220022    0.01638462  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21885167  0.01755495  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21768134  0.01872528  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21651101  0.01989561  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21534068  0.02106594  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21417035  0.02223627  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21300002  0.0234066   0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21182969  0.02457693  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21065936  0.02574726  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20948903  0.02691759  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.2083187   0.02808792  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20714837  0.02925824  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20597804  0.03042857  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20480772  0.0315989   0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20363739  0.03276923  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20246706  0.03393956  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20129673  0.03510989  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.2001264   0.03628022  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19895607  0.03745055  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19778574  0.03862088  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19661541  0.03979121  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19544508  0.04096154  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19427475  0.04213187  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19310442  0.0433022   0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19193409  0.04447253  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19076376  0.04564286  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18959343  0.04681319  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1884231   0.04798352  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18725277  0.04915385  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18608244  0.05032418  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18491211  0.05149451  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18374178  0.05266484  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18257145  0.05383517  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18140112  0.0550055   0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18023079  0.05617583  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17906046  0.05734616  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17789013  0.05851649  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1767198   0.05968682  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17554947  0.06085715  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17437914  0.06202748  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17320881  0.06319781  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17203848  0.06436814  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17086815  0.06553847  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16969782  0.0667088   0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16852749  0.06787913  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16735716  0.06904946  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16618683  0.07021979  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1650165   0.07139012  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16384617  0.07256045  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16267584  0.07373078  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16150551  0.07490111  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16033518  0.07607144  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15916485  0.07724177  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15799452  0.0784121   0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15682419  0.07958243  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15565386  0.08075276  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15448353  0.08192309  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1533132   0.08309342  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15214287  0.08426375  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15097254  0.08543408  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14980221  0.08660441  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14863188  0.08777473  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14746155  0.08894506  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14629122  0.09011539  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14512089  0.09128572  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14395057  0.09245605  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14278024  0.09362638  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14160991  0.09479671  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14043958  0.09596704  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13926925  0.09713737  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13809892  0.0983077   0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13692859  0.09947803  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13575826  0.10064836  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13458793  0.10181869  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1334176   0.10298902  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13224727  0.10415935  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13107694  0.10532968  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12990661  0.10650001  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12873628  0.10767034  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12756595  0.10884067  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12639562  0.110011    0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12522529  0.11118133  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12405496  0.11235166  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12288463  0.11352199  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1217143   0.11469232  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12054397  0.11586265  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11937364  0.11703298  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11820331  0.11820331  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11703298  0.11703298  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11586265  0.11586265  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11469232  0.11469232  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11352199  0.11352199  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11235166  0.11235166  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11118133  0.11118133  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.110011  0.110011  0.      ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10884067  0.10884067  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10767034  0.10767034  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10650001  0.10650001  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10532968  0.10532968  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10415935  0.10415935  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10298902  0.10298902  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10181869  0.10181869  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10064836  0.10064836  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09947803  0.09947803  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0983077  0.0983077  0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09713737  0.09713737  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09596704  0.09596704  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09479671  0.09479671  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09362638  0.09362638  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09245605  0.09245605  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09128572  0.09128572  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09011539  0.09011539  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08894506  0.08894506  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08777473  0.08777473  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08660441  0.08660441  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08543408  0.08543408  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08426375  0.08426375  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08309342  0.08309342  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08192309  0.08192309  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08075276  0.08075276  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07958243  0.07958243  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0784121  0.0784121  0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07724177  0.07724177  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07607144  0.07607144  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07490111  0.07490111  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07373078  0.07373078  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07256045  0.07256045  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07139012  0.07139012  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07021979  0.07021979  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06904946  0.06904946  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06787913  0.06787913  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0667088  0.0667088  0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06553847  0.06553847  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06436814  0.06436814  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06319781  0.06319781  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06202748  0.06202748  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06085715  0.06085715  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05968682  0.05968682  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05851649  0.05851649  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05734616  0.05734616  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05617583  0.05617583  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0550055  0.0550055  0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05383517  0.05383517  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05266484  0.05266484  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05149451  0.05149451  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05032418  0.05032418  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04915385  0.04915385  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04798352  0.04798352  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04681319  0.04681319  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04564286  0.04564286  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04447253  0.04447253  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0433022  0.0433022  0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04213187  0.04213187  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04096154  0.04096154  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03979121  0.03979121  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03862088  0.03862088  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03745055  0.03745055  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03628022  0.03628022  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03510989  0.03510989  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03393956  0.03393956  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03276923  0.03276923  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0315989  0.0315989  0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03042857  0.03042857  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02925824  0.02925824  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02808792  0.02808792  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02691759  0.02691759  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02574726  0.02574726  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02457693  0.02457693  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0234066  0.0234066  0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02223627  0.02223627  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02106594  0.02106594  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01989561  0.01989561  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01872528  0.01872528  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01755495  0.01755495  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01638462  0.01638462  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01521429  0.01521429  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01404396  0.01404396  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01287363  0.01287363  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0117033  0.0117033  0.       ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01053297  0.01053297  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00936264  0.00936264  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00819231  0.00819231  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00702198  0.00702198  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00585165  0.00585165  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00468132  0.00468132  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00351099  0.00351099  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00234066  0.00234066  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00117033  0.00117033  0.        ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.  0.  0.] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00117033  0.00117033  0.00117033] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00234066  0.00234066  0.00234066] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00351099  0.00351099  0.00351099] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00468132  0.00468132  0.00468132] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00585165  0.00585165  0.00585165] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00702198  0.00702198  0.00702198] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00819231  0.00819231  0.00819231] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.00936264  0.00936264  0.00936264] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01053297  0.01053297  0.01053297] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0117033  0.0117033  0.0117033] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01287363  0.01287363  0.01287363] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01404396  0.01404396  0.01404396] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01521429  0.01521429  0.01521429] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01638462  0.01638462  0.01638462] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01755495  0.01755495  0.01755495] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01872528  0.01872528  0.01872528] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.01989561  0.01989561  0.01989561] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02106594  0.02106594  0.02106594] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02223627  0.02223627  0.02223627] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0234066  0.0234066  0.0234066] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02457693  0.02457693  0.02457693] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02574726  0.02574726  0.02574726] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02691759  0.02691759  0.02691759] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02808792  0.02808792  0.02808792] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.02925824  0.02925824  0.02925824] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03042857  0.03042857  0.03042857] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0315989  0.0315989  0.0315989] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03276923  0.03276923  0.03276923] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03393956  0.03393956  0.03393956] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03510989  0.03510989  0.03510989] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03628022  0.03628022  0.03628022] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03745055  0.03745055  0.03745055] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03862088  0.03862088  0.03862088] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.03979121  0.03979121  0.03979121] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04096154  0.04096154  0.04096154] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04213187  0.04213187  0.04213187] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0433022  0.0433022  0.0433022] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04447253  0.04447253  0.04447253] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04564286  0.04564286  0.04564286] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04681319  0.04681319  0.04681319] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04798352  0.04798352  0.04798352] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.04915385  0.04915385  0.04915385] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05032418  0.05032418  0.05032418] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05149451  0.05149451  0.05149451] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05266484  0.05266484  0.05266484] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05383517  0.05383517  0.05383517] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0550055  0.0550055  0.0550055] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05617583  0.05617583  0.05617583] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05734616  0.05734616  0.05734616] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05851649  0.05851649  0.05851649] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.05968682  0.05968682  0.05968682] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06085715  0.06085715  0.06085715] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06202748  0.06202748  0.06202748] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06319781  0.06319781  0.06319781] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06436814  0.06436814  0.06436814] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06553847  0.06553847  0.06553847] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0667088  0.0667088  0.0667088] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06787913  0.06787913  0.06787913] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.06904946  0.06904946  0.06904946] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07021979  0.07021979  0.07021979] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07139012  0.07139012  0.07139012] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07256045  0.07256045  0.07256045] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07373078  0.07373078  0.07373078] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07490111  0.07490111  0.07490111] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07607144  0.07607144  0.07607144] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07724177  0.07724177  0.07724177] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0784121  0.0784121  0.0784121] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.07958243  0.07958243  0.07958243] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08075276  0.08075276  0.08075276] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08192309  0.08192309  0.08192309] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08309342  0.08309342  0.08309342] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08426375  0.08426375  0.08426375] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08543408  0.08543408  0.08543408] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08660441  0.08660441  0.08660441] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08777473  0.08777473  0.08777473] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.08894506  0.08894506  0.08894506] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09011539  0.09011539  0.09011539] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09128572  0.09128572  0.09128572] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09245605  0.09245605  0.09245605] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09362638  0.09362638  0.09362638] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09479671  0.09479671  0.09479671] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09596704  0.09596704  0.09596704] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09713737  0.09713737  0.09713737] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.0983077  0.0983077  0.0983077] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.09947803  0.09947803  0.09947803] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10064836  0.10064836  0.10064836] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10181869  0.10181869  0.10181869] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10298902  0.10298902  0.10298902] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10415935  0.10415935  0.10415935] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10532968  0.10532968  0.10532968] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10650001  0.10650001  0.10650001] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10767034  0.10767034  0.10767034] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.10884067  0.10884067  0.10884067] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.110011  0.110011  0.110011] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11118133  0.11118133  0.11118133] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11235166  0.11235166  0.11235166] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11352199  0.11352199  0.11352199] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11469232  0.11469232  0.11469232] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11586265  0.11586265  0.11586265] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11703298  0.11703298  0.11703298] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11820331  0.11820331  0.11820331] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.11937364  0.11703298  0.11703298] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12054397  0.11586265  0.11586265] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1217143   0.11469232  0.11469232] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12288463  0.11352199  0.11352199] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12405496  0.11235166  0.11235166] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12522529  0.11118133  0.11118133] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12639562  0.110011    0.110011  ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12756595  0.10884067  0.10884067] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12873628  0.10767034  0.10767034] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.12990661  0.10650001  0.10650001] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13107694  0.10532968  0.10532968] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13224727  0.10415935  0.10415935] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1334176   0.10298902  0.10298902] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13458793  0.10181869  0.10181869] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13575826  0.10064836  0.10064836] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13692859  0.09947803  0.09947803] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13809892  0.0983077   0.0983077 ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.13926925  0.09713737  0.09713737] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14043958  0.09596704  0.09596704] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14160991  0.09479671  0.09479671] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14278024  0.09362638  0.09362638] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14395057  0.09245605  0.09245605] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14512089  0.09128572  0.09128572] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14629122  0.09011539  0.09011539] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14746155  0.08894506  0.08894506] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14863188  0.08777473  0.08777473] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.14980221  0.08660441  0.08660441] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15097254  0.08543408  0.08543408] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15214287  0.08426375  0.08426375] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1533132   0.08309342  0.08309342] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15448353  0.08192309  0.08192309] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15565386  0.08075276  0.08075276] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15682419  0.07958243  0.07958243] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15799452  0.0784121   0.0784121 ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.15916485  0.07724177  0.07724177] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16033518  0.07607144  0.07607144] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16150551  0.07490111  0.07490111] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16267584  0.07373078  0.07373078] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16384617  0.07256045  0.07256045] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1650165   0.07139012  0.07139012] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16618683  0.07021979  0.07021979] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16735716  0.06904946  0.06904946] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16852749  0.06787913  0.06787913] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.16969782  0.0667088   0.0667088 ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17086815  0.06553847  0.06553847] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17203848  0.06436814  0.06436814] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17320881  0.06319781  0.06319781] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17437914  0.06202748  0.06202748] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17554947  0.06085715  0.06085715] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1767198   0.05968682  0.05968682] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17789013  0.05851649  0.05851649] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.17906046  0.05734616  0.05734616] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18023079  0.05617583  0.05617583] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18140112  0.0550055   0.0550055 ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18257145  0.05383517  0.05383517] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18374178  0.05266484  0.05266484] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18491211  0.05149451  0.05149451] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18608244  0.05032418  0.05032418] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18725277  0.04915385  0.04915385] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.1884231   0.04798352  0.04798352] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.18959343  0.04681319  0.04681319] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19076376  0.04564286  0.04564286] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19193409  0.04447253  0.04447253] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19310442  0.0433022   0.0433022 ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19427475  0.04213187  0.04213187] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19544508  0.04096154  0.04096154] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19661541  0.03979121  0.03979121] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19778574  0.03862088  0.03862088] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.19895607  0.03745055  0.03745055] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.2001264   0.03628022  0.03628022] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20129673  0.03510989  0.03510989] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20246706  0.03393956  0.03393956] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20363739  0.03276923  0.03276923] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20480772  0.0315989   0.0315989 ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20597804  0.03042857  0.03042857] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20714837  0.02925824  0.02925824] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.2083187   0.02808792  0.02808792] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.20948903  0.02691759  0.02691759] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21065936  0.02574726  0.02574726] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21182969  0.02457693  0.02457693] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21300002  0.0234066   0.0234066 ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21417035  0.02223627  0.02223627] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21534068  0.02106594  0.02106594] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21651101  0.01989561  0.01989561] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21768134  0.01872528  0.01872528] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.21885167  0.01755495  0.01755495] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.220022    0.01638462  0.01638462] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22119233  0.01521429  0.01521429] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22236266  0.01404396  0.01404396] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22353299  0.01287363  0.01287363] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22470332  0.0117033   0.0117033 ] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22587365  0.01053297  0.01053297] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22704398  0.00936264  0.00936264] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22821431  0.00819231  0.00819231] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.22938464  0.00702198  0.00702198] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.23055497  0.00585165  0.00585165] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.2317253   0.00468132  0.00468132] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.23289563  0.00351099  0.00351099] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.23406596  0.00234066  0.00234066] (2pi/Ang)
+SupercellPhonons.ComputeElectronStates: k =  [ 0.23523629  0.00117033  0.00117033] (2pi/Ang)
+SupercellPhonons.ReadKpoints: Read 505 points from BCC.kpath
+SupercellPhonons.WriteKpoints: Wrote 505 points to Bands-r7.0/qpoints
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.  0.  0.] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    0.000    -0.000    -0.000
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00234066  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    0.301     0.226     0.226
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00468132  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    0.602     0.452     0.452
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00702198  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    0.902     0.678     0.678
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00936264  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    1.202     0.904     0.904
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0117033  0.         0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    1.502     1.130     1.130
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01404396  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    1.800     1.356     1.356
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01638462  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    2.098     1.581     1.581
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01872528  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    2.395     1.806     1.806
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02106594  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    2.691     2.032     2.032
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0234066  0.         0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    2.985     2.256     2.256
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02574726  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    3.278     2.481     2.481
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02808792  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    3.569     2.705     2.705
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03042857  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    3.859     2.929     2.929
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03276923  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    4.146     3.152     3.152
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03510989  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    4.432     3.375     3.375
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03745055  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    4.715     3.598     3.598
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03979121  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    4.997     3.820     3.820
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04213187  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    5.276     4.041     4.041
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04447253  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    5.552     4.262     4.262
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04681319  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    5.826     4.482     4.482
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04915385  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.096     4.702     4.702
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05149451  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.365     4.921     4.921
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05383517  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.630     5.139     5.139
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05617583  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.892     5.356     5.356
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05851649  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    7.150     5.573     5.573
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06085715  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    7.406     5.789     5.789
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06319781  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    7.658     6.003     6.003
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06553847  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    7.907     6.217     6.217
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06787913  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.152     6.430     6.430
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07021979  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.393     6.642     6.642
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07256045  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.631     6.853     6.853
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07490111  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.865     7.063     7.063
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07724177  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.095     7.271     7.271
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07958243  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.321     7.478     7.478
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08192309  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.542     7.684     7.684
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08426375  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.760     7.889     7.889
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08660441  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.974     8.092     8.092
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08894506  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.184     8.294     8.294
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09128572  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.389     8.494     8.494
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09362638  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.590     8.693     8.693
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09596704  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.787     8.890     8.890
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0983077  0.         0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.979     9.086     9.086
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10064836  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.167     9.279     9.279
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10298902  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.351     9.472     9.472
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10532968  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.530     9.662     9.662
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10767034  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.705     9.850     9.850
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.110011  0.        0.      ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.875    10.036    10.036
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11235166  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.041    10.221    10.221
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11469232  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.203    10.403    10.403
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11703298  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.360    10.583    10.583
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11937364  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.513    10.761    10.761
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1217143  0.         0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.661    10.937    10.937
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12405496  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.805    11.110    11.110
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12639562  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.944    11.281    11.281
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12873628  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.080    11.450    11.450
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13107694  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.210    11.616    11.616
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1334176  0.         0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.337    11.779    11.779
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13575826  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.460    11.940    11.940
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13809892  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.578    12.098    12.098
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14043958  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.692    12.254    12.254
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14278024  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.802    12.406    12.406
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14512089  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.908    12.556    12.556
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14746155  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.010    12.703    12.703
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14980221  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.108    12.847    12.847
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15214287  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.202    12.988    12.988
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15448353  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.293    13.125    13.125
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15682419  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.380    13.260    13.260
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15916485  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.463    13.391    13.391
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16150551  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.542    13.519    13.519
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16384617  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.618    13.644    13.644
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16618683  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.691    13.766    13.766
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16852749  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.760    13.883    13.883
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17086815  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.826    13.998    13.998
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17320881  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.888    14.109    14.109
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17554947  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.948    14.216    14.216
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17789013  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.005    14.320    14.320
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18023079  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.058    14.420    14.420
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18257145  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.109    14.517    14.517
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18491211  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.157    14.609    14.609
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18725277  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.202    14.698    14.698
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18959343  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.244    14.783    14.783
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19193409  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.284    14.864    14.864
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19427475  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.321    14.941    14.941
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19661541  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.356    15.014    15.014
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19895607  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.389    15.084    15.084
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20129673  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.419    15.149    15.149
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20363739  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.447    15.210    15.210
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20597804  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.472    15.267    15.267
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.2083187  0.         0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.496    15.320    15.320
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21065936  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.517    15.369    15.369
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21300002  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.537    15.413    15.413
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21534068  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.554    15.454    15.454
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21768134  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.570    15.490    15.490
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.220022  0.        0.      ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.583    15.522    15.522
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22236266  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.595    15.550    15.550
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22470332  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.605    15.573    15.573
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22704398  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.613    15.592    15.592
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22938464  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.619    15.607    15.607
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.2317253  0.         0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.623    15.618    15.618
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.23406596  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.626    15.625    15.625
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.23640662  0.          0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.627    15.627    15.627
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.23523629  0.00117033  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.627    15.626    15.625
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.23406596  0.00234066  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.629    15.622    15.619
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.23289563  0.00351099  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.631    15.617    15.609
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.2317253   0.00468132  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.634    15.610    15.595
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.23055497  0.00585165  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.639    15.600    15.577
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22938464  0.00702198  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.644    15.588    15.555
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22821431  0.00819231  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.650    15.574    15.529
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22704398  0.00936264  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.657    15.558    15.499
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22587365  0.01053297  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.666    15.540    15.466
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22470332  0.0117033   0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.675    15.520    15.428
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22353299  0.01287363  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.684    15.498    15.387
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22236266  0.01404396  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.695    15.473    15.341
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22119233  0.01521429  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.707    15.447    15.292
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.220022    0.01638462  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.720    15.419    15.239
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21885167  0.01755495  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.733    15.388    15.183
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21768134  0.01872528  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.747    15.356    15.122
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21651101  0.01989561  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.762    15.321    15.058
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21534068  0.02106594  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.778    15.285    14.990
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21417035  0.02223627  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.795    15.246    14.919
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21300002  0.0234066   0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.812    15.206    14.844
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21182969  0.02457693  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.830    15.164    14.766
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21065936  0.02574726  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.849    15.120    14.684
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20948903  0.02691759  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.868    15.074    14.598
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.2083187   0.02808792  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.888    15.026    14.510
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20714837  0.02925824  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.909    14.977    14.418
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20597804  0.03042857  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.930    14.926    14.322
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20480772  0.0315989   0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.952    14.873    14.224
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20363739  0.03276923  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.975    14.818    14.122
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20246706  0.03393956  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.998    14.762    14.017
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20129673  0.03510989  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.022    14.704    13.909
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.2001264   0.03628022  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.046    14.644    13.798
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19895607  0.03745055  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.070    14.583    13.685
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19778574  0.03862088  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.095    14.521    13.568
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19661541  0.03979121  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.120    14.457    13.449
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19544508  0.04096154  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.146    14.391    13.326
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19427475  0.04213187  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.172    14.324    13.202
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19310442  0.0433022   0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.198    14.256    13.074
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19193409  0.04447253  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.225    14.187    12.944
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19076376  0.04564286  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.252    14.116    12.812
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18959343  0.04681319  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.279    14.044    12.677
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1884231   0.04798352  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.306    13.971    12.541
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18725277  0.04915385  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.334    13.897    12.401
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18608244  0.05032418  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.361    13.822    12.260
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18491211  0.05149451  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.389    13.746    12.117
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18374178  0.05266484  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.417    13.670    11.972
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18257145  0.05383517  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.445    13.592    11.825
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18140112  0.0550055   0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.472    13.513    11.676
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18023079  0.05617583  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.500    13.434    11.525
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17906046  0.05734616  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.528    13.354    11.373
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17789013  0.05851649  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.556    13.274    11.219
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1767198   0.05968682  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.583    13.193    11.064
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17554947  0.06085715  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.611    13.111    10.907
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17437914  0.06202748  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.638    13.030    10.750
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17320881  0.06319781  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.666    12.948    10.591
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17203848  0.06436814  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.693    12.865    10.431
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17086815  0.06553847  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.720    12.783    10.270
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16969782  0.0667088   0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.746    12.700    10.108
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16852749  0.06787913  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.773    12.618     9.946
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16735716  0.06904946  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.799    12.535     9.782
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16618683  0.07021979  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.825    12.453     9.619
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1650165   0.07139012  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.850    12.371     9.455
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16384617  0.07256045  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.875    12.289     9.290
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16267584  0.07373078  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.900    12.208     9.125
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16150551  0.07490111  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.924    12.127     8.961
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16033518  0.07607144  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.948    12.047     8.796
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15916485  0.07724177  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.972    11.967     8.632
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15799452  0.0784121   0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.995    11.888     8.468
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15682419  0.07958243  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.017    11.811     8.304
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15565386  0.08075276  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.039    11.734     8.141
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15448353  0.08192309  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.061    11.658     7.979
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1533132   0.08309342  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.082    11.583     7.817
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15214287  0.08426375  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.103    11.510     7.657
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15097254  0.08543408  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.123    11.437     7.498
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14980221  0.08660441  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.142    11.367     7.341
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14863188  0.08777473  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.161    11.298     7.185
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14746155  0.08894506  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.179    11.230     7.031
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14629122  0.09011539  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.197    11.164     6.879
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14512089  0.09128572  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.214    11.100     6.730
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14395057  0.09245605  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.230    11.038     6.583
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14278024  0.09362638  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.246    10.978     6.439
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14160991  0.09479671  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.261    10.920     6.298
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14043958  0.09596704  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.275    10.864     6.161
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13926925  0.09713737  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.289    10.811     6.027
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13809892  0.0983077   0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.302    10.759     5.898
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13692859  0.09947803  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.314    10.711     5.773
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13575826  0.10064836  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.326    10.664     5.652
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13458793  0.10181869  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.337    10.621     5.537
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1334176   0.10298902  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.347    10.580     5.427
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13224727  0.10415935  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.357    10.541     5.323
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13107694  0.10532968  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.365    10.506     5.226
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12990661  0.10650001  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.373    10.473     5.135
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12873628  0.10767034  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.381    10.444     5.051
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12756595  0.10884067  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.387    10.417     4.975
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12639562  0.110011    0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.393    10.393     4.907
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12522529  0.11118133  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.398    10.373     4.847
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12405496  0.11235166  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.402    10.355     4.795
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12288463  0.11352199  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.405    10.341     4.753
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1217143   0.11469232  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.408    10.329     4.719
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12054397  0.11586265  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.410    10.321     4.695
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11937364  0.11703298  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.411    10.317     4.681
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11820331  0.11820331  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.412    10.315     4.676
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11703298  0.11703298  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.409    10.314     4.675
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11586265  0.11586265  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.402    10.310     4.674
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11469232  0.11469232  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.390    10.304     4.672
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11352199  0.11352199  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.374    10.295     4.668
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11235166  0.11235166  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.353    10.284     4.664
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11118133  0.11118133  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.327    10.270     4.659
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.110011  0.110011  0.      ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.297    10.254     4.653
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10884067  0.10884067  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.261    10.235     4.646
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10767034  0.10767034  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.222    10.213     4.637
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10650001  0.10650001  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.177    10.190     4.628
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10532968  0.10532968  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.128    10.163     4.618
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10415935  0.10415935  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.075    10.135     4.607
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10298902  0.10298902  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   17.017    10.104     4.595
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10181869  0.10181869  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.954    10.070     4.583
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10064836  0.10064836  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.887    10.034     4.569
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09947803  0.09947803  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.815     9.995     4.554
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0983077  0.0983077  0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.739     9.954     4.538
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09713737  0.09713737  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.659     9.911     4.521
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09596704  0.09596704  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.574     9.865     4.503
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09479671  0.09479671  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.485     9.817     4.485
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09362638  0.09362638  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.391     9.766     4.465
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09245605  0.09245605  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.294     9.713     4.444
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09128572  0.09128572  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.192     9.658     4.423
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09011539  0.09011539  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   16.086     9.601     4.400
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08894506  0.08894506  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.976     9.541     4.376
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08777473  0.08777473  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.861     9.478     4.352
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08660441  0.08660441  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.743     9.414     4.326
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08543408  0.08543408  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.621     9.347     4.299
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08426375  0.08426375  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.495     9.278     4.272
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08309342  0.08309342  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.365     9.206     4.243
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08192309  0.08192309  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.231     9.133     4.213
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08075276  0.08075276  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.094     9.057     4.183
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07958243  0.07958243  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.952     8.979     4.151
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0784121  0.0784121  0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.807     8.899     4.118
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07724177  0.07724177  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.659     8.816     4.085
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07607144  0.07607144  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.507     8.732     4.050
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07490111  0.07490111  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.352     8.645     4.014
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07373078  0.07373078  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.193     8.557     3.978
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07256045  0.07256045  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.030     8.466     3.940
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07139012  0.07139012  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.865     8.373     3.901
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07021979  0.07021979  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.696     8.278     3.862
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06904946  0.06904946  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.524     8.182     3.821
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06787913  0.06787913  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.349     8.083     3.780
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0667088  0.0667088  0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.171     7.982     3.737
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06553847  0.06553847  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.991     7.879     3.693
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06436814  0.06436814  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.807     7.775     3.649
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06319781  0.06319781  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.620     7.669     3.603
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06202748  0.06202748  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.431     7.560     3.556
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06085715  0.06085715  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.238     7.450     3.509
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05968682  0.05968682  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.044     7.338     3.460
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05851649  0.05851649  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.846     7.225     3.411
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05734616  0.05734616  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.646     7.109     3.360
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05617583  0.05617583  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.444     6.992     3.309
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0550055  0.0550055  0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.239     6.874     3.257
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05383517  0.05383517  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.032     6.753     3.203
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05266484  0.05266484  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.823     6.631     3.149
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05149451  0.05149451  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.612     6.508     3.094
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05032418  0.05032418  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.398     6.382     3.038
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04915385  0.04915385  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.183     6.256     2.981
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04798352  0.04798352  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.965     6.127     2.923
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04681319  0.04681319  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.745     5.998     2.865
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04564286  0.04564286  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.524     5.867     2.805
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04447253  0.04447253  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.301     5.734     2.745
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0433022  0.0433022  0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.076     5.600     2.684
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04213187  0.04213187  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.849     5.465     2.622
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04096154  0.04096154  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.621     5.329     2.559
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03979121  0.03979121  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.391     5.191     2.495
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03862088  0.03862088  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.160     5.052     2.431
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03745055  0.03745055  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    7.927     4.912     2.366
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03628022  0.03628022  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    7.692     4.770     2.300
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03510989  0.03510989  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    7.457     4.628     2.233
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03393956  0.03393956  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    7.220     4.484     2.166
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03276923  0.03276923  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.982     4.339     2.098
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0315989  0.0315989  0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.742     4.194     2.029
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03042857  0.03042857  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.502     4.047     1.960
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02925824  0.02925824  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.260     3.899     1.890
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02808792  0.02808792  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.018     3.751     1.819
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02691759  0.02691759  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    5.774     3.601     1.748
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02574726  0.02574726  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    5.529     3.451     1.676
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02457693  0.02457693  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    5.284     3.299     1.604
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0234066  0.0234066  0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    5.038     3.148     1.531
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02223627  0.02223627  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    4.791     2.995     1.458
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02106594  0.02106594  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    4.543     2.841     1.384
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01989561  0.01989561  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    4.294     2.687     1.310
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01872528  0.01872528  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    4.045     2.532     1.235
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01755495  0.01755495  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    3.795     2.377     1.160
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01638462  0.01638462  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    3.545     2.221     1.084
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01521429  0.01521429  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    3.294     2.065     1.008
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01404396  0.01404396  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    3.042     1.908     0.932
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01287363  0.01287363  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    2.790     1.750     0.855
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0117033  0.0117033  0.       ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    2.538     1.593     0.779
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01053297  0.01053297  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    2.285     1.434     0.702
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00936264  0.00936264  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    2.032     1.276     0.624
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00819231  0.00819231  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    1.779     1.117     0.547
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00702198  0.00702198  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    1.525     0.958     0.469
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00585165  0.00585165  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    1.271     0.799     0.391
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00468132  0.00468132  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    1.017     0.639     0.313
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00351099  0.00351099  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    0.763     0.480     0.235
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00234066  0.00234066  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    0.509     0.320     0.157
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00117033  0.00117033  0.        ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    0.254     0.160     0.078
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.  0.  0.] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    0.000    -0.000    -0.000
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00117033  0.00117033  0.00117033] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    0.327     0.138     0.138
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00234066  0.00234066  0.00234066] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    0.653     0.275     0.275
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00351099  0.00351099  0.00351099] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    0.980     0.413     0.413
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00468132  0.00468132  0.00468132] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    1.306     0.550     0.550
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00585165  0.00585165  0.00585165] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    1.631     0.688     0.688
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00702198  0.00702198  0.00702198] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    1.956     0.826     0.826
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00819231  0.00819231  0.00819231] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    2.280     0.964     0.964
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.00936264  0.00936264  0.00936264] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    2.603     1.102     1.102
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01053297  0.01053297  0.01053297] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    2.924     1.240     1.240
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0117033  0.0117033  0.0117033] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    3.245     1.378     1.378
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01287363  0.01287363  0.01287363] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    3.564     1.516     1.516
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01404396  0.01404396  0.01404396] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    3.881     1.655     1.655
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01521429  0.01521429  0.01521429] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    4.197     1.793     1.793
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01638462  0.01638462  0.01638462] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    4.511     1.932     1.932
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01755495  0.01755495  0.01755495] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    4.823     2.071     2.071
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01872528  0.01872528  0.01872528] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    5.133     2.210     2.210
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.01989561  0.01989561  0.01989561] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    5.441     2.349     2.349
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02106594  0.02106594  0.02106594] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    5.747     2.489     2.489
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02223627  0.02223627  0.02223627] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.049     2.629     2.629
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0234066  0.0234066  0.0234066] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.350     2.769     2.769
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02457693  0.02457693  0.02457693] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.647     2.909     2.909
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02574726  0.02574726  0.02574726] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    6.942     3.049     3.049
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02691759  0.02691759  0.02691759] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    7.234     3.190     3.190
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02808792  0.02808792  0.02808792] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    7.522     3.330     3.330
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.02925824  0.02925824  0.02925824] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    7.807     3.471     3.471
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03042857  0.03042857  0.03042857] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.089     3.613     3.613
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0315989  0.0315989  0.0315989] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.367     3.754     3.754
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03276923  0.03276923  0.03276923] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.642     3.895     3.895
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03393956  0.03393956  0.03393956] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    8.913     4.037     4.037
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03510989  0.03510989  0.03510989] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.180     4.179     4.179
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03628022  0.03628022  0.03628022] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.442     4.321     4.321
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03745055  0.03745055  0.03745055] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.701     4.463     4.463
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03862088  0.03862088  0.03862088] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+    9.955     4.606     4.606
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.03979121  0.03979121  0.03979121] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.205     4.748     4.748
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04096154  0.04096154  0.04096154] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.451     4.891     4.891
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04213187  0.04213187  0.04213187] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.692     5.033     5.033
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0433022  0.0433022  0.0433022] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   10.928     5.176     5.176
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04447253  0.04447253  0.04447253] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.159     5.319     5.319
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04564286  0.04564286  0.04564286] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.385     5.461     5.461
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04681319  0.04681319  0.04681319] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.607     5.604     5.604
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04798352  0.04798352  0.04798352] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   11.823     5.747     5.747
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.04915385  0.04915385  0.04915385] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.033     5.890     5.890
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05032418  0.05032418  0.05032418] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.239     6.032     6.032
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05149451  0.05149451  0.05149451] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.439     6.175     6.175
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05266484  0.05266484  0.05266484] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.633     6.317     6.317
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05383517  0.05383517  0.05383517] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   12.822     6.460     6.460
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0550055  0.0550055  0.0550055] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.005     6.602     6.602
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05617583  0.05617583  0.05617583] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.182     6.743     6.743
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05734616  0.05734616  0.05734616] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.353     6.885     6.885
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05851649  0.05851649  0.05851649] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.518     7.026     7.026
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.05968682  0.05968682  0.05968682] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.677     7.168     7.168
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06085715  0.06085715  0.06085715] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.829     7.308     7.308
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06202748  0.06202748  0.06202748] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.976     7.449     7.449
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06319781  0.06319781  0.06319781] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.116     7.589     7.589
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06436814  0.06436814  0.06436814] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.250     7.728     7.728
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06553847  0.06553847  0.06553847] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.377     7.867     7.867
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0667088  0.0667088  0.0667088] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.498     8.006     8.006
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06787913  0.06787913  0.06787913] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.612     8.144     8.144
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.06904946  0.06904946  0.06904946] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.719     8.281     8.281
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07021979  0.07021979  0.07021979] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.820     8.418     8.418
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07139012  0.07139012  0.07139012] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.914     8.554     8.554
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07256045  0.07256045  0.07256045] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.001     8.689     8.689
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07373078  0.07373078  0.07373078] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.081     8.824     8.824
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07490111  0.07490111  0.07490111] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.154     8.958     8.958
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07607144  0.07607144  0.07607144] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.221     9.091     9.091
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07724177  0.07724177  0.07724177] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.280     9.223     9.223
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0784121  0.0784121  0.0784121] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.332     9.355     9.355
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.07958243  0.07958243  0.07958243] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.378     9.485     9.485
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08075276  0.08075276  0.08075276] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.416     9.615     9.615
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08192309  0.08192309  0.08192309] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.448     9.743     9.743
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08309342  0.08309342  0.08309342] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.472     9.871     9.871
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08426375  0.08426375  0.08426375] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.489     9.997     9.997
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08543408  0.08543408  0.08543408] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.499    10.123    10.123
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08660441  0.08660441  0.08660441] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.502    10.247    10.247
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08777473  0.08777473  0.08777473] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.498    10.370    10.370
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.08894506  0.08894506  0.08894506] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.487    10.492    10.492
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09011539  0.09011539  0.09011539] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.469    10.613    10.613
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09128572  0.09128572  0.09128572] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.444    10.732    10.732
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09245605  0.09245605  0.09245605] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.411    10.850    10.850
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09362638  0.09362638  0.09362638] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.372    10.967    10.967
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09479671  0.09479671  0.09479671] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.326    11.083    11.083
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09596704  0.09596704  0.09596704] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.274    11.197    11.197
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09713737  0.09713737  0.09713737] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.214    11.310    11.310
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.0983077  0.0983077  0.0983077] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.148    11.421    11.421
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.09947803  0.09947803  0.09947803] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.075    11.531    11.531
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10064836  0.10064836  0.10064836] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.995    11.640    11.640
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10181869  0.10181869  0.10181869] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.909    11.747    11.747
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10298902  0.10298902  0.10298902] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.816    11.852    11.852
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10415935  0.10415935  0.10415935] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.717    11.956    11.956
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10532968  0.10532968  0.10532968] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.612    12.059    12.059
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10650001  0.10650001  0.10650001] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.501    12.160    12.160
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10767034  0.10767034  0.10767034] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.383    12.259    12.259
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.10884067  0.10884067  0.10884067] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.260    12.357    12.357
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.110011  0.110011  0.110011] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.131    12.453    12.453
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11118133  0.11118133  0.11118133] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.996    12.547    12.547
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11235166  0.11235166  0.11235166] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.856    12.640    12.640
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11352199  0.11352199  0.11352199] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.711    12.731    12.731
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11469232  0.11469232  0.11469232] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.560    12.820    12.820
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11586265  0.11586265  0.11586265] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.404    12.908    12.908
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11703298  0.11703298  0.11703298] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.244    12.994    12.994
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11820331  0.11820331  0.11820331] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.079    13.079    13.079
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.11937364  0.11703298  0.11703298] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.162    13.162    12.909
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12054397  0.11586265  0.11586265] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.243    13.243    12.736
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1217143   0.11469232  0.11469232] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.322    13.322    12.559
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12288463  0.11352199  0.11352199] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.400    13.400    12.377
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12405496  0.11235166  0.11235166] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.476    13.476    12.193
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12522529  0.11118133  0.11118133] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.550    13.550    12.005
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12639562  0.110011    0.110011  ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.623    13.623    11.815
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12756595  0.10884067  0.10884067] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.694    13.694    11.622
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12873628  0.10767034  0.10767034] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.763    13.763    11.427
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.12990661  0.10650001  0.10650001] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.831    13.831    11.231
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13107694  0.10532968  0.10532968] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.897    13.897    11.033
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13224727  0.10415935  0.10415935] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   13.961    13.961    10.834
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1334176   0.10298902  0.10298902] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.024    14.024    10.634
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13458793  0.10181869  0.10181869] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.085    14.085    10.434
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13575826  0.10064836  0.10064836] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.144    14.144    10.235
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13692859  0.09947803  0.09947803] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.202    14.202    10.037
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13809892  0.0983077   0.0983077 ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.258    14.258     9.840
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.13926925  0.09713737  0.09713737] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.313    14.313     9.646
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14043958  0.09596704  0.09596704] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.366    14.366     9.454
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14160991  0.09479671  0.09479671] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.417    14.417     9.265
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14278024  0.09362638  0.09362638] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.467    14.467     9.081
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14395057  0.09245605  0.09245605] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.516    14.516     8.901
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14512089  0.09128572  0.09128572] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.563    14.563     8.727
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14629122  0.09011539  0.09011539] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.608    14.608     8.559
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14746155  0.08894506  0.08894506] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.653    14.653     8.398
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14863188  0.08777473  0.08777473] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.695    14.695     8.245
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.14980221  0.08660441  0.08660441] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.737    14.737     8.100
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15097254  0.08543408  0.08543408] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.776    14.776     7.966
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15214287  0.08426375  0.08426375] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.815    14.815     7.842
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1533132   0.08309342  0.08309342] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.852    14.852     7.729
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15448353  0.08192309  0.08192309] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.888    14.888     7.628
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15565386  0.08075276  0.08075276] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.923    14.923     7.540
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15682419  0.07958243  0.07958243] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.956    14.956     7.466
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15799452  0.0784121   0.0784121 ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   14.989    14.989     7.406
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.15916485  0.07724177  0.07724177] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.020    15.020     7.361
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16033518  0.07607144  0.07607144] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.049    15.049     7.330
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16150551  0.07490111  0.07490111] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.078    15.078     7.315
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16267584  0.07373078  0.07373078] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.106    15.106     7.316
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16384617  0.07256045  0.07256045] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.132    15.132     7.332
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1650165   0.07139012  0.07139012] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.157    15.157     7.364
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16618683  0.07021979  0.07021979] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.182    15.182     7.410
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16735716  0.06904946  0.06904946] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.205    15.205     7.472
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16852749  0.06787913  0.06787913] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.228    15.228     7.548
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.16969782  0.0667088   0.0667088 ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.249    15.249     7.638
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17086815  0.06553847  0.06553847] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.270    15.270     7.741
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17203848  0.06436814  0.06436814] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.289    15.289     7.856
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17320881  0.06319781  0.06319781] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.308    15.308     7.982
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17437914  0.06202748  0.06202748] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.326    15.326     8.120
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17554947  0.06085715  0.06085715] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.343    15.343     8.267
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1767198   0.05968682  0.05968682] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.360    15.360     8.423
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17789013  0.05851649  0.05851649] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.375    15.375     8.588
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.17906046  0.05734616  0.05734616] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.390    15.390     8.760
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18023079  0.05617583  0.05617583] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.404    15.404     8.938
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18140112  0.0550055   0.0550055 ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.418    15.418     9.123
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18257145  0.05383517  0.05383517] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.430    15.430     9.312
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18374178  0.05266484  0.05266484] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.443    15.443     9.505
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18491211  0.05149451  0.05149451] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.454    15.454     9.702
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18608244  0.05032418  0.05032418] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.465    15.465     9.902
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18725277  0.04915385  0.04915385] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.476    15.476    10.104
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.1884231   0.04798352  0.04798352] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.486    15.486    10.308
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.18959343  0.04681319  0.04681319] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.495    15.495    10.512
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19076376  0.04564286  0.04564286] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.504    15.504    10.718
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19193409  0.04447253  0.04447253] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.512    15.512    10.923
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19310442  0.0433022   0.0433022 ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.520    15.520    11.128
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19427475  0.04213187  0.04213187] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.528    15.528    11.332
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19544508  0.04096154  0.04096154] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.535    15.535    11.534
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19661541  0.03979121  0.03979121] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.542    15.542    11.735
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19778574  0.03862088  0.03862088] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.548    15.548    11.933
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.19895607  0.03745055  0.03745055] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.554    15.554    12.129
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.2001264   0.03628022  0.03628022] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.560    15.560    12.322
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20129673  0.03510989  0.03510989] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.565    15.565    12.512
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20246706  0.03393956  0.03393956] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.570    15.570    12.699
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20363739  0.03276923  0.03276923] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.575    15.575    12.881
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20480772  0.0315989   0.0315989 ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.579    15.579    13.059
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20597804  0.03042857  0.03042857] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.583    15.583    13.233
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20714837  0.02925824  0.02925824] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.587    15.587    13.403
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.2083187   0.02808792  0.02808792] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.591    15.591    13.567
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.20948903  0.02691759  0.02691759] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.594    15.594    13.727
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21065936  0.02574726  0.02574726] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.597    15.597    13.881
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21182969  0.02457693  0.02457693] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.600    15.600    14.029
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21300002  0.0234066   0.0234066 ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.603    15.603    14.172
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21417035  0.02223627  0.02223627] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.606    15.606    14.309
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21534068  0.02106594  0.02106594] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.608    15.608    14.440
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21651101  0.01989561  0.01989561] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.610    15.610    14.565
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21768134  0.01872528  0.01872528] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.612    15.612    14.683
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.21885167  0.01755495  0.01755495] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.614    15.614    14.795
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.220022    0.01638462  0.01638462] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.616    15.616    14.900
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22119233  0.01521429  0.01521429] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.617    15.617    14.999
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22236266  0.01404396  0.01404396] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.619    15.619    15.091
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22353299  0.01287363  0.01287363] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.620    15.620    15.175
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22470332  0.0117033   0.0117033 ] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.621    15.621    15.253
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22587365  0.01053297  0.01053297] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.622    15.622    15.323
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22704398  0.00936264  0.00936264] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.623    15.623    15.387
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22821431  0.00819231  0.00819231] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.624    15.624    15.443
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.22938464  0.00702198  0.00702198] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.625    15.625    15.491
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.23055497  0.00585165  0.00585165] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.625    15.625    15.533
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.2317253   0.00468132  0.00468132] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.626    15.626    15.567
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.23289563  0.00351099  0.00351099] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.626    15.626    15.593
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.23406596  0.00234066  0.00234066] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.627    15.627    15.612
+
+SupercellPhonons.SetQ: Computing force constants at q =  [ 0.23523629  0.00117033  0.00117033] (2pi/Ang)
+Phonons.CalcPhonons: Frequencies in meV:
+   15.627    15.627    15.623
+WriteNetCDF: Writing variable kpts(d) to file Bands-r7.0/Output.nc
+WriteNetCDF: Writing variable ebands(d) to file Bands-r7.0/Output.nc
+WriteNetCDF: Writing variable qpts(d) to file Bands-r7.0/Output.nc
+WriteNetCDF: Writing variable phbands(d) to file Bands-r7.0/Output.nc
+SVN $Id: WriteXMGR.py 318 2014-08-07 09:00:10Z tfrederiksen $
+Graph 0 appended to plot "Bands-r7.0/Electrons.agr"
+Writing plot to file "Bands-r7.0/Electrons.agr"
+Graph 0 appended to plot "Bands-r7.0/Phonons.agr"
+Writing plot to file "Bands-r7.0/Phonons.agr"
+SCRIPT SUMMARY:
+Call: /scratch/thf/SOFTWARE/python/2.7.10/gcc-4.9.2/packages/inelastica/DEV/intel-15.0.2/bin/Bandstructures -r 7.0 Bands-r7.0
+Program finished:  Fri Oct  2 18:06:02 2015 
+Walltime: 0.01 hrs = 0.53 min = 31.84 sec
+=======================================================================

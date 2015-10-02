@@ -1,5 +1,0 @@
-FC* : Siesta calculations of forces by displacing atoms.
-
-Simple parallellization by running the FC calculation in parallell.
-
-Running: python PHrun.py in the PHrun dir calculates the phonon-bandstructure.
