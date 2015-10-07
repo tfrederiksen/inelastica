@@ -64,15 +64,15 @@ def GetOptions(argv,**kwargs):
                  help="Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%default]")
     
     p.add_option("-k","--kpointfile",dest='kfile',default=None,
-                 help="Optional input file with electronic k-points to be evaluated [default=high-symmetry path determined by lattice type]")
+                 help="Input file with electronic k-points to be evaluated [default=%default]")
 
     p.add_option("-q","--qpointfile",dest='qfile',default=None,
-                 help="Optional input file with phonon q-points to be evaluated [default=high-symmetry path determined by lattice type]")
+                 help="Input file with phonon q-points to be evaluated [default=%default]")
 
     p.add_option('-p','--plotting',dest='plotting',action="store_true",default=False,
                  help="Generate band structure plots [default=%default]")
 
-    p.add_option('--steps',dest='steps',default=100,type="int",
+    p.add_option('-s','--steps',dest='steps',default=100,type="int",
                  help="Number of points on path between high-symmetry k-points [default=%default]")
 
     (options, args) = p.parse_args(argv)
@@ -105,7 +105,7 @@ def GetOptions(argv,**kwargs):
 
 class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
 
-    def CheckSymmetries(self,radius):
+    def CheckSymmetries(self):
         print '\nPerforming symmetry analysis'
         # Check if a smaller basis is present:
         Sym = Symmetry.Symmetry()
@@ -115,9 +115,14 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         Sym.pointGroup()
         Sym.findIrreducible()
         Sym.what()
+        self.supercell = True
+        self.Sym = Sym
+
+    def SymmetrizeFC(self,radius): 
+        Sym = self.Sym
         self.SetDynamicAtoms(range(1,Sym.basis.NN+1))
         print '\nComputing symmetrized force constants'
-        self.mean_sym = Sym.symmetrizeFC(self.mean,1,Sym.basis.NN,radi=radius)
+        self.mean_sym = self.Sym.symmetrizeFC(self.mean,1,Sym.basis.NN,radi=radius)
         self.mean_sym = self.ApplySumRule(self.mean_sym)
         # Calculate lattice vectors for phase factors
         # The closest cell might be different depending on which atom is moved
@@ -128,8 +133,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
             for jj in range(Sym.NN):
                 latticevectors[ii,jj] = micxyz[jj]+sxyz[Sym.basisatom[ii]]-sxyz[Sym.basisatom[jj]]           
         self.latticevectors = latticevectors
-        self.supercell = True
-        self.Sym = Sym
+
 
     def ComputePhononModes_q(self,qpoint):
         # Compute phonon vectors
@@ -304,70 +308,65 @@ def main(options):
 
     fdf = glob.glob(options.FCwildcard+'/RUN.fdf')  
     SCDM = Supercell_DynamicalMatrix(fdf)
-    SCDM.CheckSymmetries(radius=options.radius)
-    SCDM.SetMasses()
+    SCDM.CheckSymmetries()
 
-    # Determine which k-points to evaluate
-    if not options.kfile:
-        options.kfile = options.DestDir+'/symmetry-path'
-        WritePath(options.kfile,SCDM.Sym.path,options.steps)
+    # Write symmetry path
+    WritePath(options.DestDir+'/symmetry-path',SCDM.Sym.path,options.steps)
 
-    # Determine which q-points to evaluate
-    if not options.qfile:
-        options.qfile = options.DestDir+'/symmetry-path'
-        WritePath(options.qfile,SCDM.Sym.path,options.steps)
-
-    # Prepare Hamiltonian etc in Gamma for whole supercell
-    natoms = SIO.GetFDFlineWithDefault(fdf[0],'NumberOfAtoms',int,-1,'Error')
-    SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),1,natoms,AbsEref=False,SinglePrec=True)
-    SCDM.nao = SCDM.h0.shape[-1]
-    SCDM.FirstOrb = SCDM.OrbIndx[0][0] # First atom = 1
-    SCDM.LastOrb = SCDM.OrbIndx[SCDM.Sym.basis.NN-1][1] # Last atom = Sym.NN
-    SCDM.rednao = SCDM.LastOrb+1-SCDM.FirstOrb
+    # Netcdf output file
+    ncf = options.DestDir+'/Output.nc'
     
-    # Compute electron eigenvalues
-    kpts,dk,klabels,kticks = ReadKpoints(options.kfile)
-    WriteKpoints(options.DestDir+'/kpoints',kpts,klabels)
-    fel = open(options.DestDir+'/ebands.dat','w')
-    elist = []
-    for i,k in enumerate(kpts):
-        ev,evec = SCDM.ComputeElectronStates(k)
-        elist += [ev]
-        fel.write('%i '%i)
-        for j in ev:
-            fel.write('%.8e '%j.real)
-        fel.write(klabels[i]+'\n')
-    fel.close()
-    elist = N.array(elist)
-
-    # Write band structure plots?
-    if options.plotting:
-        PlotElectronBands(options.DestDir+'/Electrons.agr',dk,elist,kticks)
+    # Evaluate electron k-points
+    if options.kfile:
+        # Prepare Hamiltonian etc in Gamma for whole supercell
+        natoms = SIO.GetFDFlineWithDefault(fdf[0],'NumberOfAtoms',int,-1,'Error')
+        SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),1,natoms,AbsEref=False,SinglePrec=True)
+        SCDM.nao = SCDM.h0.shape[-1]
+        SCDM.FirstOrb = SCDM.OrbIndx[0][0] # First atom = 1
+        SCDM.LastOrb = SCDM.OrbIndx[SCDM.Sym.basis.NN-1][1] # Last atom = Sym.NN
+        SCDM.rednao = SCDM.LastOrb+1-SCDM.FirstOrb
+        # Compute electron eigenvalues
+        kpts,dk,klabels,kticks = ReadKpoints(options.kfile)
+        WriteKpoints(options.DestDir+'/kpoints',kpts,klabels)
+        fel = open(options.DestDir+'/ebands.dat','w')
+        elist = []
+        for i,k in enumerate(kpts):
+            ev,evec = SCDM.ComputeElectronStates(k)
+            elist += [ev]
+            fel.write('%i '%i)
+            for j in ev:
+                fel.write('%.8e '%j.real)
+            fel.write(klabels[i]+'\n')
+        fel.close()
+        elist = N.array(elist)
+        # Write data to NetCDF 
+        NCDF.write(ncf,kpts,'kpts')
+        NCDF.write(ncf,elist,'ebands')
+        # Write band structure plots?
+        if options.plotting:
+            PlotElectronBands(options.DestDir+'/Electrons.agr',dk,elist,kticks)
+        
 
     # Compute phonon eigenvalues
-    if not options.qfile: options.qfile = SCDM.Sym.kpathfn
-    qpts,dq,qlabels,qticks = ReadKpoints(options.qfile)
-    WriteKpoints(options.DestDir+'/qpoints',qpts,qlabels)
-    fph = open(options.DestDir+'/phbands.dat','w')
-    phlist = []
-    for i,q in enumerate(qpts):
-        hw,U = SCDM.ComputePhononModes_q(q)
-        phlist += [hw]
-        fph.write('%i '%i)
-        for j in hw:
-            fph.write('%.8e '%j.real)
-        fph.write(qlabels[i]+'\n')
-    fph.close()
-    phlist = N.array(phlist)
-    
-    # Write band structure plots?
-    if options.plotting:
-        PlotPhononBands(options.DestDir+'/Phonons.agr',dq,phlist,qticks)
-
-    # Write data to NetCDF 
-    ncf = options.DestDir+'/Output.nc'
-    NCDF.write(ncf,kpts,'kpts')
-    NCDF.write(ncf,elist,'ebands')
-    NCDF.write(ncf,qpts,'qpts')
-    NCDF.write(ncf,phlist,'phbands')
-
+    if options.qfile:
+        SCDM.SymmetrizeFC(options.radius)
+        SCDM.SetMasses()
+        qpts,dq,qlabels,qticks = ReadKpoints(options.qfile)
+        WriteKpoints(options.DestDir+'/qpoints',qpts,qlabels)
+        fph = open(options.DestDir+'/phbands.dat','w')
+        phlist = []
+        for i,q in enumerate(qpts):
+            hw,U = SCDM.ComputePhononModes_q(q)
+            phlist += [hw]
+            fph.write('%i '%i)
+            for j in hw:
+                fph.write('%.8e '%j.real)
+            fph.write(qlabels[i]+'\n')
+        fph.close()
+        phlist = N.array(phlist)
+        # Write data to NetCDF 
+        NCDF.write(ncf,qpts,'qpts')
+        NCDF.write(ncf,phlist,'phbands')
+        # Write band structure plots?
+        if options.plotting:
+            PlotPhononBands(options.DestDir+'/Phonons.agr',dq,phlist,qticks)
