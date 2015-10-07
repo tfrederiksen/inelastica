@@ -22,7 +22,7 @@ class Symmetry:
     a1..3    : Lattice vectors of unitcell
     b1..3    : Reciprocal lattice vectors
     bp1..bp3 : Reciprocal lattice vectors to PBC.
-    latticeType : string FCC/BCC/CUBIC/HEX/GRAPHENE/POLYMER/TETRAGONAL
+    latticeType : string CUBIC/FCC/BCC/HEX/TETRAGONAL
     basis.xyz : xyz of basis inside a1..a3
     basis.snr, .anr, .NN : Siesta/atomic number and number of atoms
 
@@ -608,25 +608,37 @@ class Symmetry:
         print 'Lattice angles  =', angles
         print 'Lattice lengths =', length
         latticetype = 'UNKNOWN'
-        if N.allclose(length[0],length[1],atol=self.accuracy) and\
-                N.allclose(length[1],length[2],atol=self.accuracy):
-            # All lengths same
+        if N.allclose(length[0],length[1],atol=self.accuracy) and \
+           N.allclose(length[1],length[2],atol=self.accuracy):
+            # All lattice vectors with same length |a1|=|a2|=|a3|:
             if N.sum(N.abs(N.array(angles)-90))<2:
                 latticetype = 'CUBIC'
-            if N.sum(N.abs(N.array(angles)-60))<2:
+                # a1 = [a,0,0]
+                # a2 = [0,a,0]
+                # a3 = [0,0,a]
+            elif N.sum(N.abs(N.array(angles)-60))<2:
                 latticetype = 'FCC'
-            if N.sum(N.abs(N.array(angles)-70.5))<4:
+                # a1 = [0,a/2,a/2]
+                # a2 = [a/2,0,a/2]
+                # a3 = [a/2,a/2,0]
+            elif N.sum(N.abs(N.array(angles)-70.5))<4:
                 latticetype = 'BCC'
-        elif N.allclose(length[0],length[1],atol=self.accuracy) and \
-                N.sum(N.abs(N.array(angles)-90))<2:
-            latticetype = 'TETRAGONAL'
-        elif N.allclose(length[1],length[2],atol=self.accuracy):
-            if N.sum(N.abs(N.array(angles)-90))<2:
-                latticetype = 'POLYMER'
+                # a1 = [-a/2,a/2,a/2]
+                # a2 = [a/2,-a/2,a/2]
+                # a3 = [a/2,a/2,-a/2]
         elif N.allclose(length[0],length[1],atol=self.accuracy):
-            if N.abs(angles[0]-60)<2:
-                latticetype="GRAPHENE"
-        print "Symmetry: Lattice  = %s"%latticetype
+            # |a1|=|a2|:
+            if N.abs(angles[0]-60)<2 and N.sum(N.abs(N.array(angles[1:])-90))<2:
+                latticetype="HEX"
+                # a1 = [a/2,-a*3**.5/2,0]
+                # a2 = [a/2,+a*3**.5/2,0]
+                # a3 = [0,0,c]
+            elif N.sum(N.abs(N.array(angles)-90))<2:
+                latticetype = 'TETRAGONAL'
+                # a1 = [a,0,0]
+                # a2 = [0,a,0]
+                # a3 = [0,0,c]
+        print "Symmetry: Lattice = %s"%latticetype
         self.latticeType = latticetype
 
     def makeHumanReadable(self,a1,a2,a3):
@@ -775,98 +787,75 @@ class Symmetry:
 
     def what(self):
         # Returns directions to calculate bandstructure
-        # [["text",k-direction, k-origin, Num k-points], ...]
         a1, a2, a3= self.a1, self.a2, self.a3
         b1, b2, b3= self.b1, self.b2, self.b3
-        signs = [N.sign(mm(b1,[b1,b2,b3][ii])) for ii in range(3)]
-        if self.latticeType == 'FCC':
-            X1 = (b1-signs[1]*b2)/2
-            X2 = (b1-signs[2]*b3)/2
-            K = X1+X2
-            L = b1
-            what = [['000-100',X1,0*X1,101],
-                    ['100-110',X2,X1,101],
-                    ['110-000',-K,K,101],
-                    ['000-111',0.5*L,0*L,51]]
+        G = N.zeros(3,N.float)
+        # Symmetry k-points from this publication:
+        # https://dx.doi.org/10.1016%2Fj.commatsci.2010.05.010
+        if self.latticeType == 'CUBIC':
+            # Table 2 - Figure 1
+            X = b1*0/1+b2*1/2+b3*0/1
+            M = b1*1/2+b2*1/2+b3*0/1
+            R = b1*1/2+b2*1/2+b3*1/2
+            path = [[G,'G'],[X,'X'],[M,'M'],[G,'G'],[R,'R'],[X,'X']]
+        elif self.latticeType == 'FCC':
+            # Table 3 - Figure 2
+            X = b1*1/2+b2*0/1+b3*1/2
+            K = b1*3/8+b2*3/8+b3*3/4
+            L = b1*1/2+b2*1/2+b3*1/2
+            U = b1*5/8+b2*1/4+b3*5/8
+            W = b1*1/2+b2*1/4+b3*3/4
+            path = [[G,'G'],[X,'X'],[W,'W'],[K,'K'],[G,'G'],[L,'L'],[U,'U']]
         elif self.latticeType == 'BCC':
-            H = abs(b1-signs[1]*b2-signs[2]*b3)/2
-            NN = abs(b1-signs[1]*b2)/2
-            P = abs(b1+signs[1]*b2+signs[2]*b3)/4
-            G = 0*P
-            what = [['G-H',H-G,G,101],
-                    ['H-N',NN-H,H,101],
-                    ['N-G',G-NN,NN,101],
-                    ['G-P',P-G,G,101],
-                    ['P-H',H-P,P,101]]
-        elif self.latticeType == 'CUBIC':
-            X = b1
-            L = b1+b2+b3
-            K = b1+b2
-            what = [['000-100',X,0*X,101],
-                    ['100-110',K-X,X,101],
-                    ['110-000',-K,K,101],
-                    ['000-111',L,0*L,101]]
-        elif self.latticeType == 'POLYMER':
-            ipiv = N.argsort(distance(N.array([a1,a2,a3])))
-            X = [b1,b2,b3][int(ipiv[0])]
-            what = [['000-100',X*0.5,0*X,101]]
-        elif self.latticeType == 'GRAPHENE':
-            #M = (b1+b2)/2
-            #K = M+(b1-b2)/6
-            M = b1/2.
-            K = (b1+b2)/3.
-            G = 0*M
-            what = [['G-M',M,G,101],
-                    ['M-K',K-M,M,101],
-                    ['K-G',G-K,K,101]]
+            # Table 4 - Figure 3
+            P = b1*1/4+b2*1/4+b3*1/4
+            NN= b1*0/1+b2*0/1+b3*1/2
+            H = b1*1/2-b2*1/2+b3*1/2
+            path = [[G,'G'],[H,'H'],[P,'P'],[G,'G'],[NN,'N'],[H,'H']]
+        elif self.latticeType == 'HEX':
+            # Table 13 - Figure 13
+            A = b1*0/1+b2*0/1+b3*1/2
+            H = b1*1/3+b2*1/3+b3*1/3
+            K = b1*1/3+b2*1/3+b3*0/1
+            L = b1*1/2+b2*0/1+b3*1/2
+            M = b1*1/2+b2*0/1+b3*0/1
+            path = [[G,'G'],[M,'M'],[K,'K'],[G,'G'],[A,'A'],[L,'L'],[H,'H'],[A,'A']]
         elif self.latticeType == 'TETRAGONAL':
-            ipiv = N.argsort(distance(N.array([a1,a2,a3])))
-            bb1, bb2, bb3 = [b1,b2,b3][int(ipiv[0])], [b1,b2,b3][int(ipiv[1])], [b1,b2,b3][int(ipiv[2])]
-            X = bb1/2
-            M = (bb1+bb2)/2
-            R = bb3/2
-            G = 0*bb1
-            what = [['X-G',G-X,X,101],
-                    ['G-M',M-G,G,101],
-                    ['M-X',X-M,M,101],
-                    ['X-G',G-X,X,101],
-                    ['G-R',R-G,G,101]]
-        elif self.latticeType == 'FCT':
-            ipiv = N.argsort(distance(N.array([a1,a2,a3])))
-            bb1, bb2, bb3 = [b1,b2,b3][int(ipiv[0])], [b1,b2,b3][int(ipiv[1])], [b1,b2,b3][int(ipiv[2])]
-            X = (bb1+bb3)/2
-            Z = bb1+(bb2+bb3)/2
-            L = (bb1+bb2+bb3)/2
-            XP = (bb2+bb3)/2
-            ZP = bb2+(bb1+bb3)/2
-            G = 0*bb1
-            what = [['G-X',X-G,G,101],
-                    ['X-Z',Z-X,X,101],
-                    ['Z-G',G-Z,Z,101],
-                    ['G-Z\'',ZP-G,G,101],
-                    ['Z\'-X\'',XP-ZP,ZP,101],
-                    ['X\'-G',G-XP,XP,101],
-                    ['G-L',L-G,G,101]]
+            # Table 5 - Figure 4
+            A = b1*1/2+b2*1/2+b3*1/2
+            M = b1*1/2+b2*1/2+b3*0/1
+            R = b1*0/1+b2*1/2+b3*1/2
+            X = b1*0/1+b2*1/2+b3*0/1
+            Z = b1*0/1+b2*0/1+b3*1/2
+            path = [[G,'G'],[X,'X'],[M,'M'],[G,'G'],[Z,'Z'],[R,'R'],[A,'A'],[Z,'Z']]
         else:
             print "Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType
             kuk
+        # Write path between high-symmetry points
         kpts = []
         labels = []
-        for elem in what:
-            print elem[0]
-            print "From ",N.round(elem[2]*1e4)/1e4," to ",N.round(1e4*(elem[2]+elem[1]))/1e4 
-            for i in range(elem[3]):
-                ki = elem[2]+elem[1]*i/elem[3]
-                if i==0:
-                    # Append label for high-symmetry point
-                    labels += [elem[0]]
-                else:
-                    labels += ['']
-                kpts.append(ki)
-        import SupercellPhonons as SP
-        self.kpathfn = self.latticeType+'.kpath'
+        for i,k in enumerate(path):
+            if i<len(path)-1:
+                k1 = path[i][0]
+                k2 = path[i+1][0]
+                for j in range(100):
+                    kj = k1 + (k2-k1)*j/100.
+                    kpts.append(kj)
+                    if j==0:
+                        labels.append(path[i][1])
+                    else:
+                        labels.append('')
+            else:
+                # last k-point in path
+                k1 = path[i][0]
+                kpts.append(k1)
+                labels.append(path[i][1])
+        print 'High-symmetry path:'
+        for k in path:
+            print k[1],k[0]
+        import SupercellPhonons as SP 
+        self.kpathfn = self.latticeType+'.kpath'              
         SP.WriteKpoints(self.kpathfn,kpts,labels)
-        return what
 
 ###########################################################
 # Mathematical helpers

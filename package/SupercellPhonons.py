@@ -290,8 +290,7 @@ def main(options):
     ge = XMGR.Graph(es)
     ge.SetXaxisSpecialTicks(kticks)
     ge.SetXaxis(max=dk[-1],majorGridlines=True)
-    ge.SetYaxis(autoscale=True)
-    ge.SetYaxis(label='E-E\sF\N (eV)',majorUnit=5.0)
+    ge.SetYaxis(min=-20,max=20,label='E-E\sF\N (eV)',majorUnit=5.0)
     pe = XMGR.Plot(options.DestDir+'/Electrons.agr',ge)
     pe.WriteFile()
     
@@ -307,9 +306,17 @@ def main(options):
     gp.SetXaxis(max=dk[-1],majorGridlines=True)
     maxy = 1000*N.amax(phlist)
     if maxy<20: mu,mx = 5,20
+    elif maxy<30: mu,mx = 5,30
+    elif maxy<40: mu,mx = 5,40
     elif maxy<50: mu,mx = 10,50
+    elif maxy<75: mu,mx = 10,75
     elif maxy<100: mu,mx = 20,100
-    elif maxy<200: mu,mx = 50,200
+    elif maxy<125: mu,mx = 25,125
+    elif maxy<150: mu,mx = 25,150
+    elif maxy<175: mu,mx = 25,175
+    elif maxy<200: mu,mx = 25,200
+    elif maxy<220: mu,mx = 25,220
+    elif maxy<250: mu,mx = 25,250
     elif maxy<500: mu,mx = 100,500
     gp.SetYaxis(label='h\\f{Symbol}w\\f{} (meV)',majorUnit=mu,min=0.0,max=mx)
     pp = XMGR.Plot(options.DestDir+'/Phonons.agr',gp)
