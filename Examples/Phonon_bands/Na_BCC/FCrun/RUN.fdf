@@ -1,6 +1,6 @@
 MD.TypeOfRun  FC
-MD.FCfirst   1
-MD.FClast    1
+MD.FCfirst    1
+MD.FClast     1
 TS.SaveHS    True
 MD.FCDispl   0.02 Ang
 
@@ -9,21 +9,28 @@ SystemLabel         NaBCC
 
 SpinPolarized       F
 
-%block kgrid_Monkhorst_Pack
-  1 0 0   0.0
-  0 1 0   0.0
-  0 0 1   0.0
-%endblock kgrid_Monkhorst_Pack
+PAO.EnergyShift 0.01 Ry
+PAO.BasisSize   DZP
+PAO.BasisType   split
 
-Reparametrize.Pseudos  T       # Options for more accuracy
-Restricted.Radial.Grid F
+XC.functional   GGA
+XC.authors      PBE
+
+MeshCutoff      500. Ry
+
+DM.Tolerance    0.00001
+DM.NumberPulay 10
+DM.MixingWeight 0.05
+MaxSCFIterations 100
+
+%block kgrid_Monkhorst_Pack
+  2 0 0   0.0
+  0 2 0   0.0
+  0 0 2   0.0
+%endblock kgrid_Monkhorst_Pack
 
 %block ChemicalSpeciesLabel
  1 11   Na
 %endblock ChemicalSpeciesLabel
 
-WriteCoorStep              T     # Default value
-WriteCoorInitial           T     # Default value
-
 %include STRUCT.fdf
-%include Default.fdf

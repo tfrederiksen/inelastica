@@ -2,9 +2,9 @@ NumberOfAtoms 864
 NumberOfSpecies 2
 LatticeConstant 1.0 Ang
 %block LatticeVectors
-    16.920000000     16.920000000      0.000000000 
-    16.920000000      0.000000000     16.920000000 
      0.000000000     16.920000000     16.920000000 
+    16.920000000      0.000000000     16.920000000 
+    16.920000000     16.920000000      0.000000000 
 %endblock LatticeVectors
 AtomicCoordinatesFormat  Ang
 %block AtomicCoordinatesAndAtomicSpecies

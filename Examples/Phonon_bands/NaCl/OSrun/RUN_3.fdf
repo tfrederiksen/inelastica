@@ -1,4 +1,4 @@
-### Lines written Fri Oct  2 18:18:25 2015 
+### Lines written Tue Oct  6 18:05:13 2015 
 TS.onlyS .true.
 SystemName STRUCT_3
 SystemLabel STRUCT_3
@@ -17,10 +17,24 @@ SystemLabel         NaCl
 
 SpinPolarized       F
 
+PAO.EnergyShift 0.01 Ry
+PAO.BasisSize   DZP
+PAO.BasisType   split
+
+XC.functional   GGA
+XC.authors      PBE
+
+MeshCutoff      500. Ry
+
+DM.Tolerance    0.00001
+DM.NumberPulay 10
+DM.MixingWeight 0.05
+MaxSCFIterations 100
+
 %block kgrid_Monkhorst_Pack
-  1 0 0   0.0
-  0 1 0   0.0
-  0 0 1   0.0
+  2 0 0   0.0
+  0 2 0   0.0
+  0 0 2   0.0
 %endblock kgrid_Monkhorst_Pack
 
 %block ChemicalSpeciesLabel
@@ -28,8 +42,4 @@ SpinPolarized       F
  2 17   Cl
 %endblock ChemicalSpeciesLabel
 
-WriteCoorStep              T     # Default value
-WriteCoorInitial           T     # Default value
-
 %include STRUCT_3.fdf
-%include Default.fdf

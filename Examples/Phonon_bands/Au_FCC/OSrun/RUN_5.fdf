@@ -1,4 +1,4 @@
-### Lines written Fri Oct  2 18:17:38 2015 
+### Lines written Tue Oct  6 18:27:12 2015 
 TS.onlyS .true.
 SystemName STRUCT_5
 SystemLabel STRUCT_5
@@ -7,8 +7,8 @@ SystemLabel STRUCT_5
 
 ### Lines from RUN.fdf 
 MD.TypeOfRun  FC
-MD.FCfirst   1
-MD.FClast    1
+MD.FCfirst    1
+MD.FClast     1
 TS.SaveHS    True
 MD.FCDispl   0.02 Ang
 
@@ -17,18 +17,28 @@ SystemLabel         AuFCC
 
 SpinPolarized       F
 
+PAO.EnergyShift 0.01 Ry
+PAO.BasisSize   DZP
+PAO.BasisType   split
+
+XC.functional   GGA
+XC.authors      PBE
+
+MeshCutoff      500. Ry
+
+DM.Tolerance    0.00001
+DM.NumberPulay 10
+DM.MixingWeight 0.05
+MaxSCFIterations 100
+
 %block kgrid_Monkhorst_Pack
-  1 0 0   0.0
-  0 1 0   0.0
-  0 0 1   0.0
+  2 0 0   0.0
+  0 2 0   0.0
+  0 0 2   0.0
 %endblock kgrid_Monkhorst_Pack
 
 %block ChemicalSpeciesLabel
- 1   79   Au_pbr
+ 1 79   Au_pbr
 %endblock ChemicalSpeciesLabel
 
-WriteCoorStep              T     # Default value
-WriteCoorInitial           T     # Default value
-
 %include STRUCT_5.fdf
-%include Default.fdf

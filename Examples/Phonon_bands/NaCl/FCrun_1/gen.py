@@ -1,8 +1,8 @@
 import numpy as N
 a= 5.64
-a1=N.array([1,1,0],N.float)*a/2.0
+a1=N.array([0,1,1],N.float)*a/2.0
 a2=N.array([1,0,1],N.float)*a/2.0
-a3=N.array([0,1,1],N.float)*a/2.0
+a3=N.array([1,1,0],N.float)*a/2.0
 
 for zz in range(6):
     for yy in range(6):
