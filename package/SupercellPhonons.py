@@ -64,10 +64,16 @@ def GetOptions(argv,**kwargs):
                  help="Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%default]")
     
     p.add_option("-k","--kpointfile",dest='kfile',default=None,
-                 help="Optional input file with k-points for the electron band structure [default=path in 1BZ determined by lattice type]")
+                 help="Optional input file with electronic k-points to be evaluated [default=high-symmetry path determined by lattice type]")
 
     p.add_option("-q","--qpointfile",dest='qfile',default=None,
-                 help="Optional input file with q-points for the phonon band structure [default=path in 1BZ determined by lattice type]")
+                 help="Optional input file with phonon q-points to be evaluated [default=high-symmetry path determined by lattice type]")
+
+    p.add_option('-p','--plotting',dest='plotting',action="store_true",default=False,
+                 help="Generate band structure plots [default=%default]")
+
+    p.add_option('--steps',dest='steps',default=100,type="int",
+                 help="Number of points on path between high-symmetry k-points [default=%default]")
 
     (options, args) = p.parse_args(argv)
 
@@ -219,6 +225,77 @@ def WriteKpoints(filename,klist,labels=None):
     f.close()
     print 'SupercellPhonons.WriteKpoints: Wrote %i points to %s'%(len(klist),filename)
 
+def WritePath(filename,path,steps):
+    # Write path between high-symmetry points
+    kpts = []
+    labels = []
+    for i,k in enumerate(path):
+        if i<len(path)-1:
+            k1 = path[i][0]
+            k2 = path[i+1][0]
+            for j in range(steps):
+                kj = k1 + (k2-k1)*j/steps
+                kpts.append(kj)
+                if j==0:
+                    labels.append(path[i][1])
+                else:
+                    labels.append('')
+        else:
+        # last k-point in path
+            k1 = path[i][0]
+            kpts.append(k1)
+            labels.append(path[i][1])
+    print 'High-symmetry path:'
+    for k in path:
+        print k[1],k[0]
+    WriteKpoints(filename,kpts,labels)
+
+def PlotElectronBands(filename,dk,elist,ticks):
+    # Make xmgrace plots
+    import WriteXMGR as XMGR
+    if len(dk)>1:
+        x = N.array([dk])
+    else:
+        x = N.array([[0.0]])
+    e = N.concatenate((x,elist.T)).T    
+    es = XMGR.Array2XYsets(e,Lwidth=2,Lcolor=1)
+    ge = XMGR.Graph(es)
+    ge.SetXaxisSpecialTicks(ticks)
+    ge.SetXaxis(max=dk[-1],majorGridlines=True)
+    ge.SetYaxis(min=-20,max=20,label='E-E\sF\N (eV)',majorUnit=5.0)
+    pe = XMGR.Plot(filename,ge)
+    pe.WriteFile()
+
+def PlotPhononBands(filename,dq,phlist,ticks):
+    # Make xmgrace plots
+    import WriteXMGR as XMGR
+    if len(dq)>1:
+        x = N.array([dq])
+    else:
+        x = N.array([[0.0]])
+    p = N.concatenate((x,1000*phlist.T)).T
+    ps = XMGR.Array2XYsets(p,Lwidth=2,Lcolor=1)
+    gp = XMGR.Graph(ps)
+    gp.SetXaxisSpecialTicks(ticks)
+    gp.SetXaxis(max=dq[-1],majorGridlines=True)
+    maxy = 1000*N.amax(phlist)
+    if maxy<20: mu,mx = 5,20
+    elif maxy<30: mu,mx = 5,30
+    elif maxy<40: mu,mx = 5,40
+    elif maxy<50: mu,mx = 10,50
+    elif maxy<75: mu,mx = 10,75
+    elif maxy<100: mu,mx = 20,100
+    elif maxy<125: mu,mx = 25,125
+    elif maxy<150: mu,mx = 25,150
+    elif maxy<175: mu,mx = 25,175
+    elif maxy<200: mu,mx = 25,200
+    elif maxy<220: mu,mx = 25,220
+    elif maxy<250: mu,mx = 25,250
+    elif maxy<500: mu,mx = 100,500
+    gp.SetYaxis(label='\\f{Symbol}w\\f{} (meV)',majorUnit=mu,min=0.0,max=mx)
+    pp = XMGR.Plot(filename,gp)
+    pp.WriteFile()
+    
 def main(options):
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     #VC.OptionsCheck(options,'Phonons')
@@ -230,6 +307,16 @@ def main(options):
     SCDM.CheckSymmetries(radius=options.radius)
     SCDM.SetMasses()
 
+    # Determine which k-points to evaluate
+    if not options.kfile:
+        options.kfile = options.DestDir+'/symmetry-path'
+        WritePath(options.kfile,SCDM.Sym.path,options.steps)
+
+    # Determine which q-points to evaluate
+    if not options.qfile:
+        options.qfile = options.DestDir+'/symmetry-path'
+        WritePath(options.qfile,SCDM.Sym.path,options.steps)
+
     # Prepare Hamiltonian etc in Gamma for whole supercell
     natoms = SIO.GetFDFlineWithDefault(fdf[0],'NumberOfAtoms',int,-1,'Error')
     SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),1,natoms,AbsEref=False,SinglePrec=True)
@@ -239,7 +326,6 @@ def main(options):
     SCDM.rednao = SCDM.LastOrb+1-SCDM.FirstOrb
     
     # Compute electron eigenvalues
-    if not options.kfile: options.kfile = SCDM.Sym.kpathfn
     kpts,dk,klabels,kticks = ReadKpoints(options.kfile)
     WriteKpoints(options.DestDir+'/kpoints',kpts,klabels)
     fel = open(options.DestDir+'/ebands.dat','w')
@@ -253,6 +339,10 @@ def main(options):
         fel.write(klabels[i]+'\n')
     fel.close()
     elist = N.array(elist)
+
+    # Write band structure plots?
+    if options.plotting:
+        PlotElectronBands(options.DestDir+'/Electrons.agr',dk,elist,kticks)
 
     # Compute phonon eigenvalues
     if not options.qfile: options.qfile = SCDM.Sym.kpathfn
@@ -270,6 +360,10 @@ def main(options):
     fph.close()
     phlist = N.array(phlist)
     
+    # Write band structure plots?
+    if options.plotting:
+        PlotPhononBands(options.DestDir+'/Phonons.agr',dq,phlist,qticks)
+
     # Write data to NetCDF 
     ncf = options.DestDir+'/Output.nc'
     NCDF.write(ncf,kpts,'kpts')
@@ -277,47 +371,3 @@ def main(options):
     NCDF.write(ncf,qpts,'qpts')
     NCDF.write(ncf,phlist,'phbands')
 
-    # Make xmgrace plots
-    import WriteXMGR as XMGR
-
-    # Electron bands
-    if len(dk)>1:
-        x = N.array([dk])
-    else:
-        x = N.array([[0.0]])
-    e = N.concatenate((x,elist.T)).T    
-    es = XMGR.Array2XYsets(e,Lwidth=2,Lcolor=1)
-    ge = XMGR.Graph(es)
-    ge.SetXaxisSpecialTicks(kticks)
-    ge.SetXaxis(max=dk[-1],majorGridlines=True)
-    ge.SetYaxis(min=-20,max=20,label='E-E\sF\N (eV)',majorUnit=5.0)
-    pe = XMGR.Plot(options.DestDir+'/Electrons.agr',ge)
-    pe.WriteFile()
-    
-    # Phonon band
-    if len(dq)>1:
-        x = N.array([dq])
-    else:
-        x = N.array([[0.0]])
-    p = N.concatenate((x,1000*phlist.T)).T
-    ps = XMGR.Array2XYsets(p,Lwidth=2,Lcolor=1)
-    gp = XMGR.Graph(ps)
-    gp.SetXaxisSpecialTicks(kticks)
-    gp.SetXaxis(max=dk[-1],majorGridlines=True)
-    maxy = 1000*N.amax(phlist)
-    if maxy<20: mu,mx = 5,20
-    elif maxy<30: mu,mx = 5,30
-    elif maxy<40: mu,mx = 5,40
-    elif maxy<50: mu,mx = 10,50
-    elif maxy<75: mu,mx = 10,75
-    elif maxy<100: mu,mx = 20,100
-    elif maxy<125: mu,mx = 25,125
-    elif maxy<150: mu,mx = 25,150
-    elif maxy<175: mu,mx = 25,175
-    elif maxy<200: mu,mx = 25,200
-    elif maxy<220: mu,mx = 25,220
-    elif maxy<250: mu,mx = 25,250
-    elif maxy<500: mu,mx = 100,500
-    gp.SetYaxis(label='h\\f{Symbol}w\\f{} (meV)',majorUnit=mu,min=0.0,max=mx)
-    pp = XMGR.Plot(options.DestDir+'/Phonons.agr',gp)
-    pp.WriteFile()

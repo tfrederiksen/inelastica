@@ -797,7 +797,7 @@ class Symmetry:
             X = b1*0/1+b2*1/2+b3*0/1
             M = b1*1/2+b2*1/2+b3*0/1
             R = b1*1/2+b2*1/2+b3*1/2
-            path = [[G,'G'],[X,'X'],[M,'M'],[G,'G'],[R,'R'],[X,'X']]
+            self.path = [[G,'G'],[X,'X'],[M,'M'],[G,'G'],[R,'R'],[X,'X']]
         elif self.latticeType == 'FCC':
             # Table 3 - Figure 2
             X = b1*1/2+b2*0/1+b3*1/2
@@ -805,13 +805,13 @@ class Symmetry:
             L = b1*1/2+b2*1/2+b3*1/2
             U = b1*5/8+b2*1/4+b3*5/8
             W = b1*1/2+b2*1/4+b3*3/4
-            path = [[G,'G'],[X,'X'],[W,'W'],[K,'K'],[G,'G'],[L,'L'],[U,'U']]
+            self.path = [[G,'G'],[X,'X'],[W,'W'],[K,'K'],[G,'G'],[L,'L'],[U,'U']]
         elif self.latticeType == 'BCC':
             # Table 4 - Figure 3
             P = b1*1/4+b2*1/4+b3*1/4
             NN= b1*0/1+b2*0/1+b3*1/2
             H = b1*1/2-b2*1/2+b3*1/2
-            path = [[G,'G'],[H,'H'],[P,'P'],[G,'G'],[NN,'N'],[H,'H']]
+            self.path = [[G,'G'],[H,'H'],[P,'P'],[G,'G'],[NN,'N'],[H,'H']]
         elif self.latticeType == 'HEX':
             # Table 13 - Figure 13
             A = b1*0/1+b2*0/1+b3*1/2
@@ -819,7 +819,7 @@ class Symmetry:
             K = b1*1/3+b2*1/3+b3*0/1
             L = b1*1/2+b2*0/1+b3*1/2
             M = b1*1/2+b2*0/1+b3*0/1
-            path = [[G,'G'],[M,'M'],[K,'K'],[G,'G'],[A,'A'],[L,'L'],[H,'H'],[A,'A']]
+            self.path = [[G,'G'],[M,'M'],[K,'K'],[G,'G'],[A,'A'],[L,'L'],[H,'H'],[A,'A']]
         elif self.latticeType == 'TETRAGONAL':
             # Table 5 - Figure 4
             A = b1*1/2+b2*1/2+b3*1/2
@@ -827,35 +827,13 @@ class Symmetry:
             R = b1*0/1+b2*1/2+b3*1/2
             X = b1*0/1+b2*1/2+b3*0/1
             Z = b1*0/1+b2*0/1+b3*1/2
-            path = [[G,'G'],[X,'X'],[M,'M'],[G,'G'],[Z,'Z'],[R,'R'],[A,'A'],[Z,'Z']]
+            self.path = [[G,'G'],[X,'X'],[M,'M'],[G,'G'],[Z,'Z'],[R,'R'],[A,'A'],[Z,'Z']]
         else:
             print "Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType
             kuk
-        # Write path between high-symmetry points
-        kpts = []
-        labels = []
-        for i,k in enumerate(path):
-            if i<len(path)-1:
-                k1 = path[i][0]
-                k2 = path[i+1][0]
-                for j in range(100):
-                    kj = k1 + (k2-k1)*j/100.
-                    kpts.append(kj)
-                    if j==0:
-                        labels.append(path[i][1])
-                    else:
-                        labels.append('')
-            else:
-                # last k-point in path
-                k1 = path[i][0]
-                kpts.append(k1)
-                labels.append(path[i][1])
-        print 'High-symmetry path:'
-        for k in path:
-            print k[1],k[0]
-        import SupercellPhonons as SP 
-        self.kpathfn = self.latticeType+'.kpath'              
-        SP.WriteKpoints(self.kpathfn,kpts,labels)
+        return self.path
+
+        
 
 ###########################################################
 # Mathematical helpers
