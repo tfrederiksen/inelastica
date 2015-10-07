@@ -130,12 +130,14 @@ class Symmetry:
         self.basis.snr, self.basis.anr = N.array(self.basis.snr)[ipiv], N.array(self.basis.anr)[ipiv]
 
         # Find out which basis atom corresponds to each atom
+        """
         xyz = moveIntoCell(self.xyz,self.a1,self.a2,self.a3,self.accuracy)
         self.basisatom = N.zeros((self.NN))
         for ii in range(self.basis.NN):
             indx = N.where(N.sum(N.abs(xyz-self.basis.xyz[ii,:]), axis=1)<self.accuracy)
             self.basisatom[indx[0]]=ii
-
+        """
+        
         # Symmetry operations are complicated by the periodic structure 
         # in the Siesta calculation. So ... limit range of interaction.
 
@@ -590,6 +592,13 @@ class Symmetry:
             kuk
         self.basis = basis
 
+        # Find out which basis atom corresponds to each atom
+        xyz = moveIntoCell(self.xyz,self.a1,self.a2,self.a3,self.accuracy)
+        self.basisatom = N.zeros((self.NN))
+        for ii in range(self.basis.NN):
+            indx = N.where(N.sum(N.abs(xyz-self.basis.xyz[ii,:]), axis=1)<self.accuracy)
+            self.basisatom[indx[0]]=ii
+        
         # Determine types of lattices from the angles / lengths
         # Sort on length
         length = N.array([distance(ii) for ii in [a1,a2,a3]])

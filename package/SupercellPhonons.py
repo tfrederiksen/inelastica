@@ -115,15 +115,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         Sym.pointGroup()
         Sym.findIrreducible()
         Sym.what()
-        self.supercell = True
-        self.Sym = Sym
-
-    def SymmetrizeFC(self,radius): 
-        Sym = self.Sym
         self.SetDynamicAtoms(range(1,Sym.basis.NN+1))
-        print '\nComputing symmetrized force constants'
-        self.mean_sym = self.Sym.symmetrizeFC(self.mean,1,Sym.basis.NN,radi=radius)
-        self.mean_sym = self.ApplySumRule(self.mean_sym)
         # Calculate lattice vectors for phase factors
         # The closest cell might be different depending on which atom is moved
         sxyz = Sym.xyz.copy()
@@ -133,7 +125,13 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
             for jj in range(Sym.NN):
                 latticevectors[ii,jj] = micxyz[jj]+sxyz[Sym.basisatom[ii]]-sxyz[Sym.basisatom[jj]]           
         self.latticevectors = latticevectors
+        self.supercell = True
+        self.Sym = Sym
 
+    def SymmetrizeFC(self,radius): 
+        print '\nComputing symmetrized force constants'
+        self.mean_sym = self.Sym.symmetrizeFC(self.mean,1,self.Sym.basis.NN,radi=radius)
+        self.mean_sym = self.ApplySumRule(self.mean_sym)
 
     def ComputePhononModes_q(self,qpoint):
         # Compute phonon vectors
