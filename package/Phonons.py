@@ -436,7 +436,11 @@ class DynamicalMatrix():
         for j in range(3*dyn):
             for i in range(3*dyn):
                 # Eigenvectors after multiplication by characteristic length
-                Ucl[:,i] = U[:,i]*(1/(self.Masses[i/3]*(hw[j]/(2*PC.Rydberg2eV)))**.5)
+                if hw[j]>0:
+                    Ucl[j,i] = U[j,i]*(1./(self.Masses[i/3]*(hw[j]/(2*PC.Rydberg2eV)))**.5)
+                else:
+                    # Characteristic length not defined for non-postive frequency
+                    Ucl[j,i] = U[j,i]*0.0
 
         # Expand vectors to full geometry
         UU = N.zeros((len(hw),self.geom.natoms,3),N.complex)
