@@ -1,0 +1,37 @@
+#!/scratch/thf/SOFTWARE/python/2.7.10/gcc-4.9.2/bin/python
+
+import sys
+from datetime import datetime
+
+from Inelastica import SupercellPhonons as SP
+from Inelastica import CommonFunctions as CF
+import optparse as o
+
+start = datetime.now()
+
+d = """
+Computing density of states from a band structure calculation on the given mesh.
+"""
+
+p = o.OptionParser("usage: %prog [options] <ncfile> <outputfile>",description=d)
+
+p.add_option("-a","--emin",type='float',default=0.0,
+             help="Energy minimum [default=%default eV]")
+p.add_option("-b","--emax",type='float',default=1.0,
+             help="Energy maximum [default=%default eV]")
+p.add_option("-n","--pts",type='int',default=1001,
+             help="Points on energy grid [default=%default eV]")
+p.add_option("-s","--smear",type='float', default=1e-4,
+             help="Gaussian smearing of eigenvalues [default=%default eV]")
+
+(options, args) = p.parse_args()
+
+SP.ComputeDOS(args[0],args[1],
+              emin=options.emin,
+              emax=options.emax,
+              pts=options.pts,
+              smear=options.smear)
+
+dT = datetime.now()-start
+
+CF.PrintScriptSummary(sys.argv,dT)

@@ -115,6 +115,7 @@ Provides:
                   'scripts/geom2geom',
                   'scripts/geom2zmat',
                   'scripts/Bandstructures',
+                  'scripts/ComputeDOS',
                   'scripts/siesta_cleanup',
                   'scripts/STMimage',
                   'scripts/Vasp2Siesta',

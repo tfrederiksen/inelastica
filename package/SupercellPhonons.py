@@ -73,6 +73,9 @@ def GetOptions(argv,**kwargs):
     p.add_option('-s','--steps',dest='steps',default=100,type="int",
                  help="Number of points on path between high-symmetry k-points [default=%default]")
 
+    p.add_option('--mesh',dest='mesh',default='[0,0,0]',type="str",
+                 help="Mesh sampling of 1BZ (powers of 2) [default=%default]")
+
     (options, args) = p.parse_args(argv)
 
     # Get the last positional argument
@@ -315,6 +318,29 @@ def PlotPhononBands(filename,dq,phlist,ticks):
     gp.SetYaxis(label='\\f{Symbol}w\\f{} (meV)',majorUnit=mu,min=0.0,max=mx)
     pp = XMGR.Plot(filename,gp)
     pp.WriteFile()
+    
+def ComputeDOS(ncfile,outfile,emin=0.0,emax=1.0,pts=1001,smear=1e-3):
+    ncf = NC.NetCDFFile(ncfile,'r')
+    bands = ncf.variables['eigenvalues'][:]
+    egrid = N.linspace(emin,emax,pts)
+    id1 = N.ones(bands.shape,N.float)
+    id2 = N.ones(egrid.shape,N.float)
+    dE = N.outer(egrid,id1)-N.outer(id2,bands) # [e,kn]
+    w = N.exp(-dE**2/(2*smear**2))/(smear*(2*N.pi)**.5) # [e,b]
+    dos = N.sum(w,axis=1)/len(bands) # sum over bands
+    ncf.close()
+    # Write plot
+    import WriteXMGR as XMGR
+    ps = XMGR.XYset(egrid,dos,Lwidth=2,Lcolor=1)
+    gp = XMGR.Graph(ps)
+    gp.SetXaxis(label='E (eV)',min=emin,max=emax,majorUnit=emax/5)
+    ymax = N.max(dos)
+    gp.SetYaxis(label='DOS (states/eV)',min=0,max=ymax,majorUnit=ymax/5)
+    #gp.SetSubtitle(ncfile)
+    pp = XMGR.Plot(outfile,gp)
+    pp.PutText('smear = %.3f meV'%(1e3*smear),0.20,0.75)
+    pp.PutText('kpts = %i'%len(bands),0.20,0.70)
+    pp.WriteFile()
 
 def main(options):
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
@@ -328,6 +354,17 @@ def main(options):
 
     # Write high-symmetry path
     WritePath(options.DestDir+'/symmetry-path',SCDM.Sym.path,options.steps)
+
+    # Write mesh
+    k1,k2,k3 = eval(options.mesh)
+    rvec = N.array([SCDM.Sym.b1,SCDM.Sym.b2,SCDM.Sym.b3])
+    import Kmesh
+    # Full mesh
+    kmesh = Kmesh.kmesh(2**k1,2**k2,2**k3,meshtype=['LIN','LIN','LIN'],invsymmetry=False)
+    WriteKpoints(options.DestDir+'/mesh_%ix%ix%i'%tuple(kmesh.Nk),N.dot(kmesh.k,rvec))
+    # Mesh reduced by inversion symmetry 
+    kmesh = Kmesh.kmesh(2**k1,2**k2,2**k3,meshtype=['LIN','LIN','LIN'],invsymmetry=True)
+    WriteKpoints(options.DestDir+'/mesh_%ix%ix%i_invsym'%tuple(kmesh.Nk),N.dot(kmesh.k,rvec))
     
     # Evaluate electron k-points
     if options.kfile:
