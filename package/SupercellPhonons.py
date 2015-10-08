@@ -7,10 +7,10 @@ a set of points in reciprocal space.
 
 The input file format with N points is simply:
 
-  kx(1) ky(1) kz(1)
-  kx(2) ky(2) kz(2)
+  kx(1) ky(1) kz(1) [label]
+  kx(2) ky(2) kz(2) [label]
 ...
-  kx(N) ky(N) kz(N)
+  kx(N) ky(N) kz(N) [label]
 
 Units: 2pi/Ang.
 
@@ -32,7 +32,8 @@ import numpy as N
 import numpy.linalg as LA
 import glob, os,sys,string
 import scipy.linalg as SLA
-
+import Scientific.IO.NetCDF as NC
+    
 vinfo = [version,SIO.version,Symmetry.version,CF.version,
          PH.version,PC.version,MM.version,NCDF.version,
          VC.version]
@@ -68,9 +69,6 @@ def GetOptions(argv,**kwargs):
 
     p.add_option("-q","--qpointfile",dest='qfile',default=None,
                  help="Input file with phonon q-points to be evaluated [default=%default]")
-
-    p.add_option('-p','--plotting',dest='plotting',action="store_true",default=False,
-                 help="Generate band structure plots [default=%default]")
 
     p.add_option('-s','--steps',dest='steps',default=100,type="int",
                  help="Number of points on path between high-symmetry k-points [default=%default]")
@@ -190,6 +188,25 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         return ev,evec
 
 def ReadKpoints(filename):
+    print 'SupercellPhonons.ReadKpoints: Reading from',filename
+    if filename.endswith('.nc'):
+        return ReadKpoints_netcdf(filename)
+    else:
+        return ReadKpoints_ascii(filename)
+
+def ReadKpoints_netcdf(filename):
+    ncf = NC.NetCDFFile(filename,'r')
+    kpts = ncf.variables['grid'][:]
+    ncf.close()
+    dk = N.empty(len(kpts))
+    dk[0] = 0.0
+    tmp = kpts[1:]-kpts[:-1]
+    dk[1:] = N.diagonal(N.dot(tmp,tmp.T))**.5
+    dk = N.cumsum(dk)
+    labels,ticks = None,None
+    return kpts,dk,labels,ticks
+    
+def ReadKpoints_ascii(filename):
     klist = []
     dklist = []
     labels = []
@@ -212,7 +229,6 @@ def ReadKpoints(filename):
             else:
                 labels += ['']
     f.close()
-    print 'SupercellPhonons.ReadKpoints: Read %i points from %s'%(len(klist),filename)
     return N.array(klist),N.array(dklist),labels,ticks
 
 def WriteKpoints(filename,klist,labels=None):
@@ -253,12 +269,14 @@ def WritePath(filename,path,steps):
     WriteKpoints(filename,kpts,labels)
 
 def PlotElectronBands(filename,dk,elist,ticks):
+    print elist.shape,dk.shape
     # Make xmgrace plots
     import WriteXMGR as XMGR
     if len(dk)>1:
         x = N.array([dk])
     else:
         x = N.array([[0.0]])
+    print x.shape,elist.shape
     e = N.concatenate((x,elist.T)).T    
     es = XMGR.Array2XYsets(e,Lwidth=2,Lcolor=1)
     ge = XMGR.Graph(es)
@@ -297,7 +315,7 @@ def PlotPhononBands(filename,dq,phlist,ticks):
     gp.SetYaxis(label='\\f{Symbol}w\\f{} (meV)',majorUnit=mu,min=0.0,max=mx)
     pp = XMGR.Plot(filename,gp)
     pp.WriteFile()
-    
+
 def main(options):
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     #VC.OptionsCheck(options,'Phonons')
@@ -308,11 +326,8 @@ def main(options):
     SCDM = Supercell_DynamicalMatrix(fdf)
     SCDM.CheckSymmetries()
 
-    # Write symmetry path
+    # Write high-symmetry path
     WritePath(options.DestDir+'/symmetry-path',SCDM.Sym.path,options.steps)
-
-    # Netcdf output file
-    ncf = options.DestDir+'/Output.nc'
     
     # Evaluate electron k-points
     if options.kfile:
@@ -325,46 +340,62 @@ def main(options):
         SCDM.rednao = SCDM.LastOrb+1-SCDM.FirstOrb
         # Compute electron eigenvalues
         kpts,dk,klabels,kticks = ReadKpoints(options.kfile)
-        WriteKpoints(options.DestDir+'/kpoints',kpts,klabels)
-        fel = open(options.DestDir+'/ebands.dat','w')
-        elist = []
+        if klabels:
+            # Only write ascii if labels exist
+            WriteKpoints(options.DestDir+'/kpoints',kpts,klabels)
+        # Loop over kpoints
+        ncfn = options.DestDir+'/Electrons.nc'
+        ncf = NC.NetCDFFile(ncfn, 'w')
+        ncf.createDimension('gridpts',len(kpts))
+        ncf.createDimension('kpt',3)
+        grid = ncf.createVariable('grid','d',('gridpts','kpt'))
+        grid[:] = kpts
         for i,k in enumerate(kpts):
             ev,evec = SCDM.ComputeElectronStates(k)
-            elist += [ev]
-            fel.write('%i '%i)
-            for j in ev:
-                fel.write('%.8e '%j.real)
-            fel.write(klabels[i]+'\n')
-        fel.close()
-        elist = N.array(elist)
-        # Write data to NetCDF 
-        NCDF.write(ncf,kpts,'kpts')
-        NCDF.write(ncf,elist,'ebands')
-        # Write band structure plots?
-        if options.plotting:
-            PlotElectronBands(options.DestDir+'/Electrons.agr',dk,elist,kticks)
-        
+            if i==0:
+                # Initiate array
+                ncf.createDimension('bands',len(ev))
+                evals = ncf.createVariable('eigenvalues','d',('gridpts','bands'))
+                evecsRe = ncf.createVariable('eigenvectors.re','d',('gridpts','bands','bands'))
+                evecsIm = ncf.createVariable('eigenvectors.im','d',('gridpts','bands','bands'))
+            evals[i] = ev
+            evecsRe[i] = evec.real
+            evecsIm[i] = evec.imag
+        ncf.sync()
+        # Produce nice plots if labels exist
+        if klabels:
+            PlotElectronBands(options.DestDir+'/Electrons.agr',dk,N.array(evals[:]),kticks)
+        ncf.close()
+
 
     # Compute phonon eigenvalues
     if options.qfile:
         SCDM.SymmetrizeFC(options.radius)
         SCDM.SetMasses()
         qpts,dq,qlabels,qticks = ReadKpoints(options.qfile)
-        WriteKpoints(options.DestDir+'/qpoints',qpts,qlabels)
-        fph = open(options.DestDir+'/phbands.dat','w')
-        phlist = []
+        if qlabels:
+            # Only write ascii if labels exist
+            WriteKpoints(options.DestDir+'/qpoints',qpts,qlabels)
+        # Loop over qpoints
+        ncfn = options.DestDir+'/Phonons.nc'
+        ncf = NC.NetCDFFile(ncfn, 'w')
+        ncf.createDimension('gridpts',len(qpts))
+        ncf.createDimension('kpt',3)
+        grid = ncf.createVariable('grid','d',('gridpts','kpt'))
+        grid[:] = qpts        
         for i,q in enumerate(qpts):
             hw,U = SCDM.ComputePhononModes_q(q)
-            phlist += [hw]
-            fph.write('%i '%i)
-            for j in hw:
-                fph.write('%.8e '%j.real)
-            fph.write(qlabels[i]+'\n')
-        fph.close()
-        phlist = N.array(phlist)
-        # Write data to NetCDF 
-        NCDF.write(ncf,qpts,'qpts')
-        NCDF.write(ncf,phlist,'phbands')
-        # Write band structure plots?
-        if options.plotting:
-            PlotPhononBands(options.DestDir+'/Phonons.agr',dq,phlist,qticks)
+            if i==0:
+                # Initiate array
+                ncf.createDimension('bands',len(hw))
+                evals = ncf.createVariable('eigenvalues','d',('gridpts','bands'))
+                evecsRe = ncf.createVariable('eigenvectors.re','d',('gridpts','bands','bands'))
+                evecsIm = ncf.createVariable('eigenvectors.im','d',('gridpts','bands','bands'))
+            evals[i] = hw
+            evecsRe[i] = U.real
+            evecsIm[i] = U.imag
+        ncf.sync()
+        # Produce nice plots if labels exist
+        if qlabels:
+            PlotPhononBands(options.DestDir+'/Phonons.agr',dq,N.array(evals[:]),qticks)
+        ncf.close()        
