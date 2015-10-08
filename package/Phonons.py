@@ -382,7 +382,7 @@ class DynamicalMatrix():
         print 'Total sumrule change in FC: %.3e eV/Ang' % N.sum(abs(FC0)-abs(FC))
         return FC
 
-    def ComputePhononModes(self,FC):
+    def ComputePhononModes(self,FC,verbose=True):
         dyn = len(self.DynamicAtoms)
         FCtilde = N.zeros((dyn,3,dyn,3),N.complex)
         # Symmetrize and mass-scale
@@ -414,11 +414,12 @@ class DynamicalMatrix():
         hw = hw[indx]
         U = U[indx]
         # Print mode frequencies
-        print 'Phonons.CalcPhonons: Frequencies in meV:'
-        for i in range(3*dyn):
-            print string.rjust('%.3f'%(1000*hw[i]),9),
-            if (i-5)%6==0: print
-        if (i-5)%6!=0: print
+        if verbose:
+            print 'Phonons.CalcPhonons: Frequencies in meV:'
+            for i in range(3*dyn):
+                print string.rjust('%.3f'%(1000*hw[i]),9),
+                if (i-5)%6==0: print
+            if (i-5)%6!=0: print
         #print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
         #for i in range(3*dyn):
         #    print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),

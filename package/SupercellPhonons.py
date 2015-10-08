@@ -134,9 +134,10 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         self.mean_sym = self.Sym.symmetrizeFC(self.mean,1,self.Sym.basis.NN,radi=radius)
         self.mean_sym = self.ApplySumRule(self.mean_sym)
 
-    def ComputePhononModes_q(self,qpoint):
+    def ComputePhononModes_q(self,qpoint,verbose=True):
         # Compute phonon vectors
-        print '\nSupercellPhonons.SetQ: Computing force constants at q = ',qpoint,'(2pi/Ang)'
+        if verbose:
+            print '\nSupercellPhonons.ComputePhononModes_q: Computing force constants at q = ',qpoint,'(2pi/Ang)'
         NN = self.Sym.basis.NN
         self.q = N.zeros((NN,3,NN,3),N.complex)
         # Loop over basis atoms
@@ -149,7 +150,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
                 phase = N.exp(-2.0j*N.pi*N.dot(qpoint,R0m))
                 self.q[n,:,self.Sym.basisatom[m],:] += phase*self.mean_sym[n,:,m,:]
         # Now compute modes using standard module
-        self.ComputePhononModes(self.q)
+        self.ComputePhononModes(self.q,verbose)
         # Expand U and Udispl to the whole supercell
         for n in range(len(self.latticevectors)):
             j = self.Sym.basisatom[n]
@@ -181,8 +182,9 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
                 H_k[...,fnb:lnb+1,fmb:lmb+1] += phase*H[...,fn:ln+1,fm:lm+1]
         return H_k
 
-    def ComputeElectronStates(self,kpoint):
-        print 'SupercellPhonons.ComputeElectronStates: k = ',kpoint,'(2pi/Ang)'
+    def ComputeElectronStates(self,kpoint,verbose=True):
+        if verbose:
+            print 'SupercellPhonons.ComputeElectronStates: k = ',kpoint,'(2pi/Ang)'
         # Fold onto primitive cell
         self.h0_k = self.Fold2PrimitiveCell(self.h0,kpoint)
         self.s0_k = self.Fold2PrimitiveCell(self.s0,kpoint)
@@ -388,7 +390,12 @@ def main(options):
         grid = ncf.createVariable('grid','d',('gridpts','kpt'))
         grid[:] = kpts
         for i,k in enumerate(kpts):
-            ev,evec = SCDM.ComputeElectronStates(k)
+            if i<100: # Print only for the first 100 points
+                ev,evec = SCDM.ComputeElectronStates(k,verbose=True)
+            else:
+                ev,evec = SCDM.ComputeElectronStates(k,verbose=False)
+                # otherwise something simple 
+                if i%100==0: print '%i out of %i k-points computed'%(i,len(kpts))
             if i==0:
                 # Initiate array
                 ncf.createDimension('bands',len(ev))
@@ -421,7 +428,12 @@ def main(options):
         grid = ncf.createVariable('grid','d',('gridpts','kpt'))
         grid[:] = qpts        
         for i,q in enumerate(qpts):
-            hw,U = SCDM.ComputePhononModes_q(q)
+            if i<100: # Print only for the first 100 points
+                hw,U = SCDM.ComputePhononModes_q(q,verbose=True)
+            else:
+                hw,U = SCDM.ComputePhononModes_q(q,verbose=False)
+                # otherwise something simple
+                if i%100==0: print '%i out of %i q-points computed'%(i,len(qpts))
             if i==0:
                 # Initiate array
                 ncf.createDimension('bands',len(hw))
