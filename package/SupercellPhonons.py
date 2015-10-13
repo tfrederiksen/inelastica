@@ -12,9 +12,9 @@ The input file format with N points is simply:
 ...
   kx(N) ky(N) kz(N) [label]
 
-Units: 2pi/Ang.
+Units: 1/Ang.
 
-Phase factors defined as: exp(2pi i k.r)
+Phase factors defined as: exp(i k.r)
 
 Thomas Frederiksen, March 2015
 """
@@ -137,7 +137,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
     def ComputePhononModes_q(self,qpoint,verbose=True):
         # Compute phonon vectors
         if verbose:
-            print '\nSupercellPhonons.ComputePhononModes_q: Computing force constants at q = ',qpoint,'(2pi/Ang)'
+            print '\nSupercellPhonons.ComputePhononModes_q: Computing force constants at q = ',qpoint,'(1/Ang)'
         NN = self.Sym.basis.NN
         self.q = N.zeros((NN,3,NN,3),N.complex)
         # Loop over basis atoms
@@ -147,7 +147,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
                 #print 'CV=',self.latticevectors[n,m]
                 # exp( - i q R0m )
                 R0m = self.latticevectors[n,m]
-                phase = N.exp(-2.0j*N.pi*N.dot(qpoint,R0m))
+                phase = N.exp(-1.0j*N.dot(qpoint,R0m))
                 self.q[n,:,self.Sym.basisatom[m],:] += phase*self.mean_sym[n,:,m,:]
         # Now compute modes using standard module
         self.ComputePhononModes(self.q,verbose)
@@ -155,7 +155,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         for n in range(len(self.latticevectors)):
             j = self.Sym.basisatom[n]
             R0n = self.latticevectors[0,n]
-            phase = N.exp(-2.0j*N.pi*N.dot(qpoint,R0n))
+            phase = N.exp(-1.0j*N.dot(qpoint,R0n))
             self.UU[:,n,:] = phase*self.U[:,3*j:3*j+3]
             self.UUdisp[:,n,:] = phase*self.Udisp[:,3*j:3*j+3]
         return self.hw,self.U
@@ -178,13 +178,13 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
                 #print 'm=%i, fm=%i, lm=%i, fmb=%i, lmb=%i'%(m,fm,lm,fmb,lmb)
                 # exp( i k R0m )
                 R0m = self.latticevectors[n,m]
-                phase = N.exp(2.0j*N.pi*N.dot(kpoint,R0m))
+                phase = N.exp(1.0j*N.dot(kpoint,R0m))
                 H_k[...,fnb:lnb+1,fmb:lmb+1] += phase*H[...,fn:ln+1,fm:lm+1]
         return H_k
 
     def ComputeElectronStates(self,kpoint,verbose=True):
         if verbose:
-            print 'SupercellPhonons.ComputeElectronStates: k = ',kpoint,'(2pi/Ang)'
+            print 'SupercellPhonons.ComputeElectronStates: k = ',kpoint,'(1/Ang)'
         # Fold onto primitive cell
         self.h0_k = self.Fold2PrimitiveCell(self.h0,kpoint)
         self.s0_k = self.Fold2PrimitiveCell(self.s0,kpoint)

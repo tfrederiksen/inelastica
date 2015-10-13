@@ -782,6 +782,9 @@ class Symmetry:
         # Returns directions to calculate bandstructure
         a1, a2, a3= self.a1, self.a2, self.a3
         b1, b2, b3= self.b1, self.b2, self.b3
+        # Here we adopt the solid-state physics definition
+        # a_i b_j=2*pi*delta_ij 
+        b1, b2, b3= 2*N.pi*b1, 2*N.pi*b2, 2*N.pi*b3
         G = N.zeros(3,N.float)
         # Symmetry k-points from this publication:
         # https://dx.doi.org/10.1016%2Fj.commatsci.2010.05.010
