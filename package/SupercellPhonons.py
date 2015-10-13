@@ -359,7 +359,7 @@ def main(options):
 
     # Write mesh
     k1,k2,k3 = eval(options.mesh)
-    rvec = N.array([SCDM.Sym.b1,SCDM.Sym.b2,SCDM.Sym.b3])
+    rvec = 2*N.pi*N.array([SCDM.Sym.b1,SCDM.Sym.b2,SCDM.Sym.b3])
     import Kmesh
     # Full mesh
     kmesh = Kmesh.kmesh(2**k1,2**k2,2**k3,meshtype=['LIN','LIN','LIN'],invsymmetry=False)
