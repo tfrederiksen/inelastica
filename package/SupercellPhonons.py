@@ -323,14 +323,24 @@ def PlotPhononBands(filename,dq,phlist,ticks):
     
 def ComputeDOS(ncfile,outfile,emin=0.0,emax=1.0,pts=1001,smear=1e-3):
     ncf = NC.NetCDFFile(ncfile,'r')
-    bands = ncf.variables['eigenvalues'][:]
+    ev = ncf.variables['eigenvalues'][:]
+    if len(ev.shape)==2: # Phonons.nc (gridpts, bands)
+        WriteDOS(outfile,ev,emin,emax,pts,smear)
+    elif len(ev.shape)==3: # Electrons.nc (gridpts, nspin, bands)
+        if len(ev[0])==1: # nspin==1
+            WriteDOS(outfile,ev[:,0],emin,emax,pts,smear)
+        elif len(ev[0])==2: # nspin==2
+            WriteDOS(outfile+'.UP',ev[:,0],emin,emax,pts,smear)
+            WriteDOS(outfile+'.DOWN',ev[:,1],emin,emax,pts,smear)            
+    ncf.close()
+
+def WriteDOS(outfile,bands,emin,emax,pts,smear):
     egrid = N.linspace(emin,emax,pts)
     id1 = N.ones(bands.shape,N.float)
     id2 = N.ones(egrid.shape,N.float)
     dE = N.outer(egrid,id1)-N.outer(id2,bands) # [e,kn]
     w = N.exp(-dE**2/(2*smear**2))/(smear*(2*N.pi)**.5) # [e,b]
     dos = N.sum(w,axis=1)/len(bands) # sum over bands
-    ncf.close()
     # Write plot
     import WriteXMGR as XMGR
     ps = XMGR.XYset(egrid,dos,Lwidth=2,Lcolor=1)
