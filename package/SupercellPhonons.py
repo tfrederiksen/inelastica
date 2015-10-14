@@ -188,8 +188,10 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         # Fold onto primitive cell
         self.h0_k = self.Fold2PrimitiveCell(self.h0,kpoint)
         self.s0_k = self.Fold2PrimitiveCell(self.s0,kpoint)
-        ev, evec = SLA.eigh(self.h0_k[0],self.s0_k)
-        #evecd = MM.dagger(evec)
+        ev = N.empty((self.nspin,self.rednao),N.float)
+        evec = N.empty((self.nspin,self.rednao,self.rednao),N.complex)
+        for ispin in range(self.nspin):
+            ev[ispin], evec[ispin] = SLA.eigh(self.h0_k[ispin],self.s0_k)
         return ev,evec
 
 def ReadKpoints(filename):
@@ -274,14 +276,12 @@ def WritePath(filename,path,steps):
     WriteKpoints(filename,kpts,labels)
 
 def PlotElectronBands(filename,dk,elist,ticks):
-    print elist.shape,dk.shape
     # Make xmgrace plots
     import WriteXMGR as XMGR
     if len(dk)>1:
         x = N.array([dk])
     else:
         x = N.array([[0.0]])
-    print x.shape,elist.shape
     e = N.concatenate((x,elist.T)).T    
     es = XMGR.Array2XYsets(e,Lwidth=2,Lcolor=1)
     ge = XMGR.Graph(es)
@@ -398,17 +398,22 @@ def main(options):
                 if i%100==0: print '%i out of %i k-points computed'%(i,len(kpts))
             if i==0:
                 # Initiate array
-                ncf.createDimension('bands',len(ev))
-                evals = ncf.createVariable('eigenvalues','d',('gridpts','bands'))
-                evecsRe = ncf.createVariable('eigenvectors.re','d',('gridpts','bands','bands'))
-                evecsIm = ncf.createVariable('eigenvectors.im','d',('gridpts','bands','bands'))
-            evals[i] = ev
-            evecsRe[i] = evec.real
-            evecsIm[i] = evec.imag
+                ncf.createDimension('nspin',SCDM.nspin)
+                ncf.createDimension('bands',SCDM.rednao)
+                evals = ncf.createVariable('eigenvalues','d',('gridpts','nspin','bands'))
+                evecsRe = ncf.createVariable('eigenvectors.re','d',('gridpts','nspin','bands','bands'))
+                evecsIm = ncf.createVariable('eigenvectors.im','d',('gridpts','nspin','bands','bands'))
+            evals[i,:] = ev
+            evecsRe[i,:] = evec.real
+            evecsIm[i,:] = evec.imag
         ncf.sync()
         # Produce nice plots if labels exist
         if klabels:
-            PlotElectronBands(options.DestDir+'/Electrons.agr',dk,N.array(evals[:]),kticks)
+            if SCDM.nspin==1:
+                PlotElectronBands(options.DestDir+'/Electrons.agr',dk,evals[:,0,:],kticks)
+            elif SCDM.nspin==2:
+                PlotElectronBands(options.DestDir+'/Electrons.UP.agr',dk,evals[:,0,:],kticks)
+                PlotElectronBands(options.DestDir+'/Electrons.DOWN.agr',dk,evals[:,1,:],kticks)
         ncf.close()
 
 
