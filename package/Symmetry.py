@@ -548,6 +548,10 @@ class Symmetry:
         print "a1 = (%f,%f,%f), N1=%i"%(a1[0],a1[1],a1[2],N1)
         print "a2 = (%f,%f,%f), N2=%i"%(a2[0],a2[1],a2[2],N2)
         print "a3 = (%f,%f,%f), N3=%i"%(a3[0],a3[1],a3[2],N3)
+        print
+        print "b1 = (%f,%f,%f)"%(b1[0],b1[1],b1[2])
+        print "b2 = (%f,%f,%f)"%(b2[0],b2[1],b2[2])
+        print "b3 = (%f,%f,%f)"%(b3[0],b3[1],b3[2])
 
         # Shift to more convenient origin
         xyz = moveIntoCell(self.xyz, a1, a2, a3, self.accuracy)
@@ -809,6 +813,11 @@ class Symmetry:
             H = b1*1/2-b2*1/2+b3*1/2
             self.path = [[G,'G'],[H,'H'],[P,'P'],[G,'G'],[NN,'N'],[H,'H']]
         elif self.latticeType == 'HEX':
+            # Determine angle between b1 and b2
+            a = N.arccos(mm(b1,b2)/distance(b1)/distance(b2))*180/N.pi
+            if a > 90:
+                # angle is 120deg, should be 60deg
+                b1 = -b1
             # Table 13 - Figure 13
             A = b1*0/1+b2*0/1+b3*1/2
             H = b1*1/3+b2*1/3+b3*1/3
