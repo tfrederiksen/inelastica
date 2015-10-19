@@ -92,10 +92,10 @@ def GetOptions(argv,**kwargs):
                  type="int",default=1000)
     
     p.add_option("--EPHfirst",dest="EPHfirst",
-                 help="First atom index for which the e-ph. couplings are evaluated [default=%default]",
+                 help="First atom index for which the e-ph. couplings are evaluated [default=FCfirst]",
                  type="int",default=1)
     p.add_option("--EPHlast", dest="EPHlast",
-                 help="Last atom index for which the e-ph. couplings are evaluated [default=%default]" ,
+                 help="Last atom index for which the e-ph. couplings are evaluated [default=FClast]" ,
                  type="int",default=1000)
 
     p.add_option("--PBCFirst", dest="PBCFirst",\
@@ -146,11 +146,14 @@ def GetOptions(argv,**kwargs):
 
     # Dynamic atoms
     options.DynamicAtoms = range(options.FCfirst,options.FClast+1)
-    del options.FCfirst, options.FClast
  
-    # EPH atoms
-    options.EPHAtoms = range(options.EPHfirst,options.EPHlast+1)
+    # EPH atoms - set only different from options.DynamicAtoms if a subset is specified
+    if options.EPHfirst>=options.FCfirst and options.EPHlast<=options.FClast:
+        options.EPHAtoms = range(options.EPHfirst,options.EPHlast+1)
+    else:
+        options.EPHAtoms = options.DynamicAtoms
     del options.EPHfirst, options.EPHlast
+    del options.FCfirst, options.FClast
 
     # PBCFirst/PBCLast
     if options.PBCFirst<options.DeviceFirst:
