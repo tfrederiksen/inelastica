@@ -312,13 +312,13 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
     K4 = MM.trace(MM.mm(M,GF1.ALT,M,GF2.AR))
     aK23 = 2*(MM.trace(t1).real-MM.trace(t2).real) # asymmetric part
     # Non-Hilbert term defined here with a minus sign
-    GF1.nHT[ihw] = checkImPart(K23+K4)
-    GF1.HT[ihw] = checkImPart(aK23)
+    GF1.nHT[ihw] = AssertReal(K23+K4,'nHT[%i]'%ihw)
+    GF1.HT[ihw] = AssertReal(aK23,'HT[%i]'%ihw)
     # Power, damping and current rates
-    GF1.P1T[ihw] = checkImPart(MM.trace(MM.mm(M,GF1.A,M,GF2.A)))
-    GF1.P2T[ihw] = checkImPart(MM.trace(MM.mm(M,GF1.AL,M,GF2.AR)))
-    GF1.ehDampL[ihw] = checkImPart(MM.trace(MM.mm(M,GF1.AL,M,GF2.AL)))
-    GF1.ehDampR[ihw] = checkImPart(MM.trace(MM.mm(M,GF1.AR,M,GF2.AR)))
+    GF1.P1T[ihw] = AssertReal(MM.trace(MM.mm(M,GF1.A,M,GF2.A)),'P1T[%i]'%ihw)
+    GF1.P2T[ihw] = AssertReal(MM.trace(MM.mm(M,GF1.AL,M,GF2.AR)),'P2T[%i]'%ihw)
+    GF1.ehDampL[ihw] = AssertReal(MM.trace(MM.mm(M,GF1.AL,M,GF2.AL)),'ehDampL[%i]'%ihw)
+    GF1.ehDampR[ihw] = AssertReal(MM.trace(MM.mm(M,GF1.AR,M,GF2.AR)),'ehDampR[%i]'%ihw)
     # Remains from older version (see before rev. 219):
     #GF.dGnout.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
     #GF.dGnin.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
@@ -543,9 +543,9 @@ def calcIETS(options,GFp,GFm,basis,hw):
 
     
 ########################################################
-def checkImPart(x):
+def AssertReal(x,label):
     VC.Check("zero-imaginary-part",abs(x.imag),
-             "Imaginary part too large.")
+             "Imaginary part too large in quantity %s"%label)
     return x.real   
 
 ########################################################
