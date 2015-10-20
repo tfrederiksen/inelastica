@@ -82,9 +82,6 @@ def __mm(args):
                 res = __mm([__mm(args[:ii]+[args[ii]])]+args[ii+1:])
     return res
 
-def dagger(x):
-    # Hermitian conjugation
-    return N.transpose(N.conjugate(x))
 
 ##############################################################
 
@@ -664,9 +661,23 @@ class SpectralMatrix:
         return tmp
     def __rmul__(self,b):
         return self*b
+    def __dagger__(self):
+        print self.L.shape,self.R.shape
+        tmp = SpectralMatrix()
+        tmp.L = dagger(self.R)
+        tmp.R = dagger(self.L)
+        print tmp.L.shape,tmp.R.shape
+        return tmp
     
 def trace(a):
     if isinstance(a,SpectralMatrix):
         return N.trace(mm(a.R,a.L)) # Switch sum around to make faster!
     else:
         return N.trace(a)
+
+def dagger(x):
+    # Hermitian conjugation
+    if isinstance(x,SpectralMatrix):
+        return x.__dagger__()
+    else:
+        return N.transpose(N.conjugate(x))

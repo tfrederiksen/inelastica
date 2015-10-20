@@ -363,7 +363,8 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
         tmp = tmp1+tmp2
         tmp = tmp + MM.dagger(tmp)
         Qlambda = MM.mm(-GF1.Ga,GF1.GammaL,GF1.Gr,tmp)
-        OneMinusTwoT = N.identity(len(TT))-2*TT
+        tmp = -2*TT
+        OneMinusTwoT = tmp+N.identity(len(GF1.GammaL))
         # Store relevant traces
         GF1.dIel[ihw] = NEGF.AssertReal(MM.trace(Tlambda0),'dIel[%i]'%ihw)
         GF1.dIinel[ihw] = NEGF.AssertReal(MM.trace(Tlambda1),'dIinel[%i]'%ihw)
