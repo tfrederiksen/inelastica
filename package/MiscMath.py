@@ -605,7 +605,7 @@ def GaussKronrod(NN):
 class SpectralMatrix:
     # self.L/R : Left / right matrices
     def __init__(self,A=None,cutoff=1e-8):
-        if A!=None:
+        if type(A)==N.ndarray:
             # Initialize ... only Hermitean matrices
             ev,evec = LA.eigh(A)
             # Drop eigenvalues
@@ -616,8 +616,10 @@ class SpectralMatrix:
             self.R = dagger(evec)
             if False:
                 print N.allclose(A,N.dot(self.L,self.R))
+                
     def full(self):
         return mm(self.L,self.R)
+    
     def __add__(self,b,subtract=False):
         # Could be improved for addition of two spectral matrices
         if not isinstance(b,SpectralMatrix):
@@ -645,22 +647,27 @@ class SpectralMatrix:
             
     def __radd__(self,b):
         return self+b
+
     def __sub__(self,b):
         if not isinstance(b,SpectralMatrix):
             return self.full()-b
         else:
             return self.__add__(b,subtract=True)
+
     def __rsub__(self,b):
         if not isinstance(b,SpectralMatrix):
             return b-self.full()
         else:
             return b.__add__(self,subtract=True)
+
     def __mul__(self,b):
         tmp = SpectralMatrix()
         tmp.L, tmp.R = self.L*b, self.R
         return tmp
+
     def __rmul__(self,b):
         return self*b
+
     def __dagger__(self):
         print self.L.shape,self.R.shape
         tmp = SpectralMatrix()
