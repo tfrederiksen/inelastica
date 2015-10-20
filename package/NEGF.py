@@ -32,6 +32,13 @@ except:
 #except:
 #    hasSciPy = False
 
+########################################################
+def AssertReal(x,label):
+    VC.Check("zero-imaginary-part",abs(x.imag),
+             "Imaginary part too large in quantity %s"%label)
+    return x.real
+
+
 def myHash(data):
     return hashlib.md5(pickle.dumps(data)).hexdigest()
 def hash2dec(hash):
@@ -594,7 +601,8 @@ class GF:
         if self.Bulk and not FoldedL:
             # Reverse sign since SigL is really SGF^-1
             self.GamL = -1.0*self.GamL
-
+        self.GamL = AssertReal(self.GamL,'GamL')
+        
         if FoldedR:
             # Fold down from nuoR0 to the device region
             devStR = self.devStR
@@ -616,6 +624,7 @@ class GF:
         if self.Bulk and not FoldedR:
             # Reverse sign since SigR is really SGF^-1
             self.GamR = -1.0*self.GamR
+        self.GamR = AssertReal(self.GamR,'GamR')
         
     def calcGF(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=False,SpectralCutoff=0.0):
         "Calculate GF etc at energy ee and 2d k-point"
@@ -690,7 +699,14 @@ class GF:
             self.A = self.AL+self.AR
             # transmission matrix AL.GamR
             self.TT = MM.mm(self.AL[nuo-nuoR:nuo,nuo-nuoR:nuo],self.GamR)
+        
         print 'NEGF.calcGF: Shape of transmission matrix (TT):', self.TT.shape
+        # Write also the Gammas in the full space of Gr/Ga/A
+        # (needed for the inelastic shot noise)
+        self.GammaL = N.zeros(self.A.shape,N.float)
+        self.GammaL[0:nuoL,0:nuoL] = self.GamL
+        self.GammaR = N.zeros(self.A.shape,N.float)
+        self.GammaR[nuo-nuoR:nuo,nuo-nuoR:nuo] = self.GamR
         
     def setkpoint(self,kpoint,ispin=0):
         # Initiate H, S to correct kpoint

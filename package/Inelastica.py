@@ -146,6 +146,10 @@ def main(options):
     GFp.ehDampR = N.zeros(len(hw),N.float) # M.AR.M.AR (R e-h damping)
     GFp.nHT = N.zeros(len(hw),N.float)     # non-Hilbert/Isym factor
     GFp.HT = N.zeros(len(hw),N.float)      # Hilbert/Iasym factor
+    GFp.dIel = N.zeros(len(hw),N.float)
+    GFp.dIinel = N.zeros(len(hw),N.float)
+    GFp.dSel = N.zeros(len(hw),N.float)
+    GFp.dSinel = N.zeros(len(hw),N.float)
     #
     GFm = NEGF.GF(options.TSHS,elecL,elecR,
                   Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms,
@@ -156,6 +160,10 @@ def main(options):
     GFm.ehDampR = N.zeros(len(hw),N.float) # M.AR.M.AR (R e-h damping)
     GFm.nHT = N.zeros(len(hw),N.float)     # non-Hilbert/Isym factor
     GFm.HT = N.zeros(len(hw),N.float)      # Hilbert/Iasym factor
+    GFm.dIel = N.zeros(len(hw),N.float)
+    GFm.dIinel = N.zeros(len(hw),N.float)
+    GFm.dSel = N.zeros(len(hw),N.float)
+    GFm.dSinel = N.zeros(len(hw),N.float)
     # Calculate transmission at Fermi level
     GFp.calcGF(options.energy+options.eta*1.0j,options.kpoint[0:2],ispin=options.iSpin,
                etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
@@ -312,20 +320,20 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
     K4 = MM.trace(MM.mm(M,GF1.ALT,M,GF2.AR))
     aK23 = 2*(MM.trace(t1).real-MM.trace(t2).real) # asymmetric part
     # Non-Hilbert term defined here with a minus sign
-    GF1.nHT[ihw] = AssertReal(K23+K4,'nHT[%i]'%ihw)
-    GF1.HT[ihw] = AssertReal(aK23,'HT[%i]'%ihw)
+    GF1.nHT[ihw] = NEGF.AssertReal(K23+K4,'nHT[%i]'%ihw)
+    GF1.HT[ihw] = NEGF.AssertReal(aK23,'HT[%i]'%ihw)
     # Power, damping and current rates
-    GF1.P1T[ihw] = AssertReal(MM.trace(MM.mm(M,GF1.A,M,GF2.A)),'P1T[%i]'%ihw)
-    GF1.P2T[ihw] = AssertReal(MM.trace(MM.mm(M,GF1.AL,M,GF2.AR)),'P2T[%i]'%ihw)
-    GF1.ehDampL[ihw] = AssertReal(MM.trace(MM.mm(M,GF1.AL,M,GF2.AL)),'ehDampL[%i]'%ihw)
-    GF1.ehDampR[ihw] = AssertReal(MM.trace(MM.mm(M,GF1.AR,M,GF2.AR)),'ehDampR[%i]'%ihw)
+    GF1.P1T[ihw] = NEGF.AssertReal(MM.trace(MM.mm(M,GF1.A,M,GF2.A)),'P1T[%i]'%ihw)
+    GF1.P2T[ihw] = NEGF.AssertReal(MM.trace(MM.mm(M,GF1.AL,M,GF2.AR)),'P2T[%i]'%ihw)
+    GF1.ehDampL[ihw] = NEGF.AssertReal(MM.trace(MM.mm(M,GF1.AL,M,GF2.AL)),'ehDampL[%i]'%ihw)
+    GF1.ehDampR[ihw] = NEGF.AssertReal(MM.trace(MM.mm(M,GF1.AR,M,GF2.AR)),'ehDampR[%i]'%ihw)
     # Remains from older version (see before rev. 219):
     #GF.dGnout.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
     #GF.dGnin.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
     # NB: TF Should one use GF.HNO (nonorthogonal) or GF.H (orthogonalized) above?
 
-    # Check against original LOE-WBA formulation
     if options.LOEscale==0.0:
+        # Check against original LOE-WBA formulation
         isym1 = MM.mm(GF1.ALT,M,GF2.AR,M)
         isym2 = MM.mm(MM.dagger(GF1.ARGLG),M,GF2.A,M)
         isym3 = MM.mm(GF1.ARGLG,M,GF2.A,M)
@@ -335,6 +343,32 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
         iasym2 = MM.mm(GF1.ARGLG,M,GF2.AR-GF2.AL,M)
         iasym = MM.trace( iasym1)+MM.trace(iasym2 )
         print 'LOE-WBA check: Iasym diff',aK23-iasym
+        
+        # Compute inelastic shot noise terms according to the papers
+        # Haupt, Novotny & Belzig, PRB 82, 165441 (2010) and
+        # Avriller & Frederiksen, PRB 86, 155411 (2012)
+        # Zero-temperature limit
+        TT = MM.mm(GF1.GammaL,GF1.AR) # this matrix has the correct shape for MM
+        ReGr = (GF1.Gr+GF1.Ga)/2.
+        tmp = MM.mm(GF1.Gr,M,ReGr,M,GF1.AR)
+        tmp = tmp+MM.dagger(tmp)
+        Tlambda0 = MM.mm(GF1.GammaL,tmp)
+        tmp1 = MM.mm(M,GF1.AR,M)
+        tmp2 = MM.mm(M,GF1.A,M,GF1.Gr,GF1.GammaR)
+        tmp = tmp1+1j/2.*(MM.dagger(tmp2)-tmp2)
+        Tlambda1 = MM.mm(GF1.GammaL,GF1.Gr,tmp,GF1.Ga)
+        MARGL = MM.mm(M,GF1.AR,GF1.GammaL)
+        tmp1 = MM.mm(MARGL,GF1.AR,M)
+        tmp2 = MM.mm(MARGL,GF1.Gr,M,GF1.Gr,GF1.GammaR)
+        tmp = tmp1+tmp2
+        tmp = tmp + MM.dagger(tmp)
+        Qlambda = MM.mm(-GF1.Ga,GF1.GammaL,GF1.Gr,tmp)
+        OneMinusTwoT = N.identity(len(TT))-2*TT
+        # Store relevant traces
+        GF1.dIel[ihw] = NEGF.AssertReal(MM.trace(Tlambda0),'dIel[%i]'%ihw)
+        GF1.dIinel[ihw] = NEGF.AssertReal(MM.trace(Tlambda1),'dIinel[%i]'%ihw)
+        GF1.dSel[ihw] = NEGF.AssertReal(MM.trace(MM.mm(OneMinusTwoT,Tlambda0)),'dSel[%i]'%ihw)
+        GF1.dSinel[ihw] = NEGF.AssertReal(MM.trace(MM.mm(OneMinusTwoT,Tlambda1)+Qlambda),'dSinel[%i]'%ihw)
 
 def calcIETS(options,GFp,GFm,basis,hw):
     # Calculate product of electronic traces and voltage functions
@@ -451,6 +485,26 @@ def calcIETS(options,GFp,GFm,basis,hw):
                 else:
                     IH[j] += GFm.HT[i]*Iasym
 
+    # Compute inelastic shot noise terms here:
+    absVl = N.absolute(Vl)
+    Inew = N.zeros(len(Vl),N.float)
+    Snew = N.zeros(len(Vl),N.float)
+    print 'Noise factors:'
+    print GFp.dIel
+    print GFp.dIinel
+    print GFp.dSel
+    print GFp.dSinel
+    for i in (hw>options.modeCutoff).nonzero()[0]:
+        # Elastic part
+        Inew += GFp.dIel[i]*Vl
+        Snew += GFp.dSel[i]*absVl
+        # Inelastic part
+        indx = (absVl-hw[i]<0).nonzero()[0]
+        fct = absVl-hw[i]
+        fct[indx] = 0.0 # set elements to zero
+        Inew += GFp.dIinel[i]*fct*N.sign(Vl)
+        Snew += GFp.dSinel[i]*fct
+
     # Get the right units for gamma_eh, gamma_heat
     gamma_eh_p=N.zeros((len(hw),),N.float)
     gamma_eh_m=N.zeros((len(hw),),N.float)
@@ -480,6 +534,10 @@ def calcIETS(options,GFp,GFm,basis,hw):
         NPow[ii]=MM.interpolate(V,Vl,Pow[ii])
         NnPh[ii]=MM.interpolate(V,Vl,nPh[ii])
 
+    # Interpolate inelastic noise
+    NV,NI,NdI,NddI,NBdI,NBddI = Broaden(options,Vl,GFp.TeF*Vl+Inew)
+    NV,NS,NdS,NddS,NBdS,NBddS = Broaden(options,Vl,Snew)
+
     print 'Inelastica.calcIETS: V[:5]        =',V[:5] # OK
     print 'Inelastica.calcIETS: V[-5:][::-1] =',V[-5:][::-1] # OK
     print 'Inelastica.calcIETS: I[:5]        =',I[:5] # OK
@@ -507,6 +565,15 @@ def calcIETS(options,GFp,GFm,basis,hw):
         write2NCfile(outNC,GFp.HT,'IAsymTr','Trace giving Asymmetric current contribution (prefactor to universal function)')
         write2NCfile(outNC,gamma_eh_p,'gamma_eh','e-h damping [*deltaN=1/Second]')
         write2NCfile(outNC,gamma_heat_p,'gamma_heat','Phonon heating [*(bias-hw) (eV) = 1/Second]')
+        # New stuff related to the noise implementation
+        write2NCfile(outNC,NI,'Inew','Intrinsic Inew (new implementation incl. elastic renormalization, T=0)')
+        write2NCfile(outNC,NdI,'dInew','Intrinsic dInew (new implementation incl. elastic renormalization, T=0)')
+        write2NCfile(outNC,NddI,'ddInew','Intrinsic ddInew (new implementation incl. elastic renormalization, T=0)')
+        write2NCfile(outNC,NddI/NdI,'IETSnew_0','Intrinsic ddInew/dInew (new implementation incl. elastic renormalization, T=0) [1/V]')
+        write2NCfile(outNC,NBdI,'BdInew','Broadened BdInew (new implementation incl. elastic renormalization, T=0)')
+        write2NCfile(outNC,NBddI,'BddInew','Broadened BddInew (new implementation incl. elastic renormalization, T=0)')
+        write2NCfile(outNC,NBddI/NBdI,'IETSnew','Broadened BddInew/BdInew (new implementation incl. elastic renormalization, T=0) [1/V]')
+        write2NCfile(outNC,NdS,'dSnew','Inelastic first-derivative of the shot noise dSnew (T=0)')
     else:
         write2NCfile(outNC,GFp.nHT,'ISymTr_p','Trace giving Symmetric current contribution (prefactor to universal function)')
         write2NCfile(outNC,GFp.HT,'IAsymTr_p','Trace giving Asymmetric current contribution (prefactor to universal function)')
@@ -542,12 +609,6 @@ def calcIETS(options,GFp,GFm,basis,hw):
     return V, I, dI, ddI, BdI, BddI
 
     
-########################################################
-def AssertReal(x,label):
-    VC.Check("zero-imaginary-part",abs(x.imag),
-             "Imaginary part too large in quantity %s"%label)
-    return x.real   
-
 ########################################################
 def writeFGRrates(options,GF,hw,NCfile):
     print 'Inelastica.writeFGRrates: Computing FGR rates'
