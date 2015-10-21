@@ -669,11 +669,9 @@ class SpectralMatrix:
         return self*b
 
     def __dagger__(self):
-        print self.L.shape,self.R.shape
         tmp = SpectralMatrix()
         tmp.L = dagger(self.R)
         tmp.R = dagger(self.L)
-        print tmp.L.shape,tmp.R.shape
         return tmp
     
 def trace(a):

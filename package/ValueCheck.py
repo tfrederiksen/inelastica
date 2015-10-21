@@ -1,3 +1,4 @@
+
 version = "SVN $Id$"
 print version
 
@@ -113,13 +114,36 @@ def OptionsCheck(opts,exe):
     opts.TSHS = '%s/%s.TSHS'%(opts.head,opts.systemlabel)
 
     # Electrodes
-    opts.fnL  = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFileLeft', str, None, exe)
-    opts.NA1L = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1Left', int, 1, exe)
-    opts.NA2L = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2Left', int, 1, exe)
-    opts.fnR  = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFileRight', str, None, exe)
-    opts.NA1R = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1Right', int, 1, exe)
-    opts.NA2R = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2Right', int, 1, exe)
-
+    try:
+        opts.fnL = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFileLeft', str, None, exe)
+        opts.NA1L = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1Left', int, 1, exe)
+        opts.NA2L = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2Left', int, 1, exe)
+        opts.fnR  = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFileRight', str, None, exe)
+        opts.NA1R = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1Right', int, 1, exe)
+        opts.NA2R = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2Right', int, 1, exe)
+    except:
+        print 'Looking for TSHS files in the new electrode format'
+        opts.NA1L,opts.NA2L = 1,1
+        opts.NA1R,opts.NA2R = 1,1
+        block = SIO.GetFDFblock(opts.fn, KeyWord = 'TS.Elec.Left')
+        for line in block:
+            print line
+            if line[0]=='TSHS':
+                opts.fnL = opts.head+'/'+line[1]
+            if line[0]=='rep-A1':
+                opts.NA1L = int(line[1])
+            if line[0]=='rep-A2':
+                opts.NA2L = int(line[1])
+        block = SIO.GetFDFblock(opts.fn, KeyWord = 'TS.Elec.Right')
+        for line in block:
+            print line
+            if line[0]=='TSHS':
+                opts.fnR = opts.head+'/'+line[1]
+            if line[0]=='rep-A1':
+                opts.NA1R = int(line[1])
+            if line[0]=='rep-A2':
+                opts.NA2R = int(line[1])
+    
     if opts.UseBulk < 0:
         opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn,'TS.UseBulkInElectrodes', bool, True, exe)
 
