@@ -52,7 +52,8 @@ vinfo = [version,SIO.version,Symmetry.version,CF.version,
 
 def GetOptions(argv,**kwargs):
     # if text string is specified, convert to list
-    if type(argv)==type(''): argv = argv.split()
+    if isinstance(argv,VC.string_types):
+        argv = argv.split()
 
     import optparse as o
 
@@ -162,7 +163,7 @@ def GetOptions(argv,**kwargs):
         options.PBCLast = options.DeviceLast
 
     # Isotopes specified in separate file?
-    if type(options.Isotopes)!=type([]): # i.e., not a list
+    if not isinstance(options.Isotopes, list): # i.e., not a list
         if os.path.isfile(options.Isotopes):
             f = open(options.Isotopes)
             s = ''

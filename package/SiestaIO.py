@@ -341,8 +341,10 @@ def WriteMKLFile(filename,atomnumber,xyz,freq,vec,FCfirst,FClast):
             line = ''
             for j in range(3):
                 f = 1000*freq[3*i+j] # Write in meV
-                if type(f)==type(1.0j): line += '%f '%f.real
-                else: line += '%f '%f
+                try:
+                    line += '%f '%f.real
+                except:
+                    line += '%f '%f
             line += '\n'
             file.write(line)
             # Write modes

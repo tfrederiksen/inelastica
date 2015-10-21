@@ -15,6 +15,13 @@ be in a wrapper call which emulates the options.
 import sys as s
 import numpy as _np
 
+# Python 3-version
+# Check of strings
+if s.version_info[0] == 3:
+    string_types = str,
+else:
+    string_types = basestring,
+
 # Place holder for checks
 _check = {}
 

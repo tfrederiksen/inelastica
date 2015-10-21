@@ -26,7 +26,8 @@ vinfo = [version,NEGF.version,SIO.version,MG.version,MM.version,PC.version,VC.ve
 # DIRECTLY in python
 def GetOptions(argv,**kwargs):
     # if text string is specified, convert to list
-    if type(argv)==type(''): argv = argv.split()
+    if isinstance(argv,VC.string_types):
+        argv = argv.split()
 
     import optparse as o
 

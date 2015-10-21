@@ -605,7 +605,7 @@ def GaussKronrod(NN):
 class SpectralMatrix:
     # self.L/R : Left / right matrices
     def __init__(self,A=None,cutoff=1e-8):
-        if type(A)==N.ndarray:
+        if isinstance(A,N.ndarray):
             # Initialize ... only Hermitean matrices
             ev,evec = LA.eigh(A)
             # Drop eigenvalues

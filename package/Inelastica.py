@@ -21,7 +21,8 @@ vinfo = [version,NEGF.version,SIO.version,MG.version,NCDF.version,PC.version,VC.
 # DIRECTLY in python
 def GetOptions(argv,**kwargs):
     # if text string is specified, convert to list
-    if type(argv)==type(''): argv = argv.split()
+    if isinstance(argv,VC.string_types):
+        argv = argv.split()
 
     import optparse as o
     d = """Inelastica script calculates and writes LOE quantities in ascii (Systemlabel.IN) and NetCDF (Systemlabel.IN.nc) 
