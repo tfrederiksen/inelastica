@@ -119,6 +119,7 @@ def OptionsCheck(opts,exe):
 
     # Electrodes
     try:
+        # Old format
         opts.fnL = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFileLeft', str, None, exe)
         opts.NA1L = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1Left', int, 1, exe)
         opts.NA2L = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2Left', int, 1, exe)
@@ -132,12 +133,12 @@ def OptionsCheck(opts,exe):
         # Hence if they are read in first it will do it in correct order.
 
         key = 'TS.Elec.Left.'
-        opts.fnL = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,key+'TSHS', str, None, exe)
+        opts.fnL = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,key+'TSHS', str, '', exe)
         opts.NA1L = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A1', int, 1, exe)
         opts.NA2L = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A2', int, 1, exe)
 
         key = 'TS.Elec.Right.'
-        opts.fnR  = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,key+'TSHS', str, None, exe)
+        opts.fnR  = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,key+'TSHS', str, '', exe)
         opts.NA1R = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A1', int, 1, exe)
         opts.NA2R = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A2', int, 1, exe)
 
@@ -153,7 +154,7 @@ def OptionsCheck(opts,exe):
             elif key in ['replicate-b','rep-b','replicate-a2','rep-a2']:
                 opts.NA2L = int(line[1])
             elif key in ['replicate','rep']:
-                # We have 3 integers
+                # We have 2 integers
                 ints = map(int,line[1:])
                 opts.NA1L = ints[0]
                 opts.NA2L = ints[1]
