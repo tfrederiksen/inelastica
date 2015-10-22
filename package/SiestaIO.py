@@ -667,28 +667,26 @@ def GetFDFlineWithDefault(infile, key, type, default, error):
         If default=None, print error and exit.
     """
     data = GetFDFline(infile, key, printAlot=False)
-    if data==None:
-        if default==None:
-            print """ERROR :: GetFDFlineWithDefault failed to 
-      find '%s' in file '%s'"""%(key,infile)
-            kuk
+    if data is None:
+        if default is None:
+            raise LookupError('GetFDFlineWithDefault failed to find "{}" in file {}.'.format(key,infile))
         else:
             return default
     else:
         data = data[0]
         # Boolean is tricky!
-        if type!=bool:
+        if type != bool:
             return type(data)
         else:
-            if data.lower() in ['true','t','.true.']:
+            data = data.lower()
+            if data in ['true','t','.true.','yes','y']:
                 return True
-            elif data.lower() in ['false','f','.false.']:
+            elif data in ['false','f','.false.','no','n']:
                 return False
             else:
-                print """ERROR :: GetFDFlineWithDefault failed to convert '%s' to boolean 
-       from key '%s' in file '%s'"""%(data,key,infile)
-                kuk                
-        
+                raise TypeError('GetFDFlineWithDefault failed to convert '+
+                                '"{}" to boolean from key "{}" in file {}.'.format(data,key,infile))
+            
 def GetFDFblock(infile, KeyWord = ''):
     """Finds the walues in a block as strings
        infile = FDF input file
@@ -1771,11 +1769,18 @@ def GetBufferAtomsList(fn,fdf):
     BufferAtoms = []
     if len(data) > 0:
         for sl in data:
-            if not sl[0].startswith('position'): continue
+            sl = [s.lower() for s in sl]
+            if sl[0] not in ['position','atom']: continue
+            # Currently Inelastica only accepts the from <> to <>
+            # and from <> plus/minus <>
             if sl[1] == 'from':
                 f = int(sl[2])
                 if f < 0: f = nua + f + 1
                 t = int(sl[4])
+                if sl[3] == 'plus':
+                    t = f + t - 1
+                elif sl[3] == 'minus':
+                    t = f - t + 1
                 if t < 0: t = nua + t + 1
                 s = 1
                 if len(sl) > 5:

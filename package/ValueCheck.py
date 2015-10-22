@@ -1,6 +1,9 @@
+# Simple case for allowing the newer print function (Python3 compliant)
+from __future__ import print_function
+
 
 version = "SVN $Id$"
-print version
+print(version)
 
 """
 Contains general quantities that are used to do checks in the 
@@ -15,6 +18,7 @@ be in a wrapper call which emulates the options.
 
 import sys as s
 import numpy as _np
+
 
 # Python 3-version
 # Check of strings
@@ -122,30 +126,56 @@ def OptionsCheck(opts,exe):
         opts.NA1R = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1Right', int, 1, exe)
         opts.NA2R = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2Right', int, 1, exe)
     except:
-        print 'Looking for TSHS files in the new electrode format'
-        opts.NA1L,opts.NA2L = 1,1
-        opts.NA1R,opts.NA2R = 1,1
+        print('Looking for TSHS files in the new electrode format')
+
+        # These first keys can be used, but they are superseeded by keys in the TS.Elec.<> block
+        # Hence if they are read in first it will do it in correct order.
+
+        key = 'TS.Elec.Left.'
+        opts.fnL = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,key+'TSHS', str, None, exe)
+        opts.NA1L = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A1', int, 1, exe)
+        opts.NA2L = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A2', int, 1, exe)
+
+        key = 'TS.Elec.Right.'
+        opts.fnR  = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,key+'TSHS', str, None, exe)
+        opts.NA1R = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A1', int, 1, exe)
+        opts.NA2R = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A2', int, 1, exe)
+
         block = SIO.GetFDFblock(opts.fn, KeyWord = 'TS.Elec.Left')
         for line in block:
-            print line
-            if line[0]=='TSHS':
+            print(line)
+            # Lower-case, FDF is case-insensitive
+            key = line[0].lower()
+            if key == 'tshs':
                 opts.fnL = opts.head+'/'+line[1]
-            if line[0]=='rep-A1':
+            elif key in ['replicate-a','rep-a','replicate-a1','rep-a1']:
                 opts.NA1L = int(line[1])
-            if line[0]=='rep-A2':
+            elif key in ['replicate-b','rep-b','replicate-a2','rep-a2']:
                 opts.NA2L = int(line[1])
+            elif key in ['replicate','rep']:
+                # We have 3 integers
+                ints = map(int,line[1:])
+                opts.NA1L = ints[0]
+                opts.NA2L = ints[1]
+
         block = SIO.GetFDFblock(opts.fn, KeyWord = 'TS.Elec.Right')
         for line in block:
-            print line
-            if line[0]=='TSHS':
+            print(line)
+            key = line[0].lower()
+            if key == 'tshs':
                 opts.fnR = opts.head+'/'+line[1]
-            if line[0]=='rep-A1':
+            elif key in ['replicate-a','rep-a','replicate-a1','rep-a1']:
                 opts.NA1R = int(line[1])
-            if line[0]=='rep-A2':
+            elif key in ['replicate-b','rep-b','replicate-a2','rep-a2']:
                 opts.NA2R = int(line[1])
+            elif key in ['replicate','rep']:
+                ints = map(int,line[1:])
+                opts.NA1R = ints[0]
+                opts.NA2R = ints[1]
     
     if opts.UseBulk < 0:
         opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn,'TS.UseBulkInElectrodes', bool, True, exe)
+        opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn,'TS.Elecs.Bulk', bool, opts.UseBulk, exe)
 
     # Read in number of buffer atoms
     opts.buffer,L,R = SIO.GetBufferAtomsList(opts.TSHS,opts.fn)
