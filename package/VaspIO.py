@@ -36,11 +36,8 @@ def ReadCONTCAR(filename):
     for ii in range(3):
         tmp = file.readline().split()
         vectors[ii] = N.array(tmp,N.float)
-    try:
-        speciesnumbers = N.array(file.readline().split(),N.int)
-    except:
-        print 'Found chemical species labels in CONTCAR'
-        speciesnumbers = N.array(file.readline().split(),N.int)
+    specieslabels = file.readline().split()
+    speciesnumbers = N.array(file.readline().split(),N.int)
     natoms = N.sum(speciesnumbers)
     # Read 'Selective Dynamics' and 'Direct' lines
     file.readline()
@@ -58,9 +55,9 @@ def ReadCONTCAR(filename):
     # Convert to cartesian coordinates
     for ii in range(natoms):
         xyz[ii][:3] = xyz[ii,0]*vectors[0]+xyz[ii,1]*vectors[1]+xyz[ii,2]*vectors[2]
-    return label,scalefactor,vectors,speciesnumbers,xyz
+    return label,scalefactor,vectors,specieslabels,speciesnumbers,xyz
 
-def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.0,constrained=[]):
+def WritePOSCAR(filename,vectors,specieslabels,speciesnumbers,xyz,label='LABEL',scalefactor=1.0,constrained=[]):
     "Write POSCAR file"
     print 'VaspIO.WritePOSCAR: Writing',filename
     file = open(filename,'w')
@@ -73,6 +70,9 @@ def WritePOSCAR(filename,vectors,speciesnumbers,xyz,label='LABEL',scalefactor=1.
         for jj in range(3):
             file.write(string.rjust('%.9f'%vectors[ii][jj],16)+' ')
         file.write('\n')
+    for ii in range(len(specieslabels)):
+        file.write('  %s'%specieslabels[ii])
+    file.write('\n')
     for ii in range(len(speciesnumbers)):
         file.write('  %i'%speciesnumbers[ii])
     file.write('\n')

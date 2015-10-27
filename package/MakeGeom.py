@@ -143,6 +143,7 @@ class Geom:
         self.xyz = N.array(self.xyz)
         self.snr = N.array(self.snr)
         self.anr = N.array(self.anr)
+        self.constrained = list(self.constrained)+[list(constrained)]
         self.natoms += 1
 
     def prependAtom(self,xyz,snr,anr,index=0):
@@ -164,13 +165,15 @@ class Geom:
         tmp = []
         for i in range(self.natoms):
             tmp.append([self.xyz[i][2],self.xyz[i][1],self.xyz[i][0],\
-                       self.snr[i],self.anr[i]])
+                        self.snr[i],self.anr[i],self.constrained[i]])
         tmp.sort()
         for i in range(self.natoms):
-            new.addAtom([tmp[i][2],tmp[i][1],tmp[i][0]],tmp[i][3],tmp[i][4])
+            #print i,tmp[i][0],tmp[i][5]
+            new.addAtom([tmp[i][2],tmp[i][1],tmp[i][0]],tmp[i][3],tmp[i][4],constrained=tmp[i][5])
         self.xyz = new.xyz
         self.snr = new.snr
         self.anr = new.anr
+        self.constrained = N.array(new.constrained)
 
     def reverse(self):
         # TF/051114
@@ -623,21 +626,16 @@ class Geom:
 
     def readCONTCAR(self,fn):
         "Read geometry from VASP CONTCAR file"
-        label,scalefactor,vectors,speciesnumbers,xyz = VIO.ReadCONTCAR(fn)
+        label,scalefactor,vectors,specieslabels,speciesnumbers,xyz = VIO.ReadCONTCAR(fn)
         self.pbc = N.array(vectors)
         self.xyz = N.array(xyz[:,:3])
         self.constrained = N.array(xyz[:,3:])
         self.natoms = len(xyz)
         self.snr = []
         self.anr = []
-        # try reading atom types from OUTCAR
-        head,tail = os.path.split(fn)
-        atoms = VIO.GetSpecies(head+'/OUTCAR')
         for i in range(len(speciesnumbers)):
             self.snr += speciesnumbers[i]*[i+1]
-            print 'MakeGeom.readCONTCAR: Found species %s corresponding to atom number %i.'\
-                %(atoms[i],PC.PeriodicTable[atoms[i]])
-            self.anr += speciesnumbers[i]*[PC.PeriodicTable[atoms[i]]]
+            self.anr += speciesnumbers[i]*[PC.PeriodicTable[specieslabels[i]]]
 
 #--------------------------------------------------------------------------------
 # Interface with VASP
@@ -651,16 +649,21 @@ class Geom:
         for i in range(len(geom.xyz)):
             if geom.anr[i]>0:
                 tmp += [[geom.anr[i],i]]
-                anrnum[geom.anr[i]] +=  1
+                anrnum[geom.anr[i]] += 1
         tmp.sort()
         xyz = []
+        cons = []
         for i in range(len(tmp)):
             j = tmp[i][1]
             xyz += [geom.xyz[j]]
-        members = []
+            cons += [list(geom.constrained[j])]
+        speciesnumbers = []
+        specieslabels = []
         for i in range(len(anrnum)):
-            if anrnum[i]!=0: members += [anrnum[i]]
-        VIO.WritePOSCAR(fn,geom.pbc,members,xyz,constrained=constrained)          
+            if anrnum[i]!=0:
+                speciesnumbers += [anrnum[i]]
+                specieslabels += [PC.PeriodicTable[i]]
+        VIO.WritePOSCAR(fn,geom.pbc,specieslabels,speciesnumbers,xyz,constrained=N.array(cons))          
 
 #--------------------------------------------------------------------------------
 # Conversion functions:
