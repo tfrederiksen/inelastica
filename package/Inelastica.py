@@ -370,7 +370,7 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
         GF1.dIel[ihw] = NEGF.AssertReal(MM.trace(Tlambda0),'dIel[%i]'%ihw)
         GF1.dIinel[ihw] = NEGF.AssertReal(MM.trace(Tlambda1),'dIinel[%i]'%ihw)
         GF1.dSel[ihw] = NEGF.AssertReal(MM.trace(MM.mm(OneMinusTwoT,Tlambda0)),'dSel[%i]'%ihw)
-        GF1.dSinel[ihw] = NEGF.AssertReal(MM.trace(MM.mm(OneMinusTwoT,Tlambda1)+Qlambda),'dSinel[%i]'%ihw)
+        GF1.dSinel[ihw] = NEGF.AssertReal(MM.trace(Qlambda+MM.mm(OneMinusTwoT,Tlambda1)),'dSinel[%i]'%ihw)
 
 def calcIETS(options,GFp,GFm,basis,hw):
     # Calculate product of electronic traces and voltage functions
