@@ -503,7 +503,7 @@ class DynamicalMatrix():
         self.DeviceLast = DeviceLast
         self.AbsEref = AbsEref
         
-    def GetGradient(self,Atom,Axis,AbsEref=False):
+    def GetGradient(self,Atom,Axis):
         print 'Phonons.GetGradient: Computing dH[%i,%i]'%(Atom,Axis)
         # Read TSHS files
         TSHSm = SIO.HS(self.TSHS[Atom,Axis,-1])
@@ -580,7 +580,12 @@ class DynamicalMatrix():
                 dh = dH[:,first:last+1,first:last+1]
                 # Loop over modes and throw away the gradient (to save memory)
                 for m in range(len(self.hw)):
-                    Heph[m] += const*dh*self.UU[m,v-1,j]/(2*self.Masses[i]*self.hw[m])**.5
+                    cplx = const*dh*self.UU[m,v-1,j]/(2*self.Masses[i]*self.hw[m])**.5
+                    if GammaPoint:
+                        Heph[m] += N.real(cplx)
+                    else:
+                        Heph[m] += cplx
+
         del dH, dh
         self.heph = Heph
 
