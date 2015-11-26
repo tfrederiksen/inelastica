@@ -601,7 +601,7 @@ class GF:
         if self.Bulk and not FoldedL:
             # Reverse sign since SigL is really SGF^-1
             self.GamL = -1.0*self.GamL
-        self.GamL = AssertReal(N.diag(self.GamL),'GamL')
+        AssertReal(N.diag(self.GamL),'GamL')
         
         if FoldedR:
             # Fold down from nuoR0 to the device region
@@ -624,7 +624,7 @@ class GF:
         if self.Bulk and not FoldedR:
             # Reverse sign since SigR is really SGF^-1
             self.GamR = -1.0*self.GamR
-        self.GamR = AssertReal(N.diag(self.GamR),'GamR')
+        AssertReal(N.diag(self.GamR),'GamR')
         
     def calcGF(self,ee,kpoint,ispin=0,etaLead=0.0,useSigNCfiles=False,SpectralCutoff=0.0):
         "Calculate GF etc at energy ee and 2d k-point"
