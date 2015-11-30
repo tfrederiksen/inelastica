@@ -38,7 +38,6 @@ def AssertReal(x,label):
              "Imaginary part too large in quantity %s"%label)
     return x.real
 
-
 def myHash(data):
     return hashlib.md5(pickle.dumps(data)).hexdigest()
 def hash2dec(hash):
