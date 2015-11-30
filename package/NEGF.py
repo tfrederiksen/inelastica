@@ -703,9 +703,9 @@ class GF:
         print 'NEGF.calcGF: Shape of transmission matrix (TT):', self.TT.shape
         # Write also the Gammas in the full space of Gr/Ga/A
         # (needed for the inelastic shot noise)
-        self.GammaL = N.zeros(self.Gr.shape,N.float)
+        self.GammaL = N.zeros(self.Gr.shape,N.complex)
         self.GammaL[0:nuoL,0:nuoL] = self.GamL
-        self.GammaR = N.zeros(self.Gr.shape,N.float)
+        self.GammaR = N.zeros(self.Gr.shape,N.complex)
         self.GammaR[nuo-nuoR:nuo,nuo-nuoR:nuo] = self.GamR
         
     def setkpoint(self,kpoint,ispin=0):
