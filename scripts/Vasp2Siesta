@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 from Inelastica import VaspIO as VIO
 from Inelastica import SiestaIO as SIO
@@ -8,30 +8,24 @@ import sys
 # File to read
 fn = sys.argv[1]
 
-label,scalefactor,vectors,vaspspeciesnumbers,xyz = VIO.ReadCONTCAR(fn)
+label,scalefactor,vectors,specieslabels,speciesnumbers,xyz = VIO.ReadCONTCAR(fn)
 
-#print label
-#print scalefactor
-#print vectors
-#print speciesnumbers
-#print xyz
-
-atomnumber = []
-siestaspeciesnumbers = []
+anr = []
+snr = []
 sn = 1
 
-for i in range(len(vaspspeciesnumbers)):
-    tmp = raw_input('Please specify element label for group %i (%i atoms): '%(i+1,vaspspeciesnumbers[i]))
-    an = PC.PeriodicTable[tmp]
-    for j in range(vaspspeciesnumbers[i]):
-        atomnumber.append(an)
-        siestaspeciesnumbers.append(sn)
-        sn += 1
+for i in range(len(speciesnumbers)):
+    element = specieslabels[i]
+    an = PC.PeriodicTable[element]
+    for j in range(speciesnumbers[i]):
+        anr.append(an)
+        snr.append(sn)
+    sn += 1
 
-print 'atomnumber ='
-print atomnumber
-print 'siesta speciesnumbers'
-print siestaspeciesnumbers
+print 'anr ='
+print anr
+print 'snr'
+print snr
 
 # Move atoms inside unit cell
 dx = raw_input('Shift along x-axis [default=0.0] (Ang)? ')
@@ -51,5 +45,5 @@ for i in range(len(xyz)):
         if xyz[i][j]-vectors[j][j]>0: xyz[i][j] -= vectors[j][j]
         if xyz[i][j]<0: xyz[i][j] += vectors[j][j]
         
-SIO.WriteXVFile(fn+'.XV',vectors,siestaspeciesnumbers,atomnumber,xyz)
-SIO.WriteXYZFile(fn+'.xyz',atomnumber,xyz)
+SIO.WriteXVFile(fn+'.XV',vectors,snr,anr,xyz)
+SIO.WriteXYZFile(fn+'.xyz',anr,xyz)

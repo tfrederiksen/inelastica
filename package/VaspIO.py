@@ -8,7 +8,6 @@ import MakeGeom as MG
 import gzip
 import Scientific.IO.NetCDF as nc
 
-
 def VIO_open(filename,mode='r'):
     "A VaspIO redefinition of the function open() to handle gzip format"
     try:
@@ -36,12 +35,23 @@ def ReadCONTCAR(filename):
     for ii in range(3):
         tmp = file.readline().split()
         vectors[ii] = N.array(tmp,N.float)
-    specieslabels = file.readline().split()
-    speciesnumbers = N.array(file.readline().split(),N.int)
+    # The species labels are not always included in CONTCAR
+    firstline = file.readline().split()
+    line = file.readline().split()
+    try:
+        specieslabels = firstline
+        speciesnumbers = N.array(line,N.int)
+    except:
+        speciesnumbers = N.array(firstline,N.int)
+        specieslabels = []
+        for i,s in enumerate(speciesnumbers):
+            specieslabels += [raw_input('Element label for group %i (%i atoms): '%(i+1,s))]
+    print 'specieslabels =',specieslabels
+    print 'speciesnumbers =',list(speciesnumbers)
     natoms = N.sum(speciesnumbers)
     # Read 'Selective Dynamics' and 'Direct' lines
-    file.readline()
-    file.readline()
+    while line[0].upper()!='DIRECT':
+        line = file.readline().split()
     # Read coordinates and degrees of freedom
     xyz = N.zeros((natoms,6),N.float)
     for ii in range(natoms):
@@ -49,7 +59,11 @@ def ReadCONTCAR(filename):
         line = line.replace('F','0')
         line = line.replace('T','1')
         line = line.split()
-        xyz[ii] = N.array(line,N.float)
+        try:
+            xyz[ii] = N.array(line,N.float)
+        except:
+            # No constraints given
+            xyz[ii,:3] = N.array(line,N.float)
     # Ignore rest of the file
     file.close()
     # Convert to cartesian coordinates
