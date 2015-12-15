@@ -77,6 +77,10 @@ def GetOptions(argv,**kwargs):
     p.add_option('--mesh',dest='mesh',default='[0,0,0]',type="str",
                  help="Mesh sampling of 1BZ (powers of 2) [default=%default]")
 
+    p.add_option("--sort",dest="sorting",
+                 help="Sort eigenvalues along k-mesh for nice plots? [default=%default]",
+                 action="store_true",default=False)
+
     (options, args) = p.parse_args(argv)
 
     # Get the last positional argument
@@ -276,6 +280,26 @@ def WritePath(filename,path,steps):
         print k[1],k[0]
     WriteKpoints(filename,kpts,labels)
 
+def SortBands(ev):
+    # Sort bands by curvature minimization
+    print 'SupercellPhonons.SortBands: Minimizing curvature in band structure'
+    kpts,bands = ev.shape
+    # loop over k-points, starting from the third
+    for i in range(2,kpts):
+        # loop over band index
+        for j in range(bands):
+            # loop over higher-lying bands
+            for k in range(j+1,bands):
+                d2ev = abs(ev[i,j]+ev[i-2,j]-2*ev[i-1,j])+abs(ev[i,k]+ev[i-2,k]-2*ev[i-1,k])
+                d2evfl = abs(ev[i,k]+ev[i-2,j]-2*ev[i-1,j])+abs(ev[i,j]+ev[i-2,k]-2*ev[i-1,k])
+                if d2ev>d2evfl:
+                    # flip bands
+                    tmp = ev[i:,j].copy()
+                    ev[i:,j] = ev[i:,k]
+                    ev[i:,k] = tmp
+                    print "   ...@ k(%i): flip indices %i-%i"%(i,j,k)
+    return ev   
+    
 def PlotElectronBands(filename,dk,elist,ticks):
     # Make xmgrace plots
     import WriteXMGR as XMGR
@@ -418,6 +442,10 @@ def main(options):
             evecsRe[i,:] = evec.real
             evecsIm[i,:] = evec.imag
         ncf.sync()
+        # Sort eigenvalues to connect crossing bands?
+        if options.sorting:
+            for i in range(SCDM.nspin):
+                evals[:,i,:] = SortBands(evals[:,i,:])
         # Produce nice plots if labels exist
         if klabels:
             if SCDM.nspin==1:
@@ -460,6 +488,9 @@ def main(options):
             evecsRe[i] = U.real
             evecsIm[i] = U.imag
         ncf.sync()
+        # Sort eigenvalues to connect crossing bands?
+        if options.sorting:
+            evals = SortBands(evals)
         # Produce nice plots if labels exist
         if qlabels:
             PlotPhononBands(options.DestDir+'/Phonons.agr',dq,N.array(evals[:]),qticks)
