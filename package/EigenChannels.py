@@ -178,6 +178,15 @@ def main(options):
             ev, es = SLA.eigh(DevGF.H,DevGF.S)
             print 'EigenChannels: Eigenvalues (in eV) of computed molecular eigenstates:'
             print ev
+            # Write eigenvalues to file
+            fn = options.DestDir+'/'+options.systemlabel+'.EIGVAL'
+            print 'EigenChannels: Writing',fn
+            file = open(fn,'w')
+            file.write('# Device region = [%i,%i], units in eV\n'%(options.DeviceFirst,options.DeviceLast))
+            for i in range(len(ev)):
+                file.write('%i %.8f\n'%(i,ev[i]))
+            file.close()
+            # Compute selected eigenstates
             for ii in range(len(ev)):
                 if N.abs(ev[ii])<options.MolStates:
                     fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii,ev[ii])
