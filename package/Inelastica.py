@@ -453,7 +453,8 @@ def calcIETS(options,GFp,GFm,basis,hw):
     # Current: Asymmetric/Hilbert part (IH)
     try:
         import scipy.special as SS
-        print "Inelastica: Computing asymmetric term using digamma function, see Bevilacqua et al."
+        print "Inelastica: Computing asymmetric term using digamma function,"
+        print "... see G. Bevilacqua et al., Eur. Phys. J. B (2016) 89: 3"
         IH = N.zeros((NN,),N.float)
         IasymF = N.zeros((NN,),N.float)
         for i in (hw>options.modeCutoff).nonzero()[0]:
