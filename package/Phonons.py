@@ -118,11 +118,8 @@ def GetOptions(argv,**kwargs):
                 help="Use an absolute energy reference (Fermi energy of equilibrium structure) for displaced Hamiltonians (e.g., when eF is not well-defined) instead of the instantaneous Fermi energy for the displaced geometries, cf. Eq.(17) in PRB 75, 205413 (2007) [default=%default]",action="store_true",default=False)
     
     p.add_option("-i", "--Isotopes",dest="Isotopes",
-                 help="List of substitutions [[i1, anr1],...], where atom index i1 (SIESTA numbering) is set to be of type anr1. Alternatively, the argument can be a file with the input string [default=%default]",default=[])
+                 help="String, formatted as a list '[[i1, anr1],...]', where atom index i1 (SIESTA numbering) will be substituted with atom type anr1. Alternatively, the argument can be a file with the string [default=%default]",default='[]')
 
-    p.add_option("--AtomicMass", dest='AtomicMass', default='[]',
-                 help="Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%default]")
-    
     p.add_option("-x","--k1", dest='k1', default=0.0,type='float',
                  help="k-point along a1 where e-ph couplings are evaluated [%default]")
     p.add_option("-y","--k2", dest='k2', default=0.0,type='float',
@@ -163,29 +160,13 @@ def GetOptions(argv,**kwargs):
         options.PBCLast = options.DeviceLast
 
     # Isotopes specified in separate file?
-    if not isinstance(options.Isotopes, list): # i.e., not a list
-        if os.path.isfile(options.Isotopes):
-            f = open(options.Isotopes)
-            s = ''
-            for line in f.readlines():
-                s += line.replace('\n','').replace(' ','')
-            options.Isotopes = s
-            f.close()
-
-    # Check if AtomicMasses are specified
-    if options.AtomicMass!='[]':
-        from Inelastica import PhysicalConstants as PC
-        masslist = eval(options.AtomicMass.replace('\n','').replace(' ',''))
-        for elm in masslist:
-            anr = int(elm[0])
-            mass = float(elm[1])
-            PC.AtomicMass[anr] = mass
-            if len(elm)==3:
-                label = elm[2]
-                PC.PeriodicTable[anr] = label
-                PC.PeriodicTable[label] = anr
-        print 'AtomicMass =',PC.AtomicMass
-        print 'PeriodicTable =',PC.PeriodicTable
+    if os.path.isfile(options.Isotopes):
+        f = open(options.Isotopes)
+        s = ''
+        for line in f.readlines():
+            s += line.replace('\n','')
+        options.Isotopes = s
+    options.Isotopes=eval(options.Isotopes)
 
     return options
   
@@ -371,6 +352,8 @@ class DynamicalMatrix():
                 j = self.DynamicAtoms.index(ii)
                 print 'Phonons.Analyse: Isotope substitution for atom %i (SIESTA numbering):'%ii
                 print '  ... atom type %i --> %i'%(self.geom.anr[ii-1],anr)
+                print '  ... atom element %s --> %s'%(PC.PeriodicTable[self.geom.anr[ii-1]],
+                                                      PC.PeriodicTable[anr])
                 print '  ... atom mass %.4f --> %.4f'%(PC.AtomicMass[self.geom.anr[ii-1]],\
                                                        PC.AtomicMass[anr])
                 self.Masses[j] = PC.AtomicMass[anr]
