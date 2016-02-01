@@ -50,8 +50,11 @@ def ReadCONTCAR(filename):
     print 'speciesnumbers =',list(speciesnumbers)
     natoms = N.sum(speciesnumbers)
     # Read 'Selective Dynamics' and 'Direct' lines
-    while line[0].upper()!='DIRECT':
+    dircoor = True # Default is reading direct coordinates
+    while line[0].upper()!='DIRECT' and line[0].upper()!='CARTESIAN':
         line = file.readline().split()
+        if line[0].upper()=='CARTESIAN':
+            dircoor = False
     # Read coordinates and degrees of freedom
     xyz = N.zeros((natoms,6),N.float)
     for ii in range(natoms):
@@ -67,8 +70,12 @@ def ReadCONTCAR(filename):
     # Ignore rest of the file
     file.close()
     # Convert to cartesian coordinates
+    print 'Read direct coordinates?',dircoor
     for ii in range(natoms):
-        xyz[ii][:3] = xyz[ii,0]*vectors[0]+xyz[ii,1]*vectors[1]+xyz[ii,2]*vectors[2]
+        if dircoor:
+            xyz[ii][:3] = xyz[ii,0]*vectors[0]+xyz[ii,1]*vectors[1]+xyz[ii,2]*vectors[2]
+        else:
+            xyz[ii][:3] = xyz[ii,:3]
     return label,scalefactor,vectors,specieslabels,speciesnumbers,xyz
 
 def WritePOSCAR(filename,vectors,specieslabels,speciesnumbers,xyz,label='LABEL',scalefactor=1.0,constrained=[]):

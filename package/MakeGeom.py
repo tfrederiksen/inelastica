@@ -106,6 +106,10 @@ class Geom:
                 self.readSTRUCT_OUT(fn)
             elif 'CONTCAR' in fn:
                 self.readCONTCAR(fn)
+            elif 'POSCAR' in fn:
+                self.readCONTCAR(fn)
+            else:
+                sys.exit('ERROR: Input file format unknown\n ... currently .XV, .xyz, .fdf, and POSCAR/CONTCAR are supported')
 
         try:
             self.constrained
