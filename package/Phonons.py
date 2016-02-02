@@ -127,6 +127,10 @@ def GetOptions(argv,**kwargs):
     p.add_option("-z","--k3", dest='k3', default=0.0,type='float',
                  help="k-point along a3 where e-ph couplings are evaluated [%default]")
 
+    p.add_option("-g", "--WriteGradients",dest="WriteGradients",
+                 help="Write real-space gradients dH/dR to NetCDF [default=%default]",
+                 action="store_true",default=False)
+
     (options, args) = p.parse_args(argv)
 
     # Get the last positional argument
@@ -515,7 +519,7 @@ class DynamicalMatrix():
         self.dSdij[:,f:l+1] = 0. # reset
         return dH
 
-    def ComputeEPHcouplings(self,PBCFirst,PBCLast,EPHAtoms,Restart,CheckPointNetCDF):
+    def ComputeEPHcouplings(self,PBCFirst,PBCLast,EPHAtoms,Restart,CheckPointNetCDF,WriteGradients=False):
         first,last = self.OrbIndx[self.DeviceFirst-1][0],self.OrbIndx[self.DeviceLast-1][1]
         rednao = last+1-first
         const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
@@ -532,6 +536,8 @@ class DynamicalMatrix():
            print "Start e-ph. calculation from scratch"
            Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),self.atype)
 
+        if WriteGradients:
+            self.gradients = []
         # Loop over dynamic atoms
         for i,v in enumerate(EPHAtoms):
             # Loop over axes
@@ -555,13 +561,13 @@ class DynamicalMatrix():
                     dH[:,:,:pbcf-1] = 0.0
                 # Device part
                 dh = dH[:,first:last+1,first:last+1]
+                if WriteGradients:
+                    self.gradients.append(dh)
                 # Loop over modes and throw away the gradient (to save memory)
                 for m in range(len(self.hw)):
                     if self.hw[m]>0:
-                        if self.atype==N.float32 or self.atype==N.float64:
-                            Heph[m] += const*dh*self.UU[m,v-1,j].real/(2*self.Masses[i]*self.hw[m])**.5
-                        else:
-                            Heph[m] += const*dh*self.UU[m,v-1,j]/(2*self.Masses[i]*self.hw[m])**.5
+                        # Eigenvectors should be real for GammaPoint phonons, hence we always take the real part
+                        Heph[m] += const*dh*self.UU[m,v-1,j].real/(2*self.Masses[i]*self.hw[m])**.5
                     elif i==0:
                         # Print only first time
                         print 'Phonons.ComputeEPHcouplings: Mode %i has nonpositive frequency --> Zero-valued coupling matrix'%m
@@ -594,18 +600,18 @@ class DynamicalMatrix():
         WriteAXSFFilesPer('%s.per.charlength-displ.axsf'%label,self.geom.pbc,self.geom.xyz,self.geom.anr,\
                              hw,UUcl,1,natoms)
         # Netcdf format
-        NCDF.write('%s.nc'%label,hw,'hw',SinglePrec)
-        NCDF.write('%s.nc'%label,UU,'U',SinglePrec)
-        NCDF.write('%s.nc'%label,UUdisp,'Udisp',SinglePrec)
-        NCDF.write('%s.nc'%label,self.geom.pbc,'CellVectors',SinglePrec)
-        NCDF.write('%s.nc'%label,self.geom.xyz,'GeometryXYZ',SinglePrec)
-        NCDF.write('%s.nc'%label,self.geom.anr,'AtomNumbers',SinglePrec)
-        NCDF.write('%s.nc'%label,self.geom.snr,'SpeciesNumbers',SinglePrec)
-        NCDF.write('%s.nc'%label,self.Masses,'Masses',SinglePrec)
-        NCDF.write('%s.nc'%label,self.DynamicAtoms,'DynamicAtoms',SinglePrec)
+        NCDF.write('%s.nc'%label,hw,'hw')
+        NCDF.write('%s.nc'%label,UU,'U')
+        NCDF.write('%s.nc'%label,UUdisp,'Udisp')
+        NCDF.write('%s.nc'%label,self.geom.pbc,'CellVectors')
+        NCDF.write('%s.nc'%label,self.geom.xyz,'GeometryXYZ')
+        NCDF.write('%s.nc'%label,self.geom.anr,'AtomNumbers')
+        NCDF.write('%s.nc'%label,self.geom.snr,'SpeciesNumbers')
+        NCDF.write('%s.nc'%label,self.Masses,'Masses')
+        NCDF.write('%s.nc'%label,self.DynamicAtoms,'DynamicAtoms')
         try:
-            NCDF.write('%s.nc'%label,self.DeviceAtoms,'DeviceAtoms',SinglePrec)
-            NCDF.write('%s.nc'%label,self.kpoint,'kpoint',SinglePrec)
+            NCDF.write('%s.nc'%label,self.DeviceAtoms,'DeviceAtoms')
+            NCDF.write('%s.nc'%label,self.kpoint,'kpoint')
             NCDF.write('%s.nc'%label,self.h0.real,'H0',SinglePrec)
             NCDF.write('%s.nc'%label,self.s0.real,'S0',SinglePrec)
             if not GammaPoint:
@@ -619,6 +625,12 @@ class DynamicalMatrix():
                 NCDF.write('%s.nc'%label,self.heph.imag,'ImHe_ph',SinglePrec)
         except:
             print 'EPH couplings etc not found'
+        try:
+            grad = N.array(self.gradients)
+            NCDF.write('%s.nc'%label,grad.real,'grad.re',SinglePrec)
+            NCDF.write('%s.nc'%label,grad.imag,'grad.im',SinglePrec)
+        except:
+            pass
 
 def WriteFreqFile(filename,hw):
     print 'Phonons.WriteFreqFile: Writing',filename
@@ -730,7 +742,8 @@ def main(options):
     # Compute e-ph coupling
     if options.CalcCoupl:
        DM.PrepareGradients(options.onlySdir,options.kpoint,options.DeviceFirst,options.DeviceLast,options.AbsEref,options.atype)
-       DM.ComputeEPHcouplings(options.PBCFirst,options.PBCLast,options.EPHAtoms,options.Restart,options.CheckPointNetCDF)
+       DM.ComputeEPHcouplings(options.PBCFirst,options.PBCLast,options.EPHAtoms,options.Restart,options.CheckPointNetCDF,
+                              WriteGradients=options.WriteGradients)
        # Write data to files
        DM.WriteOutput(options.DestDir+'/Output',options.SinglePrec,options.GammaPoint)
        CF.PrintMainFooter('Phonons')

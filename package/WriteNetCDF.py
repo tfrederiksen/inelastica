@@ -10,10 +10,10 @@ def write(fn,array,label,SinglePrec=False):
     a new or existing NetCDF file
     """
     nc = NCfile(fn)
-    vartype = 'd'
     if SinglePrec:
-        if label in ['He_ph','ReHe_ph','ImHe_ph']:
-            vartype = 'f'
+        vartype = 'f'
+    else:
+        vartype = 'd'
     nc.write(array,label,vartype)
     nc.close()
 
