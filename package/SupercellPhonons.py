@@ -407,7 +407,7 @@ def main(options):
     if options.kfile:
         # Prepare Hamiltonian etc in Gamma for whole supercell
         natoms = SIO.GetFDFlineWithDefault(fdf[0],'NumberOfAtoms',int,-1,'Error')
-        SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),1,natoms,AbsEref=False,SinglePrec=True)
+        SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),1,natoms,AbsEref=False,atype=N.complex)
         SCDM.nao = SCDM.h0.shape[-1]
         SCDM.FirstOrb = SCDM.OrbIndx[0][0] # First atom = 1
         SCDM.LastOrb = SCDM.OrbIndx[SCDM.Sym.basis.NN-1][1] # Last atom = Sym.NN

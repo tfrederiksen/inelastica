@@ -1740,8 +1740,13 @@ class HS:
                 #if juo==self.listh[si]-1:
                 #    if phase[si]!=1.0+0.0j:
                 #        print "hej"
-                    Full[iuo,juo] += Sparse[si]*phase[si]       
-        return N.array(Full,atype)
+                    Full[iuo,juo] += Sparse[si]*phase[si]
+        if not (Full.dtype==atype):
+            print 'SIO: Forcing array from %s to %s'%(Full.dtype,atype)
+        if atype==N.float or atype==N.float32 or atype==N.float64:
+            return N.array(Full.real,atype)
+        else:
+            return N.array(Full,atype)
 
 # Easy method to read in number of atoms in a TSHS file
 def ReadTSHS(fn,**kwargs):

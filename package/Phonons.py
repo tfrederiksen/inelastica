@@ -142,6 +142,19 @@ def GetOptions(argv,**kwargs):
     options.kpoint = N.array([options.k1,options.k2,options.k3],N.float)
     del options.k1,options.k2,options.k3
 
+    # Determine array type for H,S,dH,...
+    options.GammaPoint = N.dot(options.kpoint,options.kpoint)<1e-7
+    if options.GammaPoint:
+        if options.SinglePrec:
+            options.atype = N.float32
+        else:
+            options.atype = N.float64
+    else:
+        if options.SinglePrec:
+            options.atype = N.complex64
+        else:
+            options.atype = N.complex128
+    
     # Dynamic atoms
     options.DynamicAtoms = range(options.FCfirst,options.FClast+1)
  
@@ -259,8 +272,10 @@ class FCrun():
         self.snr2nao = snr2nao # orbitals per species
         return self.orbitalIndices,self.nao
 
+    
 class OSrun:
-    def __init__(self,onlySdir,kpoint):
+    
+    def __init__(self,onlySdir,kpoint,atype=N.complex):
         print 'Phonons.GetOnlyS: Reading from', onlySdir
         onlySfiles = glob.glob(onlySdir+'/*.onlyS*')
         onlySfiles.sort()
@@ -273,7 +288,7 @@ class OSrun:
             Displ = {}
             for file in onlySfiles:
                 thisHS = SIO.HS(file)
-                thisHS.setkpoint(kpoint)
+                thisHS.setkpoint(kpoint,atype=atype)
                 S = thisHS.S
                 del thisHS
                 nao = len(S)/2
@@ -305,7 +320,6 @@ class OSrun:
             for j in range(3):
                 self.dS[j] = (onlyS[j,1]-onlyS[j,-1])/(Displ[j,-1]+Displ[j,1])
             self.Displ = Displ
-
 
 class DynamicalMatrix():
 
@@ -447,16 +461,15 @@ class DynamicalMatrix():
         self.UUdisp = UUdisp
         self.UUcl = UUcl
 
-
-        
-    def PrepareGradients(self,onlySdir,kpoint,DeviceFirst,DeviceLast,AbsEref,SinglePrec):
+    def PrepareGradients(self,onlySdir,kpoint,DeviceFirst,DeviceLast,AbsEref,atype):
         print '\nPhonons.PrepareGradients: Setting up various arrays'
+        self.atype = atype
         self.kpoint = kpoint
         self.OrbIndx,nao = self.FCRs[0].GetOrbitalIndices()
-        OS = OSrun(onlySdir,kpoint)
+        OS = OSrun(onlySdir,kpoint,atype=atype)
         self.dS = OS.dS
         self.TSHS0 = SIO.HS(self.TSHS[0])
-        self.TSHS0.setkpoint(kpoint)
+        self.TSHS0.setkpoint(kpoint,atype=atype)
         self.invS0H0 = N.empty((2,)+self.TSHS0.H.shape,dtype=self.TSHS0.H.dtype)
         invS0 = LA.inv(OS.S0)
         self.nspin = len(self.TSHS0.H)
@@ -465,18 +478,8 @@ class DynamicalMatrix():
             self.invS0H0[1,iSpin,:,:] = MM.mm(self.TSHS0.H[iSpin,:,:],invS0)
         del invS0
         # don't re-create the array every time... too expensive    
-        GammaPoint = N.dot(self.kpoint,self.kpoint)<1e-7
-        if GammaPoint:
-           if SinglePrec:
-              self.dSdij = N.zeros((nao,nao),N.float32)
-           else:
-              self.dSdij = N.zeros((nao,nao),N.float64)
-        else:
-           if SinglePrec:
-              self.dSdij = N.zeros((nao,nao),N.complex64)
-           else:
-              self.dSdij = N.zeros((nao,nao),N.complex128)
-
+        self.dSdij = N.zeros((nao,nao),atype)
+        
         # Take Device region 
         self.DeviceAtoms = range(DeviceFirst,DeviceLast+1)
         first,last = self.OrbIndx[DeviceFirst-1][0],self.OrbIndx[DeviceLast-1][1]
@@ -487,12 +490,12 @@ class DynamicalMatrix():
         self.AbsEref = AbsEref
         
     def GetGradient(self,Atom,Axis):
-        print 'Phonons.GetGradient: Computing dH[%i,%i]'%(Atom,Axis)
+        print '\nPhonons.GetGradient: Computing dH[%i,%i]'%(Atom,Axis)
         # Read TSHS files
         TSHSm = SIO.HS(self.TSHS[Atom,Axis,-1])
-        TSHSm.setkpoint(self.kpoint)
+        TSHSm.setkpoint(self.kpoint,atype=self.atype)
         TSHSp = SIO.HS(self.TSHS[Atom,Axis,1])
-        TSHSp.setkpoint(self.kpoint)
+        TSHSp.setkpoint(self.kpoint,atype=self.atype)
         # Use Fermi energy of equilibrium calculation as energy reference?
         if self.AbsEref:
             print 'Computing gradient with absolute energy reference'
@@ -512,7 +515,7 @@ class DynamicalMatrix():
         self.dSdij[:,f:l+1] = 0. # reset
         return dH
 
-    def ComputeEPHcouplings(self,PBCFirst,PBCLast,EPHAtoms,Restart,CheckPointNetCDF,SinglePrec):
+    def ComputeEPHcouplings(self,PBCFirst,PBCLast,EPHAtoms,Restart,CheckPointNetCDF):
         first,last = self.OrbIndx[self.DeviceFirst-1][0],self.OrbIndx[self.DeviceLast-1][1]
         rednao = last+1-first
         const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
@@ -524,20 +527,11 @@ class DynamicalMatrix():
               else:
                  print "Restart e-ph. calculation. Partial information read from file:", CheckPointNetCDF
                  RNCfile = NC.NetCDFFile(CheckPointNetCDF,'r')
-                 Heph = N.array(RNCfile.variables['He_ph'])
+                 Heph = N.array(RNCfile.variables['He_ph'],self.atype)
         else:
            print "Start e-ph. calculation from scratch"
-           GammaPoint = N.dot(self.kpoint,self.kpoint)<1e-7
-           if GammaPoint:
-              if SinglePrec:
-                 Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),N.float32)
-              else:
-                 Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),N.float64)
-           else:
-              if SinglePrec:
-                 Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),N.complex64)
-              else:
-                 Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),N.complex128)
+           Heph = N.zeros((len(self.hw),self.nspin,rednao,rednao),self.atype)
+
         # Loop over dynamic atoms
         for i,v in enumerate(EPHAtoms):
             # Loop over axes
@@ -563,16 +557,20 @@ class DynamicalMatrix():
                 dh = dH[:,first:last+1,first:last+1]
                 # Loop over modes and throw away the gradient (to save memory)
                 for m in range(len(self.hw)):
-                    cplx = const*dh*self.UU[m,v-1,j]/(2*self.Masses[i]*self.hw[m])**.5
-                    if GammaPoint:
-                        Heph[m] += N.real(cplx)
-                    else:
-                        Heph[m] += cplx
-
+                    if self.hw[m]>0:
+                        if self.atype==N.float32 or self.atype==N.float64:
+                            Heph[m] += const*dh*self.UU[m,v-1,j].real/(2*self.Masses[i]*self.hw[m])**.5
+                        else:
+                            Heph[m] += const*dh*self.UU[m,v-1,j]/(2*self.Masses[i]*self.hw[m])**.5
+                    elif i==0:
+                        # Print only first time
+                        print 'Phonons.ComputeEPHcouplings: Mode %i has nonpositive frequency --> Zero-valued coupling matrix'%m
+                        # already zero
         del dH, dh
         self.heph = Heph
 
-    def WriteOutput(self,label,SinglePrec):
+    def WriteOutput(self,label,SinglePrec,GammaPoint):
+        print '\nPhonons.WriteOutput'
         ### Write MKL- and xyz-files
         natoms = self.geom.natoms
         hw = self.hw
@@ -610,7 +608,6 @@ class DynamicalMatrix():
             NCDF.write('%s.nc'%label,self.kpoint,'kpoint',SinglePrec)
             NCDF.write('%s.nc'%label,self.h0.real,'H0',SinglePrec)
             NCDF.write('%s.nc'%label,self.s0.real,'S0',SinglePrec)
-            GammaPoint = N.dot(self.kpoint,self.kpoint)<1e-7
             if not GammaPoint:
                 NCDF.write('%s.nc'%label,self.h0.imag,'ImH0',SinglePrec)
                 NCDF.write('%s.nc'%label,self.s0.imag,'ImS0',SinglePrec)
@@ -723,6 +720,8 @@ def main(options):
     print '  ... PBC First   = %4i, PBC Last   = %4i, Device atoms  = %4i'\
           %(options.PBCFirst,options.PBCLast,options.PBCLast-options.PBCFirst+1)
 
+    print '\nSetting array type to %s\n'%options.atype
+
     # Build Dynamical Matrix
     DM = DynamicalMatrix(fdf,options.DynamicAtoms)
     DM.SetMasses(options.Isotopes)
@@ -730,14 +729,14 @@ def main(options):
     DM.ComputePhononModes(DM.mean)
     # Compute e-ph coupling
     if options.CalcCoupl:
-       DM.PrepareGradients(options.onlySdir,options.kpoint,options.DeviceFirst,options.DeviceLast,options.AbsEref,options.SinglePrec)
-       DM.ComputeEPHcouplings(options.PBCFirst,options.PBCLast,options.EPHAtoms,options.Restart,options.CheckPointNetCDF,options.SinglePrec)
+       DM.PrepareGradients(options.onlySdir,options.kpoint,options.DeviceFirst,options.DeviceLast,options.AbsEref,options.atype)
+       DM.ComputeEPHcouplings(options.PBCFirst,options.PBCLast,options.EPHAtoms,options.Restart,options.CheckPointNetCDF)
        # Write data to files
-       DM.WriteOutput(options.DestDir+'/Output',options.SinglePrec)
+       DM.WriteOutput(options.DestDir+'/Output',options.SinglePrec,options.GammaPoint)
        CF.PrintMainFooter('Phonons')
        return DM.h0,DM.s0,DM.hw,DM.heph
     else:
-       DM.WriteOutput(options.DestDir+'/Output',options.SinglePrec)
+       DM.WriteOutput(options.DestDir+'/Output',options.SinglePrec,options.GammaPoint)
        CF.PrintMainFooter('Phonons')
        return DM.hw
 
