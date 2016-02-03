@@ -475,7 +475,14 @@ class DynamicalMatrix():
         self.TSHS0 = SIO.HS(self.TSHS[0])
         self.TSHS0.setkpoint(kpoint,atype=atype)
         self.invS0H0 = N.empty((2,)+self.TSHS0.H.shape,dtype=self.TSHS0.H.dtype)
-        invS0 = LA.inv(OS.S0)
+        # OS.S0 and TSHS0.S should be identical, but with some versions/compilations
+        # of TranSIESTA this is NOT always the case away from k=0 (GammaPoint is OK).
+        # It appears to be a bug in TranSIESTA 3.2 and 4.0b affecting runs
+        # with TS.onlyS=True, i.e., the quick evaluations in the OSrun folder
+        if not N.allclose(OS.S0,self.TSHS0.S):
+            sys.exit('Inconsistency detected with your .onlyS files. Perhaps a bug in your TranSIESTA version/compilation.')
+        #invS0 = LA.inv(OS.S0) # <--- This choice was used in rev. 324-397
+        invS0 = LA.inv(self.TSHS0.S) # Reverting to the matrix used up to rev. 323
         self.nspin = len(self.TSHS0.H)
         for iSpin in range(self.nspin):
             self.invS0H0[0,iSpin,:,:] = MM.mm(invS0,self.TSHS0.H[iSpin,:,:])
