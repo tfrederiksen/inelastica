@@ -461,7 +461,7 @@ class ElectrodeSelfEnergy:
             self.HS.setkpoint(kp)
             tmpH, tmpS = self.HS.H.copy(), self.HS.S.copy()
 
-            kp[self.periodic_axis] = 0.5
+            kp[self.semiinf] = 0.5
             self.HS.setkpoint(kp)
             self.H = 0.5 * (tmpH + self.HS.H)
             self.S = 0.5 * (tmpS + self.HS.S)
@@ -470,7 +470,7 @@ class ElectrodeSelfEnergy:
             # 1: -i*(H(kz=0.25)-H) = -i*(H + i*H01 - i*H10-H) = H01-H10 
             # 2: H(kz=0)-H  = H + H01 + H10 - H =  H01+H10
             # -> H10 = (-i*(H(kz=0.25)-H) + H(kz=0)-H)/2
-            kp[self.periodic_axis] = 0.25
+            kp[self.semiinf] = 0.25
             self.HS.setkpoint(kp)
             self.H01 = 0.5*( -1j*( self.HS.H - self.H ) + tmpH - self.H)
             self.S01 = 0.5*( -1j*( self.HS.S - self.S ) + tmpS - self.S)

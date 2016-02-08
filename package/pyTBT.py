@@ -138,10 +138,10 @@ def main(options):
     # Setup self-energies and device GF
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
     elecL.scaling = options.scaleSigL
-    elecL.periodic_axis = options.paL
+    elecL.semiinf = options.semiinfL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
     elecR.scaling = options.scaleSigR
-    elecR.periodic_axis = options.paR
+    elecR.semiinf = options.semiinfR
     DevGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,
                     DeviceAtoms=options.DeviceAtoms,
                     BufferAtoms=options.buffer)
