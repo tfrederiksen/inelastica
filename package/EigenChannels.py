@@ -365,6 +365,9 @@ def writenetcdf(geom,fn,YY,nx,ny,nz,origo,dstep):
     varIm = file.createVariable('Im-Psi','d',('nx','ny','nz'))
     varIm[:] = YY.imag
 
+    varAbsSq = file.createVariable('Abs-sqr-Psi','d',('nx','ny','nz'))
+    varAbsSq[:] = N.absolute(N.square(YY))
+    
     vardstep = file.createVariable('dstep','d',('number',))
     vardstep[:]  = dstep
 
@@ -509,6 +512,26 @@ def writeXSF(geom,fn,YY,nx,ny,nz,origo,dstep):
         else :
             fo.write('  %1.5E'% (data[iii]))
     fo.write('\n END_DATAGRID_3D\n')
+    # Absolute square
+    fo.write(' BEGIN_DATAGRID_3D_REAL\n')
+    fo.write('    %3.0i    %3.0i    %3.0i\n'%(nx,ny,nz))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (origo[0],origo[1],origo[2]))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin,0.0000,0.0000))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,ymax-ymin,0.0000))
+    fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,0.0000,zmax-zmin))
+    data=[]
+    ll=0
+    YYA2 = N.absolute(N.square(YY))
+    for ii in range(nz):
+        for kk in range(ny):
+            for jj in range(nx):
+    		data.append(YYA2[jj,kk,ii])
+    for iii in range((nx*ny*nz)) :
+	if ((iii+1)%6==0) :	
+            fo.write('  %1.5E\n'% (data[iii]))
+	else :
+            fo.write('  %1.5E'% (data[iii]))
+    fo.write('\n END_DATAGRID_3D\n')
     fo.write('END_BLOCK_DATAGRID_3D')
     fo.close()
 
@@ -540,15 +563,17 @@ def writeWavefunction(options,geom,basis,Y,fn=None):
     foT.close()
 
     YY, dstep, origo, nx, ny, nz = calcWF(options,geom,basis,Y)
-
+    
     # Write wave function in specified file format
     if options.format.lower() == 'macu':
         writemacubin(fn+'.Re.macu',YY.real,nx,ny,nz,origo,dstep)
         writemacubin(fn+'.Im.macu',YY.imag,nx,ny,nz,origo,dstep)
+        writemacubin(fn+'.Abs.macu',N.absolute(N.square(YY)),nx,ny,nz,origo,dstep)
 
     if options.format.lower() == 'cube':
         writecube(geom,fn+'.Re.cube',YY.real,nx,ny,nz,origo,dstep)
         writecube(geom,fn+'.Im.cube',YY.imag,nx,ny,nz,origo,dstep)
+        writecube(geom,fn+'.Abs.cube',N.absolute(N.square(YY)),nx,ny,nz,origo,dstep)
         
     if options.format.lower() == 'xsf':
         writeXSF(geom,fn+'.XSF',YY,nx,ny,nz,origo,dstep)
