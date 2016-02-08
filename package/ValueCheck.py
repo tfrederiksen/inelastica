@@ -112,6 +112,8 @@ def OptionsCheck(opts,exe):
 
     # Read SIESTA files
     opts.head,tail = osp.split(opts.fn)
+    if opts.head == '': # set filepath if missing
+        opts.head = '.'
     print(exe+": Reading keywords from {0} \n".format(opts.fn))
 
     opts.systemlabel = SIO.GetFDFlineWithDefault(opts.fn,'SystemLabel', str, 'siesta', exe) 
