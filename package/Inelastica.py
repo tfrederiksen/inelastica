@@ -123,8 +123,10 @@ def main(options):
     # Set up electrodes and device Greens function
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage*VfracL)
     elecL.scaling = options.scaleSigL
+    elecL.periodic_axis = options.paL
     elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,options.voltage*(VfracL-1.))
     elecR.scaling = options.scaleSigR
+    elecR.periodic_axis = options.paR
     # Read phonons
     NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
     print 'Inelastica: Reading ',options.PhononNetCDF

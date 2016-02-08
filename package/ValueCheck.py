@@ -118,6 +118,8 @@ def OptionsCheck(opts,exe):
     opts.TSHS = '%s/%s.TSHS'%(opts.head,opts.systemlabel)
 
     # Electrodes
+    opts.paL = 2 # z-axis is the default periodic axis of left electrode
+    opts.paR = 2 # z-axis is the default periodic axis of right electrode
     try:
         # Old format
         opts.fnL = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFileLeft', str, None, exe)
@@ -142,6 +144,7 @@ def OptionsCheck(opts,exe):
         opts.NA1R = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A1', int, 1, exe)
         opts.NA2R = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A2', int, 1, exe)
 
+        # Left
         block = SIO.GetFDFblock(opts.fn, KeyWord = 'TS.Elec.Left')
         for line in block:
             print(line)
@@ -158,7 +161,16 @@ def OptionsCheck(opts,exe):
                 ints = map(int,line[1:])
                 opts.NA1L = ints[0]
                 opts.NA2L = ints[1]
-
+            # Determine periodic axis
+            elif key == 'semi-inf-direction' or key == 'semi-inf-dir' or key == 'semi-inf':
+                axis = line[1][1:]
+                if axis=='a' or axis=='A1':
+                    opts.paL = 0
+                elif axis=='b' or axis=='A2':
+                    opts.paL = 1
+                elif axis=='c' or axis=='A3':
+                    opts.paL = 2
+        # Right
         block = SIO.GetFDFblock(opts.fn, KeyWord = 'TS.Elec.Right')
         for line in block:
             print(line)
@@ -173,6 +185,15 @@ def OptionsCheck(opts,exe):
                 ints = map(int,line[1:])
                 opts.NA1R = ints[0]
                 opts.NA2R = ints[1]
+            # Determine periodic axis
+            elif key == 'semi-inf-direction' or key == 'semi-inf-dir' or key == 'semi-inf':
+                axis = line[1][1:]
+                if axis=='a' or axis=='A1':
+                    opts.paR = 0
+                elif axis=='b' or axis=='A2':
+                    opts.paR = 1
+                elif axis=='c' or axis=='A3':
+                    opts.paR = 2
     
     if opts.UseBulk < 0:
         opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn,'TS.UseBulkInElectrodes', bool, True, exe)
