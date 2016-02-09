@@ -92,7 +92,6 @@ setup(name='Inelastica',
       version='1.2-rc',
       # Define the requirements for Inelastica
       # These probably needs to be adjusted... 
-      install_requires = ['python>=2.5','numpy>=1.6','ScientificPython>=2.6'],
       requires = ['python (>=2.5)','numpy (>=1.6)','ScientificPython (>=2.6)'],
       description='Python tools for SIESTA/TranSIESTA', 
       long_description="""

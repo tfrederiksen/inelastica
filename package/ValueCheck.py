@@ -122,87 +122,84 @@ def OptionsCheck(opts,exe):
     # Electrodes
     opts.semiinfL = 2 # z-axis is the default semiinfinite direction of left electrode
     opts.semiinfR = 2 # z-axis is the default semiinfinite direction of right electrode
-    try:
-        # Old format
-        opts.fnL = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFileLeft', str, None, exe)
-        opts.NA1L = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1Left', int, 1, exe)
-        opts.NA2L = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2Left', int, 1, exe)
-        opts.fnR  = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFileRight', str, None, exe)
-        opts.NA1R = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1Right', int, 1, exe)
-        opts.NA2R = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2Right', int, 1, exe)
-    except:
-        print('Looking for TSHS files in the new electrode format')
-
-        # These first keys can be used, but they are superseeded by keys in the TS.Elec.<> block
-        # Hence if they are read in first it will do it in correct order.
-
-        key = 'TS.Elec.Left.'
-        opts.fnL = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,key+'TSHS', str, '', exe)
-        opts.NA1L = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A1', int, 1, exe)
-        opts.NA2L = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A2', int, 1, exe)
-
-        key = 'TS.Elec.Right.'
-        opts.fnR  = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,key+'TSHS', str, '', exe)
-        opts.NA1R = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A1', int, 1, exe)
-        opts.NA2R = SIO.GetFDFlineWithDefault(opts.fn,key+'Rep.A2', int, 1, exe)
-
-        # Left
-        block = SIO.GetFDFblock(opts.fn, KeyWord = 'TS.Elec.Left')
-        for line in block:
-            print(line)
-            # Lower-case, FDF is case-insensitive
-            key = line[0].lower()
-            if key == 'tshs':
-                opts.fnL = opts.head+'/'+line[1]
-            elif key in ['replicate-a','rep-a','replicate-a1','rep-a1']:
-                opts.NA1L = int(line[1])
-            elif key in ['replicate-b','rep-b','replicate-a2','rep-a2']:
-                opts.NA2L = int(line[1])
-            elif key in ['replicate','rep']:
-                # We have 2 integers
-                ints = map(int,line[1:])
-                opts.NA1L = ints[0]
-                opts.NA2L = ints[1]
-            # Determine semiinfinite direction
-            elif key == 'semi-inf-direction' or key == 'semi-inf-dir' or key == 'semi-inf':
-                axis = line[1][1:]
-                if axis=='a' or axis=='A1':
-                    opts.semiinfL = 0
-                elif axis=='b' or axis=='A2':
-                    opts.semiinfL = 1
-                elif axis=='c' or axis=='A3':
-                    opts.semiinfL = 2
-        # Right
-        block = SIO.GetFDFblock(opts.fn, KeyWord = 'TS.Elec.Right')
-        for line in block:
-            print(line)
-            key = line[0].lower()
-            if key == 'tshs':
-                opts.fnR = opts.head+'/'+line[1]
-            elif key in ['replicate-a','rep-a','replicate-a1','rep-a1']:
-                opts.NA1R = int(line[1])
-            elif key in ['replicate-b','rep-b','replicate-a2','rep-a2']:
-                opts.NA2R = int(line[1])
-            elif key in ['replicate','rep']:
-                ints = map(int,line[1:])
-                opts.NA1R = ints[0]
-                opts.NA2R = ints[1]
-            # Determine semiinfinite direction
-            elif key == 'semi-inf-direction' or key == 'semi-inf-dir' or key == 'semi-inf':
-                axis = line[1][1:]
-                if axis=='a' or axis=='A1':
-                    opts.semiinfR = 0
-                elif axis=='b' or axis=='A2':
-                    opts.semiinfR = 1
-                elif axis=='c' or axis=='A3':
-                    opts.semiinfR = 2
+    
+    # These first keys can be used, but they are superseeded by keys in the TS.Elec.<> block
+    # Hence if they are read in first it will do it in correct order.
     
     if opts.UseBulk < 0:
+        # Note NRP:
+        #  in principle this is now a per-electrode setting which
+        #  may be useful for certain systems...
         opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn,'TS.UseBulkInElectrodes', bool, True, exe)
         opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn,'TS.Elecs.Bulk', bool, opts.UseBulk, exe)
+            
+    def set_elec_vars(lr, TSHS, NA1, NA2, semiinf):
+        
+        # default semi-inf direction
+        semiinf = 2
+        
+        # Old format
+        try:
+            TSHS = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFile'+lr, str, None, exe)
+            NA1 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1'+lr, int, 1, exe)
+            NA2 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2'+lr, int, 1, exe)
+        except:
+            return
+        
+        belec = 'TS.Elec.' + lr
+        print('Looking for new electrode format in: %%block {}'.format(belec))
+        
+        # Default replication stuff
+        TSHS = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,belec+'.TSHS', str, '', exe)
+        NA1 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A1', int, 1, exe)
+        NA2 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A2', int, 1, exe)
+        NA2 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A3', int, 1, exe)
+        
+        # Overwrite block
+        block = SIO.GetFDFblock(opts.fn, KeyWord = belec)
+        
+        for line in block:
+            print(line)
+            
+            # Lower-case, FDF is case-insensitive
+            key = line[0].lower()
+            if key in ['tshs','tshs-file']:
+                TSHS = opts.head+'/'+line[1]
+            elif key in ['replicate-a','rep-a','replicate-a1','rep-a1']:
+                NA1 = int(line[1])
+            elif key in ['replicate-b','rep-b','replicate-a2','rep-a2']:
+                NA2 = int(line[1])
+            elif key in ['replicate-c','rep-c','replicate-a3','rep-a3']:
+                NA3 = int(line[1])
+            elif key in ['replicate','rep']:
+                # We have *at least* 2 integers
+                NA1 = int(line[1])
+                NA2 = int(line[2])
+                NA3 = int(line[3])
 
+            elif key in ['semi-inf-direction','semi-inf-dir','semi-inf']:
+                # This is lower-case checked
+                axis = line[1][1:].lower()
+                if 'a' == axis or 'a1' == axis:
+                    semiinf = 0
+                elif 'b' == axis or 'a2' == axis:
+                    semiinf = 1
+                elif 'c' == axis or 'a3' == axis:
+                    semiinf = 2
+
+                # Simple check of input, this may be overwritten later
+                if semiinf != 2 and NA1 * NA2 * NA3 > 1:
+                    raise ValueError(("Cannot provide semi-infinite directions "
+                                      "other than A3-direction with repetition."))
+                    
+    set_elec_vars('Left',
+                  opts.fnL, opts.NA1L, opts.NA2L, opts.semiinfL)
+    set_elec_vars('Right',
+                  opts.fnR, opts.NA1R, opts.NA2R, opts.semiinfR)
+    
+    
     # Read in number of buffer atoms
-    opts.buffer,L,R = SIO.GetBufferAtomsList(opts.TSHS,opts.fn)
+    opts.buffer, L, R = SIO.GetBufferAtomsList(opts.TSHS,opts.fn)
     opts.bufferL = L
     opts.bufferR = R
 
