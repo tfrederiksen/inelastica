@@ -119,10 +119,6 @@ def OptionsCheck(opts,exe):
     opts.systemlabel = SIO.GetFDFlineWithDefault(opts.fn,'SystemLabel', str, 'siesta', exe) 
     opts.TSHS = '%s/%s.TSHS'%(opts.head,opts.systemlabel)
 
-    # Electrodes
-    opts.semiinfL = 2 # z-axis is the default semiinfinite direction of left electrode
-    opts.semiinfR = 2 # z-axis is the default semiinfinite direction of right electrode
-    
     # These first keys can be used, but they are superseeded by keys in the TS.Elec.<> block
     # Hence if they are read in first it will do it in correct order.
     
@@ -133,7 +129,7 @@ def OptionsCheck(opts,exe):
         opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn,'TS.UseBulkInElectrodes', bool, True, exe)
         opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn,'TS.Elecs.Bulk', bool, opts.UseBulk, exe)
             
-    def set_elec_vars(lr, TSHS, NA1, NA2, semiinf):
+    def get_elec_vars(lr):
         
         # default semi-inf direction
         semiinf = 2
@@ -143,8 +139,9 @@ def OptionsCheck(opts,exe):
             TSHS = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFile'+lr, str, None, exe)
             NA1 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1'+lr, int, 1, exe)
             NA2 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2'+lr, int, 1, exe)
+            return TSHS,NA1,NA2,semiinf
         except:
-            return
+            pass
         
         belec = 'TS.Elec.' + lr
         print('Looking for new electrode format in: %%block {}'.format(belec))
@@ -153,14 +150,13 @@ def OptionsCheck(opts,exe):
         TSHS = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,belec+'.TSHS', str, '', exe)
         NA1 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A1', int, 1, exe)
         NA2 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A2', int, 1, exe)
-        NA2 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A3', int, 1, exe)
+        NA3 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A3', int, 1, exe)
         
         # Overwrite block
         block = SIO.GetFDFblock(opts.fn, KeyWord = belec)
         
         for line in block:
             print(line)
-            
             # Lower-case, FDF is case-insensitive
             key = line[0].lower()
             if key in ['tshs','tshs-file']:
@@ -191,12 +187,10 @@ def OptionsCheck(opts,exe):
                 if semiinf != 2 and NA1 * NA2 * NA3 > 1:
                     raise ValueError(("Cannot provide semi-infinite directions "
                                       "other than A3-direction with repetition."))
-                    
-    set_elec_vars('Left',
-                  opts.fnL, opts.NA1L, opts.NA2L, opts.semiinfL)
-    set_elec_vars('Right',
-                  opts.fnR, opts.NA1R, opts.NA2R, opts.semiinfR)
-    
+        return TSHS,NA1,NA2,semiinf
+
+    opts.fnL, opts.NA1L, opts.NA2L, opts.semiinfL = get_elec_vars('Left')
+    opts.fnR, opts.NA1R, opts.NA2R, opts.semiinfR = get_elec_vars('Right')
     
     # Read in number of buffer atoms
     opts.buffer, L, R = SIO.GetBufferAtomsList(opts.TSHS,opts.fn)
