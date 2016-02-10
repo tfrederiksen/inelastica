@@ -131,25 +131,22 @@ def OptionsCheck(opts,exe):
             
     def get_elec_vars(lr):
         
+        # Look up old format first
+        TSHS = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFile'+lr, str, '', exe)
+        NA1 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1'+lr, int, 1, exe)
+        NA2 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2'+lr, int, 1, exe)
+
         # default semi-inf direction
         semiinf = 2
         
-        # Old format
-        try:
-            TSHS = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFile'+lr, str, None, exe)
-            NA1 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1'+lr, int, 1, exe)
-            NA2 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2'+lr, int, 1, exe)
-            return TSHS,NA1,NA2,semiinf
-        except:
-            pass
-        
+        # Proceed looking up new format, which precedes
         belec = 'TS.Elec.' + lr
         print('Looking for new electrode format in: %%block {}'.format(belec))
         
         # Default replication stuff
-        TSHS = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,belec+'.TSHS', str, '', exe)
-        NA1 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A1', int, 1, exe)
-        NA2 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A2', int, 1, exe)
+        TSHS = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,belec+'.TSHS', str, TSHS, exe)
+        NA1 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A1', int, NA1, exe)
+        NA2 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A2', int, NA2, exe)
         NA3 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A3', int, 1, exe)
         
         # Overwrite block

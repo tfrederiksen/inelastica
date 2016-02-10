@@ -694,17 +694,19 @@ def GetFDFblock(infile, KeyWord = ''):
     lines = ReadFDFLines(infile)
     kwl = KeyWord.lower()
     data = []
+    start = 0
     for i in range(len(lines)):
         tmp = lines[i]
         if tmp[0].lower() == '%block':
             if tmp[1].lower() == kwl:
                 start = i+1
                 break
-    for i in range(len(lines)):
-        tmp = lines[i+start]
-        if tmp[0].lower() != '%endblock':
-            data.append(tmp)
-        else: break
+    if start > 0: # Only append data if block was found
+        for i in range(len(lines)):
+            tmp = lines[i+start]
+            if tmp[0].lower() != '%endblock':
+                data.append(tmp)
+            else: break
     return data
 
 #--------------------------------------------------------------------------------
