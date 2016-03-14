@@ -22,7 +22,7 @@ class Symmetry:
     a1..3    : Lattice vectors of unitcell
     b1..3    : Reciprocal lattice vectors
     bp1..bp3 : Reciprocal lattice vectors to PBC.
-    latticeType : string CUBIC/FCC/BCC/HEX/TETRAGONAL
+    latticeType : string CUBIC/FCC/BCC/HEX/TETRAGONAL/ORTHORHOMBIC
     basis.xyz : xyz of basis inside a1..a3
     basis.snr, .anr, .NN : Siesta/atomic number and number of atoms
 
@@ -636,6 +636,11 @@ class Symmetry:
                 # a1 = [a,0,0]
                 # a2 = [0,a,0]
                 # a3 = [0,0,c]
+        elif N.sum(N.abs(N.array(angles)-90))<2:
+            latticetype="ORTHORHOMBIC"
+                # a1 = [a,0,0]
+                # a2 = [0,b,0]
+                # a3 = [0,0,c]
         print "Symmetry: Lattice = %s"%latticetype
         self.latticeType = latticetype
 
@@ -833,6 +838,12 @@ class Symmetry:
             X = b1*0/1+b2*1/2+b3*0/1
             Z = b1*0/1+b2*0/1+b3*1/2
             self.path = [[G,'G'],[X,'X'],[M,'M'],[G,'G'],[Z,'Z'],[R,'R'],[A,'A'],[Z,'Z']]
+        elif self.latticeType == 'ORTHORHOMBIC':
+            X = b1*1/2+b2*0/2+b3*0/2
+            Y = b1*0/2+b2*1/2+b3*0/2
+            S = b1*1/2+b2*1/2+b3*0/2
+            Z = b1*0/2+b2*0/2+b3*1/2
+            self.path = [[G,'G'],[X,'X'],[S,'S'],[Y,'Y'],[G,'G'],[Z,'Z']]
         else:
             print "Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType
             sys.exit('Error: unknown lattice type')
