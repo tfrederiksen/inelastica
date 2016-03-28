@@ -485,7 +485,7 @@ class Geom:
         
         print '   ... Final number of atoms        = %i' %len(self.xyz)
 
-    def BuildOnlyS(self,displacement=0.04*PC.Bohr2Ang):
+    def BuildOnlyS(self,displacement=0.02):
         "Returns a new geometry object with 7 times as many atoms"
         geom=copy.deepcopy(self)
         for dim in range(3):
