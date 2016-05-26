@@ -127,7 +127,7 @@ class Symmetry:
 
         # Find out which basis atom corresponds to each atom
         xyz = moveIntoCell(self.xyz,self.a1,self.a2,self.a3,self.accuracy)
-        self.basisatom = N.zeros((self.NN))
+        self.basisatom = N.zeros((self.NN),N.int)
         for ii in range(self.basis.NN):
             indx = N.where(N.sum(N.abs(xyz-self.basis.xyz[ii,:]), axis=1)<self.accuracy)
             self.basisatom[indx[0]]=ii
@@ -583,7 +583,7 @@ class Symmetry:
 
         # Find out which basis atom corresponds to each atom
         xyz = moveIntoCell(self.xyz,self.a1,self.a2,self.a3,self.accuracy)
-        self.basisatom = N.zeros((self.NN))
+        self.basisatom = N.zeros((self.NN),N.int)
         for ii in range(self.basis.NN):
             indx = N.where(N.sum(N.abs(xyz-self.basis.xyz[ii,:]), axis=1)<self.accuracy)
             self.basisatom[indx[0]]=ii
