@@ -397,6 +397,7 @@ class DynamicalMatrix():
                                    /(self.Masses[i]*self.Masses[j])**0.5
         # Solve eigenvalue problem with symmetric FCtilde
         FCtilde = FCtilde.reshape((3*dyn,3*dyn),order='C')
+        self.FCtilde = FCtilde
         evalue,evec = LA.eigh(FCtilde)
         #evalue,evec = LA.eig(FCtilde)
         evec = N.transpose(evec)

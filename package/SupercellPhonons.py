@@ -75,7 +75,7 @@ def GetOptions(argv,**kwargs):
                  help="Number of points on path between high-symmetry k-points [default=%default]")
 
     p.add_option('--mesh',dest='mesh',default='[0,0,0]',type="str",
-                 help="Mesh sampling of 1BZ (powers of 2) [default=%default]")
+                 help="Mesh sampling over one BZ (powers of 2) [default=%default]")
 
     p.add_option("--sort",dest="sorting",
                  help="Sort eigenvalues along k-mesh for nice plots? [default=%default]",
@@ -110,6 +110,13 @@ def GetOptions(argv,**kwargs):
   
 
 class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
+
+    def __init__(self,fdf):
+        PH.DynamicalMatrix.__init__(self,fdf,DynamicAtoms=None)
+        # Find basis and symmetry operations
+        self.CheckSymmetries()
+
+    # PHONONIC PART
 
     def CheckSymmetries(self):
         print '\nPerforming symmetry analysis'
@@ -165,6 +172,8 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
             self.UUdisp[:,n,:] = phase*self.Udisp[:,3*j:3*j+3]
         return self.hw,self.U
 
+    # ELECTRONIC PART
+
     def Fold2PrimitiveCell(self,H,kpoint):
         # Folding down H (or S) to specified kpoint
         # in the primitive cell
@@ -184,7 +193,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
                 # exp( i k R0m )
                 R0m = self.latticevectors[n,m]
                 phase = N.exp(1.0j*N.dot(kpoint,R0m))
-                H_k[...,fnb:lnb+1,fmb:lmb+1] += phase*H[...,fn:ln+1,fm:lm+1]
+	        H_k[...,fnb:lnb+1,fmb:lmb+1] += phase*H[...,fn:ln+1,fm:lm+1]
         return H_k
 
     def ComputeElectronStates(self,kpoint,verbose=True):
@@ -198,6 +207,9 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         for ispin in range(self.nspin):
             ev[ispin], evec[ispin] = SLA.eigh(self.h0_k[ispin],self.s0_k)
         return ev,evec
+
+
+# AUXILIARY FUNCTIONS
 
 def ReadKpoints(filename):
     print 'SupercellPhonons.ReadKpoints: Reading from',filename
@@ -379,15 +391,15 @@ def WriteDOS(outfile,bands,emin,emax,pts,smear):
     pp.PutText('kpts = %i'%len(bands),0.20,0.70)
     pp.WriteFile()
 
+
 def main(options):
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     #VC.OptionsCheck(options,'Phonons')
 
     CF.PrintMainHeader('Bandstructures',vinfo,options)
 
-    fdf = glob.glob(options.FCwildcard+'/RUN.fdf')  
+    fdf = glob.glob(options.FCwildcard+'/RUN.fdf') # This should be made an input flag
     SCDM = Supercell_DynamicalMatrix(fdf)
-    SCDM.CheckSymmetries()
 
     # Write high-symmetry path
     WritePath(options.DestDir+'/symmetry-path',SCDM.Sym.path,options.steps)
@@ -412,18 +424,33 @@ def main(options):
         SCDM.FirstOrb = SCDM.OrbIndx[0][0] # First atom = 1
         SCDM.LastOrb = SCDM.OrbIndx[SCDM.Sym.basis.NN-1][1] # Last atom = Sym.NN
         SCDM.rednao = SCDM.LastOrb+1-SCDM.FirstOrb
-        # Compute electron eigenvalues
+        # Read kpoints
         kpts,dk,klabels,kticks = ReadKpoints(options.kfile)
         if klabels:
             # Only write ascii if labels exist
             WriteKpoints(options.DestDir+'/kpoints',kpts,klabels)
-        # Loop over kpoints
+        # Prepare netcdf
         ncfn = options.DestDir+'/Electrons.nc'
         ncf = NC.NetCDFFile(ncfn, 'w')
+        # Grid
         ncf.createDimension('gridpts',len(kpts))
-        ncf.createDimension('kpt',3)
-        grid = ncf.createVariable('grid','d',('gridpts','kpt'))
+        ncf.createDimension('vector',3)
+        grid = ncf.createVariable('grid','d',('gridpts','vector'))
         grid[:] = kpts
+        grid.units = '1/Angstrom'
+        # Geometry
+        ncf.createDimension('atoms',SCDM.Sym.basis.NN)
+        xyz = ncf.createVariable('xyz','d',('atoms','vector'))
+        xyz[:] = SCDM.Sym.basis.xyz
+        xyz.units = 'Angstrom'
+        pbc = ncf.createVariable('pbc','d',('vector','vector'))
+        pbc.units = 'Angstrom'
+        pbc[:] = [SCDM.Sym.a1,SCDM.Sym.a2,SCDM.Sym.a3]
+        rvec1 = ncf.createVariable('rvec','d',('vector','vector'))
+        rvec1.units = '1/Angstrom (incl. factor 2pi)'
+        rvec1[:] = rvec
+        ncf.sync()
+        # Loop over kpoints
         for i,k in enumerate(kpts):
             if i<100: # Print only for the first 100 points
                 ev,evec = SCDM.ComputeElectronStates(k,verbose=True)
@@ -432,16 +459,55 @@ def main(options):
                 # otherwise something simple 
                 if i%100==0: print '%i out of %i k-points computed'%(i,len(kpts))
             if i==0:
-                # Initiate array
                 ncf.createDimension('nspin',SCDM.nspin)
+                ncf.createDimension('orbs',SCDM.rednao)
                 ncf.createDimension('bands',SCDM.rednao)
                 evals = ncf.createVariable('eigenvalues','d',('gridpts','nspin','bands'))
-                evecsRe = ncf.createVariable('eigenvectors.re','d',('gridpts','nspin','bands','bands'))
-                evecsIm = ncf.createVariable('eigenvectors.im','d',('gridpts','nspin','bands','bands'))
+                evals.units = 'eV'
+                evecsRe = ncf.createVariable('eigenvectors.re','d',('gridpts','nspin','orbs','bands'))
+                evecsIm = ncf.createVariable('eigenvectors.im','d',('gridpts','nspin','orbs','bands'))
+                # Check eigenvectors
+                print 'SupercellPhonons: Checking eigenvectors at',k,
+                for j in range(SCDM.nspin):
+                    ev2 = N.diagonal(MM.mm(MM.dagger(evec[j]),SCDM.h0_k[j],evec[j]))
+                    assert N.allclose(ev[j],ev2,atol=1e-5,rtol=1e-3)
+                print 'OK'
+                ncf.sync()
+            # Write to NetCDF
             evals[i,:] = ev
             evecsRe[i,:] = evec.real
             evecsIm[i,:] = evec.imag
         ncf.sync()
+        # Include basis orbitals in netcdf file
+        lasto = SCDM.OrbIndx[:SCDM.Sym.basis.NN+1,0]
+        orbbasis = SIO.BuildBasis(fdf[0],1,SCDM.Sym.basis.NN,lasto)
+        # Note that the above basis is for the geometry with an atom FC-moved in z.
+        #print dir(orbbasis)
+        #print orbbasis.xyz # Hence, this is not the correct geometry of the basis atoms!
+        center = ncf.createVariable('orbcenter','i',('orbs',)) 
+        center[:] = N.array(orbbasis.ii-1,dtype='int32')
+        center.description = 'Atom index (counting from 0) of the orbital center'
+        nn = ncf.createVariable('N','i',('orbs',)) 
+        nn[:] = N.array(orbbasis.N,dtype='int32')
+        ll = ncf.createVariable('L','i',('orbs',))
+        ll[:] = N.array(orbbasis.L,dtype='int32')
+        mm = ncf.createVariable('M','i',('orbs',)) 
+        mm[:] = N.array(orbbasis.M,dtype='int32')
+        # Cutoff radius and delta
+        Rc = ncf.createVariable('Rc','d',('orbs',))
+        Rc[:] = orbbasis.coff
+        Rc.units = 'Angstrom'
+        delta = ncf.createVariable('delta','d',('orbs',))
+        delta[:] = orbbasis.delta
+        delta.units = 'Angstrom'
+        # Radial components of the orbitals
+        ntb = len(orbbasis.orb[0])
+        ncf.createDimension('ntb',ntb)
+        rii = ncf.createVariable('rii','d',('orbs','ntb'))
+        rii[:] = N.outer(orbbasis.delta,N.arange(ntb))
+        rii.units = 'Angstrom'
+        radialfct = ncf.createVariable('radialfct','d',('orbs','ntb'))
+        radialfct[:] = orbbasis.orb
         # Sort eigenvalues to connect crossing bands?
         if options.sorting:
             for i in range(SCDM.nspin):
@@ -455,7 +521,6 @@ def main(options):
                 PlotElectronBands(options.DestDir+'/Electrons.DOWN.agr',dk,evals[:,1,:],kticks)
         ncf.close()
 
-
     # Compute phonon eigenvalues
     if options.qfile:
         SCDM.SymmetrizeFC(options.radius)
@@ -464,13 +529,28 @@ def main(options):
         if qlabels:
             # Only write ascii if labels exist
             WriteKpoints(options.DestDir+'/qpoints',qpts,qlabels)
-        # Loop over qpoints
+        # Prepare netcdf
         ncfn = options.DestDir+'/Phonons.nc'
         ncf = NC.NetCDFFile(ncfn, 'w')
+        # Grid
         ncf.createDimension('gridpts',len(qpts))
-        ncf.createDimension('kpt',3)
-        grid = ncf.createVariable('grid','d',('gridpts','kpt'))
-        grid[:] = qpts        
+        ncf.createDimension('vector',3)
+        grid = ncf.createVariable('grid','d',('gridpts','vector'))
+        grid[:] = qpts
+        grid.units = '1/Angstrom'
+        # Geometry
+        ncf.createDimension('atoms',SCDM.Sym.basis.NN)
+        xyz = ncf.createVariable('xyz','d',('atoms','vector'))
+        xyz[:] = SCDM.Sym.basis.xyz
+        xyz.units = 'Angstrom'
+        pbc = ncf.createVariable('pbc','d',('vector','vector'))
+        pbc.units = 'Angstrom'
+        pbc[:] = [SCDM.Sym.a1,SCDM.Sym.a2,SCDM.Sym.a3]
+        rvec1 = ncf.createVariable('rvec','d',('vector','vector'))
+        rvec1.units = '1/Angstrom (incl. factor 2pi)'
+        rvec1[:] = rvec
+        ncf.sync()
+        # Loop over q
         for i,q in enumerate(qpts):
             if i<100: # Print only for the first 100 points
                 hw,U = SCDM.ComputePhononModes_q(q,verbose=True)
@@ -479,11 +559,20 @@ def main(options):
                 # otherwise something simple
                 if i%100==0: print '%i out of %i q-points computed'%(i,len(qpts))
             if i==0:
-                # Initiate array
                 ncf.createDimension('bands',len(hw))
+                ncf.createDimension('displ',len(hw))
                 evals = ncf.createVariable('eigenvalues','d',('gridpts','bands'))
-                evecsRe = ncf.createVariable('eigenvectors.re','d',('gridpts','bands','bands'))
-                evecsIm = ncf.createVariable('eigenvectors.im','d',('gridpts','bands','bands'))
+                evals.units = 'eV'
+                evecsRe = ncf.createVariable('eigenvectors.re','d',('gridpts','bands','displ'))
+                evecsIm = ncf.createVariable('eigenvectors.im','d',('gridpts','bands','displ'))
+                # Check eigenvectors
+                print 'SupercellPhonons.Checking eigenvectors at',q,
+                tmp = MM.mm(N.conjugate(U),SCDM.FCtilde,N.transpose(U))
+                const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
+                hw2 = const*N.diagonal(tmp)**0.5 # Units in eV
+                assert N.allclose(hw,N.absolute(hw2),atol=1e-5,rtol=1e-3)
+                print 'OK'
+                ncf.sync()
             evals[i] = hw
             evecsRe[i] = U.real
             evecsIm[i] = U.imag
