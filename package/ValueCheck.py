@@ -145,9 +145,9 @@ def OptionsCheck(opts,exe):
         
         # Default replication stuff
         TSHS = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,belec+'.TSHS', str, TSHS, exe)
-        NA1 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A1', int, NA1, exe)
-        NA2 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A2', int, NA2, exe)
-        NA3 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Rep.A3', int, 1, exe)
+        NA1 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Bloch.A1', int, NA1, exe)
+        NA2 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Bloch.A2', int, NA2, exe)
+        NA3 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Bloch.A3', int, 1, exe)
         
         # Overwrite block
         block = SIO.GetFDFblock(opts.fn, KeyWord = belec)
@@ -158,13 +158,13 @@ def OptionsCheck(opts,exe):
             key = line[0].lower()
             if key in ['tshs','tshs-file']:
                 TSHS = opts.head+'/'+line[1]
-            elif key in ['replicate-a','rep-a','replicate-a1','rep-a1']:
+            elif key in ['replicate-a','rep-a','replicate-a1','rep-a1','bloch-a1']:
                 NA1 = int(line[1])
-            elif key in ['replicate-b','rep-b','replicate-a2','rep-a2']:
+            elif key in ['replicate-b','rep-b','replicate-a2','rep-a2','bloch-a2']:
                 NA2 = int(line[1])
-            elif key in ['replicate-c','rep-c','replicate-a3','rep-a3']:
+            elif key in ['replicate-c','rep-c','replicate-a3','rep-a3','bloch-a3']:
                 NA3 = int(line[1])
-            elif key in ['replicate','rep']:
+            elif key in ['replicate','rep','bloch']:
                 # We have *at least* 2 integers
                 NA1 = int(line[1])
                 NA2 = int(line[2])
