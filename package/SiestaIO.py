@@ -1300,6 +1300,8 @@ def BuildBasis(FDFfile,FirstAtom,LastAtom,lasto):
     CSL = GetFDFblock(FDFfile,'ChemicalSpeciesLabel')
     systemlabel = GetFDFlineWithDefault(FDFfile,'SystemLabel', str, 'siesta', 'SiestaIO')
     head,tail =  os.path.split(FDFfile)
+    if head=='': 
+        head = '.'
     XVfile = '%s/%s.XV'%(head,systemlabel)
     try:
         # XV file prevails
