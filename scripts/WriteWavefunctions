@@ -1,0 +1,47 @@
+#!/scratch/thf/SOFTWARE/python/2.7.10/gcc-4.9.2/bin/python
+
+from Inelastica import EigenChannels as EC
+from Inelastica import MakeGeom as MG
+from Inelastica import SiestaIO as SIO
+from Inelastica import CommonFunctions as CF
+import scipy.linalg as SLA
+import sys
+import numpy as N
+
+# Usage: WriteWavefunctions <firstorb> <lastorb> <DestDir> [<optional EC options>]
+
+firstorb = int(sys.argv[1]) # Index of first WF to write to file
+lastorb = int(sys.argv[2]) # Index of last WF to write to file
+
+opts = ''
+if len(sys.argv)>3:
+    for o in sys.argv[3:]:
+        opts += ' %s'%o
+
+# "Borrow" options object from EigenChannels
+options = EC.GetOptions(opts)
+CF.CreatePipeOutput(options.DestDir+'/WriteWavefunctions.log')
+label = SIO.GetFDFlineWithDefault(options.fn,'SystemLabel', str, 'siesta', 'SiestaIO')
+
+# Read Hamiltonian
+tshs = SIO.HS(label+'.TSHS')
+geom = MG.Geom(label+'.XV')
+options.DeviceAtoms = range(1,geom.natoms+1)
+
+# Build basis
+basis = SIO.BuildBasis(options.fn,1,geom.natoms,tshs.lasto)
+
+# Which k-point?
+tshs.setkpoint(options.kpoint)
+
+# Solve generalized eigenvalue problem
+for ispin in range(tshs.nspin):
+    ev, es = SLA.eigh(tshs.H[ispin],tshs.S)
+    for ii in range(firstorb,lastorb+1):
+        print '\nORBITAL:',ii
+        v = es[:,ii]
+        vd = N.conjugate(v)
+        print 'Eigenvalue <v|H|v>:',N.dot(vd,N.dot(tshs.H[ispin],v))
+        print 'Normalization <v|S|v>:', N.dot(vd,N.dot(tshs.S,v))
+        fn = options.DestDir+'/%s.s%i_i%.3i_%.2feV'%(label,ispin,ii,ev[ii])
+        EC.writeWavefunction(options,geom,basis,es[:,ii],fn=fn)

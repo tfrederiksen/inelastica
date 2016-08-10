@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+
+import os,sys
+
+def makePDF(fn):
+    "Generate .pdf from xmgrace .agr file"
+    print 'Read',fn
+    ftmp = fn.replace('.agr','.ps')
+    os.system('xmgrace -hardcopy -printfile %s %s'%(ftmp,fn))
+    fout = fn.replace('.agr','.pdf')
+    os.system('ps2pdf %s %s'%(ftmp,fout))
+    os.system('rm %s'%ftmp)
+    print 'Wrote',fout
+
+for fn in sys.argv[1:]:
+    makePDF(fn)

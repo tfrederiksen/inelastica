@@ -108,7 +108,8 @@ Provides:
       url='https://sourceforge.net/apps/mediawiki/inelastica', 
       license='GPL. Please cite: Frederiksen et al., PRB 75, 205413 (2007)', 
       package_dir={'Inelastica': 'package'},
-      scripts  = ['scripts/Inelastica',
+      scripts  = ['scripts/agr2pdf',
+                  'scripts/Inelastica',
                   'scripts/EigenChannels',
                   'scripts/pyTBT',
                   'scripts/geom2geom',
@@ -123,7 +124,8 @@ Provides:
                   'scripts/NEB',
                   'scripts/grid2grid',
                   'scripts/setupFCrun',
-                  'scripts/setupOSrun'
+                  'scripts/setupOSrun',
+                  'scripts/WriteWavefunctions'
                   ],
       packages=['Inelastica'],
       ext_modules=[F90ext,F90extLapack],
