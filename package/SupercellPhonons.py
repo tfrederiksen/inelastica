@@ -193,7 +193,8 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
                 # exp( i k R0m )
                 R0m = self.latticevectors[n,m]
                 phase = N.exp(1.0j*N.dot(kpoint,R0m))
-	        H_k[...,fnb:lnb+1,fmb:lmb+1] += phase*H[...,fn:ln+1,fm:lm+1]
+		#H_k[...,fnb:lnb+1,fmb:lmb+1] += phase*H[...,fn:ln+1,fm:lm+1]
+                H_k[...,fmb:lmb+1,fnb:lnb+1] += phase*H[...,fm:lm+1,fn:ln+1]
         return H_k
 
     def ComputeElectronStates(self,kpoint,verbose=True):
@@ -208,6 +209,63 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
             ev[ispin], evec[ispin] = SLA.eigh(self.h0_k[ispin],self.s0_k)
         return ev,evec
 
+            
+    def ReadGradients(self,AbsEref=False):
+        # Read in gradients once into memory (in the full supercell basis)
+        # No folding yet onto k and q
+        self.dH = {}
+        # Loop over dynamic atoms
+        for i,v in enumerate(self.DynamicAtoms):
+            # Loop over axes
+            for j in range(3):
+                # Compute gradient
+                self.dH[v,j] = self.GetGradient(v,j)
+
+    # ELECTRON-PHONON COUPLING PART
+
+    def FoldMatrix_DoubleSum(self,H,kpoint,qpoint):
+        sh = list(H.shape)
+        sh[-1],sh[-2] = self.rednao,self.rednao
+        H_kq = N.zeros(tuple(sh),N.complex)
+        # Loop over atoms
+        for n in range(len(self.latticevectors[0])):
+            fn,ln = self.OrbIndx[n]
+            fnb,lnb = self.OrbIndx[self.Sym.basisatom[n]] 
+            # Loop over atoms
+            for m in range(len(self.latticevectors[0])):
+                fm,lm = self.OrbIndx[m]
+                fmb,lmb = self.OrbIndx[self.Sym.basisatom[m]]
+                # exp( i q R0m )
+                R0m = self.latticevectors[self.Sym.basisatom[n],m]
+                phase1 = N.exp(1.0j*N.dot(qpoint,R0m))
+                # exp( i k Rnm )
+                Rnm = self.latticevectors[n,m]
+                #print 'allclose',N.allclose(Rnm,-1.* self.latticevectors[m,n]) # this is always true
+                phase2 = N.exp(1.0j*N.dot(kpoint,Rnm))
+                #H_kq[...,fnb:lnb+1,fmb:lmb+1] += phase1*phase2*H[...,fn:ln+1,fm:lm+1]
+                H_kq[...,fmb:lmb+1,fnb:lnb+1] += phase1*phase2*H[...,fm:lm+1,fn:ln+1]
+        #return H_kq/self.geom.natoms*self.Sym.basis.NN
+        return H_kq
+
+    def ComputeEPHcouplings_kq(self,kpoint,qpoint,verbose=True):
+        if verbose:
+            print 'SupercellPhonons.ComputeEPHcouplings_kq: k = ',kpoint,' q = ',qpoint,'(1/Ang)'
+        # This assumes that phonon modes UU has been computed at that q
+        const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
+        M = N.zeros((len(self.hw),self.nspin,self.nao,self.nao),N.complex)
+        G = N.zeros((len(self.hw),self.nspin,self.nao,self.nao),N.complex)
+        # Loop over dynamic atoms
+        for i,v in enumerate(self.DynamicAtoms):
+            # Loop over axes
+            for j in range(3):
+                # Loop over modes
+                for m in range(len(self.hw)):
+                    M[m] += self.dH[v,j]*self.UU[m,v-1,j]
+                    if self.hw[m] > 0.0: # Only proceed with a postive frequency
+                        G[m] += const*self.dH[v,j]*self.UU[m,v-1,j]/(2*self.Masses[i]*self.hw[m])**.5
+        m = self.FoldMatrix_DoubleSum(M,kpoint,qpoint)
+        g = self.FoldMatrix_DoubleSum(G,kpoint,qpoint)
+        return m,g
 
 # AUXILIARY FUNCTIONS
 
@@ -391,7 +449,6 @@ def WriteDOS(outfile,bands,emin,emax,pts,smear):
     pp.PutText('kpts = %i'%len(bands),0.20,0.70)
     pp.WriteFile()
 
-
 def main(options):
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     #VC.OptionsCheck(options,'Phonons')
@@ -467,11 +524,10 @@ def main(options):
                 evecsRe = ncf.createVariable('eigenvectors.re','d',('gridpts','nspin','orbs','bands'))
                 evecsIm = ncf.createVariable('eigenvectors.im','d',('gridpts','nspin','orbs','bands'))
                 # Check eigenvectors
-                print 'SupercellPhonons: Checking eigenvectors at',k,
+                print 'SupercellPhonons: Checking eigenvectors at',k
                 for j in range(SCDM.nspin):
                     ev2 = N.diagonal(MM.mm(MM.dagger(evec[j]),SCDM.h0_k[j],evec[j]))
-                    assert N.allclose(ev[j],ev2,atol=1e-5,rtol=1e-3)
-                print 'OK'
+                    print ' ... spin %i: Allclose='%j, N.allclose(ev[j],ev2,atol=1e-5,rtol=1e-3)
                 ncf.sync()
             # Write to NetCDF
             evals[i,:] = ev
@@ -566,12 +622,11 @@ def main(options):
                 evecsRe = ncf.createVariable('eigenvectors.re','d',('gridpts','bands','displ'))
                 evecsIm = ncf.createVariable('eigenvectors.im','d',('gridpts','bands','displ'))
                 # Check eigenvectors
-                print 'SupercellPhonons.Checking eigenvectors at',q,
+                print 'SupercellPhonons.Checking eigenvectors at',q
                 tmp = MM.mm(N.conjugate(U),SCDM.FCtilde,N.transpose(U))
                 const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
                 hw2 = const*N.diagonal(tmp)**0.5 # Units in eV
-                assert N.allclose(hw,N.absolute(hw2),atol=1e-5,rtol=1e-3)
-                print 'OK'
+                print ' ... Allclose=', N.allclose(hw,N.absolute(hw2),atol=1e-5,rtol=1e-3)
                 ncf.sync()
             evals[i] = hw
             evecsRe[i] = U.real
@@ -584,3 +639,52 @@ def main(options):
         if qlabels:
             PlotPhononBands(options.DestDir+'/Phonons.agr',dq,N.array(evals[:]),qticks)
         ncf.close()        
+
+    # Compute e-ph couplings
+    if options.kfile and options.qfile:
+        SCDM.ReadGradients(AbsEref=False)
+        ncf = NC.NetCDFFile(options.DestDir+'/EPH.nc', 'w')
+        ncf.createDimension('kpts',len(kpts))
+        ncf.createDimension('qpts',len(qpts))
+        ncf.createDimension('modes',len(hw))
+        ncf.createDimension('nspin',SCDM.nspin)
+        ncf.createDimension('bands',SCDM.rednao)
+        ncf.createDimension('vector',3)
+        kgrid = ncf.createVariable('kpts','d',('kpts','vector'))
+        kgrid[:] = kpts
+        qgrid = ncf.createVariable('qpts','d',('qpts','vector'))
+        qgrid[:] = qpts
+        evalfkq = ncf.createVariable('evalfkq','d',('kpts','qpts','nspin','bands'))
+        # First (second) band index n (n') is the initial (final) state, i.e.,
+        # Mkq(k,q,mode,spin,n,n') := < n',k+q | dV_q(mode) | n,k >
+        MkqAbs = ncf.createVariable('Mkqabs','d',('kpts','qpts','modes','nspin','bands','bands'))
+        GkqAbs = ncf.createVariable('Gkqabs','d',('kpts','qpts','modes','nspin','bands','bands'))
+        ncf.sync()
+        # Loop over k-points
+        for i,k in enumerate(kpts):
+            kpts[i] = k
+            # Compute initial electronic states
+            evi,eveci = SCDM.ComputeElectronStates(k,verbose=True)
+            # Loop over q-points
+            for j,q in enumerate(qpts):
+                # Compute phonon modes
+                hw,U = SCDM.ComputePhononModes_q(q,verbose=True)
+                # Compute final electronic states
+                evf,evecf = SCDM.ComputeElectronStates(k+q,verbose=True)
+                evalfkq[i,j,:] = evf
+                # Compute electron-phonon couplings
+                m,g = SCDM.ComputeEPHcouplings_kq(k,q) # (modes,nspin,bands,bands)
+                # Data to file
+                # M (modes,spin,i,l) = m(modes,k,j) init(i,j) final(k,l)
+                #                            0 1 2       0,1        0 1
+                #                                ^-------^
+                #                              ^----------------------^
+                for ispin in range(SCDM.nspin):
+                    evecfd = MM.dagger(evecf[ispin]) # (bands,bands)
+                    M = N.tensordot(N.tensordot(m[:,ispin],eveci[ispin],axes=[2,0]),evecfd,axes=[1,1])
+                    G = N.tensordot(N.tensordot(g[:,ispin],eveci[ispin],axes=[2,0]),evecfd,axes=[1,1])
+                    MkqAbs[i,j,:,ispin] = N.absolute(M)
+                    GkqAbs[i,j,:,ispin] = N.absolute(G)
+                ncf.sync()
+        ncf.close()
+    return SCDM.Sym.path
