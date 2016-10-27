@@ -278,6 +278,9 @@ def calcCurrent(options,basis,H,Y):
     Y : complex scattering state or
     Y : A_l or A_r! (for total current)
     """
+    if options.kpoint[0]!=0.0 or options.kpoint[1]!=0.0:
+        exit('Error: The current implementation of bond currents is only valid for the Gamma point (should be easy to fix)')
+        
     if isinstance(Y,MM.SpectralMatrix):
         Y = MM.mm(Y.L,Y.R)
     NN=len(H)
@@ -290,6 +293,8 @@ def calcCurrent(options,basis,H,Y):
             for jj in range(NN):
                 a2=basis.ii[jj]-options.DeviceAtoms[0]
                 tmp=H[jj,ii]*Y[ii,jj]/2/N.pi
+                # Note that taking the imaginary part is only the valid
+                # expression for Gamma point calculations
                 Curr[a1,a2]=Curr[a1,a2]+4*N.pi*tmp.imag
     else:
         for ii in range(NN):
