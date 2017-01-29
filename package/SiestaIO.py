@@ -390,12 +390,17 @@ def WriteXYZFile(filename,atomnumber,xyz):
     file.write(str(len(xyz)))
     file.write('\n\n')
     for i in range(len(xyz)):
-        line = string.ljust(PC.PeriodicTable[abs(atomnumber[i])],5)
+        try:
+            element = PC.PeriodicTable[abs(atomnumber[i])]
+        except:
+            element = 'X' 
+        line = string.ljust(element,5)
         for j in range(3):
             line += string.rjust('%.9f'%xyz[i][j],16)
         line +='\n'
         file.write(line)
     #file.write('\n')
+    file.close()
 
 #--------------------------------------------------------------------------------
 # FDF format IO
