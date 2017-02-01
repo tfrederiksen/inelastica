@@ -232,15 +232,15 @@ def IntegrityCheck(options,GF,basis,NCfile):
     print '\nInelastica.IntegrityCheck:'
     print 'A = %s'%options.PhononNetCDF
     print 'B = %s'%options.XV
-    print ' idxA    xA       yA       zA   anrA   ',
-    print ' idxB    xB       yB       zB   anrB'
+    print ' idxA    xA       yA       zA    anrA   ',
+    print ' idxB    xB       yB       zB    anrB'
     for i in range(max(len(PH_dev),len(TS_dev))):
         # Geom A
         if PH_dev[0]+i in PH_dev:
             s = ('%i'%(PH_dev[0]+i)).rjust(5)
             for j in range(3):
                 s += ('%.4f'%(PH_xyz[PH_dev[0]-1+i,j])).rjust(9)
-            s += ('%i'%PH_anr[PH_dev[0]-1+i]).rjust(4)
+            s += ('%i'%PH_anr[PH_dev[0]-1+i]).rjust(5)
         else:
             s = ('---').center(36)
         s += '  vs'
@@ -249,7 +249,7 @@ def IntegrityCheck(options,GF,basis,NCfile):
             s += ('%i'%(options.DeviceAtoms[0]+i)).rjust(5)
             for j in range(3):
                 s += ('%.4f'%(TS_xyz[options.DeviceAtoms[0]-1+i,j])).rjust(9)
-            s += ('%i'%TS_anr[options.DeviceAtoms[0]-1+i]).rjust(4)
+            s += ('%i'%TS_anr[options.DeviceAtoms[0]-1+i]).rjust(5)
         else:
             s += ('---').center(36)
         print s
@@ -277,14 +277,8 @@ def IntegrityCheck(options,GF,basis,NCfile):
         d = PH_xyz[PH_dev[0]-1+i]-TS_xyz[options.DeviceAtoms[0]-1+i] - R
         dist_xyz += N.dot(d,d)**.5
         # Difference between atom numbers
-        if PH_anr[PH_dev[0]-1+i]<200:
-            a = PH_anr[PH_dev[0]-1+i]-TS_anr[options.DeviceAtoms[0]-1+i]
-        elif PH_anr[PH_dev[0]-1+i]<1200:
-            # Deuterated atom in PH calculation
-            a = (PH_anr[PH_dev[0]-1+i]-1000)-TS_anr[options.DeviceAtoms[0]-1+i]
-        elif PH_anr[PH_dev[0]-1+i]<2200:
-            # "Special" species with a mass defined as anr>2000
-            a = (PH_anr[PH_dev[0]-1+i]-2000)-TS_anr[options.DeviceAtoms[0]-1+i]
+        # Modulo 200
+        a = (PH_anr[PH_dev[0]-1+i])%200 - (TS_anr[options.DeviceAtoms[0]-1+i])%200
         dist_anr += abs(a)
     if dist_xyz<1e-3:
         print '... Check 2 passed: Atomic coordinates consistent'
@@ -295,7 +289,7 @@ def IntegrityCheck(options,GF,basis,NCfile):
     else:
         print '... Check 2 failed: Atomic coordinates deviate by %.3f Ang!!!'%dist_xyz
         check2 = False
-    if dist_anr<1e-3:
+    if dist_anr==0:
         print '... Check 3 passed: Atomic numbers consistent'
         check3 = True
     else:
