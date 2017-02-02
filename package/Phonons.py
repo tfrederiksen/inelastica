@@ -118,7 +118,7 @@ def GetOptions(argv,**kwargs):
                 help="Use an absolute energy reference (Fermi energy of equilibrium structure) for displaced Hamiltonians (e.g., when eF is not well-defined) instead of the instantaneous Fermi energy for the displaced geometries, cf. Eq.(17) in PRB 75, 205413 (2007) [default=%default]",action="store_true",default=False)
     
     p.add_option("-i", "--Isotopes",dest="Isotopes",
-                 help="String, formatted as a list '[[i1, anr1],...]', where atom index i1 (SIESTA numbering) will be substituted with atom type anr1. Alternatively, the argument can be a file with the string [default=%default]",default='[]')
+                 help="String, formatted as a list '[[i1,m1],...]', where the mass of atom index i1 (SIESTA numbering) will be set to m1. Alternatively, the argument can be a file with the string [default=%default]",default='[]')
 
     p.add_option("-x","--k1", dest='k1', default=0.0,type='float',
                  help="k-point along a1 where e-ph couplings are evaluated [%default]")
@@ -363,18 +363,17 @@ class DynamicalMatrix():
         self.Masses = []
         # Set default masses
         for i,v in enumerate(self.DynamicAtoms):
-            self.Masses.append( PC.AtomicMass[self.geom.anr[v-1]] )
-        # Override with specified Isotopes?
-        for ii,anr in Isotopes:
+            try:
+                self.Masses.append( PC.AtomicMass[self.geom.anr[v-1]] )
+            except:
+                print 'WARNING: Mass of atom %i unknown, set arbitrarily to 1000.00 amu'%v
+                self.Masses.append( 1000.00 )
+        # Override with specified masses?
+        for ii,mass in Isotopes:
             if ii in self.DynamicAtoms:
                 j = self.DynamicAtoms.index(ii)
-                print 'Phonons.Analyse: Isotope substitution for atom %i (SIESTA numbering):'%ii
-                print '  ... atom type %i --> %i'%(self.geom.anr[ii-1],anr)
-                print '  ... atom element %s --> %s'%(PC.PeriodicTable[self.geom.anr[ii-1]],
-                                                      PC.PeriodicTable[anr])
-                print '  ... atom mass %.4f --> %.4f'%(PC.AtomicMass[self.geom.anr[ii-1]],\
-                                                       PC.AtomicMass[anr])
-                self.Masses[j] = PC.AtomicMass[anr]
+                print 'Phonons.Analyse: Setting mass for atom %i (SIESTA numbering) to %f:'%(ii,mass)
+                self.Masses[j] = mass
 
     def ApplySumRule(self,FC):
         FC0 = FC.copy()
