@@ -700,6 +700,7 @@ class GF:
             self.TT = MM.mm(self.AL[nuo-nuoR:nuo,nuo-nuoR:nuo],self.GamR)
         
         print 'NEGF.calcGF: Shape of transmission matrix (TT):', self.TT.shape
+        print 'NEGF.calcGF: Energy and total transmission Tr[TT].real:', ee, N.trace(self.TT).real
         # Write also the Gammas in the full space of Gr/Ga/A
         # (needed for the inelastic shot noise)
         self.GammaL = N.zeros(self.Gr.shape,N.complex)
