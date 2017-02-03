@@ -157,7 +157,7 @@ def SetupFCrun(CGrun,newFCrun,FCfirst,FClast,displacement=0.02,
         print '\nSetupRuns.SetupFCrun: %s already exists. OVERWRITING FILES!!!'\
               %newFCrun
     # Copy template files
-    CopyInputFiles(CGrun,newFCrun,['.fdf','.vps','.psf','.DM','.XV','.pbs'])
+    CopyInputFiles(CGrun,newFCrun,['.fdf','.vps','.psf','.DM','.XV','.pbs','.TSDE'])
     # Read relaxed geometry and overwrite STRUCT files
     XVfiles = glob.glob(CGrun+'/*.XV*')
     if len(XVfiles)==1:
