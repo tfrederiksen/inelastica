@@ -51,7 +51,7 @@ For help use --help!
                  help="Calculate eigenstates of device Hamiltonian within [%default] eV from Ef")
     p.add_option("-r", "--Res", dest='res', default=0.4,type='float',
                  help="Resolution [%default Ang]")
-    p.add_option("-w", "--format", dest='format', default='macu',type='string',
+    p.add_option("-w", "--format", dest='format', default='XSF',type='string',
                  help="Wavefunction format (macu, cube, XSF, or nc) [%default]")
     p.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
                  help="Energy where eigenchannel scattering states are evaluated [%default eV]")
