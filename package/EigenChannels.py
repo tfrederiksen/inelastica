@@ -146,13 +146,22 @@ def main(options):
     # Calculate Eigenchannels
     DevGF.calcEigChan(options.numchan)
 
+    # Compute bond currents?
+    if options.kpoint[0]!=0.0 or options.kpoint[1]!=0.0:
+        print 'Warning: The current implementation of bond currents is only valid for the Gamma point (should be easy to fix)'
+        BC = False
+    else:
+        BC = True
+
+    
     # Eigenchannels from left
     ECleft, EigT = DevGF.ECleft, DevGF.EigTleft
     for jj in range(options.numchan):
         options.iSide, options.iChan = 0, jj+1
         writeWavefunction(options,geom,basis,ECleft[jj])
-        Curr=calcCurrent(options,basis,DevGF.H,ECleft[jj])
-        writeCurrent(options,geom,Curr)
+        if BC:
+            Curr=calcCurrent(options,basis,DevGF.H,ECleft[jj])
+            writeCurrent(options,geom,Curr)
                     
     # Calculate eigenchannels from right
     if options.bothsides:
@@ -160,16 +169,18 @@ def main(options):
         for jj in range(options.numchan):
             options.iSide, options.iChan = 1, jj+1
             writeWavefunction(options,geom,basis,ECright[jj])
-            Curr=calcCurrent(options,basis,DevGF.H,ECright[jj])
-            writeCurrent(options,geom,Curr)
+            if BC:
+                Curr=calcCurrent(options,basis,DevGF.H,ECright[jj])
+                writeCurrent(options,geom,Curr)
 
     # Calculate total "bond currents"
-    Curr=-calcCurrent(options,basis,DevGF.H,DevGF.AL)
-    options.iChan, options.iSide = 0, 0
-    writeCurrent(options,geom,Curr)
-    Curr=-calcCurrent(options,basis,DevGF.H,DevGF.AR)
-    options.iSide = 1
-    writeCurrent(options,geom,Curr)
+    if BC:
+        Curr=-calcCurrent(options,basis,DevGF.H,DevGF.AL)
+        options.iChan, options.iSide = 0, 0
+        writeCurrent(options,geom,Curr)
+        Curr=-calcCurrent(options,basis,DevGF.H,DevGF.AR)
+        options.iSide = 1
+        writeCurrent(options,geom,Curr)
 
     # Calculate eigenstates of device Hamiltonian
     if options.MolStates>0.0:
@@ -278,8 +289,6 @@ def calcCurrent(options,basis,H,Y):
     Y : complex scattering state or
     Y : A_l or A_r! (for total current)
     """
-    if options.kpoint[0]!=0.0 or options.kpoint[1]!=0.0:
-        exit('Error: The current implementation of bond currents is only valid for the Gamma point (should be easy to fix)')
         
     if isinstance(Y,MM.SpectralMatrix):
         Y = MM.mm(Y.L,Y.R)
