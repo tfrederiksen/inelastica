@@ -156,7 +156,7 @@ def OptionsCheck(opts,exe):
             print(line)
             # Lower-case, FDF is case-insensitive
             key = line[0].lower()
-            if key in ['tshs','tshs-file']:
+            if key in ['tshs','tshs-file','hs','hs-file']:
                 TSHS = opts.head+'/'+line[1]
             elif key in ['replicate-a','rep-a','replicate-a1','rep-a1','bloch-a1']:
                 NA1 = int(line[1])
@@ -186,9 +186,20 @@ def OptionsCheck(opts,exe):
                                       "other than A3-direction with repetition."))
         return TSHS,NA1,NA2,semiinf
 
-    opts.fnL, opts.NA1L, opts.NA2L, opts.semiinfL = get_elec_vars('Left')
-    opts.fnR, opts.NA1R, opts.NA2R, opts.semiinfR = get_elec_vars('Right')
-    
+    # Look up electrode block
+    block = SIO.GetFDFblock(opts.fn, KeyWord = 'TS.Elecs')
+    if len(block)==0:
+        # Did not find the electrode block, defaults to old naming scheme
+        opts.fnL, opts.NA1L, opts.NA2L, opts.semiinfL = get_elec_vars('Left')
+        opts.fnR, opts.NA1R, opts.NA2R, opts.semiinfR = get_elec_vars('Right')
+    elif len(block)==2:
+        # NB: The following assumes that the left electrode is the first in the block!
+        opts.fnL, opts.NA1L, opts.NA2L, opts.semiinfL = get_elec_vars(block[0][0])
+        opts.fnR, opts.NA1R, opts.NA2R, opts.semiinfR = get_elec_vars(block[1][0])
+    else:
+        print(block)
+        raise IOError('Currently only two electrodes are supported')
+        
     # Read in number of buffer atoms
     opts.buffer, L, R = SIO.GetBufferAtomsList(opts.TSHS,opts.fn)
     opts.bufferL = L
