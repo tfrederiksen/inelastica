@@ -727,8 +727,23 @@ class GF:
         else:
             # Do trick with kz
             tmpH, tmpS = self.HS.H[ispin,:,:].copy(), self.HS.S.copy()
-
-            kpoint3[2] = 0.5
+            if self.elecL.semiinf==0 and self.elecR.semiinf==0:
+                # Periodicity along A1
+                if kpoint[0] == 0.0:
+                    kpoint3[0] = 0.5
+                else:
+                    print 'Specified 2D k-point=',kpoint
+                    raise IOError('Incompatible 2D k-point - use z as transport direction')
+            elif self.elecL.semiinf==1 and self.elecR.semiinf==1:
+                # Periodicity along A1
+                if kpoint[1] == 0.0:
+                    kpoint3[1] = 0.5
+                else:
+                    print 'Specified 2D k-point=',kpoint
+                    raise IOError('Incompatible 2D k-point - use z as transport direction')                 
+            else:
+                # Default is along A3
+                kpoint3[2] = 0.5
             self.HS.setkpoint(kpoint3)
             self.H0 = 0.5 * (tmpH + self.HS.H[ispin,:,:])
             self.S0 = 0.5 * (tmpS + self.HS.S)
