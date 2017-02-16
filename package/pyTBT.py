@@ -153,8 +153,19 @@ def main(options):
         mesh = Kmesh.kmesh(3,3,1)
 
     if options.dos:
-        DOSL=N.zeros((nspin,len(options.Elist),DevGF.nuo),N.float)
-        DOSR=N.zeros((nspin,len(options.Elist),DevGF.nuo),N.float)
+        DOSL = N.zeros((nspin,len(options.Elist),DevGF.nuo),N.float)
+        DOSR = N.zeros((nspin,len(options.Elist),DevGF.nuo),N.float)
+
+        # MPSH projections?
+        MPSHL = N.zeros((nspin,len(options.Elist),DevGF.nuo),N.float)
+        MPSHR = N.zeros((nspin,len(options.Elist),DevGF.nuo),N.float)
+        # evaluate eigenstates at Gamma
+        import scipy.linalg as SLA
+        DevGF.setkpoint(N.zeros(2))
+        ev0, es0 = SLA.eigh(DevGF.H,DevGF.S)
+        print 'MPSH eigenvalues:',ev0
+        #print 'MPSH eigenvector normalizations:',N.diag(MM.mm(MM.dagger(es0),DevGF.S,es0)).real # right
+
     # Loop over spin
     for iSpin in range(nspin):
         # initialize transmission and shot noise arrays
@@ -219,6 +230,8 @@ def main(options):
             if options.dos:
                 DOSL[iSpin,ie,:] += N.diag(AavL).real/(2*N.pi)
                 DOSR[iSpin,ie,:] += N.diag(AavR).real/(2*N.pi)
+                MPSHL[iSpin,ie,:] += N.diag(MM.mm(MM.dagger(es0),AavL,es0)).real/(2*N.pi)
+                MPSHR[iSpin,ie,:] += N.diag(MM.mm(MM.dagger(es0),AavR,es0)).real/(2*N.pi)
                 print 'ispin= %i, e= %.4f, DOSL= %.4f, DOSR= %.4f'%(iSpin,ee,N.sum(DOSL[iSpin,ie,:]),N.sum(DOSR[iSpin,ie,:]))
         fo.write('\n')
         fo.close()
@@ -275,7 +288,11 @@ def main(options):
         WritePDOS(outFile+'.PDOS.gz',options,DevGF,DOSL+DOSR,basis)
         WritePDOS(outFile+'.PDOSL.gz',options,DevGF,DOSL,basis)
         WritePDOS(outFile+'.PDOSR.gz',options,DevGF,DOSR,basis)
-
+        
+        WriteMPSH(outFile+'.MPSH.gz',options,DevGF,MPSHL+MPSHR,ev0)
+        WriteMPSH(outFile+'.MPSHL.gz',options,DevGF,MPSHL,ev0)
+        WriteMPSH(outFile+'.MPSHR.gz',options,DevGF,MPSHR,ev0)
+        
     CF.PrintMainFooter('pyTBT')
     
 
@@ -338,6 +355,45 @@ def WritePDOS(fn,options,DevGF,DOS,basis):
     # Set axes and write XMGR plot to file
     g.SetXaxis(label='E-E\sF\N (eV)',autoscale=True)
     g.SetYaxis(label='DOS (1/eV/atom)',autoscale=True)
+    g.SetTitle(fn,size=1.3)
+    g.ShowLegend()
+    p = XMGR.Plot(fn+'.xmgr',g)
+    p.WriteFile()
+
+def WriteMPSH(fn,options,DevGF,DOS,ev0):
+    """
+    Projected density of states onto MPSH eigenstates (at Gamma)
+    """
+
+    import xml.dom.minidom as xml
+    import gzip
+
+    doc = xml.Document()
+    mpsh = doc.createElement('mpsh')
+    doc.appendChild(mpsh)
+    xmladd(doc,mpsh,'nspin','%i'%DevGF.HS.nspin)
+    xmladd(doc,mpsh,'norbitals','%i'%(DevGF.nuo))
+    xmladd(doc,mpsh,'energy_values',myprint(options.Elist+DevGF.HS.ef))
+    xmladd(doc,mpsh,'E_Fermi','%.8f'%DevGF.HS.ef)
+    for ii in range(DevGF.nuo):
+        orb = doc.createElement('orbital')
+        mpsh.appendChild(orb)
+        orb.setAttribute('index','%i'%ii)
+        xmladd(doc,orb,'data',myprint(DOS[:,:,ii]))
+    doc.writexml(gzip.GzipFile(fn,'w'))
+
+    # Make plot
+    import WriteXMGR as XMGR
+    g = XMGR.Graph()
+    for ii in range(DevGF.nuo):
+        for iS in range(DevGF.HS.nspin):
+            g.AddDatasets(XMGR.XYset(options.Elist,(-1)**iS*DOS[iS,:,ii],legend='',Lwidth=2))
+
+    # Set axes and write XMGR plot to file
+    g.SetXaxis(label='E-E\sF\N (eV)',autoscale=True)
+    g.SetYaxis(label='DOS (1/eV)',autoscale=True)
+    # Add MPSH eigenvalues to plot after axis scaling
+    g.AddDatasets(XMGR.XYset(ev0,0*ev0+1,Ltype=0,Stype=3))
     g.SetTitle(fn,size=1.3)
     g.ShowLegend()
     p = XMGR.Plot(fn+'.xmgr',g)

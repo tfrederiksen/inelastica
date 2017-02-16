@@ -47,8 +47,8 @@ For help use --help!
                  type='int', default=4)
     p.add_option("-B", "--BothSides", dest='bothsides', default=False,action='store_true',
                  help="Calculate eigenchannels from both sides [%default]")
-    p.add_option("-M", "--MolecularStates", dest='MolStates', default=0.0, type='float',
-                 help="Calculate eigenstates of device Hamiltonian within [%default] eV from Ef")
+    p.add_option("-M", "--MPSH", dest='MolStates', default=0.0, type='float',
+                 help="Calculate eigenstates of the device region Hamiltonian (Molecular Projected Selfconsistent Hamiltonian, MPSH) within [%default] eV from Ef")
     p.add_option("-r", "--Res", dest='res', default=0.4,type='float',
                  help="Resolution [%default Ang]")
     p.add_option("-w", "--format", dest='format', default='XSF',type='string',
@@ -182,10 +182,8 @@ def main(options):
         options.iSide = 1
         writeCurrent(options,geom,Curr)
 
-    # Calculate eigenstates of device Hamiltonian
+    # Calculate eigenstates of device Hamiltonian (MPSH)
     if options.MolStates>0.0:
-        #print 'calculating molecular eigenstates of folded, orthogonalized device hamiltonian'
-        #ev, es = LA.eigh(DevGF.H)
         try:
             import scipy.linalg as SLA
             ev, es = SLA.eigh(DevGF.H,DevGF.S)
