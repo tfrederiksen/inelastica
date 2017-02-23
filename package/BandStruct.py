@@ -10,7 +10,6 @@ import MakeGeom as MG
 import MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
-import Scientific.IO.NetCDF as NC
 import sys, string, struct, glob,  os
 from optparse import OptionParser, OptionGroup
 import PhysicalConstants as PC

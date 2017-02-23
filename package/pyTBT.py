@@ -8,7 +8,6 @@ print version
  Magnus Paulsson magnus.paulsson@hik.se
 
  Requires: numpy (compile it linked with mkl, acml or atlas!)
-           ScientificPython (vers. >= 2.8)
            For speed compile the fortran subroutines in F90 
            (cd F90;source compile.bat)
 

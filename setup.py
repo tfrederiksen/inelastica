@@ -28,15 +28,15 @@ def test_prereq():
         print "#### ERROR ####"
         raise NameError('numpy f2py package not found')
 
-    # Check for ScientificPython including netCDF.
     try:
-        import Scientific.IO.NetCDF as nc
+        import netCDF4 as NC4
     except:
         print "#### ERROR ####"
-        print "Inelastica requires ScientificPython with NetCDF extensions."
+        print "Inelastica requires netCDF4 (1.2.7 or newer recommended)"
+        print "https://pypi.python.org/pypi/netCDF4"
         print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
         print "#### ERROR ####"
-        raise NameError('ScientificPython package not found')
+        raise NameError('netCDF4 package not found')
 
     # Make sure that numpy is compiled with optimized LAPACK/BLAS
     st = time.time()
@@ -92,7 +92,7 @@ setup(name='Inelastica',
       version='1.2-rc',
       # Define the requirements for Inelastica
       # These probably needs to be adjusted... 
-      requires = ['python (>=2.5)','numpy (>=1.6)','ScientificPython (>=2.6)'],
+      requires = ['python (>=2.5)','numpy (>=1.6)','netCDF4 (>=1.2.7)'],
       description='Python tools for SIESTA/TranSIESTA', 
       long_description="""
 Provides:

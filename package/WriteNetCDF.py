@@ -2,7 +2,7 @@ version = "SVN $Id$"
 print version
 
 import numpy as N
-import Scientific.IO.NetCDF as NC
+import netCDF4 as NC4
 
 def write(fn,array,label,SinglePrec=False):
     """
@@ -21,7 +21,10 @@ class NCfile:
     
     def __init__(self,fn):
         "Returning instance of class."
-        self.file = NC.NetCDFFile(fn,'a')
+        try:
+            self.file = NC4.Dataset(fn,'a')
+        except:
+            self.file = NC4.Dataset(fn,'w')
         self.fn = fn
         self.dimensions = self.file.dimensions
         self.variables = self.file.variables

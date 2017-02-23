@@ -13,7 +13,7 @@ import MakeGeom as MG
 import MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
-import Scientific.IO.NetCDF as NC
+import netCDF4 as NC4
 import sys, string, struct, glob, os
 import PhysicalConstants as PC
 import ValueCheck as VC
@@ -356,7 +356,7 @@ def writenetcdf(geom,fn,YY,nx,ny,nz,origo,dstep):
     THF: Write eigenchannels to netcdf format
     """
     import time
-    file = NC.NetCDFFile(fn,'w','Created '+time.ctime(time.time()))
+    file = NC4.Dataset(fn,'w')
     file.createDimension('nx',nx)
     file.createDimension('ny',ny)
     file.createDimension('nz',nz)
@@ -364,7 +364,7 @@ def writenetcdf(geom,fn,YY,nx,ny,nz,origo,dstep):
     file.createDimension('naxes',3)
     file.createDimension('number',1)
     #file.createDimension('pair',2)
-        
+
     # Grid
     #grid = file.createVariable('grid','d',('naxes','pair'))
     #tmp  = [origo,[dstep,dstep,dstep]]

@@ -32,8 +32,8 @@ import numpy as N
 import numpy.linalg as LA
 import glob, os,sys,string
 import scipy.linalg as SLA
-import Scientific.IO.NetCDF as NC
-    
+import netCDF4 as NC4
+
 vinfo = [version,SIO.version,Symmetry.version,CF.version,
          PH.version,PC.version,MM.version,NCDF.version,
          VC.version]
@@ -277,7 +277,7 @@ def ReadKpoints(filename):
         return ReadKpoints_ascii(filename)
 
 def ReadKpoints_netcdf(filename):
-    ncf = NC.NetCDFFile(filename,'r')
+    ncf = NC4.Dataset(filename,'r')
     kpts = ncf.variables['grid'][:]
     ncf.close()
     dk = N.empty(len(kpts))
@@ -417,7 +417,7 @@ def PlotPhononBands(filename,dq,phlist,ticks):
     pp.WriteFile()
     
 def ComputeDOS(ncfile,outfile,emin=0.0,emax=1.0,pts=1001,smear=1e-3):
-    ncf = NC.NetCDFFile(ncfile,'r')
+    ncf = NC4.Dataset(ncfile,'r')
     ev = ncf.variables['eigenvalues'][:]
     if len(ev.shape)==2: # Phonons.nc (gridpts, bands)
         WriteDOS(outfile,ev,emin,emax,pts,smear)
@@ -488,7 +488,7 @@ def main(options):
             WriteKpoints(options.DestDir+'/kpoints',kpts,klabels)
         # Prepare netcdf
         ncfn = options.DestDir+'/Electrons.nc'
-        ncf = NC.NetCDFFile(ncfn, 'w')
+        ncf = NC4.Dataset(ncfn, 'w')
         # Grid
         ncf.createDimension('gridpts',len(kpts))
         ncf.createDimension('vector',3)
@@ -587,7 +587,7 @@ def main(options):
             WriteKpoints(options.DestDir+'/qpoints',qpts,qlabels)
         # Prepare netcdf
         ncfn = options.DestDir+'/Phonons.nc'
-        ncf = NC.NetCDFFile(ncfn, 'w')
+        ncf = NC4.Dataset(ncfn, 'w')
         # Grid
         ncf.createDimension('gridpts',len(qpts))
         ncf.createDimension('vector',3)
@@ -643,7 +643,7 @@ def main(options):
     # Compute e-ph couplings
     if options.kfile and options.qfile:
         SCDM.ReadGradients(AbsEref=False)
-        ncf = NC.NetCDFFile(options.DestDir+'/EPH.nc', 'w')
+        ncf = NC4.Dataset(options.DestDir+'/EPH.nc', 'w')
         ncf.createDimension('kpts',len(kpts))
         ncf.createDimension('qpts',len(qpts))
         ncf.createDimension('modes',len(hw))

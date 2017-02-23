@@ -13,7 +13,7 @@ The basic idea is to use an existing CG (geometry optimization) setup
 to create all the other calculation directories needed. 
 """
 import os, glob, string, time, sys, shutil, os
-import Scientific.IO.NetCDF as nc
+import netCDF4 as NC4
 import numpy as N
 import numpy.linalg as LA
 import MakeGeom as MG
@@ -721,7 +721,7 @@ def UnitConvertTBOutput(TBncfile,newTBncfile):
     print 'SetupRuns.UnitConvertTBOutput: %s  -->  %s' %(TBncfile,newTBncfile)
 
     # Read TBncfile (infile)
-    infile = nc.NetCDFFile(TBncfile,'r')
+    infile = NC4.Dataset(TBncfile,'r')
     En = PC.Rydberg2eV*N.array(infile.variables['En'][:,0]) \
          + 1j*PC.Rydberg2eV*N.array(infile.variables['En'][:,1])
     H = PC.Rydberg2eV*N.array(infile.variables['H'][:])
@@ -737,7 +737,7 @@ def UnitConvertTBOutput(TBncfile,newTBncfile):
     dim = len(H)
 
     # Write variables to newTBncfile (outfile)
-    outfile = nc.NetCDFFile(newTBncfile,'w','Created '+time.ctime(time.time()))
+    outfile = NC4.Dataset(newTBncfile,'w')
     outfile.title = "TBtrans unit-converted output"
     outfile.version = 1
     outfile.createDimension('x',x) # Energy grid

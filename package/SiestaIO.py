@@ -14,7 +14,7 @@ import numpy.linalg as LA
 import string, struct, os.path, sys
 import MakeGeom as MG
 import gzip
-import Scientific.IO.NetCDF as nc
+import netCDF4 as NC4
 import PhysicalConstants as PC
 import ValueCheck as VC
 
@@ -1265,15 +1265,15 @@ def ReadIonNCFile(filename,printnorm=False):
     class ion:
         pass
     
-    file = nc.NetCDFFile(filename,'r')
+    file = NC4.Dataset(filename,'r')
     print 'Reading Basis from %s' % filename
 
     # General attributes
     ion.filename = filename
     ion.element = file.Element
     ion.label = file.Label
-    ion.atomnum = file.Atomic_number[0]
-    ion.numorb = file.Number_of_orbitals[0]
+    ion.atomnum = file.Atomic_number
+    ion.numorb = file.Number_of_orbitals
 
     # Variables
     ion.L = N.array(file.variables['orbnl_l'][:],N.int)

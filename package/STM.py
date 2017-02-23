@@ -12,11 +12,10 @@ import pyTBT as pyTBT
 import SiestaIO as SIO
 import NEGF
 import MakeGeom as MG
-#import EigenChannels as EC
 import WriteXMGR as XMGR
 import numpy as N
 import numpy.linalg as LA
-import Scientific.IO.NetCDF as NC
+import netCDF4 as NC4
 import sys, string, struct, glob,  os
 from optparse import OptionParser, OptionGroup
 import PhysicalConstants as PC
@@ -266,7 +265,7 @@ def writenetcdf(fn,YY,nx,ny,nz,origo,dstep):
     THF: Write eigenchannels to netcdf format
     """
     import time
-    file = NC.NetCDFFile(fn,'w','Created '+time.ctime(time.time()))
+    file = NC4.Dataset(fn,'w')
     file.createDimension('nx',nx)
     file.createDimension('ny',ny)
     file.createDimension('nz',nz)

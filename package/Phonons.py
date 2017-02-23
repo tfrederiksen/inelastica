@@ -1,3 +1,4 @@
+
 version = "SVN $Id$"
 print version
 
@@ -41,8 +42,7 @@ import PhysicalConstants as PC
 import MiscMath as MM
 import WriteNetCDF as NCDF
 import ValueCheck as VC
-import Scientific.IO.NetCDF as NC
-
+import netCDF4 as NC4
 import numpy as N
 import numpy.linalg as LA
 import glob, os,sys,string
@@ -245,7 +245,6 @@ class FCrun():
                 self.TSHS[v,j,1] = files[1+6*i+2*j+1]
 
     def GetOrbitalIndices(self):
-        import Scientific.IO.NetCDF as nc
         # Determine snr (siesta number) for each label
         csl = SIO.GetFDFblock(self.fdf, KeyWord = 'ChemicalSpeciesLabel')
         csl2snr = {}
@@ -259,9 +258,9 @@ class FCrun():
                 print 'Phonons.GetOrbitalIndices: Unzipping',ionfile
                 os.system('gunzip '+ionfile)
                 ionfile = ionfile[:-3]
-            file = nc.NetCDFFile(ionfile,'r')
-            thissnr = csl2snr[file.Label]
-            snr2nao[int(thissnr)] = int(file.Number_of_orbitals[0])
+            file = NC4.Dataset(ionfile,'r')
+            thissnr = int(csl2snr[file.Label])
+            snr2nao[thissnr] = file.Number_of_orbitals
             file.close()
         print 'Phonons.GetOrbitalIndices: Dictionary snr2nao =',snr2nao
         # Determine which orbital indices that belongs to a certain atom
@@ -537,7 +536,7 @@ class DynamicalMatrix():
                  sys.exit()
               else:
                  print "Restart e-ph. calculation. Partial information read from file:", CheckPointNetCDF
-                 RNCfile = NC.NetCDFFile(CheckPointNetCDF,'r')
+                 RNCfile = NC4.Dataset(CheckPointNetCDF,'r')
                  Heph = N.array(RNCfile.variables['He_ph'],self.atype)
         else:
            print "Start e-ph. calculation from scratch"

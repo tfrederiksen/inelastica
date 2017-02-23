@@ -7,7 +7,7 @@ import MiscMath as MM
 import WriteNetCDF as NCDF
 import numpy as N
 import numpy.linalg as LA
-import Scientific.IO.NetCDF as NC
+import netCDF4 as NC4
 import sys
 import PhysicalConstants as PC
 import time
@@ -128,9 +128,9 @@ def main(options):
     elecR.scaling = options.scaleSigR
     elecR.semiinf = options.semiinfR
     # Read phonons
-    NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
+    NCfile = NC4.Dataset(options.PhononNetCDF,'r')
     print 'Inelastica: Reading ',options.PhononNetCDF
-    hw = N.array(NCfile.variables['hw'][:])
+    hw = NCfile.variables['hw'][:]
     try:
         if NCfile.CurrentHWidx != len(hw):
             sys.exit('Inelastica: Error - not all phonon He-ph are calculated.')
@@ -222,10 +222,10 @@ def IntegrityCheck(options,GF,basis,NCfile):
     # Perform consistency checks for device region in 
     # PH and TS calculations by comparing coordinates
     # and atom numbers
-    PH_dev = N.array(NCfile.variables['DeviceAtoms'][:])
-    PH_dyn = N.array(NCfile.variables['DynamicAtoms'][:])
-    PH_xyz = N.array(NCfile.variables['GeometryXYZ'][:])
-    PH_anr = N.array(NCfile.variables['AtomNumbers'][:])
+    PH_dev = NCfile.variables['DeviceAtoms'][:]
+    PH_dyn = NCfile.variables['DynamicAtoms'][:]
+    PH_xyz = NCfile.variables['GeometryXYZ'][:]
+    PH_anr = NCfile.variables['AtomNumbers'][:]
     TS_dev = range(options.DeviceAtoms[0],options.DeviceAtoms[1]+1)
     TS_anr = options.geom.anr
     TS_xyz = options.geom.xyz
@@ -259,7 +259,7 @@ def IntegrityCheck(options,GF,basis,NCfile):
         if PH_dev[0]+i == PH_dyn[-1]:
             print '        --------------------- Dynamic region ends ----------------------'
     # - check 1: Matrix sizes
-    PH_H0 = N.array(NCfile.variables['H0'][:])
+    PH_H0 = NCfile.variables['H0'][:]
     check1 = N.shape(PH_H0[0])==N.shape(GF.Gr)
     if check1:
         print '... Check 1 passed: Device orb. space matches'
@@ -613,7 +613,7 @@ def writeFGRrates(options,GF,hw,NCfile):
     print 'Inelastica.writeFGRrates: Computing FGR rates'
     # Eigenchannels
     GF.calcEigChan(channels=options.numchan)
-    NCfile = NC.NetCDFFile(options.PhononNetCDF,'r')
+    NCfile = NC4.Dataset(options.PhononNetCDF,'r')
     print 'Reading ',options.PhononNetCDF
 
     outFile = file('%s/%s.IN.FGR'%(options.DestDir,options.systemlabel),'w')
@@ -731,7 +731,7 @@ def Broaden(options,VV,II):
 def initNCfile(filename,hw,V):
     'Initiate netCDF file'
     print 'Inelastica: Initializing nc-file'
-    ncfile = NC.NetCDFFile(filename+'.nc','w','Created '+time.ctime(time.time()))
+    ncfile = NC4.Dataset(filename+'.nc','w')
     ncfile.title = 'Inelastica Output'
     ncfile.version = 1
     ncfile.createDimension('Nph',len(hw))

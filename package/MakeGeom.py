@@ -8,7 +8,7 @@ import SiestaIO as SIO
 import VaspIO as VIO
 import numpy as N
 import string, copy, math, sys
-import Scientific.IO.NetCDF as NC
+import netCDF4 as NC4
 import PhysicalConstants as PC
 import os
 
@@ -543,7 +543,7 @@ class Geom:
     def StretchAlongEigenvector(self,ncfile,modeindex,displacement=0.04*PC.Bohr2Ang):
         'Displace a geometry along a calculated eigenmode'
         # TF/080527 
-        file = NC.NetCDFFile(ncfile,'r')
+        file = NC4.Dataset(ncfile,'r')
         hw = file.variables['hw'][modeindex]
         U = file.variables['U'][modeindex]
         print 'MakeGeom.StretchAlongEigenvector: Stretching %.3e Ang along mode #%i (hw = %.4f eV).'%(displacement,modeindex,hw)

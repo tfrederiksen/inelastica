@@ -6,7 +6,6 @@ import numpy.linalg as LA
 import string, struct, os.path, sys
 import MakeGeom as MG
 import gzip
-import Scientific.IO.NetCDF as nc
 
 def VIO_open(filename,mode='r'):
     "A VaspIO redefinition of the function open() to handle gzip format"

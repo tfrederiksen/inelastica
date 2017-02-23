@@ -7,7 +7,7 @@ import numpy as N
 import numpy.linalg as LA
 import string
 import pickle, hashlib, glob, time, os 
-import Scientific.IO.NetCDF as NC
+import netCDF4 as NC4
 import ValueCheck as VC
 
 # For speed some routines can be linked as F90 code
@@ -57,7 +57,7 @@ class SigDir:
             self.add(ii)
         
     def add(self,fn):
-        ncfile = NC.NetCDFFile(fn,'r')
+        ncfile = NC4.Dataset(fn,'r')
         if 'Done' in ncfile.variables:
             print "Read ",fn
             ncv = ncfile.variables 
@@ -93,8 +93,7 @@ class SigDir:
             left=0
         if self.newFile == None:
             self.newFileIndx = 0
-            nf = NC.NetCDFFile(self.path+'/Sig_'+str(N.floor(N.random.rand()*1e9))+\
-                                '.nc','w','Created '+time.ctime(time.time()))
+            nf = NC4.Dataset(self.path+'/Sig_'+str(N.floor(N.random.rand()*1e9))+'.nc','w')
             nf.createDimension('One',1)
             nf.createDimension('Two',2)
             nf.createDimension('32',32)
