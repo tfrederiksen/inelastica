@@ -131,11 +131,6 @@ def main(options):
     NCfile = NC4.Dataset(options.PhononNetCDF,'r')
     print 'Inelastica: Reading ',options.PhononNetCDF
     hw = NCfile.variables['hw'][:]
-    try:
-        if NCfile.CurrentHWidx != len(hw):
-            sys.exit('Inelastica: Error - not all phonon He-ph are calculated.')
-    except:
-        print 'Inelastica: WARNING: variable CurrentHWidx not found in',options.PhononNetCDF
     # Work with GFs etc for positive (V>0: \mu_L>\mu_R) and negative (V<0: \mu_L<\mu_R) bias voltages
     GFp = NEGF.GF(options.TSHS,elecL,elecR,
                   Bulk=options.UseBulk,DeviceAtoms=options.DeviceAtoms,
