@@ -1759,6 +1759,7 @@ class HS:
 
 # Easy method to read in number of atoms in a TSHS file
 def ReadTSHS(fn,**kwargs):
+    print 'SiestaIO.ReadTSHS: Reading TSHS header from',fn
     # return dictionary
     d = {}
     # Read in TSHS header (do not read in everything!)

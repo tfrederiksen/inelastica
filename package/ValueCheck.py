@@ -208,7 +208,7 @@ def OptionsCheck(opts,exe):
     if 'maxBias' in opts.__dict__:
         # Bias range
         opts.maxBias = abs(opts.maxBias)
-        opts.minBias = -opts.maxBias
+        opts.minBias = -abs(opts.maxBias)
 
     # Device region
     if opts.DeviceFirst<=0:
