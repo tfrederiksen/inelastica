@@ -4,16 +4,12 @@ print version
 import numpy as N
 import netCDF4 as NC4
 
-def write(fn,array,label,SinglePrec=False):
+def write(fn,array,label,vartype='d'):
     """
     The simplest possible way to write an array to
     a new or existing NetCDF file
     """
     nc = NCfile(fn)
-    if SinglePrec:
-        vartype = 'f'
-    else:
-        vartype = 'd'
     nc.write(array,label,vartype)
     nc.close()
 

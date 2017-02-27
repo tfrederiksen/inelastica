@@ -611,30 +611,34 @@ class DynamicalMatrix():
         NCDF.write('%s.nc'%label,UUdisp,'Udisp')
         NCDF.write('%s.nc'%label,self.geom.pbc,'CellVectors')
         NCDF.write('%s.nc'%label,self.geom.xyz,'GeometryXYZ')
-        NCDF.write('%s.nc'%label,self.geom.anr,'AtomNumbers')
-        NCDF.write('%s.nc'%label,self.geom.snr,'SpeciesNumbers')
+        NCDF.write('%s.nc'%label,self.geom.anr,'AtomNumbers','i')
+        NCDF.write('%s.nc'%label,self.geom.snr,'SpeciesNumbers','i')
         NCDF.write('%s.nc'%label,self.Masses,'Masses')
-        NCDF.write('%s.nc'%label,self.DynamicAtoms,'DynamicAtoms')
+        NCDF.write('%s.nc'%label,self.DynamicAtoms,'DynamicAtoms','i')
+        if SinglePrec:
+            vartype = 'f'
+        else:
+            vartype = 'd'
         try:
-            NCDF.write('%s.nc'%label,self.DeviceAtoms,'DeviceAtoms')
+            NCDF.write('%s.nc'%label,self.DeviceAtoms,'DeviceAtoms','i')
             NCDF.write('%s.nc'%label,self.kpoint,'kpoint')
-            NCDF.write('%s.nc'%label,self.h0.real,'H0',SinglePrec)
-            NCDF.write('%s.nc'%label,self.s0.real,'S0',SinglePrec)
+            NCDF.write('%s.nc'%label,self.h0.real,'H0',vartype)
+            NCDF.write('%s.nc'%label,self.s0.real,'S0',vartype)
             if not GammaPoint:
-                NCDF.write('%s.nc'%label,self.h0.imag,'ImH0',SinglePrec)
-                NCDF.write('%s.nc'%label,self.s0.imag,'ImS0',SinglePrec)
+                NCDF.write('%s.nc'%label,self.h0.imag,'ImH0',vartype)
+                NCDF.write('%s.nc'%label,self.s0.imag,'ImS0',vartype)
         except:
             print 'Hamiltonian etc not found'
         try:
-            NCDF.write('%s.nc'%label,self.heph.real,'He_ph',SinglePrec)
+            NCDF.write('%s.nc'%label,self.heph.real,'He_ph',vartype)
             if not GammaPoint:
-                NCDF.write('%s.nc'%label,self.heph.imag,'ImHe_ph',SinglePrec)
+                NCDF.write('%s.nc'%label,self.heph.imag,'ImHe_ph',vartype)
         except:
             print 'EPH couplings etc not found'
         try:
             grad = N.array(self.gradients)
-            NCDF.write('%s.nc'%label,grad.real,'grad.re',SinglePrec)
-            NCDF.write('%s.nc'%label,grad.imag,'grad.im',SinglePrec)
+            NCDF.write('%s.nc'%label,grad.real,'grad.re',vartype)
+            NCDF.write('%s.nc'%label,grad.imag,'grad.im',vartype)
         except:
             pass
 
