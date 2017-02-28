@@ -1597,8 +1597,8 @@ class HS:
         ef = ReadFortranBin(file,'d',1)[0]*PC.Rydberg2eV
         listh = []
         for ii in range(nou):
-            listh=N.concatenate((listh,N.array(ReadFortranBin(file,fortranLong,numhg[ii]))))
- 
+            listh += list( ReadFortranBin(file,fortranLong,numhg[ii]) )
+        listh = N.array(listh)
         Ssparse, cnt = N.zeros(maxnh,N.float), 0
         for ii in range(nou):
             Ssparse[cnt:cnt+numhg[ii]]=ReadFortranBin(file,'d',numhg[ii])

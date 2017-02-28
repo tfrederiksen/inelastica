@@ -1,13 +1,14 @@
 # Script to test the Fortran-90 code:
-
 python TestF90code.py 
 
 # Scripts to test self-energy calculations (compare 1x1 with 3x3 setup)
-    
 python TestFCC100.py
 python TestFCC111.py
 
-
 # Script to test reading buffer atoms from FDF
-
 python TestFDF.py
+
+# Comparison of Hilbert transform implementation for Gaussian function
+python TestHilbert.py
+
+# To run all the above you can execute "source README"

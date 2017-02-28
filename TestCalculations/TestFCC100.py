@@ -6,6 +6,8 @@ import numpy as N
 import numpy.random as RA
 
 def err_SE_k(ee,E1,E2,k,**kwargs):
+    E1.semiinf = 2
+    E2.semiinf = 2
     Sig1 = E1.getSig(ee,k,**kwargs)
     Sig2 = E2.getSig(ee,k,**kwargs)
     return N.max(abs(Sig1-Sig2))
@@ -40,12 +42,6 @@ def main():
     maxerr = comp_SE(elec1,elec3)
     del elec1,elec3
     
-    elec1 = NEGF.ElectrodeSelfEnergy('Self-energy-FCC100/ELEC-1x1/ABAB_NEW.TSHS',3,3)
-    elec3 = NEGF.ElectrodeSelfEnergy('Self-energy-FCC100/ELEC-3x3/ABAB_NEW.TSHS',1,1)
-
-    tmp = comp_SE(elec1,elec3)
-    maxerr = max(tmp,maxerr)
-
     print
     print "#########################################"
     print "#########################################"

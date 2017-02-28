@@ -65,14 +65,15 @@ def compare_H(HS1,HS2,not_checks={}):
                     print "ERROR!"
                     kuk
 
-    print 'Reading of file %s vs. %s PASSED!\n'%(HS1.fn,HS2.fn)
+    print 'Reading of file %s vs. %s'%(HS1.fn,HS2.fn)
+    print 'PASSED!\n'
 
 def main():
     if not SIO.F90imported:
         print "To test the F90 routines you better compile them first"
         kuk
 
-    print 'TESTING reading routines:'
+    print 'TESTING reading routines:\n'
 
     # Test readTSHS routines
     for file in ['Self-energy-FCC111/ELEC-1x1/Au3D_BCA.TSHS','sample.onlyS']:
@@ -111,6 +112,8 @@ def main():
             kuk
 
         ee = RA.random(1)+0.0001j
+        elec1.semiinf = 2
+        elec2.semiinf = 2
         SGF1 = elec1.getSig(ee,k[0:2].copy(),UseF90helpers=True)
         SGF2 = elec2.getSig(ee,k[0:2].copy(),UseF90helpers=False)
         SGFerr = N.max(abs(SGF1-SGF2))
@@ -142,6 +145,8 @@ def main():
             kuk
 
         ee=RA.random(1)+0.0001j
+        elecF90.semiinf = 2
+        elecNoF90.semiinf = 2
         SGFf90=elecF90.getSig(ee,k[0:2].copy(),UseF90helpers=True)
         SGF=elecNoF90.getSig(ee,k[0:2].copy(),UseF90helpers=False)
         SGFerr=N.max(abs(SGFf90-SGF))
@@ -159,7 +164,7 @@ def main():
         print "ERROR!"
         kuk
     else:
-        print "Test passed for remove Xij, expansion_SE, readTSHS, and setkpoint!"
+        print "Tests passed for remove Xij, expansion_SE, readTSHS, and setkpoint!"
     print "###############################################################"
     print "###############################################################"
     print 
