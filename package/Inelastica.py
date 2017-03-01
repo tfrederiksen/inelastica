@@ -4,21 +4,20 @@ import NEGF
 import SiestaIO as SIO
 import MakeGeom as MG
 import MiscMath as MM
-import WriteNetCDF as NCDF
 import numpy as N
 import numpy.linalg as LA
 import netCDF4 as NC4
 import sys
 import PhysicalConstants as PC
-import time
 import ValueCheck as VC
 import CommonFunctions as CF
 
-vinfo = [version,NEGF.version,SIO.version,MG.version,NCDF.version,PC.version,VC.version,CF.version]
+vinfo = [version,NEGF.version,SIO.version,MG.version,PC.version,VC.version,CF.version]
 
 # For doing loops with Inelastica we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.
 # DIRECTLY in python
+
 def GetOptions(argv,**kwargs):
     # if text string is specified, convert to list
     if isinstance(argv,VC.string_types):

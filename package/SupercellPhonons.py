@@ -25,7 +25,6 @@ import CommonFunctions as CF
 import Phonons as PH
 import PhysicalConstants as PC
 import MiscMath as MM
-import WriteNetCDF as NCDF
 import ValueCheck as VC
 
 import numpy as N
@@ -35,8 +34,7 @@ import scipy.linalg as SLA
 import netCDF4 as NC4
 
 vinfo = [version,SIO.version,Symmetry.version,CF.version,
-         PH.version,PC.version,MM.version,NCDF.version,
-         VC.version]
+         PH.version,PC.version,MM.version,VC.version]
 
 def GetOptions(argv,**kwargs):
     # if text string is specified, convert to list
