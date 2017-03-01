@@ -1,4 +1,3 @@
-
 version = "SVN $Id$"
 print version
 
@@ -40,7 +39,6 @@ import CommonFunctions as CF
 import MakeGeom as MG
 import PhysicalConstants as PC
 import MiscMath as MM
-import WriteNetCDF as NCDF
 import ValueCheck as VC
 import netCDF4 as NC4
 import numpy as N
@@ -48,7 +46,7 @@ import numpy.linalg as LA
 import glob, os,sys,string
 
 vinfo = [version,SIO.version,Symmetry.version,CF.version,
-         MG.version,PC.version,MM.version,NCDF.version,VC.version]
+         MG.version,PC.version,MM.version,VC.version]
 
 def GetOptions(argv,**kwargs):
     # if text string is specified, convert to list
@@ -580,6 +578,8 @@ class DynamicalMatrix():
                         # already zero
         del dH, dh
         self.heph = Heph
+        if WriteGradients:
+            self.gradients = N.array(self.gradients)
 
     def WriteOutput(self,label,SinglePrec,GammaPoint):
         print '\nPhonons.WriteOutput'
@@ -606,41 +606,109 @@ class DynamicalMatrix():
         WriteAXSFFilesPer('%s.per.charlength-displ.axsf'%label,self.geom.pbc,self.geom.xyz,self.geom.anr,\
                              hw,UUcl,1,natoms)
         # Netcdf format
-        NCDF.write('%s.nc'%label,hw,'hw')
-        NCDF.write('%s.nc'%label,UU,'U')
-        NCDF.write('%s.nc'%label,UUdisp,'Udisp')
-        NCDF.write('%s.nc'%label,self.geom.pbc,'CellVectors')
-        NCDF.write('%s.nc'%label,self.geom.xyz,'GeometryXYZ')
-        NCDF.write('%s.nc'%label,self.geom.anr,'AtomNumbers','i')
-        NCDF.write('%s.nc'%label,self.geom.snr,'SpeciesNumbers','i')
-        NCDF.write('%s.nc'%label,self.Masses,'Masses')
-        NCDF.write('%s.nc'%label,self.DynamicAtoms,'DynamicAtoms','i')
+        ncdffn = '%s.nc'%label
+        print 'Phonons.WriteOutput: Writing',ncdffn
+        ncdf = NC4.Dataset(ncdffn,'w')
+        ncdf.createDimension('one',1)
+        ncdf.createDimension('xyz',3)
+        ncdf.createDimension('modes',len(hw))
+        ncdf.createDimension('natoms',self.geom.natoms)
+        ncdf.createDimension('dyn_atoms',len(self.DynamicAtoms))
+        ncdf.createVariable('hw','d',('modes',))
+        ncdf.variables['hw'][:] = hw
+        ncdf.variables['hw'].info = 'Phonon frequencies'
+        ncdf.variables['hw'].unit = 'eV'
+        ncdf.createVariable('U','d',('modes','natoms','xyz'))
+        ncdf.variables['U'][:] = self.UU.real
+        ncdf.variables['U'].info = 'Real part of the phonon eigenvectors'
+        ncdf.createVariable('Udisp','d',('modes','natoms','xyz'))
+        ncdf.variables['Udisp'][:] = self.UUdisp.real
+        ncdf.variables['Udisp'].info = 'Real part of the phonon displacement vectors'
+        ncdf.createVariable('Ucl','d',('modes','natoms','xyz'))
+        ncdf.variables['Ucl'][:] = self.UUcl.real
+        ncdf.variables['Ucl'].info = 'Real part of displacement vectors scaled for the characteristic length'
+        ncdf.createVariable('CellVectors','d',('xyz','xyz'))
+        ncdf.variables['CellVectors'][:] = self.geom.pbc
+        ncdf.variables['CellVectors'].info = 'Unit cell vectors'
+        ncdf.variables['CellVectors'].unit = 'Ang'
+        ncdf.createVariable('GeometryXYZ','d',('natoms','xyz'))
+        ncdf.variables['GeometryXYZ'][:] = self.geom.xyz
+        ncdf.variables['GeometryXYZ'].info = 'Atomic coordinates of all atoms in cell'
+        ncdf.variables['GeometryXYZ'].unit = 'Ang'
+        ncdf.createVariable('AtomNumbers','i',('natoms',))
+        ncdf.variables['AtomNumbers'][:] = self.geom.anr
+        ncdf.variables['AtomNumbers'].info = 'Element number for each atom (anr)'
+        ncdf.createVariable('SpeciesNumbers','i',('natoms',))
+        ncdf.variables['SpeciesNumbers'][:] = self.geom.snr
+        ncdf.variables['SpeciesNumbers'].info = 'Siesta species number (snr)'
+        ncdf.createVariable('Masses','d',('dyn_atoms',))
+        ncdf.variables['Masses'][:] = self.Masses
+        ncdf.variables['Masses'].info = 'Atomic masses of each dynamic atom'
+        ncdf.variables['Masses'].unit = 'Atomic units'
+        ncdf.createVariable('DynamicAtoms','i',('dyn_atoms',))
+        ncdf.variables['DynamicAtoms'][:] = self.DynamicAtoms
+        ncdf.variables['DynamicAtoms'].info = 'Dynamic atoms (SIESTA numbering)'
+        try:
+            self.h0
+            ncdf.createDimension('dev_atoms',len(self.DeviceAtoms))
+            ncdf.createDimension('nspin',len(self.h0))
+            ncdf.createDimension('norb',len(self.h0[0]))
+            ncdf.createVariable('DeviceAtoms','i',('dev_atoms',))
+            ncdf.variables['DeviceAtoms'][:] = self.DeviceAtoms
+            ncdf.variables['DeviceAtoms'].info = 'Device atoms (SIESTA numbering)'
+            ncdf.createVariable('kpoint','d',('xyz',))
+            ncdf.variables['kpoint'][:] = self.kpoint
+            ncdf.variables['kpoint'].info = 'Vector in orthogonal space (not in reciprocal space)'
+            ncdf.createVariable('H0','d',('nspin','norb','norb'))
+            ncdf.variables['H0'][:] = self.h0.real
+            ncdf.variables['H0'].info = 'Real part of electronic Hamiltonian'
+            ncdf.variables['H0'].unit = 'eV'
+            ncdf.createVariable('S0','d',('nspin','norb','norb'))
+            ncdf.variables['S0'][:] = self.s0.real
+            ncdf.variables['S0'].info = 'Electronic overlap matrix'
+            if not GammaPoint:
+                ncdf.createVariable('H0.imag','d',('nspin','norb','norb'))
+                ncdf.variables['H0.imag'][:] = self.h0.imag
+                ncdf.variables['H0.imag'].info = 'Imaginary part of Hamiltonian'
+                ncdf.createVariable('S0.imag','d',('nspin','norb','norb'))
+                ncdf.variables['S0.imag'][:] = self.s0.imag
+                ncdf.variables['S0.imag'].info = 'Imaginary part of overlap'
+            print 'Phonons.WriteOutput: Wrote H and S to',ncdffn
+        except:
+            print 'Hamiltonian etc not computed'
+        # Precision for He_ph (and gradients)
         if SinglePrec:
-            vartype = 'f'
+            atype = 'f'
         else:
-            vartype = 'd'
+            atype = 'd'
         try:
-            NCDF.write('%s.nc'%label,self.DeviceAtoms,'DeviceAtoms','i')
-            NCDF.write('%s.nc'%label,self.kpoint,'kpoint')
-            NCDF.write('%s.nc'%label,self.h0.real,'H0',vartype)
-            NCDF.write('%s.nc'%label,self.s0.real,'S0',vartype)
+            self.heph
+            ncdf.createVariable('He_ph',atype,('modes','nspin','norb','norb'))
+            ncdf.variables['He_ph'][:] = self.heph.real
+            ncdf.variables['He_ph'].info = 'Real part of EPH couplings'
+            ncdf.variables['He_ph'].unit = 'eV/Ang'
             if not GammaPoint:
-                NCDF.write('%s.nc'%label,self.h0.imag,'ImH0',vartype)
-                NCDF.write('%s.nc'%label,self.s0.imag,'ImS0',vartype)
+                ncdf.createVariable('ImHe_ph',atype,('modes','nspin','norb','norb'))
+                ncdf.variables['ImHe_ph'][:] = self.heph.imag
+                ncdf.variables['ImHe_ph'].info = 'Imaginary part of EPH couplings'
+            print 'Phonons.WriteOutput: Wrote He_ph to',ncdffn
         except:
-            print 'Hamiltonian etc not found'
+            print 'EPH couplings etc not computed'
         try:
-            NCDF.write('%s.nc'%label,self.heph.real,'He_ph',vartype)
+            self.gradients
+            ncdf.createVariable('grad.re',atype,('modes','nspin','norb','norb'))
+            ncdf.variables['grad.re'][:] = self.gradients.real            
+            ncdf.variables['grad.re'].info = 'Real part of gradients'
+            ncdf.variables['grad.re'].unit = 'eV/Ang'
             if not GammaPoint:
-                NCDF.write('%s.nc'%label,self.heph.imag,'ImHe_ph',vartype)
-        except:
-            print 'EPH couplings etc not found'
-        try:
-            grad = N.array(self.gradients)
-            NCDF.write('%s.nc'%label,grad.real,'grad.re',vartype)
-            NCDF.write('%s.nc'%label,grad.imag,'grad.im',vartype)
+                ncdf.createVariable('grad.im',atype,('modes','nspin','norb','norb'))
+                ncdf.variables['grad.im'][:] = self.gradients.imag
+                ncdf.variables['grad.im'].info = 'Imaginary part of gradients'         
+            print 'Phonons.WriteOutput: Wrote gradients to',ncdffn
         except:
             pass
+        ncdf.close()
+        print 'Phonons.WriteOutput: Finished',ncdffn
 
 def WriteFreqFile(filename,hw):
     print 'Phonons.WriteFreqFile: Writing',filename
@@ -762,4 +830,3 @@ def main(options):
        DM.WriteOutput(options.DestDir+'/Output',options.SinglePrec,options.GammaPoint)
        CF.PrintMainFooter('Phonons')
        return DM.hw
-

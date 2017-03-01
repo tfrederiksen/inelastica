@@ -1751,7 +1751,7 @@ class HS:
                 #        print "hej"
                     Full[iuo,juo] += Sparse[si]*phase[si]
         if not (Full.dtype==atype):
-            print 'SIO: Forcing array from %s to %s'%(Full.dtype,atype)
+            print 'SiestaIO: Forcing array from %s to %s'%(Full.dtype,atype)
         if atype==N.float or atype==N.float32 or atype==N.float64:
             return N.array(Full.real,atype)
         else:
