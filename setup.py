@@ -125,6 +125,7 @@ Provides:
                   'scripts/grid2grid',
                   'scripts/setupFCrun',
                   'scripts/setupOSrun',
+                  'scripts/kaverage-TBT',
                   'scripts/WriteWavefunctions'
                   ],
       packages=['Inelastica'],

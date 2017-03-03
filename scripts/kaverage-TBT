@@ -1,0 +1,99 @@
+#!/usr/bin/env python
+# 
+# Thomas Frederiksen
+# March 2017 
+#
+
+import numpy as N
+import netCDF4 as NC
+import sys
+import argparse
+
+parser = argparse.ArgumentParser(description='Utility to perform k-averages on relevant quantities in netCDF4 files from TBTrans.')
+parser.add_argument('ncfiles',metavar='NC',nargs='+',type=file,
+                    help='A netCDF4 file from TBTrans')
+parser.add_argument('-w',dest='asc',default=False,action='store_true',
+                    help='Write k-averaged quantities also in ascii format [default: %(default)s]')
+parser.add_argument('-v','--var',dest='var',nargs='+',default=['DOS','ADOS','T'],
+                    help='Variable names for k-averaging [default: %(default)s]')
+parser.add_argument('-t','--term',dest='term',nargs='+',default=['.T'],
+                    help='String terminations of variables for k-averaging [default: %(default)s]')
+parser.add_argument('-s','--skipvar',dest='skip',nargs='+',default=['ReLeft.bGk','ImLeft.bGk'],
+                    help='Skip variables matching this list [default: %(default)s]')
+parser.add_argument('-e','--ext',dest='ext',default='kavg.nc',
+                    help='Output filename termination [default: %(default)s]')
+args = parser.parse_args()
+
+print 'skip =',args.skip
+print 'term =',args.term
+print 'var  =',args.var
+print 'ext  =',args.ext
+
+def walk(wkpt,E,grpin,grpout,id,label):
+    "Function to copy (and possibly k-average) variables"
+    # Attributes
+    grpout.setncatts({k: grpin.getncattr(k) for k in grpin.ncattrs()})
+    # Dimensions
+    for dname, dim in grpin.dimensions.iteritems():
+        grpout.createDimension(dname,len(dim) if not dim.isunlimited() else None)
+    # Variables
+    for vname, var in grpin.variables.iteritems():
+        if any(vname.endswith(t) for t in args.skip):
+            print id,'VAR:%s <-- skipped'%vname
+        elif vname in args.var or any(vname.endswith(t) for t in args.term):
+            # Found a variable to average
+            print id,'VAR:%s <-- k-averaged'%vname
+            vout = grpout.createVariable(vname,var.datatype,var.dimensions[1:])
+            vout.setncatts({k: var.getncattr(k) for k in var.ncattrs()})
+            vout[:] = N.tensordot(wkpt,var[:],axes=([0],[0]))
+            if args.asc and len(vout.shape) in [1,2]:
+                writeascii(id,label+vname,E,vout[:])
+        else:
+            # Any other variable to be copied
+            print id,'VAR:%s <-- copied'%vname
+            vout = grpout.createVariable(vname,var.datatype,var.dimensions)
+            vout.setncatts({k: var.getncattr(k) for k in var.ncattrs()})
+            vout[:] = var[:]
+    # Groups
+    for gname, g in grpin.groups.iteritems():
+        if gname in args.skip:
+            print id,'GROUP:%s <-- skipped'%gname
+        else:
+            print id,'GROUP:%s <-- copying'%gname
+            go = grpout.createGroup(gname)
+            # Recursive call
+            walk(wkpt,E,g,go,id+'   ',label+'%s.'%g.name)
+
+def writeascii(id,label,x,y):
+    fn = label+'.dat'
+    Ry2eV = 13.605
+    if len(y.shape)==2:
+        y = y.sum(1)
+    f = open(fn,'w')
+    assert len(x) == len(y)
+    for i,xi in enumerate(x*Ry2eV):
+        f.write('%.8f %.8e\n'%(xi,y[i]))
+    f.close()
+    print id,'... Wrote',fn
+
+
+# Loop over arguments
+for nin in args.ncfiles:
+    "Initialization of input/output files"
+    fin = nin.name
+    if '.TBT.' in fin and fin.endswith('.nc') and not fin.endswith(args.ext):
+        fout = fin[:-3]+'.'+args.ext
+        print '\nReading',fin
+        # Open NC files
+        nin = NC.Dataset(fin,'r')
+        nout = NC.Dataset(fout,'w')
+        wkpt = nin.variables['wkpt'][:]
+        E = nin.variables['E'][:]
+        id = '' # for indentation
+        walk(wkpt,E,nin,nout,'',fin[:-3]+'.')
+        nout.close()
+        nin.close()
+        print 'Write %s\n'%fout
+    else:
+        print 'Skipping',fin
+
