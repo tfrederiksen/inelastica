@@ -1,24 +1,34 @@
 #!/usr/bin/env python
 
 import Inelastica.MakeGeom as MG
-from optparse import OptionParser
+import argparse
 
-usage = "usage: %prog from to [options]"
 description = """
-Tool for converting geometries between different files.
+Tool for converting geometries to zmatrix FDF format.
 Currently supports XV, xyz, fdf, ANI, and mkl.
-Repeat unitcell from XV and fdf.
 (fdf support limited to Ang, cartesian coord)
 """
-parser = OptionParser(usage,description=description)
-parser.add_option("-f", "--first", help="First atom in Z-matrix range", type='int', default=0)
-parser.add_option("-l", "--last", help="Last atom in Z-matrix range", type='int', default=0)
-(general, args) = parser.parse_args()
 
-if len(args)<2:
-    print description
-    parser.error('You need to supply two filenames.')
-else:
-    g = MG.Geom(args[0])
-    g.writeFDFZmat(args[1],general.first,general.last)
+parser = argparse.ArgumentParser(description=description)
+parser.add_argument('GIN',help='Input geometry file')
+parser.add_argument('GOUT',help='Output zmat-fdf filename')
+parser.add_argument('-f', '--first',metavar='F',default=1,
+                    help='First atom in Z-matrix range (default: %(default)s)')
+parser.add_argument('-l', '--last',metavar='L',default=1,
+                    help='Last atom in Z-matrix range (default: %(default)s)')
+parser.add_argument('-x', '--A1',type=int,default=1,
+                    help='Repeat unitcell along lattice vector A1')
+parser.add_argument('-y', '--A2',type=int,default=1,
+                    help='Repeat unitcell along lattice vector A2')
+parser.add_argument('-z', '--A3',type=int,default=1,
+                    help='Repeat unitcell along lattice vector A3')
+args = parser.parse_args()
 
+rep = [args.A1,args.A2,args.A3]
+print 'Converting %s to %s with repetition'%(args.GIN,args.GOUT),rep
+g = MG.Geom(args.GIN)
+for i in range(3):
+    if rep[i]>1:
+        g.repeteGeom(g.pbc[i],rep=rep[i])
+        g.pbc[i]=g.pbc[i]*rep[i]
+g.writeFDFZmat(args.GOUT,args.first,args.last)
