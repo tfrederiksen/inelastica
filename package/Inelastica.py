@@ -23,83 +23,79 @@ def GetOptions(argv,**kwargs):
     if isinstance(argv,VC.string_types):
         argv = argv.split()
 
-    import optparse as o
-    d = """Inelastica script calculates and writes LOE quantities in ascii (Systemlabel.IN) and NetCDF (Systemlabel.IN.nc) 
-
-For help use --help!"""
-    p = o.OptionParser("usage: %prog [options] DestinationDirectory",description=d)
-    p.add_option("-n", "--NumChan", dest="numchan", help="Number of eigenchannels [default=%default]",
-                 type='int', default=4)
-    p.add_option("-F","--DeviceFirst", dest='DeviceFirst',default=0,type='int',
-                 help="First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]")
-    p.add_option("-L","--DeviceLast", dest='DeviceLast',default=0,type='int',
-                 help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
-    p.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
-                 help="Energy reference where Greens functions etc are evaluated [default=%default eV]")
-    p.add_option("--eta", dest='eta', default=0.000001,type='float',
-                 help="Tiny imag. part in Green's functions etc. [default=%default eV]")
-    p.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
-                 help="Input fdf-file for TranSIESTA calculations [default=%default]")
-    p.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
-                 help="Spin channel [default=%default]")
-    p.add_option("-x","--k1", dest='k1', default=0.0,type='float',
-                 help="k-point along a1 [default=%default]")
-    p.add_option("-y","--k2", dest='k2', default=0.0,type='float',
-                 help="k-point along a2 [default=%default]")
-    p.add_option("-p", "--PhononNetCDF", dest='PhononNetCDF', default='Output.nc',type='string',
-                 help="Electron-phonon coupling NetCDF [default=%default]")
-    p.add_option("-t", "--Temp", dest='Temp', default=4.2,type='float',
-                 help="Temperature [default=%default K]")
-    p.add_option("-b", "--BiasPoints", dest='biasPoints', default=801,type='int',
-                 help="Number of bias points [default=%default]")
-    p.add_option("-v", "--MaxBias", dest='maxBias', default=0.4,type='float',
-                 help="Sets the IETS bias range (-MaxBias to MaxBias) [default=%default V]")
-    p.add_option("-c", "--ModeCutoff", dest='modeCutoff', default='0.0025',type='float',
-                 help="Ignore phonon modes with lower hw [default=%default eV]")
-    p.add_option("-V", "--Vrms", dest='Vrms', default='0.005',type='float',
-                 help="Lock in amplifier broadening [default=%default V]")
-    p.add_option("-H", "--Heating", dest='PhHeating', default=False,action='store_true',
-                 help="Include heating of vibrational modes [default=%default]")
-    p.add_option("-d", "--PhExtDamp", dest='PhExtDamp', default=1e-15,type='float',
-                 help="External damping [default=%default (?) TODO check unit!]")
-    p.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
-                 help="Use SigNCfiles [default=%default]")
-    p.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [default=%default eV]",
-                 type='float', default=0.0)
-    p.add_option("--SpectralCutoff", dest="SpectralCutoff", help="Cutoff value for SpectralMatrix functions (for ordinary matrix representation set cutoff<=0.0) [default=%default]",
-                 type='float', default=1e-8)
-
+    import argparse
+    p = argparse.ArgumentParser(description='Inelastica script calculates and writes LOE quantities in ascii (Systemlabel.IN) and NetCDF (Systemlabel.IN.nc)')
+    p.add_argument('DestDir',help='Destination directory')
+    p.add_argument('-n','--NumChan',dest='numchan',type=int,default=4,
+                   help='Number of eigenchannels [default: %(default)s]')
+    p.add_argument('-F','--DeviceFirst',dest='DeviceFirst',default=0,type=int,
+                   help='First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]')
+    p.add_argument('-L','--DeviceLast',dest='DeviceLast',default=0,type=int,
+                   help='Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]')
+    p.add_argument('-e','--Energy',dest='energy',default=0.0,type=float,
+                   help='Energy reference where Greens functions etc are evaluated [default: %(default)s eV]')
+    p.add_argument('--eta',dest='eta',default=0.000001,type=float,
+                   help='Tiny imag. part in Greens functions etc. [default: %(default)s eV]')
+    p.add_argument('-f','--fdf',dest='fn',default='./RUN.fdf',type=str,
+                   help='Input fdf-file for TranSIESTA calculations [default: %(default)s]')
+    p.add_argument('-s','--iSpin',dest='iSpin',default=0,type=int,
+                   help='Spin channel [default: %(default)s]')
+    p.add_argument('-x','--k1',dest='k1',default=0.0,type=float,
+                   help='k-point along a1 [default: %(default)s]')
+    p.add_argument('-y','--k2',dest='k2',default=0.0,type=float,
+                   help='k-point along a2 [default: %(default)s]')
+    p.add_argument('-p','--PhononNetCDF',dest='PhononNetCDF',default='Output.nc',type=str,
+                   help='Electron-phonon coupling NetCDF [default: %(default)s]')
+    p.add_argument('-t','--Temp',dest='Temp',default=4.2,type=float,
+                   help='Temperature [default: %(default)s K]')
+    p.add_argument('-b','--BiasPoints',dest='biasPoints',default=801,type=int,
+                   help='Number of bias points [default: %(default)s]')
+    p.add_argument('-v','--MaxBias',dest='maxBias',default=0.4,type=float,
+                   help='Sets the IETS bias range (-MaxBias to MaxBias) [default: %(default)s V]')
+    p.add_argument('-c','--ModeCutoff',dest='modeCutoff',default='0.0025',type=float,
+                   help='Ignore phonon modes with lower hw [default: %(default)s eV]')
+    p.add_argument('-V','--Vrms',dest='Vrms',default='0.005',type=float,
+                   help='Lock in amplifier broadening [default: %(default)s V]')
+    p.add_argument('-H','--Heating',dest='PhHeating',default=False,action='store_true',
+                   help='Include heating of vibrational modes [default: %(default)s]')
+    p.add_argument('-d','--PhExtDamp',dest='PhExtDamp',default=1e-15,type=float,
+                   help='External damping [default: %(default)s (?) TODO check unit!]')
+    p.add_argument('-u','--useSigNC',dest='signc',default=False,action='store_true',
+                   help='Use SigNCfiles [default: %(default)s]')
+    p.add_argument('-l','--etaLead',dest='etaLead',type=float,default=0.0,
+                   help='Additional imaginary part added ONLY in the leads (surface GF) [default: %(default)s eV]')
+    p.add_argument('--SpectralCutoff',dest='SpectralCutoff',type=float,default=1e-8,
+                   help='Cutoff value for SpectralMatrix functions (for ordinary matrix representation set cutoff<=0.0) [default: %(default)s]')
+                   
     # Electrode stuff
-    p.add_option("--bulk", dest='UseBulk',default=-1,action='store_true',
-                 help="Use bulk in electrodes. The Hamiltonian from the electrode calculation is inserted into the electrode region in the TranSIESTA cell [TS.UseBulkInElectrodes]")
-    p.add_option("--nobulk", dest='UseBulk',default=-1,action='store_false',
-                 help="Use only self-energies in the electrodes. The full Hamiltonian of the TranSIESTA cell is used in combination with self-energies for the electrodes [TS.UseBulkInElectrodes]")
+    p.add_argument('--bulk',dest='UseBulk',default=-1,action='store_true',
+                   help='Use bulk in electrodes. The Hamiltonian from the electrode calculation is inserted into the electrode region in the TranSIESTA cell [TS.UseBulkInElectrodes]')
+    p.add_argument('--nobulk',dest='UseBulk',default=-1,action='store_false',
+                   help='Use only self-energies in the electrodes. The full Hamiltonian of the TranSIESTA cell is used in combination with self-energies for the electrodes [TS.UseBulkInElectrodes]')
 
     # Scale (artificially) the coupling to the electrodes
-    p.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to Sigma_L [default=%default]",
-                 type='float', default=1.0)
-    p.add_option("--scaleSigR", dest="scaleSigR", help="Scale factor applied to Sigma_R [default=%default]",
-                 type='float', default=1.0)
+    p.add_argument('--scaleSigL',dest='scaleSigL',type=float,default=1.0,
+                   help='Scale factor applied to Sigma_L [default: %(default)s]')
+    p.add_argument('--scaleSigR',dest='scaleSigR',type=float,default=1.0,
+                   help='Scale factor applied to Sigma_R [default: %(default)s]')
 
+    
     # Which LOE method?
-    p.add_option("--LOEscale", dest="LOEscale", help="Scale factor to interpolate between LOE-WBA (0.0) and generalized LOE (1.0), see arXiv:1312.7625 [default=%default]", type='float', default=1.0)
-    p.add_option("--VfracL", dest="VfracL", help="Voltage fraction over the left-center interface [default=%default]",
-                 type='float', default=0.5)
+    p.add_argument('--LOEscale',dest='LOEscale',type=float,default=1.0,
+                   help='Scale factor to interpolate between LOE-WBA (0.0) and generalized LOE (1.0), see PRB 89, 081405(R) (2014) [default: %(default)s]')
+    p.add_argument('--VfracL',dest='VfracL',type=float,default=0.5,
+                   help='Voltage fraction over the left-center interface [default: %(default)s]')
 
     # Parse the options
-    (options, args) = p.parse_args(argv)
-
-    # Get the last positional argument
-    options.DestDir = VC.GetPositional(args,"You need to specify a destination directory")
+    options = p.parse_args(argv)
 
     # With this one can overwrite the logging information
     if "log" in kwargs:
-        options.Logfile = kwargs["log"]
+        options.Logfile = kwargs['log']
     else:
         options.Logfile = 'Inelastica.log'
 
-
-    # k-point                                                                                                                                                                                                       
+    # k-point
     options.kpoint = N.array([options.k1,options.k2,0.0],N.float)
     del options.k1,options.k2
 

@@ -53,86 +53,52 @@ def GetOptions(argv,**kwargs):
     if isinstance(argv,VC.string_types):
         argv = argv.split()
 
-    import optparse as o
+    import argparse
 
-    usage = "usage: %prog [options] DestinationDirectory"
-    description = "Methods to calculate vibrations and e-ph couplings from SIESTA output"
-
-    p = o.OptionParser(description=description,usage=usage)
-
-    p.add_option("-c", "--CalcCoupl",dest="CalcCoupl",
-                 help="Calculate e-ph couplings [default=%default]",
-                 action="store_true",default=False)
-
-    p.add_option("-r", "--Restart",dest="Restart",
-                 help="Restart from a previous run [default=%default]",
-                 action="store_true",default=False)
-
-    p.add_option("--CheckPointNetCDF", dest='CheckPointNetCDF',
-                 help="Old NetCDF file used for restart [default=%default]",
-                 type='str',default="None")
-
-    p.add_option("-s", "--SinglePrec",dest="SinglePrec",
-                 help="Calculate e-ph couplings using single precision arrays [default=%default]",
-                 action="store_true",default=False)
+    p = argparse.ArgumentParser(description='Methods to calculate vibrations and e-ph couplings from SIESTA output')
+    p.add_argument('DestDir',help='Destination directory')
+    p.add_argument('-c','--CalcCoupl',dest='CalcCoupl',action='store_true',default=False,
+                   help='Calculate e-ph couplings [default=%(default)s]')
+    p.add_argument('-r','--Restart',dest='Restart',action='store_true',default=False,
+                   help='Restart from a previous run [default=%(default)s]')
+    p.add_argument('--CheckPointNetCDF',dest='CheckPointNetCDF',type=str,default='None',
+                   help='Old NetCDF file used for restart [default=%(default)s]')
+    p.add_argument('-s','--SinglePrec',dest='SinglePrec',action='store_true',default=False,
+                   help='Calculate e-ph couplings using single precision arrays [default=%(default)s]')
+    p.add_argument('-F','--DeviceFirst',dest='DeviceFirst',type=int,default=1,
+                   help='First device atom index (in the electronic basis) [default=%(default)s]')
+    p.add_argument('-L','--DeviceLast',dest='DeviceLast',type=int,default=1000,
+                   help='Last device atom index (in the electronic basis) [default=%(default)s]')
+    p.add_argument('--FCfirst',dest='FCfirst',type=int,default=1,
+                   help='First FC atom index [default=%(default)s]')
+    p.add_argument('--FClast',dest='FClast',type=int,default=1000,
+                   help='Last FC atom index [default=%(default)s]')
+    p.add_argument('--EPHfirst',dest='EPHfirst',type=int,default=1,
+                   help='First atom index for which the e-ph. couplings are evaluated [default=FCfirst]')
+    p.add_argument('--EPHlast',dest='EPHlast',type=int,default=1000,
+                   help='Last atom index for which the e-ph. couplings are evaluated [default=FClast]')
+    p.add_argument('--PBCFirst',dest='PBCFirst',type=int,default=1,
+                   help='For eliminating interactions through periodic boundary conditions in z-direction [default=%(default)s]')
+    p.add_argument('--PBCLast',dest='PBCLast',type=int,default=1000,
+                   help='For eliminating interactions through periodic boundary conditions in z-direction [default=%(default)s]')
+    p.add_argument('--FCwildcard',dest='FCwildcard',type=str,default='./FC*',
+                   help='Wildcard for FC directories [default=%(default)s]')
+    p.add_argument('--OSdir',dest='onlySdir',type=str,default='./OSrun',
+                   help='Location of OnlyS directory [default=%(default)s]')
+    p.add_argument('-a','--AbsoluteEnergyReference',dest='AbsEref',action='store_true',default=False,
+                   help='Use an absolute energy reference (Fermi energy of equilibrium structure) for displaced Hamiltonians (e.g., when eF is not well-defined) instead of the instantaneous Fermi energy for the displaced geometries, cf. Eq.(17) in PRB 75, 205413 (2007) [default=%(default)s]')
+    p.add_argument('-i','--Isotopes',dest='Isotopes',default='[]',
+                   help='String, formatted as a list [[i1,m1],...], where the mass of atom index i1 (SIESTA numbering) will be set to m1. Alternatively, the argument can be a file with the string [default=%(default)s]')
+    p.add_argument('-x','--k1',dest='k1',default=0.0,type=float,
+                   help='k-point along a1 where e-ph couplings are evaluated [%(default)s]')
+    p.add_argument('-y','--k2',dest='k2',default=0.0,type=float,
+                   help='k-point along a2 where e-ph couplings are evaluated [%(default)s]')
+    p.add_argument('-z','--k3',dest='k3',default=0.0,type=float,
+                   help='k-point along a3 where e-ph couplings are evaluated [%(default)s]')
+    p.add_argument('-g','--WriteGradients',dest='WriteGradients',action='store_true',default=False,
+                   help='Write real-space gradients dH/dR to NetCDF [default=%(default)s]')
     
-    p.add_option("-F","--DeviceFirst",dest="DeviceFirst",
-                 help="First device atom index (in the electronic basis) [default=%default]",
-                 type="int",default=1)
-    p.add_option("-L","--DeviceLast",dest="DeviceLast",
-                 help="Last device atom index (in the electronic basis) [default=%default]",
-                 type="int",default=1000)
-    
-    p.add_option("--FCfirst",dest="FCfirst",
-                 help="First FC atom index [default=%default]",
-                 type="int",default=1)
-    p.add_option("--FClast", dest="FClast",
-                 help="Last FC atom index [default=%default]" ,
-                 type="int",default=1000)
-    
-    p.add_option("--EPHfirst",dest="EPHfirst",
-                 help="First atom index for which the e-ph. couplings are evaluated [default=FCfirst]",
-                 type="int",default=1)
-    p.add_option("--EPHlast", dest="EPHlast",
-                 help="Last atom index for which the e-ph. couplings are evaluated [default=FClast]" ,
-                 type="int",default=1000)
-
-    p.add_option("--PBCFirst", dest="PBCFirst",\
-                 help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
-                 type="int",default=1)
-    p.add_option("--PBCLast", dest="PBCLast",\
-                 help="For eliminating interactions through periodic boundary conditions in z-direction [default=%default]",
-                 type="int",default=1000)
-    
-    p.add_option("--FCwildcard",dest="FCwildcard",
-                 help="Wildcard for FC directories [default=%default]",
-                 type="str",default="./FC*")
-    
-    p.add_option("--OSdir",dest="onlySdir",
-                 help="Location of OnlyS directory [default=%default]",
-                 type="str",default="./OSrun")
-    
-    p.add_option("-a", "--AbsoluteEnergyReference",dest="AbsEref",
-                help="Use an absolute energy reference (Fermi energy of equilibrium structure) for displaced Hamiltonians (e.g., when eF is not well-defined) instead of the instantaneous Fermi energy for the displaced geometries, cf. Eq.(17) in PRB 75, 205413 (2007) [default=%default]",action="store_true",default=False)
-    
-    p.add_option("-i", "--Isotopes",dest="Isotopes",
-                 help="String, formatted as a list '[[i1,m1],...]', where the mass of atom index i1 (SIESTA numbering) will be set to m1. Alternatively, the argument can be a file with the string [default=%default]",default='[]')
-
-    p.add_option("-x","--k1", dest='k1', default=0.0,type='float',
-                 help="k-point along a1 where e-ph couplings are evaluated [%default]")
-    p.add_option("-y","--k2", dest='k2', default=0.0,type='float',
-                 help="k-point along a2 where e-ph couplings are evaluated [%default]")
-    p.add_option("-z","--k3", dest='k3', default=0.0,type='float',
-                 help="k-point along a3 where e-ph couplings are evaluated [%default]")
-
-    p.add_option("-g", "--WriteGradients",dest="WriteGradients",
-                 help="Write real-space gradients dH/dR to NetCDF [default=%default]",
-                 action="store_true",default=False)
-
-    (options, args) = p.parse_args(argv)
-
-    # Get the last positional argument
-    options.DestDir = VC.GetPositional(args,"You need to specify a destination directory")
+    options = p.parse_args(argv)
 
     # With this one can overwrite the logging information
     if "log" in kwargs:

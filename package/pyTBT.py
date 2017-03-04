@@ -38,79 +38,75 @@ def GetOptions(argv,**kwargs):
     if isinstance(argv,VC.string_types):
         argv = argv.split()
 
-    import optparse as o
+    import argparse
 
-    d = """pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge.
-For help use --help!
- """
-    p = o.OptionParser("usage: %prog [options] DestinationDirectory",description=d)
-    
+    p = argparse.ArgumentParser(description='pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge.')    
+    p.add_argument('DestDir',help='Destination directory')
     # keywords with defaults from fdf-file:
-    p.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
-                  help="Input fdf-file for TranSIESTA calculation [%default]")
-    p.add_option("-F","--DeviceFirst", dest='DeviceFirst',default=0,type='int',
-                  help="First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]")
-    p.add_option("-L","--DeviceLast", dest='DeviceLast',default=0,type='int',
-                  help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
-    p.add_option("-N","--NPoints", dest='NPoints',default=0,type='int',
-                  help="Energy points [TS.TBT.NPoints]")
-    p.add_option("--Emin", dest='Emin',default=1e10,type='float',
-                  help="First energy point [TS.TBT.Emin]")
-    p.add_option("--Emax", dest='Emax',default=1e10,type='float',
-                  help="Last energy point [TS.TBT.Emax]")
+    p.add_argument('-f','--fdf',dest='fn',default='./RUN.fdf',type=str,
+                 help='Input fdf-file for TranSIESTA calculation [%(default)s]')
+    p.add_argument('-F','--DeviceFirst',dest='DeviceFirst',default=0,type=int,
+                 help='First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]')
+    p.add_argument('-L','--DeviceLast',dest='DeviceLast',default=0,type=int,
+                 help='Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]')
+    p.add_argument('-N','--NPoints',dest='NPoints',default=0,type=int,
+                 help='Energy points [TS.TBT.NPoints]')
+    p.add_argument('--Emin',dest='Emin',default=1e10,type=float,
+                 help='First energy point [TS.TBT.Emin]')
+    p.add_argument('--Emax',dest='Emax',default=1e10,type=float,
+                 help='Last energy point [TS.TBT.Emax]')
 
     # k-points related
-    p.add_option("-x","--Nk1", dest='Nk1', default=1,type='int',
-                  help="k-points Nk1 along a1 [%default]")
-    p.add_option("-y","--Nk2", dest='Nk2', default=1,type='int',
-                  help="k-points Nk2 along a2 [%default]")
-    p.add_option("-a","--Gk1", dest='Gk1', default=0,type='int',
-                  help="Gaussian quadrature k-point sampling for a1 direction (2*GK1+1 points) [%default]")
-    p.add_option("-b","--Gk2", dest='Gk2', default=0,type='int',
-                  help="Gaussian quadrature k-point sampling for a2 direction (2*GK2+1 points) [%default]")
-    p.add_option("-s", "--skipsym", dest='skipsymmetry',default=False,action='store_true',
-                  help="Skip inversion (time-reversal) symmetry (i.e., k=-k) that reduces the number of k-point evaluations")
-    p.add_option("-j", "--singlejunction", dest='singlejunction',default=False,action='store_true',
-                  help="k-point sample only electrode self-energies")
-
+    p.add_argument('-x','--Nk1',dest='Nk1',default=1,type=int,
+                 help='k-points Nk1 along a1 [%(default)s]')
+    p.add_argument('-y','--Nk2',dest='Nk2',default=1,type=int,
+                 help='k-points Nk2 along a2 [%(default)s]')
+    p.add_argument('-a','--Gk1',dest='Gk1',default=0,type=int,
+                 help='Gaussian quadrature k-point sampling for a1 direction (2*GK1+1 points) [%(default)s]')
+    p.add_argument('-b','--Gk2',dest='Gk2',default=0,type=int,
+                 help='Gaussian quadrature k-point sampling for a2 direction (2*GK2+1 points) [%(default)s]')
+    p.add_argument('-s','--skipsym',dest='skipsymmetry',default=False,action='store_true',
+                 help='Skip inversion (time-reversal) symmetry (i.e., k=-k) that reduces the number of k-point evaluations')
+    p.add_argument('-j','--singlejunction',dest='singlejunction',default=False,action='store_true',
+                 help='k-point sample only electrode self-energies')
+    
     # Imaginary part to Greens functions
-    p.add_option("-e","--eta", dest="eta", help="Imaginary part added to all energies (device and leads) [%default eV]",
-                  type='float', default=1e-6)
-    p.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
-                  type='float', default=0.0)
+    p.add_argument('-e','--eta',dest='eta',type=float,default=1e-6,
+                 help='Imaginary part added to all energies (device and leads) [%(default)s eV]')
+    p.add_argument('-l','--etaLead',dest='etaLead',type=float,default=0.0,
+                 help='Additional imaginary part added ONLY in the leads (surface GF) [%(default)s eV]')
+   
     # Other options
-    p.add_option("-d", "--skipDOS", dest='dos',default=True,action='store_false',
-                  help="Skip calculation of PDOS")
-    p.add_option("--useSigNC", dest='signc',default=False,action='store_true',
-                  help="Use SigNCfiles")
-    p.add_option("--NumChan", dest="numchan", help="Number of eigenchannels [%default]",
-                  type='int', default=10)
-
+    p.add_argument('-d','--skipDOS',dest='dos',default=True,action='store_false',
+                 help='Skip calculation of PDOS')
+    p.add_argument('--useSigNC',dest='signc',default=False,action='store_true',
+                 help='Use SigNCfiles')
+    p.add_argument('--NumChan',dest='numchan',type=int,default=10,
+                 help='Number of eigenchannels [%(default)s]')                 
+    
     # Electrode stuff
-    p.add_option("--bulk", dest='UseBulk',default=-1,action='store_true',
-                  help="Use bulk in electrodes. The Hamiltonian from the electrode calculation is inserted into the electrode region in the TranSIESTA cell [TS.UseBulkInElectrodes]")
-    p.add_option("--nobulk", dest='UseBulk',default=-1,action='store_false',
-                  help="Use only self-energies in the electrodes. The full Hamiltonian of the TranSIESTA cell is used in combination with self-energies for the electrodes [TS.UseBulkInElectrodes]")
-
+    p.add_argument('--bulk',dest='UseBulk',default=-1,action='store_true',
+                 help='Use bulk in electrodes. The Hamiltonian from the electrode calculation is inserted into the electrode region in the TranSIESTA cell [TS.UseBulkInElectrodes]')
+    p.add_argument('--nobulk',dest='UseBulk',default=-1,action='store_false',
+                 help='Use only self-energies in the electrodes. The full Hamiltonian of the TranSIESTA cell is used in combination with self-energies for the electrodes [TS.UseBulkInElectrodes]')
+    
     # Scale (artificially) coupling to electrodes
-    p.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to Sigma_L [default=%default]",
-                  type='float', default=1.0)
-    p.add_option("--scaleSigR", dest="scaleSigR", help="Scale factor applied to Sigma_R [default=%default]",
-                  type='float', default=1.0)
+    p.add_argument('--scaleSigL',dest='scaleSigL',type=float,default=1.0,
+                 help='Scale factor applied to Sigma_L [default=%(default)s]')
+    p.add_argument('--scaleSigR',dest='scaleSigR',type=float,default=1.0,
+                 help='Scale factor applied to Sigma_R [default=%(default)s]')
 
     # Use spectral matrices? 
-    p.add_option("--SpectralCutoff", dest="SpectralCutoff", help="Cutoff value for SpectralMatrix functions (for ordinary matrix representation set cutoff<=0.0) [default=%default]",
-                  type='float', default=0.0)
-
+    p.add_argument('--SpectralCutoff',dest='SpectralCutoff',type=float,default=0.0,
+                 help='Cutoff value for SpectralMatrix functions (for ordinary matrix representation set cutoff<=0.0) [default=%(default)s]')
+                 
+    
     # Parse the options
-    (options, args) = p.parse_args(argv)
-
-    # Get the last positional argument
-    options.DestDir = VC.GetPositional(args,"You need to specify a destination directory")
+    options = p.parse_args(argv)
 
     # With this one can overwrite the logging information
     if "log" in kwargs:
-        options.Logfile = kwargs["log"]
+        options.Logfile = kwargs['log']
     else:
         options.Logfile = 'pyTBT.log'
 

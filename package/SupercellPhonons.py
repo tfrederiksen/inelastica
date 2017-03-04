@@ -41,48 +41,30 @@ def GetOptions(argv,**kwargs):
     if isinstance(argv,VC.string_types):
         argv = argv.split()
 
-    import optparse as o
+    import argparse
 
-    usage = "usage: %prog [options] DestinationDirectory"
-    description = "Methods to calculate electron and phonon band structures from finite-difference calculations"
+    p = argparse.ArgumentParser(description='Methods to calculate electron and phonon band structures from finite-difference calculations')
+    p.add_argument('DestDir',help='Destination directory')
+    p.add_argument('--FCwildcard',dest='FCwildcard',type=str,default='./FC*',
+                 help='Wildcard for FC directories [default=%(default)s]')
+    p.add_argument('--OSdir',dest='onlySdir',type=str,default='./OSrun',
+                 help='Location of OnlyS directory [default=%(default)s]')
+    p.add_argument('-r','--radius',dest='radius',type=float,default=0.,
+                 help='Force cutoff radius in Angstroms [default=%(default)s]')
+    p.add_argument('--AtomicMass',dest='AtomicMass',default='[]',
+                 help='Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%(default)s]')
+    p.add_argument('-k','--kpointfile',dest='kfile',default=None,
+                 help='Input file with electronic k-points to be evaluated [default=%(default)s]')
+    p.add_argument('-q','--qpointfile',dest='qfile',default=None,
+                 help='Input file with phonon q-points to be evaluated [default=%(default)s]')
+    p.add_argument('-s','--steps',dest='steps',default=100,type=int,
+                 help='Number of points on path between high-symmetry k-points [default=%(default)s]')
+    p.add_argument('--mesh',dest='mesh',default='[0,0,0]',type=str,
+                 help='Mesh sampling over one BZ (powers of 2) [default=%(default)s]')
+    p.add_argument('--sort',dest='sorting',action='store_true',default=False,
+                 help='Sort eigenvalues along k-mesh for nice plots? [default=%(default)s]')
 
-    p = o.OptionParser(description=description,usage=usage)
-
-    p.add_option("--FCwildcard",dest="FCwildcard",
-                 help="Wildcard for FC directories [default=%default]",
-                 type="str",default="./FC*")
-    
-    p.add_option("--OSdir",dest="onlySdir",
-                 help="Location of OnlyS directory [default=%default]",
-                 type="str",default="./OSrun")
-    
-    p.add_option("-r","--radius", dest="radius",
-                 help="Force cutoff radius in Angstroms [default=%default]" ,
-                 type="float",default=0.)
-
-    p.add_option("--AtomicMass", dest='AtomicMass', default='[]',
-                 help="Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=%default]")
-    
-    p.add_option("-k","--kpointfile",dest='kfile',default=None,
-                 help="Input file with electronic k-points to be evaluated [default=%default]")
-
-    p.add_option("-q","--qpointfile",dest='qfile',default=None,
-                 help="Input file with phonon q-points to be evaluated [default=%default]")
-
-    p.add_option('-s','--steps',dest='steps',default=100,type="int",
-                 help="Number of points on path between high-symmetry k-points [default=%default]")
-
-    p.add_option('--mesh',dest='mesh',default='[0,0,0]',type="str",
-                 help="Mesh sampling over one BZ (powers of 2) [default=%default]")
-
-    p.add_option("--sort",dest="sorting",
-                 help="Sort eigenvalues along k-mesh for nice plots? [default=%default]",
-                 action="store_true",default=False)
-
-    (options, args) = p.parse_args(argv)
-
-    # Get the last positional argument
-    options.DestDir = VC.GetPositional(args,"You need to specify a destination directory")
+    options = p.parse_args(argv)
 
     # With this one can overwrite the logging information
     if "log" in kwargs:
