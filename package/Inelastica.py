@@ -751,7 +751,7 @@ def write2NCfile(NCfile,var,name,unit):
     tmp.units = unit
     
 def writeLOEData2Datafile(file,hw,T,nHT,HT):
-    f = open(file,'a')
+    f = open(file,'w')
     f.write("## Almost First Order Born Approximation (kbT=0)\n")
     f.write("## hw(eV)      Trans        non-H-term (e/pi/hbar)   H-term\n")
     for ii in range(len(hw)):
