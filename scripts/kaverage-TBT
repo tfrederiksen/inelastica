@@ -87,7 +87,11 @@ for nin in args.ncfiles:
         # Open NC files
         nin = NC.Dataset(fin,'r')
         nout = NC.Dataset(fout,'w')
-        wkpt = nin.variables['wkpt'][:]
+        try:
+            wkpt = nin.variables['wkpt'][:]
+        except:
+            # Gamma calculation only
+            wkpt = N.array([1.])
         E = nin.variables['E'][:]
         id = '' # for indentation
         walk(wkpt,E,nin,nout,'',fin[:-3]+'.')
