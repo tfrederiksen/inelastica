@@ -168,7 +168,7 @@ def main(options):
                            options.DeviceAtoms[0]+L,
                            options.DeviceAtoms[1]+L,lasto)
     basis.ii -= L
-    TeF = N.trace(GFp.TT).real
+    TeF = MM.trace(GFp.TT).real
     GFp.TeF = TeF
     GFm.TeF = TeF
     # Check consistency of PHrun vs TSrun inputs
@@ -303,6 +303,10 @@ def calcTraces(options,GF1,GF2,basis,NCfile,ihw):
     # LOE expressions in compact form
     t1 = MM.mm(MARGLGM,GF2.AR)
     t2 = MM.mm(MARGLGM2,GF1.AL)
+    # Note that compared with Eq. (10) of PRB89, 081405 (2014) we here use
+    # the definition B_lambda = MM.trace(t1-dagger(t2)), which in turn gives
+    # ReB = MM.trace(t1).real-MM.trace(t2).real
+    # ImB = MM.trace(t1).imag+MM.trace(t2).imag
     K23 = MM.trace(t1).imag+MM.trace(t2).imag
     K4 = MM.trace(MM.mm(M,GF1.ALT,M,GF2.AR))
     aK23 = 2*(MM.trace(t1).real-MM.trace(t2).real) # asymmetric part
