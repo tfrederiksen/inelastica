@@ -642,7 +642,7 @@ class SpectralMatrix:
                 if not subtract:
                     res.L[:,Na:Na+Nb], res.R[Na:Na+Nb,:] = b.L, b.R
                 else:
-                    res.L[:,Na:Na+Nb], res.R[Na:Na+Nb,:] = -b.L, -b.R
+                    res.L[:,Na:Na+Nb], res.R[Na:Na+Nb,:] = -b.L, b.R
                 return res
             
     def __radd__(self,b):
