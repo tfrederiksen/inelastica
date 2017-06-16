@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/scratch/thf/SOFTWARE/python/2.7.10/gcc-4.9.2/bin/python
 
 import Inelastica.MakeGeom as MG
 import argparse
@@ -12,9 +12,9 @@ Currently supports XV, xyz, fdf, ANI, and mkl.
 parser = argparse.ArgumentParser(description=description)
 parser.add_argument('GIN',help='Input geometry file')
 parser.add_argument('GOUT',help='Output zmat-fdf filename')
-parser.add_argument('-f', '--first',metavar='F',default=1,
+parser.add_argument('-F', '--first',type=int,default=1,
                     help='First atom in Z-matrix range (default: %(default)s)')
-parser.add_argument('-l', '--last',metavar='L',default=1,
+parser.add_argument('-L', '--last',type=int,default=1,
                     help='Last atom in Z-matrix range (default: %(default)s)')
 parser.add_argument('-x', '--A1',type=int,default=1,
                     help='Repeat unitcell along lattice vector A1')
