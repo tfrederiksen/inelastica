@@ -227,7 +227,7 @@ class Geom:
             -min(N.array(self.xyz)[:,1]),\
             -min(N.array(self.xyz)[:,2])])
 
-    def rotate(self,axisvector,angle,RotationCenter=[0.,0.,0.],RotateSubset=None,Degrees=True,
+    def rotate(self,axisvector,angle,RotationCenter=None,RotateSubset=None,Degrees=True,
                RotateLatticeVectors=False):
         # Rotation around an axis specified by some axisvector
         # See the "rotation formula" in Goldstein 2nd ed. p. 165
@@ -239,7 +239,7 @@ class Geom:
             RotateThese = range(self.natoms) # Rotate all atoms
         else:
             RotateThese = RotateSubset
-        if RotationCenter != [0.,0.,0.]:
+        if RotationCenter.any():
             # Move origo to center of rotation
             self.move([-x for x in RotationCenter]) 
         for i in RotateThese:
@@ -248,7 +248,7 @@ class Geom:
                 + vec*N.dot(vec,r0)*(1-math.cos(angle)) \
                 + CrossProd(r0,vec)*math.sin(angle)
             self.xyz[i] = [r[0],r[1],r[2]]
-        if RotationCenter != [0.,0.,0.]:
+        if RotationCenter.any():
             # Move back after rotation
             self.move(RotationCenter)
         # Lattice vectors will only be rotated around origo
