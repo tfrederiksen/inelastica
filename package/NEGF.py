@@ -819,24 +819,25 @@ class GF:
             ev, U = LA.eigh(MM.mm(A1.L,A1.R))
         else:
             ev, U = LA.eigh(A1)
-        U = N.transpose(U)
-        Utilde = N.empty(U.shape,U.dtype)
-        for jj in range(len(ev)): # Problems with negative numbers
-            if ev[jj]<0: ev[jj]=0
-            Utilde[jj,:]=N.sqrt(ev[jj]/(2*N.pi))*U[jj,:]
-        Utilde=N.transpose(Utilde)
+
+        # This small trick will remove all zero contribution vectors
+        # and will diagonalize the tt matrix in the subspace where there
+        # are values.
+        idx = (ev > 0).nonzero()[0]
+        ev = N.sqrt(ev[idx] / ( 2 * N.pi ))
+        ev.shape = (1, -1)
+        Utilde = ev * U[:, idx]
+        
         nuo,nuoL,nuoR = self.nuo, self.nuoL, self.nuoR
         if Left:
-            tt=MM.mm(MM.dagger(Utilde)[:,nuo-nuoR:nuo],2*N.pi*G2,Utilde[nuo-nuoR:nuo,:])
+            tt=MM.mm(MM.dagger(Utilde[nuo-nuoR:nuo,:]),2*N.pi*G2,Utilde[nuo-nuoR:nuo,:])
         else:
-            tt=MM.mm(MM.dagger(Utilde)[:,:nuoL],2*N.pi*G2,Utilde[:nuoL,:])
+            tt=MM.mm(MM.dagger(Utilde[:nuoL,:]),2*N.pi*G2,Utilde[:nuoL,:])
+
+        # Diagonalize (note that this is on a reduced tt matrix (no 0 contributing columns)
         evF, UF = LA.eigh(tt)
-        UF = N.transpose(UF)
-        EC=[]
-        for jj in range(channels):
-            ec=MM.mm(Utilde,UF[len(evF)-jj-1,:])
-            EC.append(ec.copy())
-        return EC, evF[::-1] # reverse eigenvalues
+        EC = MM.mm(Utilde, UF[:,-channels:]).T
+        return EC[::-1, :], evF[::-1] # reverse eigenvalues
 
     def calcEigChan(self,channels=10):
         # Calculate Eigenchannels from left

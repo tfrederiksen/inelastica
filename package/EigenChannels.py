@@ -516,7 +516,7 @@ def writeXSF(geom,fn,YY,nx,ny,nz,origo,dstep):
             fo.write('  %1.5E'% (data[iii]))
     fo.write('\n END_DATAGRID_3D\n')
     # Absolute square
-    fo.write(' BEGIN_DATAGRID_3D_REAL\n')
+    fo.write(' BEGIN_DATAGRID_3D_ABS\n')
     fo.write('    %3.0i    %3.0i    %3.0i\n'%(nx,ny,nz))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (origo[0],origo[1],origo[2]))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin,0.0000,0.0000))
