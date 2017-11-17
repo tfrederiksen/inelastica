@@ -184,7 +184,10 @@ def GetVibModesNoScaling(OUTCAR):
             if 'meV' in line:
                 # grep frequency
                 print line,
-                freq.append(float(l[-2]))
+                if 'f/i' in line: # imaginary as negative
+                    freq.append(-float(l[-2]))
+                else:
+                    freq.append(float(l[-2]))
                 # begin vector array
             if len(l) == 6 and l[0] != 'X':
                 v.append([float(l[3]),float(l[4]),float(l[5])])
@@ -208,7 +211,10 @@ def GetVibModesMassScaled(OUTCAR):
             if 'meV' in line:
                 # grep frequency
                 print line,
-                freq.append(float(l[-2]))
+                if 'f/i' in line: # imaginary as negative
+                    freq.append(-float(l[-2]))
+                else:
+                    freq.append(float(l[-2]))
                 # begin vector array
             if len(l) == 6 and l[0] != 'X':
                 v.append([float(l[3]),float(l[4]),float(l[5])])

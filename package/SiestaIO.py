@@ -169,7 +169,7 @@ def WriteAXSFFiles(filename,geoms,forces=None):
             ln = ' %i'%geoms[i].anr[j]
             for k in range(3):
                 ln += ' %.6f'%geoms[i].xyz[j][k]
-            if forces!=None:
+            if type(forces) != bool:
                 for k in range(3):
                     ln += ' %.6f'%forces[i][j][k]
             ln += '\n'
