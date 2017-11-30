@@ -392,7 +392,8 @@ def WriteXYZFile(filename,atomnumber,xyz,write_ghosts=False):
     if write_ghosts:
         file.write(str(len(xyz)))
     else:
-        print '... skipped %i ghost atoms'%nga
+        if nga>0:
+            print '... skipped %i ghost atoms'%nga
         file.write(str(len(xyz)-nga))
     file.write('\n\n')
     for i in range(len(xyz)):
