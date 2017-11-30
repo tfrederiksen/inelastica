@@ -593,13 +593,13 @@ class Geom:
             else:
                 self.pbc.append(vec)    
 
-    def writeXYZ(self,fn,rep=[1,1,1]):
+    def writeXYZ(self,fn,rep=[1,1,1],write_ghosts=False):
         "Write .mkl file with unitcell repeated rep times"
         geom = copy.deepcopy(self)
         for i in range(3):
             geom.repeteGeom(self.pbc[i],rep=rep[i])
             geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
-        SIO.WriteXYZFile(fn,geom.anr,geom.xyz)
+        SIO.WriteXYZFile(fn,geom.anr,geom.xyz,write_ghosts)
 
     def readFDF(self,fn):
         self.pbc,self.xyz,self.snr,self.anr,self.natoms = SIO.ReadFDFFile(fn)
@@ -694,8 +694,10 @@ def convert(infile,outfile,rep=[1,1,1],MoveInsideUnitCell=False,RoundOff=False):
                 geom.xyz[i][j] += 1e5
                 geom.xyz[i][j] = round(geom.xyz[i][j],4)
                 geom.xyz[i][j] -= 1e5
-    if outfile[-4:] == '.xyz':
-        geom.writeXYZ(outfile,rep)
+    if outfile[-4:] == '.XYZ':
+        geom.writeXYZ(outfile,rep,write_ghosts=True)
+    elif outfile[-4:] == '.xyz':
+        geom.writeXYZ(outfile,rep,write_ghosts=False)
     elif outfile[-4:] == '.fdf':
         geom.writeFDF(outfile,rep)
     elif outfile[-3:] == '.XV':

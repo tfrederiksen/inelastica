@@ -382,12 +382,18 @@ def ReadXYZFile(filename):
     return label,N.array(atomnumber),N.array(xyz)
 
 
-def WriteXYZFile(filename,atomnumber,xyz):
+def WriteXYZFile(filename,atomnumber,xyz,write_ghosts=False):
     "Writes atomic geometry in xyz-file format"
     print 'SiestaIO.WriteXYZFile: Writing',filename
+    # Number of ghost atoms
+    nga = len(N.where(atomnumber<0)[0])
     # Write file
     file = open(filename,'w')
-    file.write(str(len(xyz)))
+    if write_ghosts:
+        file.write(str(len(xyz)))
+    else:
+        print '... skipped %i ghost atoms'%nga
+        file.write(str(len(xyz)-nga))
     file.write('\n\n')
     for i in range(len(xyz)):
         try:
@@ -398,8 +404,8 @@ def WriteXYZFile(filename,atomnumber,xyz):
         for j in range(3):
             line += string.rjust('%.9f'%xyz[i][j],16)
         line +='\n'
-        file.write(line)
-    #file.write('\n')
+        if atomnumber[i]>0 or write_ghosts:
+            file.write(line)
     file.close()
 
 #--------------------------------------------------------------------------------
@@ -434,7 +440,7 @@ def WriteFDFFile(filename,vectors,speciesnumber,atomnumber,xyz):
         line=string.rjust('%.9f'%xyz[ii][0],16)+' '
         line+=string.rjust('%.9f'%xyz[ii][1],16)+' '
         line+=string.rjust('%.9f'%xyz[ii][2],16)+' '
-        line+=str(int(speciesnumber[ii]))+'\n'
+        line+=str(int(speciesnumber[ii]))+' # %i\n'%(ii+1)
         file.write(line)
     file.write('%endblock AtomicCoordinatesAndAtomicSpecies\n')
 
