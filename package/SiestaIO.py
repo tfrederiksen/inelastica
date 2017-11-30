@@ -386,7 +386,7 @@ def WriteXYZFile(filename,atomnumber,xyz,write_ghosts=False):
     "Writes atomic geometry in xyz-file format"
     print 'SiestaIO.WriteXYZFile: Writing',filename
     # Number of ghost atoms
-    nga = len(N.where(atomnumber<0)[0])
+    nga = len(N.where(N.array(atomnumber)<0)[0])
     # Write file
     file = open(filename,'w')
     if write_ghosts:
