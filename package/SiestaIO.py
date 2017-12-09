@@ -669,9 +669,13 @@ def GetFDFline(infile, KeyWord = '', printAlot=True):
         KeyWord = line to find"""
     lines = ReadFDFLines(infile, printAlot=printAlot)
     kwl = KeyWord.lower()
-    for i in range(len(lines)):
-        if lines[i][0].lower() == kwl:
-            return lines[i][1:]
+    for line in lines:
+        key = line[0].lower()
+        for s in ['-','_','.']: # these characters should be ignored in fdf keys
+            key = key.replace(s,'')
+            kwl = kwl.replace(s,'')
+        if key == kwl:
+            return line[1:]
 
 def GetFDFlineWithDefault(infile, key, type, default, error):
     """ Finds a line and gives the value of type type.
@@ -700,17 +704,19 @@ def GetFDFlineWithDefault(infile, key, type, default, error):
                                 '"{}" to boolean from key "{}" in file {}.'.format(data,key,infile))
             
 def GetFDFblock(infile, KeyWord = ''):
-    """Finds the walues in a block as strings
+    """Finds the values in a block as strings
        infile = FDF input file
        KeyWord = block to find"""
     lines = ReadFDFLines(infile)
     kwl = KeyWord.lower()
     data = []
     start = 0
-    for i in range(len(lines)):
-        tmp = lines[i]
-        if tmp[0].lower() == '%block':
-            if tmp[1].lower() == kwl:
+    for i,line in enumerate(lines):
+        if line[0].lower() == '%block':
+            for s in ['-','_','.']: # these characters should be ignored in fdf keys
+                line[1] = line[1].replace(s,'')
+                kwl = kwl.replace(s,'')
+            if line[1].lower() == kwl:
                 start = i+1
                 break
     if start > 0: # Only append data if block was found
