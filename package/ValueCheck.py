@@ -132,7 +132,7 @@ def OptionsCheck(opts,exe):
     def get_elec_vars(lr):
         
         # Look up old format first
-        TSHS = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFile'+lr, str, '', exe)
+        TSHS = SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFile'+lr, str, '', exe)
         NA1 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1'+lr, int, 1, exe)
         NA2 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2'+lr, int, 1, exe)
 
@@ -144,7 +144,7 @@ def OptionsCheck(opts,exe):
         print('Looking for new electrode format in: %%block {}'.format(belec))
         
         # Default replication stuff
-        TSHS = opts.head+'/'+SIO.GetFDFlineWithDefault(opts.fn,belec+'.TSHS', str, TSHS, exe)
+        TSHS = SIO.GetFDFlineWithDefault(opts.fn,belec+'.TSHS', str, TSHS, exe)
         NA1 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Bloch.A1', int, NA1, exe)
         NA2 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Bloch.A2', int, NA2, exe)
         NA3 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Bloch.A3', int, 1, exe)
@@ -157,7 +157,7 @@ def OptionsCheck(opts,exe):
             # Lower-case, FDF is case-insensitive
             key = line[0].lower()
             if key in ['tshs','tshs-file','hs','hs-file']:
-                TSHS = opts.head+'/'+line[1]
+                TSHS = line[1]
             elif key in ['replicate-a','rep-a','replicate-a1','rep-a1','bloch-a1']:
                 NA1 = int(line[1])
             elif key in ['replicate-b','rep-b','replicate-a2','rep-a2','bloch-a2']:
@@ -184,6 +184,9 @@ def OptionsCheck(opts,exe):
                 if semiinf != 2 and NA1 * NA2 * NA3 > 1:
                     raise ValueError(("Cannot provide semi-infinite directions "
                                       "other than A3-direction with repetition."))
+        if TSHS[0] != '/':
+            # path is relative
+            TSHS = opts.head+'/'+TSHS
         return TSHS,NA1,NA2,semiinf
 
     # Look up electrode block
