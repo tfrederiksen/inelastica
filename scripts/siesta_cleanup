@@ -23,8 +23,20 @@ rmfileshead = [
     "CLOCK",
     "fort.",
     "DMHS.nc",
-    "DM.nc"]
-rmfilestail=[
+    "DM.nc",
+    "H_DMGEN",
+    "H_MIXED",
+    "TIMES",
+    "PARALLEL_DIST",
+    "mpd.hosts",
+    "0_NORMAL_EXIT",
+    "MESSAGES",
+# VASP STUFF
+    "vasprun.xml",
+    "WAVECAR"
+]
+
+rmfilestail = [
     ".ion",
     ".ion.xml",
     ".alloc",
@@ -36,7 +48,12 @@ rmfilestail=[
     ".confpot",
     ".psdump",
     "~",
-    ".pyc"]
+    ".pyc"
+]
+
+rmpatterns = [".TSGF",
+            ".TBTGF"
+]
 
 # Compressed files end in this
 zipfiles=[".bz",".bz2",".zip",".gz",".tgz"]
@@ -58,7 +75,9 @@ def rmfileQ(fn):
     for ii in rmfilestail:
         if tail[-len(ii):]==ii:
             rm=True
-
+    for p in rmpatterns:
+        if p in tail:
+            rm=True
     return rm
         
 def walktree(top, atime, rmTheFiles):
@@ -123,5 +142,6 @@ if __name__ == '__main__':
             print rmfilestail
             print "###################################################################"
 	    bigfiles = walktree(thispath, now, rmTheFiles=True)
-            print "Big files (larger than 50 MB) found:" 
-            print bigfiles
+            print "Big files (larger than 50 MB) found:"
+            for f in bigfiles:
+                print f

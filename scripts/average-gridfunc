@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+from Inelastica import PhysicalConstants as PC
+import numpy as N
+from scipy.io import netcdf
+import sys
+import argparse
+
+def average(ncfile,axis):
+    """This function writes plane-averaged 1D functions of 
+    SIESTA gridfunctions such as the ElectrostaticPotential.nc
+    on a selected axis"""
+    print 'Averaging %s on axis %i'%(ncfile.filename,axis)
+    dat = ncfile.variables['gridfunc'][0,:] # spin-component 0 only
+    cell = ncfile.variables['cell'][:]
+    a = 3-axis
+    A = N.array(cell[axis-1])
+    L = N.dot(A,A)**.5
+    [n3,n2,n1] =  dat.shape
+    # Write output to file
+    fn = ncfile.filename+'.A%i.dat'%axis
+    fout = open(fn,'w')
+    n = dat.shape[a]
+    for i in range(n):
+    	# convert distance unit to Angstrom 
+        z = L/n*i*PC.Bohr2Ang
+        if axis == 1:
+            fout.write('%.8f %.8f\n'%(z,N.sum(dat[:,:,i])/(n2*n3)))
+        elif axis == 2:
+            fout.write('%.8f %.8f\n'%(z,N.sum(dat[:,i,:])/(n1*n3)))
+        elif axis == 3:
+            fout.write('%.8f %.8f\n'%(z,N.sum(dat[i,:,:])/(n1*n2)))
+    fout.close()
+    print '... wrote',fn
+    del dat,cell,n,n1,n2,n3,A
+    ncfile.close()
+
+
+parser = argparse.ArgumentParser(description='Tool for 2D averages of SIESTA 3D gridfunctions')
+parser.add_argument('-a','--axis',dest='axis',type=int,default=3,
+                    help='Axis along which the transverse 2D average should be performed')
+parser.add_argument('ncfile',type=netcdf.netcdf_file,nargs='+',
+		    help='Input netcdf gridfunction file')
+args = parser.parse_args()
+
+for fn in args.ncfile:
+    average(fn,args.axis)

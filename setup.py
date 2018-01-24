@@ -126,6 +126,7 @@ Provides:
                   'scripts/setupFCrun',
                   'scripts/setupOSrun',
                   'scripts/kaverage-TBT',
+                  'scripts/average-gridfunc',
                   'scripts/WriteWavefunctions'
                   ],
       packages=['Inelastica'],
