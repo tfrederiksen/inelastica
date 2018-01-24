@@ -129,7 +129,9 @@ if __name__ == '__main__':
         print "   Goes through directories and gzips files more than <days> days old"
         print "   and removes files older than <days> that begin with:"
         print rmfileshead
-        print "   and end with:"
+        print "   contain the following string patterns:"
+        print rmpatterns
+        print "   or end with:"
         print rmfilestail
         print "   (NB. it will also remove zipped, gziped etc files with those names)"
     else:
@@ -138,7 +140,9 @@ if __name__ == '__main__':
             print "Running siesta_cleanup.py on %s"%thispath
             print "... Deleting files older than %i days that begin with"%days
             print rmfileshead
-            print "and end with:"
+            print "   contain the following string patterns:"
+            print rmpatterns
+            print "   or end with:"
             print rmfilestail
             print "###################################################################"
 	    bigfiles = walktree(thispath, now, rmTheFiles=True)

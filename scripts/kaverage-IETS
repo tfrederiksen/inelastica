@@ -1,0 +1,70 @@
+#!/usr/bin/env python
+# 
+# Thomas Frederiksen
+# January 2018 
+#
+
+import numpy as N
+import netCDF4 as NC
+import sys
+import argparse
+
+parser = argparse.ArgumentParser(description='Utility to perform k-averages on relevant quantities in netCDF4 files from Inelastica.')
+parser.add_argument('ncfile',nargs='+',type=str,
+                    help='An output netCDF4 file from Inelastica')
+parser.add_argument('-o','--output',default='avg-IETS.nc',
+                    help='Output filename for k-averaged IETS [default: %(default)s]')
+args = parser.parse_args()
+
+def write2file(fn,x,y):
+    f = open(fn,'w')
+    assert len(x) == len(y)
+    for i,xi in enumerate(x):
+        f.write('%.8f %.8e\n'%(xi,y[i]))
+    f.close()
+    print '... Wrote',fn
+
+# Loop over arguments
+nout = NC.Dataset(args.output,'w')
+wkpt = 1./len(args.ncfile)
+print 'Weight factor per kpoint:', wkpt
+
+for i,fin in enumerate(args.ncfile):
+    nin = NC.Dataset(fin,'r')
+    print '\nReading k=',nin.variables['kpoint'][:], 'from',fin
+    if i==0:
+        # Copy data structures from the first file
+        # Set attibutes
+        nout.setncatts({k: nin.getncattr(k) for k in nin.ncattrs()})
+        # Set dimensions
+        for dname, dim in nin.dimensions.iteritems():
+            nout.createDimension(dname,len(dim) if not dim.isunlimited() else None)
+        # Variables
+        for vname, var in nin.variables.iteritems():
+            vout = nout.createVariable(vname,var.datatype,var.dimensions[:])
+            vout.setncatts({k: var.getncattr(k) for k in var.ncattrs()})
+            vout[:] = wkpt*var[:]
+    else:
+        # Just read data and add to output file
+        for vname, var in nin.variables.iteritems():
+            nout.variables[vname][:] += wkpt*var[:]
+    nin.close()
+
+# Recompute broadened IETS
+V = nout.variables['V'][:]
+IETS = nout.variables['BddI'][:]/nout.variables['BdI'][:]
+nout.variables['IETS'][:] = IETS
+write2file(args.output+'.IETS.dat',V,IETS)
+
+# Recompute intrinsic IETS
+IETS = nout.variables['ddI'][:]/nout.variables['dI'][:]
+nout.variables['IETS_0'][:] = IETS
+write2file(args.output+'.IETS0.dat',V,IETS)
+
+# Write other ascii files
+write2file(args.output+'.BddI.dat',V,nout.variables['BddI'][:])
+write2file(args.output+'.ddI.dat',V,nout.variables['ddI'][:])
+write2file(args.output+'.BdI.dat',V,nout.variables['BdI'][:])
+write2file(args.output+'.dI.dat',V,nout.variables['dI'][:])
+
+nout.close()
