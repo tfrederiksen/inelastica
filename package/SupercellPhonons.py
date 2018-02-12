@@ -63,6 +63,8 @@ def GetOptions(argv,**kwargs):
                  help='Mesh sampling over one BZ (powers of 2) [default=%(default)s]')
     p.add_argument('--sort',dest='sorting',action='store_true',default=False,
                  help='Sort eigenvalues along k-mesh for nice plots? [default=%(default)s]')
+    p.add_argument('--TSdir',dest='onlyTSdir',type=str,default=None,
+                 help='Location of TranSIESTA calculation directory (will ignore FC and OnlyS directories) [default=%(default)s]')
 
     options = p.parse_args(argv)
 
@@ -91,14 +93,14 @@ def GetOptions(argv,**kwargs):
 
 class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
 
-    def __init__(self,fdf):
-        PH.DynamicalMatrix.__init__(self,fdf,DynamicAtoms=None)
+    def __init__(self,fdf,TSrun=False):
+        PH.DynamicalMatrix.__init__(self,fdf,DynamicAtoms=None,TSrun=TSrun)
         # Find basis and symmetry operations
-        self.CheckSymmetries()
+        self.CheckSymmetries(TSrun=TSrun)
 
     # PHONONIC PART
 
-    def CheckSymmetries(self):
+    def CheckSymmetries(self,TSrun=False):
         print '\nPerforming symmetry analysis'
         # Check if a smaller basis is present:
         Sym = Symmetry.Symmetry()
@@ -108,7 +110,8 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         Sym.pointGroup()
         #Sym.findIrreducible()
         Sym.what()
-        self.SetDynamicAtoms(range(1,Sym.basis.NN+1))
+        if not TSrun:
+            self.SetDynamicAtoms(range(1,Sym.basis.NN+1))
         # Calculate lattice vectors for phase factors
         # The closest cell might be different depending on which atom is moved
         sxyz = Sym.xyz.copy()
@@ -116,7 +119,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         for ii in range(Sym.NN):
             micxyz = Symmetry.moveIntoClosest(sxyz-sxyz[ii],Sym.pbc[0],Sym.pbc[1],Sym.pbc[2])
             for jj in range(Sym.NN):
-                latticevectors[ii,jj] = micxyz[jj]+sxyz[Sym.basisatom[ii]]-sxyz[Sym.basisatom[jj]]           
+                latticevectors[ii,jj] = micxyz[jj]+sxyz[Sym.basisatom[ii]]-sxyz[Sym.basisatom[jj]]
         self.latticevectors = latticevectors
         self.supercell = True
         self.Sym = Sym
@@ -177,12 +180,17 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
                 H_k[...,fmb:lmb+1,fnb:lnb+1] += phase*H[...,fm:lm+1,fn:ln+1]
         return H_k
 
-    def ComputeElectronStates(self,kpoint,verbose=True):
+    def ComputeElectronStates(self,kpoint,verbose=True,TSrun=False):
         if verbose:
             print 'SupercellPhonons.ComputeElectronStates: k = ',kpoint,'(1/Ang)'
         # Fold onto primitive cell
-        self.h0_k = self.Fold2PrimitiveCell(self.h0,kpoint)
-        self.s0_k = self.Fold2PrimitiveCell(self.s0,kpoint)
+        if TSrun:
+            self.TSHS0.setkpoint(kpoint,atype=N.complex)
+            self.h0_k = self.TSHS0.H[:,:,:]
+            self.s0_k = self.TSHS0.S[:,:]
+        else:
+            self.h0_k = self.Fold2PrimitiveCell(self.h0,kpoint)
+            self.s0_k = self.Fold2PrimitiveCell(self.s0,kpoint)
         ev = N.empty((self.nspin,self.rednao),N.float)
         evec = N.empty((self.nspin,self.rednao,self.rednao),N.complex)
         for ispin in range(self.nspin):
@@ -435,8 +443,13 @@ def main(options):
 
     CF.PrintMainHeader('Bandstructures',vinfo,options)
 
-    fdf = glob.glob(options.FCwildcard+'/RUN.fdf') # This should be made an input flag
-    SCDM = Supercell_DynamicalMatrix(fdf)
+    try:
+        fdf = glob.glob(options.onlyTSdir+'/RUN.fdf')
+        TSrun=True
+    except:
+        fdf = glob.glob(options.FCwildcard+'/RUN.fdf') # This should be made an input flag
+        TSrun=False
+    SCDM = Supercell_DynamicalMatrix(fdf,TSrun)
 
     # Write high-symmetry path
     WritePath(options.DestDir+'/symmetry-path',SCDM.Sym.path,options.steps)
@@ -456,7 +469,7 @@ def main(options):
     if options.kfile:
         # Prepare Hamiltonian etc in Gamma for whole supercell
         natoms = SIO.GetFDFlineWithDefault(fdf[0],'NumberOfAtoms',int,-1,'Error')
-        SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),1,natoms,AbsEref=False,atype=N.complex)
+        SCDM.PrepareGradients(options.onlySdir,N.array([0.,0.,0.]),1,natoms,AbsEref=False,atype=N.complex,TSrun=TSrun)
         SCDM.nao = SCDM.h0.shape[-1]
         SCDM.FirstOrb = SCDM.OrbIndx[0][0] # First atom = 1
         SCDM.LastOrb = SCDM.OrbIndx[SCDM.Sym.basis.NN-1][1] # Last atom = Sym.NN
@@ -490,9 +503,9 @@ def main(options):
         # Loop over kpoints
         for i,k in enumerate(kpts):
             if i<100: # Print only for the first 100 points
-                ev,evec = SCDM.ComputeElectronStates(k,verbose=True)
+                ev,evec = SCDM.ComputeElectronStates(k,verbose=True,TSrun=TSrun)
             else:
-                ev,evec = SCDM.ComputeElectronStates(k,verbose=False)
+                ev,evec = SCDM.ComputeElectronStates(k,verbose=False,TSrun=TSrun)
                 # otherwise something simple 
                 if i%100==0: print '%i out of %i k-points computed'%(i,len(kpts))
             if i==0:
@@ -515,7 +528,12 @@ def main(options):
             evecsIm[i,:] = evec.imag
         ncf.sync()
         # Include basis orbitals in netcdf file
-        lasto = SCDM.OrbIndx[:SCDM.Sym.basis.NN+1,0]
+        if SCDM.Sym.basis.NN == len(SCDM.OrbIndx):
+            lasto = N.zeros(SCDM.Sym.basis.NN+1,N.float)
+            lasto[:SCDM.Sym.basis.NN] = SCDM.OrbIndx[:SCDM.Sym.basis.NN,0]
+            lasto[SCDM.Sym.basis.NN] = SCDM.OrbIndx[SCDM.Sym.basis.NN-1,SCDM.Sym.basis.NN-1]+1
+        else:
+            lasto = SCDM.OrbIndx[:SCDM.Sym.basis.NN+1,0]
         orbbasis = SIO.BuildBasis(fdf[0],1,SCDM.Sym.basis.NN,lasto)
         # Note that the above basis is for the geometry with an atom FC-moved in z.
         #print dir(orbbasis)

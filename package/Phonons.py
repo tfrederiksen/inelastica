@@ -239,6 +239,28 @@ class FCrun():
         self.snr2nao = snr2nao # orbitals per species
         return self.orbitalIndices,self.nao
 
+
+class OTSrun(FCrun): # Only TranSiesta run
+
+    def __init__(self,runfdf):
+        self.fdf = runfdf
+        self.directory,self.tail = os.path.split(runfdf)
+        self.systemlabel = SIO.GetFDFlineWithDefault(runfdf,'SystemLabel', str, 'siesta','Phonons')
+        # Read geometry
+        self.geom = MG.Geom(runfdf)
+        # Compare with XV file corrected for last displacement
+        XV = self.directory+'/%s.XV'%self.systemlabel
+        geomXV = MG.Geom(XV)
+        natoms = self.geom.natoms
+        # Determine TSHS files
+        try:
+            files = glob.glob(self.directory+'/%s*.TSHS'%self.systemlabel)
+        except:
+            sys.exit('Phonons.GetFileLists: No TSHS file found in %s'%self.directory)
+        # Build dictionary over TSHS files and corresponding displacement amplitudes
+        self.TSHS = {}
+        self.TSHS[0] = files[0] # Equilibrium TSHS
+
     
 class OSrun:
     
@@ -290,9 +312,14 @@ class OSrun:
 
 class DynamicalMatrix():
 
-    def __init__(self,fdfs,DynamicAtoms=None):
+    def __init__(self,fdfs,DynamicAtoms=None,TSrun=False):
         self.fdfs = fdfs
-        self.FCRs = [FCrun(f) for f in fdfs]
+        if TSrun:
+            self.FCRs = [OTSrun(f) for f in fdfs]
+            self.TSHS = {}
+            self.TSHS[0] = self.FCRs[0].TSHS[0]
+        else:
+            self.FCRs = [FCrun(f) for f in fdfs]
         self.geom = self.FCRs[0].geom # assume identical geometries
         if DynamicAtoms:
             self.SetDynamicAtoms(DynamicAtoms)
@@ -428,22 +455,23 @@ class DynamicalMatrix():
         self.UUdisp = UUdisp
         self.UUcl = UUcl
 
-    def PrepareGradients(self,onlySdir,kpoint,DeviceFirst,DeviceLast,AbsEref,atype):
+    def PrepareGradients(self,onlySdir,kpoint,DeviceFirst,DeviceLast,AbsEref,atype,TSrun=False):
         print '\nPhonons.PrepareGradients: Setting up various arrays'
         self.atype = atype
         self.kpoint = kpoint
         self.OrbIndx,nao = self.FCRs[0].GetOrbitalIndices()
-        OS = OSrun(onlySdir,kpoint,atype=atype)
-        self.dS = OS.dS
         self.TSHS0 = SIO.HS(self.TSHS[0])
         self.TSHS0.setkpoint(kpoint,atype=atype)
+        if not TSrun:
+            OS = OSrun(onlySdir,kpoint,atype=atype)
+            self.dS = OS.dS
+            # OS.S0 and TSHS0.S should be identical, but with some versions/compilations
+            # of TranSIESTA this is NOT always the case away from k=0 (GammaPoint is OK).
+            # It appears to be a bug in TranSIESTA 3.2 and 4.0b affecting runs
+            # with TS.onlyS=True, i.e., the quick evaluations in the OSrun folder
+            if not N.allclose(OS.S0,self.TSHS0.S):
+                sys.exit('Inconsistency detected with your .onlyS files. Perhaps a bug in your TranSIESTA version/compilation.')
         self.invS0H0 = N.empty((2,)+self.TSHS0.H.shape,dtype=self.TSHS0.H.dtype)
-        # OS.S0 and TSHS0.S should be identical, but with some versions/compilations
-        # of TranSIESTA this is NOT always the case away from k=0 (GammaPoint is OK).
-        # It appears to be a bug in TranSIESTA 3.2 and 4.0b affecting runs
-        # with TS.onlyS=True, i.e., the quick evaluations in the OSrun folder
-        if not N.allclose(OS.S0,self.TSHS0.S):
-            sys.exit('Inconsistency detected with your .onlyS files. Perhaps a bug in your TranSIESTA version/compilation.')
         #invS0 = LA.inv(OS.S0) # <--- This choice was used in rev. 324-397
         invS0 = LA.inv(self.TSHS0.S) # Reverting to the matrix used up to rev. 323
         self.nspin = len(self.TSHS0.H)

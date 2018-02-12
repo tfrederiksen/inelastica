@@ -669,11 +669,12 @@ def GetFDFline(infile, KeyWord = '', printAlot=True):
         KeyWord = line to find"""
     lines = ReadFDFLines(infile, printAlot=printAlot)
     kwl = KeyWord.lower()
+    for s in ['-','_','.']: # these characters should be ignored in fdf keys
+        kwl = kwl.replace(s,'')
     for line in lines:
         key = line[0].lower()
         for s in ['-','_','.']: # these characters should be ignored in fdf keys
             key = key.replace(s,'')
-            kwl = kwl.replace(s,'')
         if key == kwl:
             return line[1:]
 
@@ -1338,7 +1339,7 @@ def BuildBasis(FDFfile,FirstAtom,LastAtom,lasto):
 
     if nn!=lasto[LastAtom]-lasto[FirstAtom-1]:
         print "Length of basis set build: %i"%nn
-        print "Size of Hamiltonian: %i"%lasto[LastAtom]-lasto[FirstAtom-1]
+        print "Size of Hamiltonian: %i"%(lasto[LastAtom]-lasto[FirstAtom-1])
         print "Error: Could not build basis set. Check if all ion.nc files are there!"
         kuk
 
