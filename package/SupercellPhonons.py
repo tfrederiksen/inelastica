@@ -531,7 +531,7 @@ def main(options):
         if SCDM.Sym.basis.NN == len(SCDM.OrbIndx):
             lasto = N.zeros(SCDM.Sym.basis.NN+1,N.float)
             lasto[:SCDM.Sym.basis.NN] = SCDM.OrbIndx[:SCDM.Sym.basis.NN,0]
-            lasto[SCDM.Sym.basis.NN] = SCDM.OrbIndx[SCDM.Sym.basis.NN-1,SCDM.Sym.basis.NN-1]+1
+            lasto[SCDM.Sym.basis.NN] = SCDM.OrbIndx[SCDM.Sym.basis.NN-1,1]+1
         else:
             lasto = SCDM.OrbIndx[:SCDM.Sym.basis.NN+1,0]
         orbbasis = SIO.BuildBasis(fdf[0],1,SCDM.Sym.basis.NN,lasto)
