@@ -181,14 +181,14 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         return H_k
 
     def ComputeElectronStates(self,kpoint,verbose=True,TSrun=False):
-        if verbose:
-            print 'SupercellPhonons.ComputeElectronStates: k = ',kpoint,'(1/Ang)'
-        # Fold onto primitive cell
         if TSrun:
-            self.TSHS0.setkpoint(kpoint,atype=N.complex)
+            self.TSHS0.setkpoint(kpoint,atype=N.complex,verbose=verbose)
             self.h0_k = self.TSHS0.H[:,:,:]
             self.s0_k = self.TSHS0.S[:,:]
         else:
+            if verbose:
+                print 'SupercellPhonons.ComputeElectronStates: k = ',kpoint,'(1/Ang)'
+            # Fold onto primitive cell
             self.h0_k = self.Fold2PrimitiveCell(self.h0,kpoint)
             self.s0_k = self.Fold2PrimitiveCell(self.s0,kpoint)
         ev = N.empty((self.nspin,self.rednao),N.float)

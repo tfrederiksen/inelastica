@@ -1710,14 +1710,14 @@ class HS:
                     #if juo!=jo and N.max(abs(self.xij[self.listhptr[iuo]+jnz,:]))<0.1:
                     #    print self.xij[self.listhptr[iuo]+jnz,:]
 
-    def setkpoint(self,kpoint,UseF90helpers=True,atype=N.complex):
+    def setkpoint(self,kpoint,UseF90helpers=True,atype=N.complex,verbose=True):
         "Make full matrices from sparse for specific k-point"
         kpoint = N.array(kpoint,N.float)
         if self.gamma:
             VC.Check("same-kpoint", abs(kpoint),
                      "Trying to set non-zero k-point for Gamma point calculation.")
         if N.any(N.abs(self.kpoint-kpoint) > VC.GetCheck("same-kpoint")):
-            print "SiestaIO.HS.setkpoint: %s k =" % self.fn,kpoint
+            if verbose: print "SiestaIO.HS.setkpoint: %s k =" % self.fn,kpoint
             self.kpoint = kpoint
             self.S = self.setkpointhelper(self.Ssparse,kpoint,UseF90helpers,atype=atype)
             if not self.onlyS:
