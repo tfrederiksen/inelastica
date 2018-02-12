@@ -106,12 +106,11 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         Sym = Symmetry.Symmetry()
         # Find lattice symmetries
         Sym.setupGeom(self.geom.pbc,self.geom.snr,self.geom.anr,self.geom.xyz,onlyLatticeSym=True)
-        # A primitive cell was found
-        Sym.pointGroup()
-        #Sym.findIrreducible()
-        Sym.what()
         if not TSrun:
+            Sym.pointGroup() # Actually this call is only needed if phonons are computed
+            #Sym.findIrreducible()
             self.SetDynamicAtoms(range(1,Sym.basis.NN+1))
+        Sym.what()
         # Calculate lattice vectors for phase factors
         # The closest cell might be different depending on which atom is moved
         sxyz = Sym.xyz.copy()
