@@ -281,17 +281,27 @@ def ReadKpoints_ascii(filename):
     labels = []
     ticks = []
     f = open(filename,'r')
-    for ln in f.readlines():
+    # Initialize variables with the first read k-point
+    ln = f.readlines()[0]
+    s = ln.split()
+    if len(s)==3 or len(s)==4:
+        klist += [N.array([N.float(s[0]),N.float(s[1]),N.float(s[2])])]
+        dk = N.zeros(3,N.float)
+        dklist += [N.dot(dk,dk)**.5]
+        if len(s)==4:
+            labels += [s[3]]
+            ticks += [[dklist[0],s[3]]]
+        else:
+            labels += ['']
+    # Continue reading the rest of the file
+    f.seek(0)
+    for ln in f.readlines()[1:]:
         i = len(klist)
         s = ln.split()
         if len(s)==3 or len(s)==4:
             klist += [N.array([N.float(s[0]),N.float(s[1]),N.float(s[2])])]
-            if i==0:
-                dk = N.zeros(3,N.float)
-                dklist += [N.dot(dk,dk)**.5]
-            else:
-                dk = klist[i]-klist[i-1]
-                dklist += [dklist[i-1]+N.dot(dk,dk)**.5]
+            dk = klist[i]-klist[i-1]
+            dklist += [dklist[i-1]+N.dot(dk,dk)**.5]
             if len(s)==4:
                 labels += [s[3]]
                 ticks += [[dklist[i],s[3]]]

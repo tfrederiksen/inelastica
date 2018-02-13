@@ -818,17 +818,27 @@ class Symmetry:
             H = b1*1/2-b2*1/2+b3*1/2
             self.path = [[G,'G'],[H,'H'],[P,'P'],[G,'G'],[NN,'N'],[H,'H']]
         elif self.latticeType == 'HEX':
-            # Determine angle between b1 and b2
-            a = N.arccos(mm(b1,b2)/distance(b1)/distance(b2))*180/N.pi
+            # Determine ortogonal array c3
+            if N.allclose(N.dot(b1,b3),(0.,0.,0.)):
+                if N.allclose(N.dot(b2,b3),(0.,0.,0.)):
+                    c1, c2, c3 = b1, b2, b3
+                else:
+                    c1, c2, c3 = b3, b2, b1
+            else:
+                c1, c2, c3 = b1, b3, b2
+            # Determine angle between c1 and c2
+            a = N.arccos(mm(c1,c2)/distance(c1)/distance(c2))*180/N.pi
             if a > 90:
                 # angle is 120deg, should be 60deg
-                b1 = -b1
-            # Table 13 - Figure 13
-            A = b1*0/1+b2*0/1+b3*1/2
-            H = b1*1/3+b2*1/3+b3*1/3
-            K = b1*1/3+b2*1/3+b3*0/1
-            L = b1*1/2+b2*0/1+b3*1/2
-            M = b1*1/2+b2*0/1+b3*0/1
+                c2 = -c2
+#               i.e.:
+#               K = c1*1/3-c2*1/3+c3*0/1
+#               H = c1*1/3-c2*1/3+c3*1/2
+            A = c1*0/1+c2*0/1+c3*1/2
+            H = c1*1/3+c2*1/3+c3*1/2
+            K = c1*1/3+c2*1/3+c3*0/1
+            L = c1*1/2+c2*0/1+c3*1/2
+            M = c1*1/2+c2*0/1+c3*0/1
             self.path = [[G,'G'],[M,'M'],[K,'K'],[G,'G'],[A,'A'],[L,'L'],[H,'H'],[A,'A']]
         elif self.latticeType == 'TETRAGONAL':
             # Table 5 - Figure 4
