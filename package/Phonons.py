@@ -253,13 +253,13 @@ class OTSrun(FCrun): # Only TranSiesta run
         geomXV = MG.Geom(XV)
         natoms = self.geom.natoms
         # Determine TSHS files
-        try:
-            files = glob.glob(self.directory+'/%s*.TSHS'%self.systemlabel)
-        except:
-            sys.exit('Phonons.GetFileLists: No TSHS file found in %s'%self.directory)
+        files = glob.glob(self.directory+'/%s*.TSHS'%self.systemlabel)
         # Build dictionary over TSHS files and corresponding displacement amplitudes
         self.TSHS = {}
-        self.TSHS[0] = files[0] # Equilibrium TSHS
+        try:
+            self.TSHS[0] = files[0] # Equilibrium TSHS
+        except:
+            sys.exit('Phonons.GetFileLists: No TSHS file found in %s'%self.directory)
 
     
 class OSrun:

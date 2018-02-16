@@ -181,7 +181,10 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
 
     def ComputeElectronStates(self,kpoint,verbose=True,TSrun=False):
         if TSrun:
-            self.TSHS0.setkpoint(kpoint,atype=N.complex,verbose=verbose)
+            # kpoint has unit of '2*pi/a'
+            kpt = kpoint/(2*N.pi)
+            kpt2 = MM.mm(N.array([self.Sym.a1,self.Sym.a2,self.Sym.a3]), kpt)
+            self.TSHS0.setkpoint(kpt2,atype=N.complex,verbose=verbose)
             self.h0_k = self.TSHS0.H[:,:,:]
             self.s0_k = self.TSHS0.S[:,:]
         else:
@@ -583,6 +586,9 @@ def main(options):
                 PlotElectronBands(options.DestDir+'/Electrons.UP.agr',dk,evals[:,0,:],kticks)
                 PlotElectronBands(options.DestDir+'/Electrons.DOWN.agr',dk,evals[:,1,:],kticks)
         ncf.close()
+
+    if TSrun: # only electronic calculation
+        return SCDM.Sym.path
 
     # Compute phonon eigenvalues
     if options.qfile:
