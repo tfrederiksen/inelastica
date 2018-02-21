@@ -1,635 +1,516 @@
-print "SVN $Id$"
+from __future__ import absolute_import, print_function
+version = "SVN $Id$"
+print(version)
 
-"""
-Eigenchannels:
-1: Eigenchannels, method from Paulsson and Brandbyge PRB 2007
-2: Analyze IETS spectra, Paulsson et al PRL 2008
-3: Calculate "bond" currents
-"""
-fudgeEnergy = 5e-5         # Fudge energy in eV used to see if Ef is close to the calculated energy
-
-import pyTBT as pyTBT
-import SiestaIO as SIO
-import NEGF
-import MakeGeom as MG
-import WriteXMGR as XMGR
+import Inelastica.NEGF as NEGF
+import Inelastica.SiestaIO as SIO
+import Inelastica.MakeGeom as MG
+import Inelastica.MiscMath as MM
+import Inelastica.PhysicalConstants as PC
+import Inelastica.Kmesh as Kmesh
+import Inelastica.Symmetry as SYM
 import numpy as N
 import numpy.linalg as LA
-import netCDF4 as NC4
-import sys, string, struct, glob,  os
-from optparse import OptionParser, OptionGroup
-import PhysicalConstants as PC
+import netCDF4 as NC
+import sys, string, struct, glob, os, time, resource
+import Inelastica.PhysicalConstants as PC
+import Inelastica.ValueCheck as VC
+import Inelastica.CommonFunctions as CF
+import scipy
+import scipy.io
+import scipy.sparse.linalg as SLA
+import scipy.sparse as SS
+import Inelastica.WriteNetCDF as writeNC
+import Inelastica.STMFD as STMFD
 
-# Dummy classes for global variables
-class HS:       pass
-class IETS:     pass
-# general, basis and geom are a global variables
+#Units: Bohr and Rydberg!
 
-########################################################
-##################### Main routine #####################
-########################################################
-def main():
-    setupParameters()
+# ID for boundaries 
+zeroSide, wfSide, pbcSide = 1, 2, 3 # ID
+DEBUG = False
+DEBUGPDE = False
 
-    readxv()
-    readHS()
-    readbasis()
-    calcSTM()
+vinfo = [version,NEGF.version,SIO.version,MG.version,MM.version,PC.version,VC.version,CF.version]
 
-########################################################
-def readxv():
-    global geom
-    # Read geometry from first .XV file found in dir
-    fns=glob.glob('*.XV')
+def GetOptions(argv,**kwargs):
+    # if text string is specified, convert to list
+    if type(argv)==type(''): argv = argv.split()
 
-    if len(fns)>1:
-        print "ERROR: Eigenchannels: More than one .XV file ... which geometry to choose???"
-        sys.exit(1)
-    elif len(fns)<1:
-        print "ERROR: Eigenchannels: Error ... No .XV file found!"
-        sys.exit(1)
+    import optparse as o
 
-    print('Reading geometry from "%s" file' % fns[0])
-    geom = MG.Geom(fns[0])
+    d = """Script that calculates STM images using the Bardeen approximation outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The script is divided into 3 parts:
+1) Calculation of the scattering states at the Fermi-energy on the same real space grid as TranSiesta (real-space cutoff). These are saved in DestDir/SystemLabel.A[LR][0-99].nc files and are reused if found. NEEDS: TranSiesta calculation. 
+2) Propagation of the scattering states from a surface (defined by a constant charge density) out into the vacuum region. After the x-y plane, where the average potential of the slice is maximum (the separation plane), is found, the potential is ascribed a constant value at this average. Saves the propagated wavefunctions at the separation plane in DestDir/[kpoint]/FD[kpoint].nc. NEEDS: TotalPotential.grid.nc and Rho.grid.nc. 
+3) Conductance calculation where the tip/substrate wavefunctions are displaced to simulate the conductance at different tip-positions. The k averaged STM image and the STM images of individual k points are saved in DestDir/STMimage.nc.
+"""
 
-########################################################
-def readbasis():
-    global basis
-    fn=glob.glob('RUN.fdf')
-    basis = SIO.BuildBasis(fn[0], general.from_atom, general.to_atom, HS.GF.HS.lasto)
+    p = o.OptionParser("usage: %prog [options] DestinationDirectory",description=d)
+    p.add_option("-F","--DeviceFirst", dest='DeviceFirst',default=0,type='int',
+                 help="First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]")
+    p.add_option("-L","--DeviceLast", dest='DeviceLast',default=0,type='int',
+                 help="Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]")
+    p.add_option("-e", "--Energy", dest='energy', default=0.0,type='float',
+                 help="Energy where scattering states are evaluated [%default eV]")
+    p.add_option("--eta", dest="eta", help="Imaginary part added to all energies (device and leads) [%default eV]",
+                 type='float', default=0.000001)
+    p.add_option("-l","--etaLead", dest="etaLead", help="Additional imaginary part added ONLY in the leads (surface GF) [%default eV]",
+                 type='float', default=0.0)
+    p.add_option("-f", "--fdf", dest='fn',default='./RUN.fdf',type='string',
+                 help="Input fdf-file for TranSIESTA calculations [%default]")
+    p.add_option("-s", "--iSpin", dest='iSpin', default=0,type='int',
+                 help="Spin channel [%default]")
+    p.add_option("-p","--savePOS", dest='savePOS',default=False,action='store_true',
+                 help="Save the individual solutions as .pos files")
+    p.add_option("--shift", dest='shift',default=False,action='store_true',
+                 help="Shift current 1/2 cell in x, y directions")
 
-########################################################
-def readHS():
-    class options:
-        pass
-    options.fn='RUN.fdf'
-    options.fnL  = './'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileLeft', str, None, 'pyTBT')
-    options.NA1L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Left', int, 1, 'pyTBT')
-    options.NA2L = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Left', int, 1, 'pyTBT')
-    options.fnR  = './'+SIO.GetFDFlineWithDefault(options.fn,'TS.HSFileRight', str, None, 'pyTBT')
-    options.NA1R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA1Right', int, 1, 'pyTBT')
-    options.NA2R = SIO.GetFDFlineWithDefault(options.fn,'TS.ReplicateA2Right', int, 1, 'pyTBT')
+    # Electrode stuff
+    p.add_option("--bulk", dest='UseBulk',default=-1,action='store_true',
+                 help="Use bulk in electrodes. The Hamiltonian from the electrode calculation is inserted into the electrode region in the TranSIESTA cell [TS.UseBulkInElectrodes]")
+    p.add_option("--nobulk", dest='UseBulk',default=-1,action='store_false',
+                 help="Use only self-energies in the electrodes. The full Hamiltonian of the TranSIESTA cell is used in combination with self-energies for the electrodes [TS.UseBulkInElectrodes]")
 
-    options.systemlabel = SIO.GetFDFlineWithDefault("RUN.fdf",'SystemLabel', str, 'siesta', 'Eigenchannels')       
-    options.TSHS = './%s.TSHS'%(options.systemlabel)
+    # Scale (artificially) the coupling to the electrodes
+    p.add_option("--scaleSigL", dest="scaleSigL", help="Scale factor applied to Sigma_L [default=%default]",
+                 type='float', default=1.0)
+    p.add_option("--scaleSigR", dest="scaleSigR", help="Scale factor applied to Sigma_R [default=%default]",
+                 type='float', default=1.0)
+
+    p.add_option("-u", "--useSigNC", dest='signc',default=False,action='store_true',
+                 help="Use SigNCfiles [%default]")
+
+    # Use spectral matrices? 
+    p.add_option("--SpectralCutoff", dest="SpectralCutoff", help="Cutoff value for SpectralMatrix functions (for ordinary matrix representation set cutoff<=0.0) [default=%default]",
+                 type='float', default=0.0)
+    p.add_option("-n", "--nCPU", dest='nCPU', default=1,type='int',
+                 help="Number of processors [%default]")
+
+    # k-grid
+    p.add_option("-x","--Nk1", dest='Nk1', default=1,type='int',
+                  help="k-points Nk1 along a1 [%default]")
+    p.add_option("-y","--Nk2", dest='Nk2', default=1,type='int',
+                  help="k-points Nk2 along a2 [%default]")
+
+    #FD calculation
+    p.add_option("-r", "--rhoiso", dest='rhoiso', default=1e-3,type='float',
+                 help="Density at the isosurface from which the localized-basis wave functions are propagated [default=%default Bohr^-3Ry^-1]")
+    p.add_option("--ssp", dest='ShiftSeparationPlane', default=0,type='float',
+                 help="Manually shift the separation plane (>0 means away from the substrate) [default=%default Ang]")
+    p.add_option("--sc", dest='samplingscale', default=2,type='int',
+                 help="Sampling scale of wave functions in lateral plane. 1 means same real-space resolution as used in TranSiesta, while 2 means doubling of the lateral lattice constants, etc. [default=%default]")
+    p.add_option("-t", "--tolsolve", dest='tolsolve', default=1e-6,type='float',
+                 help="Tolerance for the iterative linear solver (scipy.linalg.isolve.gmres) [default=%default]")
+    p.add_option("--savelocwfs", dest='savelocwfs',default=False,action='store_true',
+                 help="Save localized-basis wave functions.")
+
+    (options, args) = p.parse_args(argv)
+
+    # Get the last positional argument
+    options.DestDir = VC.GetPositional(args,"You need to specify a destination directory!")    
+    # With this one can overwrite the logging information
+    if "log" in kwargs:
+        options.Logfile = kwargs["log"]
+    else:
+        options.Logfile = 'STM.log'
+    options.kpoints = Kmesh.kmesh(options.Nk1,options.Nk2,1,meshtype=['LIN','LIN','LIN'],invsymmetry=False)
+    return options
+
+def main(options):
+    dd = len(glob.glob(options.DestDir))
+    if len(glob.glob('TotalPotential.grid.nc'))==0 and len(glob.glob('Rho.grid.nc'))==0:
+        sys.exit('TotalPotential.nc and Rho.grid.nc not found! Add "SaveTotalPotential true" and "SaveRho true" to RUN.fdf')
+    if len(glob.glob('TotalPotential.grid.nc'))==0:
+        sys.exit('TotalPotential.nc not found! Add "SaveTotalPotential true" to RUN.fdf')
+    if len(glob.glob('Rho.grid.nc'))==0:
+        sys.exit('Rho.grid.nc not found! Add "SaveRho true" to RUN.fdf')
     
-    # Check for buffer atoms
-    options.buffer = SIO.GetBufferAtomsList(options.TSHS,"RUN.fdf")
-    if options.buffer.size >0: raise ValueError("You cannot use buffer atoms with STM")
-
-    # Setup H, S and self-energies
-    # Setup self-energies and device GF
-    elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,0)
-    elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,0)
-    myGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=False,DeviceAtoms=[general.from_atom, general.to_atom])
-
-    HS.L, HS.R, HS.GF, devSt, devEnd, general.Elist, general.eta, general.SiestaOutFile = \
-        elecL, elecR, myGF, myGF.DeviceOrbs[0], myGF.DeviceOrbs[1], [0.0], 1e-6, options.systemlabel
-
-########################################################
-def calcSTM():
-    # Calculate STM picture
-    Ef = general.Ef
-
-    # Find division between L-R
-    zcoord = N.array(geom.xyz)[:,2]
-    zdiff = zcoord[1:]-zcoord[:-1]
-    lastLeftAtom = N.where(zdiff==N.max(zdiff))[0][0]
-    tipxyz = geom.xyz[lastLeftAtom+1] # Guess at tip possition
-    lastLeftOrb = HS.GF.HS.lasto[lastLeftAtom+1]-HS.GF.DeviceOrbs[0]
-    firstRightOrb = lastLeftOrb+1
-
-    HS.GF.calcGF(Ef+general.eta*1j, general.kPoint[0:2], ispin=general.iSpin)
-
-    # Calculate transmission with coupling L-R
-    transmission, SN = HS.GF.calcTEIG()
-
-    # Remove coupling L-R
-    H, S = HS.GF.H, HS.GF.S
-    H[:lastLeftOrb+1,firstRightOrb:]=0
-    H[firstRightOrb:,:lastLeftOrb+1]=0
-    S[:lastLeftOrb+1,firstRightOrb:]=0
-    S[firstRightOrb:,:lastLeftOrb+1]=0
-
-    nnL,  nnR = len(HS.GF.GamL),  len(HS.GF.GamR)
-    Gam1,  Gam2 = N.zeros(HS.GF.H.shape, N.complex), N.zeros(HS.GF.H.shape, N.complex)
-    Sig1,  Sig2 = N.zeros(HS.GF.H.shape, N.complex), N.zeros(HS.GF.H.shape, N.complex)
-    Gam1[0:nnL, 0:nnL] ,  Gam2[-nnR:, -nnR:] = HS.GF.GamL, HS.GF.GamR
-    Sig1[0:nnL, 0:nnL] ,  Sig2[-nnR:, -nnR:] = HS.GF.SigL, HS.GF.SigR
-
-    Gr = LA.inv(Ef*N.eye(len(H))-H-Sig1-Sig2)
-
-    rho1= mm(Gr,Gam1,dagger(Gr),S)/(2*N.pi)
-    rho2= mm(Gr,Gam2,dagger(Gr),S)/(2*N.pi)
-    eval1, evec1 = LA.eig(rho1)
-    eval2, evec2 = LA.eig(rho2)
-
-    for ii in range(len(eval1)):
-        evec1[:,ii] = evec1[:,ii]/N.sqrt(N.dot(N.conjugate(evec1[:,ii]),evec1[:,ii]))
-        evec2[:,ii] = evec2[:,ii]/N.sqrt(N.dot(N.conjugate(evec2[:,ii]),evec2[:,ii]))
-
-    Y1, dstep, origo, nx, ny, nz = calcWF(evec1[:,0])
-    rho1 =N.real(eval1[0]*Y1*N.conjugate(Y1))
-    Y2, dstep, origo, nx, ny, nz = calcWF(evec2[:,0])
-    rho2 =N.real(eval2[0]*Y2*N.conjugate(Y2))
-
-    for ii in range(1,len(eval1)):
-        SIO.printDone(ii,len(eval1),'Real space density generation')
-        if eval1[ii]>1e-8:
-            Y, dstep, origo, nx, ny, nz = calcWF(evec1[:,ii])
-            rho1 += N.real(eval1[ii]*Y*N.conjugate(Y))
-        if eval2[ii]>1e-8:
-            Y, dstep, origo, nx, ny, nz = calcWF(evec2[:,ii])
-            rho2 += N.real(eval2[ii]*Y*N.conjugate(Y))
-
-    fn = general.DestDir+'/'+general.SiestaOutFile
-    if general.format == 'macu':
-        writemacubin(fn+'.rho1.macu',rho1.real,nx,ny,nz,origo,dstep)
-        writemacubin(fn+'.rho2.macu',rho2.real,nx,ny,nz,origo,dstep)
-    if general.format == 'cube':
-        writecube(fn+'.rho1.cube',rho1.real,nx,ny,nz,origo,dstep)
-        writecube(fn+'.rho2.cube',rho2.real,nx,ny,nz,origo,dstep)
-    if general.format == 'XSF':
-        writeXSF(fn+'.rho1.XSF',rho1,nx,ny,nz,origo,dstep)
-        writeXSF(fn+'.rho2.XSF',rho2,nx,ny,nz,origo,dstep)
-    if general.format == 'nc':
-        writenetcdf(fn+'.rho1.nc',rho1,nx,ny,nz,origo,dstep)
-        writenetcdf(fn+'.rho2.nc',rho2,nx,ny,nz,origo,dstep)
-
-    upperLim1=N.max(N.where(rho1>0)[2])
-    lowerLim2=N.min(N.where(rho2>0)[2])
-
-    rho1=rho1[:,:,lowerLim2:upperLim1+1]
-    rho2=rho2[:,:,lowerLim2:upperLim1+1]
-
-    origo=origo+dstep*(lowerLim2+(upperLim1-lowerLim2+1)/2)*\
-        N.array([0,0,1],N.float)
-
-    mvx, mvy = tipxyz[0]-origo[0], tipxyz[1]-origo[1]
-    rho1 = N.roll(rho1, -int(mvx/dstep), axis=0)
-    rho1 = N.roll(rho1, -int(mvy/dstep), axis=1)
-    origo[0], origo[1] = tipxyz[0]-int(mvx/dstep)*dstep, tipxyz[1]-int(mvy/dstep)*dstep
-    Nz = general.NumZ
-
-    image = N.zeros((nx,ny,Nz))
-    for iz in range(Nz):
-        for iy in range(ny):
-            for ix in range(nx):
-                SIO.printDone(iz*nx*ny+iy*nx+ix,Nz*nx*ny,'Image generation')
-                image[ix,iy,iz]=N.sum(rho1*rho2)
-                rho2 = N.roll(rho2, 1, axis=0)
-            rho2 = N.roll(rho2, 1, axis=1)
-        rho2 = N.roll(rho2, 1, axis=2) # Move tip up
-        rho2[:,:,0]=0.0
-
-    image=image/N.max(image)
-
-    if general.format == 'macu':
-        writemacubin(fn+'.STM.macu',image,nx,ny,Nz,origo,dstep)
-    if general.format == 'cube':
-        writecube(fn+'.STM.cube',image,nx,ny,Nz,origo,dstep)
-    if general.format == 'XSF':
-        writeXSF(fn+'.STM.XSF',image,nx,ny,Nz,origo,dstep)
-    if general.format == 'nc':
-        writenetcdf(fn+'.STM.nc',image,nx,ny,Nz,origo,dstep)
+    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    VC.OptionsCheck(options,'STM')
+    CF.PrintMainHeader('STM',vinfo,options)
     
+    ## Step 1: Calculate scattering states from L/R on TranSiesta real space grid.    
+    if glob.glob(options.DestDir+'/kpoints')!=[]: # Check previous k-points
+        f, oldk = open(options.DestDir+'/kpoints','r'), []
+        f.readline()
+        for ii in f.readlines():
+            oldk += [N.array(string.split(ii),N.float)]
+        oldk = N.array(oldk)
+        bool = len(options.kpoints.k)==len(oldk)
 
+    options.kpoints.mesh2file(options.DestDir+'/kpoints')
+    doK = []
+    for ikpoint in range(len(options.kpoints.k)):
+        try: 
+            os.mkdir(options.DestDir+'/%i'%(ikpoint))
+        except: 
+            pass
+        doK += [ikpoint]    
+    
+    #Check if some k points are already done
+    doK = []
+    nokpts = len(options.kpoints.k)
+    noFDcalcs = len(glob.glob('./'+options.DestDir+'/*/FDcurr*.nc'))
+    for ii in range(nokpts):
+        if len(glob.glob('./'+options.DestDir+'/'+str(ii)+'/FDcurr'+str(ii)+'.nc'))==1:
+            pass
+        else:
+            doK += [ii]
+
+    if noFDcalcs>nokpts-1:
+        print('\nAll ('+str(nokpts)+') k points are already finished!\n')
+    elif noFDcalcs>0 and noFDcalcs<nokpts:
+        print(str(nokpts-len(doK))+' ('+str(N.round(100.*((1.*nokpts-len(doK))/nokpts),1))+'%) k points already done. Will proceed with the rest.')
+        print('You should perhaps remove the loc-basis states in the most recent k folder ')
+        print('since some of these may not have been calculated before interuption.\n')
+    else:
+        if dd==1:
+            print('No STM calculations found in existing directory '+str(options.DestDir)+'/. Starting from scratch.')
+            print('(...by possibly using saved localized-basis states)\n')
+        else:
+            print('STM calculation starts.')
+    args=[(options,ik) for ik in doK]
+    tmp = CF.runParallel(calcTSWFPar,args,nCPU=options.nCPU)       
+
+    print('Calculating k-point averaged STM image')
+    def ShiftOrigin(mat,x,y):
+        Nx = N.shape(mat)[0];Ny = N.shape(mat)[1]
+        NewMat = N.zeros((Nx,Ny))
+        for ii in range(Nx):
+            for jj in range(Ny):
+                NewMat[N.mod(ii+x,Nx),N.mod(jj+y,Ny)] = mat[ii,jj]
+        return NewMat
+                
+    file = NC.Dataset('TotalPotential.grid.nc','r')
+    steps = N.array(file.variables['cell'][:],N.float)
+    theta = N.arccos(N.dot(steps[0],steps[1])/(LA.norm(steps[0])*LA.norm(steps[1])))
+
+    currtmp = NC.Dataset('./'+options.DestDir+'/0/FDcurr0.nc','r')
+    dimSTMimage = N.shape(currtmp.variables['Curr'][:,:])
+    dim1 = dimSTMimage[0]
+    dim2 = dimSTMimage[1]
+    STMimage = N.zeros((dim1,dim2))
+    tmpSTM = N.zeros((dim1*nokpts,dim2))
+    for ii in range(nokpts):
+        file = NC.Dataset('./'+options.DestDir+'/'+str(ii)+'/FDcurr'+str(ii)+'.nc','r')
+        ikSTMimage = file.variables['Curr'][:,:]/(nokpts)
+        STMimage += ShiftOrigin(ikSTMimage,dim1/2,dim2/2)
+        tmpSTM[ii*dim1:(ii+1)*dim1,:] = ShiftOrigin(ikSTMimage,dim1/2,dim2/2)
+    STMimagekpt = N.zeros((dim1*options.Nk1,dim2*options.Nk2))
+    for ii in range(options.Nk1):
+        for jj in range(options.Nk2):
+            N1 = ii+1;N2 = options.Nk2-jj;kk = (ii+1)*options.Nk2-jj-1
+            STMimagekpt[(N1-1)*dim1:N1*dim1,(N2-1)*dim2:N2*dim2]=tmpSTM[kk*dim1:(kk+1)*dim1,::-1]
+
+    tmp = open(options.systemlabel+'.XV').readlines()[4+options.DeviceFirst-1:4+options.DeviceLast]
+    xyz = N.zeros((len(tmp),4))
+    for ii in range(len(tmp)):
+        for jj in range(1,5):
+            tmp2 = tmp[ii].split()
+            xyz[ii,jj-1] = eval(tmp2[jj])
+            if jj>1:
+                xyz[ii,jj-1] = xyz[ii,jj-1]*PC.Bohr2Ang
+
+    drAtoms = N.zeros(len(xyz))
+    for atomIdx in range(len(xyz)-1):
+        drAtoms[atomIdx] = N.round((xyz[atomIdx+1][3]-xyz[atomIdx][3]),3)
+    TipHeight = N.max(drAtoms)
+
+    n=writeNC.NCfile('./'+options.DestDir+'/STMimage.nc')
+    n.write(STMimage,'STMimage')
+    n.write(theta,'theta')
+    n.write(options.kpoints.k,'kpoints')
+    n.write(options.Nk1,'Nk1')
+    n.write(options.Nk2,'Nk2')
+    n.write(STMimagekpt,'STMkpoint')
+    n.write(xyz,'Geometry')
+    n.write(TipHeight,'TipHeight')
+    n.close()
+    
+    
+    #Convert .nc file...
+    tmpstr = '/bionano2/netcdf/bin/ncdump ./'+options.DestDir+'/STMimage.nc | /bionano2/netcdf/bin/ncgen -o ./'+options.DestDir+'/STMimage.nc -k1'
+    os.system(tmpstr)
+
+    CF.PrintMainFooter('STM')
 
 ########################################################
-def calcWF(Y):
+def calcTSWF(options,ikpoint):
+    kpoint = options.kpoints.k[ikpoint]
+    def calcandwrite(A,txt,kpoint,ikpoint):
+        if isinstance(A,MM.SpectralMatrix):
+            A=A.full()
+        A=A*PC.Rydberg2eV # Change to 1/Ryd                                                    
+        ev, U = LA.eigh(A)
+        Utilde = N.empty(U.shape,U.dtype)
+        for jj in range(len(ev)): # Problems with negative numbers                                                      
+            if ev[jj]<0: ev[jj]=0
+            Utilde[:,jj]=N.sqrt(ev[jj]/(2*N.pi))*U[:,jj]
+        indx2 = N.where(abs(abs(ev)>1e-4))[0] # Pick non-zero states
+
+        ev=ev[indx2]
+        Utilde=Utilde[:,indx2]
+        indx=ev.real.argsort()[::-1]
+        args=[]
+        fn=options.DestDir+'/%i/'%(ikpoint)+options.systemlabel+'.%s'%(txt)
+
+        path = './'+options.DestDir+'/'
+        #FermiEnergy = SIO.HS(options.systemlabel+'.TSHS').ef
+        
+        def noWfs(side):
+            tmp = len(glob.glob(path+str(ikpoint)+'/'+options.systemlabel+'.A'+side+'*'))
+            return tmp
+        if noWfs('L')==0 or noWfs('R')==0 and len(glob.glob(path+str(ikpoint)+'/FD*'))==0:
+            print('Calculating localized-basis states from spectral function %s ...'%(txt))
+            tlb = time.clock()
+            calcWF2(options,geom,options.DeviceAtoms,basis,Utilde[:,indx],[N1,N2,N3,minN3,maxN3],Fold=True,k=kpoint,fn=fn)
+            times = N.round(time.clock()-tlb,2);timem = N.round(times/60,2)
+            print('Finished in '+str(times)+' s = '+str(timem)+' min')
+        else:
+            pass
+        if noWfs('L')>0 and noWfs('R')>0 and len(glob.glob(path+str(ikpoint)+'/FD*'))==0 and str('%s'%(txt))==str('AR'):
+            print('\nLocalized-basis states are calculated in k point '+str(ikpoint)+'/.')
+            print('------------------------------------------------------')
+            print('Finite-difference calculation of vacuum states starts!')
+            timeFD = time.clock()
+            STMFD.main(options,kpoint,ikpoint)
+            print('FD calculation in k-point folder '+str(ikpoint)+'/ done in '+str(N.round((time.clock()-timeFD)/60,2))+' min.')
+            print('------------------------------------------------------')
+            if options.savelocwfs == False:
+                os.system('rm -f '+path+str(ikpoint)+'/'+options.systemlabel+'*')
+            else:
+                pass
+    #Read geometry              
+    XV = '%s/%s.XV'%(options.head,options.systemlabel)
+    geom = MG.Geom(XV,BufferAtoms=options.buffer)
+
+    #Set up device Greens function        
+    elecL = NEGF.ElectrodeSelfEnergy(options.fnL,options.NA1L,options.NA2L,options.voltage/2.)
+    elecL.scaling = options.scaleSigL
+    elecL.semiinf = options.semiinfL
+    elecR = NEGF.ElectrodeSelfEnergy(options.fnR,options.NA1R,options.NA2R,-options.voltage/2.)
+    elecR.scaling = options.scaleSigR
+    elecR.semiinf = options.semiinfR
+    DevGF = NEGF.GF(options.TSHS,elecL,elecR,Bulk=options.UseBulk,
+                    DeviceAtoms=options.DeviceAtoms,
+                    BufferAtoms=options.buffer)
+
+    DevGF.calcGF(options.energy+options.eta*1.0j,kpoint[0:2],ispin=options.iSpin,
+                 etaLead=options.etaLead,useSigNCfiles=options.signc,SpectralCutoff=options.SpectralCutoff)
+    NEGF.SavedSig.close() #Make sure saved Sigma is written to file  
+    #Transmission     
+    print('Transmission Ttot(%.4feV) = %.16f'%(options.energy,N.trace(DevGF.TT).real))
+
+    #Build basis                                
+    options.nspin = DevGF.HS.nspin
+    L = options.bufferL
+    #Pad lasto with zeroes to enable basis generation...    
+    lasto = N.zeros((DevGF.HS.nua+L+1,),N.int)
+    lasto[L:] = DevGF.HS.lasto
+    basis = SIO.BuildBasis(options.fn,
+                           options.DeviceAtoms[0]+L,
+                           options.DeviceAtoms[1]+L,lasto)
+    basis.ii -= L
+
+    file = NC.Dataset('TotalPotential.grid.nc','r')
+    N1, N2, N3 = len(file.dimensions['n1']), len(file.dimensions['n2']), len(file.dimensions['n3'])
+    cell = file.variables['cell'][:]
+    file.close()
+
+    #Find device region in a3 axis                                                   
+    U = LA.inv(N.array([cell[0]/N1,cell[1]/N2,cell[2]/N3]).transpose())
+    gridindx = N.dot(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]]/PC.Bohr2Ang,U)
+    minN3, maxN3 = N.floor(N.min(gridindx[:,2])).astype(N.int), N.ceil(N.max(gridindx[:,2])).astype(N.int)
+    if not N.allclose(geom.pbc,cell*PC.Bohr2Ang):
+        print('Error: TotalPotential.grid.nc has different cell compared to geometry')
+        sys.exit(1)
+
+    print('\nk-point folder '+str(ikpoint)+'/')
+    print('Checking/calculating localized-basis states ...')
+    calcandwrite(DevGF.AL,'AL',kpoint,ikpoint)
+    calcandwrite(DevGF.AR,'AR',kpoint,ikpoint)
+
+def calcTSWFPar(resQue,ii,options,ik):
+    calcTSWF(options,ik)
+    resQue.put((ii,True))
+
+def calcWF2(options,geom,DeviceAtoms,basis,Y,NN,Fold=True,k=[0,0,0],a=None,fn=''):
     """
-    Calculate wavefunction, returns:
-    YY : complex wavefunction on regular grid
-    dstep : stepsize
-    origo : vector
-    nx, ny, nz : number of grid points
+    Calculate wavefunction on real space mesh with optional folding
+    of the periodic boundary conditions. If Fold==True the vectors 'a'
+    will be choosen to be the periodic boundary condition vectors and
+    the real space wavefunction folded into the cell using the k-vector.
+    If Folded==False, you can choose any 'a' but folding by the PBC will
+    not be done.
+    Note: Folding assumes coupling only between N.N. cells 
+    
+    INPUT:
+      geom        : MakeGeom structure for full geometry
+      DeviceAtoms : [first, last] numbering from 1 to N
+      basis       : Basis struct for ONLY the device region
+      Y           : Wavefunction for the device region
+      NN          : [N1,N2,N3,minN3,maxN3] number of points along [a1, a2, a3]
+                    only calculate from minN3 to maxN3
+      Fold        : fold periodic boundary conditions 
+      k           : k-vector to use for folding [-0.5,0.5]
+      a           : if Fold==True, uses geom.pbc, if false: [a1, a2, a3]
+                    along these directions, i.e., da1=a1/N1 ...
+      
+    RETURNS:
+    YY : complex wavefunction as N1, N2, N3 matrix
     """
-
-    xyz=N.array(geom.xyz[general.from_atom-1:general.to_atom])
-    atomnum=geom.anr[general.from_atom-1:general.to_atom]
-
-    # Size of cube
-    xmin, xmax = min(xyz[:,0])-5.0, max(xyz[:,0])+5.0
-    ymin, ymax = min(xyz[:,1])-5.0, max(xyz[:,1])+5.0
-    zmin, zmax = min(xyz[:,2])-5.0, max(xyz[:,2])+5.0
-    xl, yl, zl = xmax-xmin, ymax-ymin, zmax-zmin
-    dx, dy, dz = general.res, general.res, general.res
-    nx, ny, nz = int(xl/dx)+1, int(yl/dy)+1, int(zl/dz)+1
-
-    origo = N.array([xmin,ymin,zmin],N.float)
-
+    xyz=N.array(geom.xyz[DeviceAtoms[0]-1:DeviceAtoms[1]])
+    N1, N2, N3, minN3, maxN3 = NN[0], NN[1], NN[2], NN[3], NN[4]
+    NN3 = maxN3-minN3+1
+    if Fold:
+        da1, da2, da3 = geom.pbc[0]/N1, geom.pbc[1]/N2, geom.pbc[2]/N3
+    else:
+        da1, da2, da3 = a[0]/N1, a[1]/N2, a[2]/N3
+    try:
+        NNY=Y.shape[1]
+    except:
+        NNY=1
     # Def cube
-    YY=N.zeros((nx,ny,nz),N.complex)
-    rx=N.array(range(nx),N.float)*dx+origo[0]
-    ry=N.array(range(ny),N.float)*dy+origo[1]
-    rz=N.array(range(nz),N.float)*dz+origo[2]
+    YY=[N.zeros((N1,N2,NN3),N.complex) for ii in range(NNY)]
+    # Help indices 
+    i1 = MM.outerAdd(N.arange(N1),N.zeros(N2),N.zeros(NN3))
+    i2 = MM.outerAdd(N.zeros(N1),N.arange(N2),N.zeros(NN3))
+    i3 = MM.outerAdd(N.zeros(N1),N.zeros(N2),N.arange(NN3)+minN3)
 
-    for ii in range(len(Y)):
-        if ii>0 and ii%(int(len(Y)/10))==0:
-            SIO.printDone(ii,len(Y),'Wavefunction')  
+    # Positions x,y,z for points in matrix form
+    rx = i1*da1[0]+i2*da2[0]+i3*da3[0]
+    ry = i1*da1[1]+i2*da2[1]+i3*da3[1]
+    rz = i1*da1[2]+i2*da2[2]+i3*da3[2]
 
-        rax,ray,raz=basis.xyz[ii,0],basis.xyz[ii,1],basis.xyz[ii,2]
-        # Only calulate in subset
-        ixmin, ixmax = int((rax-origo[0]-basis.coff[ii])/dx), \
-                       int((rax-origo[0]+basis.coff[ii])/dx)
-        iymin, iymax = int((ray-origo[1]-basis.coff[ii])/dy), \
-                       int((ray-origo[1]+basis.coff[ii])/dy)
-        izmin, izmax = int((raz-origo[2]-basis.coff[ii])/dz), \
-                       int((raz-origo[2]+basis.coff[ii])/dz)
+    if Fold:
+        pbc = N.array([da1*N1,da2*N2,da3*N3])
+        orig = da3*minN3
+        b = N.transpose(LA.inv(pbc))
+        olist = [orig,orig+pbc[0]+pbc[1]+pbc[2]]
+        pairs = N.array([[b[1],b[2]],[b[0],b[2]],[b[0],b[1]]])
+        pbcpairs = N.array([[pbc[1],pbc[2]],[pbc[0],pbc[2]],[pbc[0],pbc[1]]])
+
+    for iiatom in range(DeviceAtoms[1]-DeviceAtoms[0]+1):
+        if iiatom>0:
+            #Wavefunction percent done...
+            SIO.printDone(iiatom,DeviceAtoms[1]-DeviceAtoms[0]+1,'Wave function') 
         
-        ddx,ddy,ddz=rx[ixmin:ixmax]-rax,ry[iymin:iymax]-ray,rz[izmin:izmax]-raz
+        if not Fold:
+            shiftvec = [0,0,0]
+        else: # include shift vectors if sphere cuts planes of PBC
+            basisindx = N.where(basis.ii==iiatom+DeviceAtoms[0])[0]
+            basisradius = N.max(basis.coff[basisindx])
+            minshift, maxshift = [0,0,0], [0,0,0]
+            for iithiso, thiso in enumerate(olist):
+                c=xyz[iiatom,:]-thiso
+                for ip in range(3):
+                    n = N.cross(pbcpairs[ip,0],pbcpairs[ip,1])
+                    n = n / LA.norm(n)
+                    dist = N.abs(N.dot(n,N.dot(N.dot(pairs[ip],c),pbcpairs[ip])-c))
+                    if dist < basisradius:
+                        if iithiso==0:
+                            minshift[ip]=-1
+                        else:
+                            maxshift[ip]=1
+            shiftvec = []
+            for ix in range(minshift[0],maxshift[0]+1):
+                for iy in range(minshift[1],maxshift[1]+1):
+                    for iz in range(minshift[2],maxshift[2]+1):
+                        shiftvec+=[[ix,iy,iz]]
+                    
+        #print(shiftvec)
+        for shift in shiftvec:
+            # Atom position shifted
+            vec=-N.dot(N.array(shift),geom.pbc)
+            phase = N.exp(-1.0j*(2*N.pi*N.dot(N.array(k),N.array(shift))))
 
-        dr=N.sqrt(outerAdd(ddx*ddx,ddy*ddy,ddz*ddz))
-        drho=N.sqrt(outerAdd(ddx*ddx,ddy*ddy,0*ddz))
-        
-        imax=(basis.coff[ii]-2*basis.delta[ii])/basis.delta[ii]
-        ri=dr/basis.delta[ii]            
-        ri=N.where(ri<imax,ri,imax)
-        ri=ri.astype(N.int)
-        costh, sinth = outerAdd(0*ddx,0*ddy,ddz)/dr, drho/dr
-        cosfi, sinfi = outerAdd(ddx,0*ddy,0*ddz)/drho, outerAdd(0*ddx,ddy,0*ddz)/drho
+            # Difference and polar, cylinder distances
+            dx,dy,dz=rx-xyz[iiatom,0]-vec[0],ry-xyz[iiatom,1]-vec[1],rz-xyz[iiatom,2]-vec[2]
+            dr2=dx*dx+dy*dy+dz*dz
+            drho2=dx*dx+dy*dy
 
-        # Numpy has changed the choose function to crap!
-        RR=N.take(basis.orb[ii],ri)
+            basisindx = N.where(basis.ii==iiatom+DeviceAtoms[0])[0]
+            old_coff, old_delta = 0.0, 0.0
+            for basisorb in basisindx:
+                if not (basis.coff[basisorb]==old_coff and basis.delta[basisorb]==old_delta):
+                    old_coff, old_delta = basis.coff[basisorb], basis.delta[basisorb]
+                    indx = N.where(dr2<basis.coff[basisorb]**2) # Find points close to atom
 
-        SphHar=sphericalHarmonic(ii)
-
-        YY[ixmin:ixmax,iymin:iymax,izmin:izmax]=YY[ixmin:ixmax,iymin:iymax,izmin:izmax]+\
-                                                 RR*SphHar(sinth,costh,sinfi,cosfi)*Y[ii]
-
-    return YY, general.res, origo, nx, ny, nz
+                    idr, idrho=N.sqrt(dr2[indx]), N.sqrt(drho2[indx])
+                    iri=(idr/basis.delta[basisorb]).astype(N.int)
+                    idx, idy, idz = dx[indx], dy[indx], dz[indx]
+            
+                    costh = idz/idr
+                    cosfi, sinfi = idx/idrho, idy/idrho
+            
+                    # Fix divide by zeros
+                    indxRzero, indxRhozero = N.where(idr==0.0), N.where(idrho==0.0)
+                    costh[indxRzero] = 1.0
+                    cosfi[indxRhozero], sinfi[indxRhozero] = 1.0, 0.0
+                    
+                    # Numpy has changed the choose function to crap!
+                    RR=N.take(basis.orb[basisorb],iri)
+                # Calculate spherical harmonics
+                if len(idr)>0: 
+                    l = basis.L[basisorb]
+                    m = basis.M[basisorb]
+                    if l==3:
+                        print('f-shell : l=%i, m=%i (NOT TESTED!!)'%(l,m))
+                    thisSphHar = MM.sphericalHarmonics(l,m,costh,sinfi,cosfi)
+                    for iy in range(NNY):
+                        YY[iy][indx]=YY[iy][indx]+RR*thisSphHar*Y[basisorb,iy]*phase
+    N1, N2, N3, minN3, maxN3 = NN[0], NN[1], NN[2], NN[3], NN[4]
+    for ii in range(NNY):
+        writenetcdf2(geom,fn+'%i.nc'%ii,YY[ii],N1,N2,N3,minN3,maxN3,geom.pbc,options.DeviceAtoms)
+    return YY
 
 ########################################################
-def writenetcdf(fn,YY,nx,ny,nz,origo,dstep):
+def writenetcdf2(geom,fn,YY,nx,ny,nz,minnz,maxnz,pbc,DeviceAtoms):
     """
-    THF: Write eigenchannels to netcdf format
+    MP: Write STM files to netcdf
     """
     import time
-    file = NC4.Dataset(fn,'w')
+    file = NC.Dataset(fn,'w','Created '+time.ctime(time.time()))
     file.createDimension('nx',nx)
     file.createDimension('ny',ny)
-    file.createDimension('nz',nz)
-    file.createDimension('natoms',len(geom.xyz))
+    file.createDimension('nz',maxnz-minnz+1)
+    file.createDimension('natoms',DeviceAtoms[1]-DeviceAtoms[0]+1)
     file.createDimension('naxes',3)
     file.createDimension('number',1)
-    #file.createDimension('pair',2)
-        
-    # Grid
-    #grid = file.createVariable('grid','d',('naxes','pair'))
-    #tmp  = [origo,[dstep,dstep,dstep]]
-    #grid[:] = N.transpose(N.array(tmp))
-
     # Fields
-    varRe = file.createVariable('Re-Psi','d',('nx','ny','nz'))
-    varRe[:] = YY.real
-    
-    varIm = file.createVariable('Im-Psi','d',('nx','ny','nz'))
-    varIm[:] = YY.imag
-
-    vardstep = file.createVariable('dstep','d',('number',))
-    vardstep[:]  = dstep
-
-    vargeom = file.createVariable('xyz','f',('natoms','naxes'))
-    # OpenDX needs float for positions
-    tmp = []
-    for i in range(len(geom.xyz)):
-        tmp2 = (geom.xyz[i]-origo)/dstep
-        tmp.append([float(tmp2[0]),
-                    float(tmp2[1]),
-                    float(tmp2[2])])
-    vargeom[:] = tmp
-
+    varRe = file.createVariable('Re-Psi','d',('nx','ny','nz'),zlib=True)
+    varRe[:] = YY.real*(PC.Bohr2Ang**(3.0/2.0))
+    varRe.units = '1/[Ryd^(1/2) Bohr^(3/2)]'
+    varIm = file.createVariable('Im-Psi','d',('nx','ny','nz'),zlib=True)
+    varIm[:] = YY.imag*(PC.Bohr2Ang**(3.0/2.0))
+    varIm.units = '1/[Ryd^(1/2) Bohr^(3/2)]'
+    varcell = file.createVariable('cell','d',('naxes','naxes'))
+    varcell[:]  = pbc/PC.Bohr2Ang
+    varcell.units = 'Bohr'
+    vardsteps = file.createVariable('steps','d',('naxes','naxes'))
+    steps = N.array([pbc[0]/nx,pbc[1]/ny,pbc[2]/nz])/PC.Bohr2Ang
+    vardsteps[:]  = steps
+    vardsteps.units = 'Bohr'
+    varorig = file.createVariable('origin','d',('naxes',))
+    varorig[:]  = pbc[2]/nz*minnz/PC.Bohr2Ang
+    varorig.units = 'Bohr'
+    vargeom = file.createVariable('xyz','d',('natoms','naxes'))
+    vargeom[:] = geom.xyz[list(range(DeviceAtoms[0]-1,DeviceAtoms[1]))]/PC.Bohr2Ang
+    vargeom.units = 'Bohr'
     varanr = file.createVariable('anr','i',('natoms',))
-    varanr[:] = geom.anr
-    
-    # Set attributes
-    setattr(varanr,'field','anr')
-    setattr(varanr,'positions','xyz')
-
-    #setattr(varRe,'field','Re-Psi')
-    #setattr(varRe,'positions','grid, compact')
-
-    #setattr(varIm,'field','Im-Psi')
-    #setattr(varIm,'positions','grid, compact')
-
-    file.close()
-    
-################# Write cube file ######################
-def writecube(fn,YY,nx,ny,nz,origo,dstep):
-    """
-    Write wavefunction to cube file.
-    """
-    global geom
-
-    xyz=N.array(geom.xyz)
-    anr=geom.anr
-
-    foR=file(fn,'w')
-    foR.write('Eigenchannel wavefunction\n%s\n'%fn)
-    foR.write('%i %f %f %f\n'% (len(xyz),origo[0]/PC.Bohr2Ang,origo[1]/PC.Bohr2Ang,origo[2]/PC.Bohr2Ang))
-    foR.write('%i %f %f %f\n'% (nx,dstep/PC.Bohr2Ang,0.0,0.0))
-    foR.write('%i %f %f %f\n'% (ny,0.0,dstep/PC.Bohr2Ang,0.0))
-    foR.write('%i %f %f %f\n'% (nz,0.0,0.0,dstep/PC.Bohr2Ang))
-    # Write atom coordinates
-    for ii in range(len(xyz)):
-        foR.write('%i %f '% (anr[ii],0.0))
-        tmp=xyz[ii,:]/PC.Bohr2Ang
-        foR.write('%f %f %f\n'% (tmp[0],tmp[1],tmp[2]))
-    # Write wavefunction
-    for ix in range(nx):
-        for iy in range(ny):
-            for iz in range(nz):
-                foR.write('%1.3e\n' % YY[ix,iy,iz].real)
-    foR.close()
-
-################# Write wave function in macu format ######################
-def writemacubin(fn,YY,nx,ny,nz,origo,dstep):
-    """
-    Write molekel binary format
-    """
-    
-    fo=file(fn,'w')
-    fo.write(struct.pack('i',36))
-    xmin,xmax = origo[0], origo[0]+dstep*(nx-1)
-    ymin,ymax = origo[1], origo[1]+dstep*(ny-1)
-    zmin,zmax = origo[2], origo[2]+dstep*(nz-1)
-    fo.write(struct.pack('6f4i',
-                         xmin,xmax,ymin,ymax,zmin,zmax,nx,ny,nz,nx*ny*nz))
-    
-    for ii in range(nz):
-        bin=struct.pack('i',nx*ny*4)
-        for kk in range(ny):
-            for jj in range(nx):
-                bin+=struct.pack('f',YY[jj,kk,ii])
-        bin+=struct.pack('i',nx*ny*4)
-        fo.write(bin)
-
-    fo.close()
-
-################ Write wave function in XSF format ##################################
-def writeXSF(fn,YY,nx,ny,nz,origo,dstep):
-    """
-    Write XSF datagrid for XCrysden
-    """
-    fo=file(fn,'w')
-    vectors=geom.pbc
-    speciesnumber=geom.snr
-    atomnumber=geom.anr
-    xyz=geom.xyz
-    xmin,xmax = origo[0], origo[0]+dstep*(nx-1)
-    ymin,ymax = origo[1], origo[1]+dstep*(ny-1)
-    zmin,zmax = origo[2], origo[2]+dstep*(nz-1)
-    
-    fo.write(' ATOMS\n')
-    numberOfAtoms = len(speciesnumber)
-
-    # Write out the position for the atoms
-    for i in range(numberOfAtoms):
-        line = '   %i  ' %atomnumber[i]
-        for j in range(3):
-            line += string.rjust('%.9f'%xyz[i][j],16)
-        fo.write(line+'\n')
-
-    #Write the datagrid
-    fo.write('BEGIN_BLOCK_DATAGRID_3D\n')
-    fo.write(' DATA_from:Inelastica\n')
-    # Real part
-    fo.write(' BEGIN_DATAGRID_3D_REAL\n')
-    fo.write('    %3.0i    %3.0i    %3.0i\n'%(nx,ny,nz))
-    fo.write('  %1.7E  %1.7E  %1.7E\n'% (origo[0],origo[1],origo[2]))
-    fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin,0.0000,0.0000))
-    fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,ymax-ymin,0.0000))
-    fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,0.0000,zmax-zmin))
-    data=[]
-    ll=0
-    for ii in range(nz):
-        for kk in range(ny):
-            for jj in range(nx):
-    		data.append(YY.real[jj,kk,ii])
-    for iii in range((nx*ny*nz)) :
-	if ((iii+1)%6==0) :	
-            fo.write('  %1.5E\n'% (data[iii]))
-	else :
-            fo.write('  %1.5E'% (data[iii]))
-    fo.write('\n END_DATAGRID_3D\n')
-    # Imaginary part
-    fo.write(' BEGIN_DATAGRID_3D_IMAG\n')
-    fo.write('    %3.0i    %3.0i    %3.0i\n'%(nx,ny,nz))
-    fo.write('  %1.7E  %1.7E  %1.7E\n'% (origo[0],origo[1],origo[2]))
-    fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin,0.0000,0.0000))
-    fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,ymax-ymin,0.0000))
-    fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000,0.0000,zmax-zmin))
-    data=[]
-    ll=0
-    for ii in range(nz):
-        for kk in range(ny):
-            for jj in range(nx):
-                data.append(YY.imag[jj,kk,ii])
-    for iii in range((nx*ny*nz)) :
-        if ((iii+1)%6==0) :	
-            fo.write('  %1.5E\n'% (data[iii]))
-        else :
-            fo.write('  %1.5E'% (data[iii]))
-    fo.write('\n END_DATAGRID_3D\n')
-    fo.write('END_BLOCK_DATAGRID_3D')
-    fo.close()
-
-
-
-###########################################################
-def setupParameters():
-    # Note: can be called from Inelastica as well!
-    global general
-    
-    usage = "usage: %prog [options] DestinationDirectory"
-    description = """
-STM image generation program
-For help use --help!
-"""
-    parser = OptionParser(usage,description=description)
-    EC = OptionGroup(parser, "Options for STM")
-    EC.add_option("-r", "--Res", dest='res', default=0.4,type='float',
-                  help="Resolution [%default Ang]")
-    EC.add_option("-w", "--format", dest='format', default='macu',type='string',
-                  help="Wavefunction format (macu, cube, XSF, or nc) [%default]")
-    EC.add_option("-N", "--NumZ", dest='NumZ', default=10,type='int',
-                  help="Also move the tip in the Z-direction away from sample with NumZ steps [%default]")
-    parser.add_option_group(EC)
-    
-    EC.add_option("-e", "--Ef", dest='Ef', default=0.0,type='float',
-                       help="Fermi energy [%default eV]")
-    EC.add_option("-f", "--fdf", dest='fdfFile', default='./RUN.fdf',type='string',
-                       help="fdf file used for transiesta calculation [%default]")
-    EC.add_option("-s", "--iSpin", dest='iSpin', default=1,type='int',
-                       help="Spin channel [%default]")
-    EC.add_option("-k", "--kPoint", dest='kPoint', default='[0,0]',type='string',
-                       help="2D k-point in range [0,1] given as string! default='[0.0,0.0]'")
-
-    (general, args) = parser.parse_args()
-    print description
-
-    general.energy, general.iSpin = general.Ef, general.iSpin-1
-    
-    if general.kPoint[0]!='[' or general.kPoint[-1]!=']':
-        parser.error("ERROR: --kPoint='[0.0,0.0]' not --kPoint=%s"%general.kPoint)
-    else:
-        try:
-            tmp=string.split(general.kPoint[1:-1],',')
-            general.kPoint = N.array([float(tmp[0]),float(tmp[1]),0],N.float)
-        except:
-            parser.error("ERROR: --kPoint='[0.0,0.0]' not --kPoint=%s"%general.kPoint)
-
-    if not os.path.exists(general.fdfFile):
-        parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
-
-    try:
-        general.from_atom = SIO.GetFDFlineWithDefault(
-            general.fdfFile,'TS.TBT.PDOSFrom', int, None, 'Eigenchannels')
-        general.to_atom = SIO.GetFDFlineWithDefault(
-            general.fdfFile,'TS.TBT.PDOSTo', int, None, 'Eigenchannels')
-    except:
-        parser.error("Specify device region with TS.TBT.PDOS[To/From] keyword.")
-
-    print args
-    if len(args)!=1:
-        parser.error('ERROR: You need to specify destination directory')
-    general.DestDir = args[0]
-    if not os.path.isdir(general.DestDir):
-        print '\nEigenchannels : Creating folder %s' %general.DestDir
-        os.mkdir(general.DestDir)
-    else:
-       parser.error('ERROR: destination directory %s already exist!'%general.DestDir)
-
-    def myprint(arg,file):
-        # Save in parameter file
-        print arg
-        file.write(arg+'\n')
-
-    class myopen:
-        # Double stdout to RUN.out and stdout
-        def write(self,x):
-            self.stdout.write(x)
-            self.file.write(x)
-
-    fo = myopen()
-    fo.stdout, fo.file = sys.stdout, open(general.DestDir+'/RUN.out','w',0)
-    sys.stdout = fo
-
-    file = open(general.DestDir+'/Parameters','w')    
-    argv=""
-    for ii in sys.argv: argv+=" "+ii
-    myprint(argv,file)
-    myprint('##################################################################################',file)
-    myprint('## Eigenchannel options',file)
-    myprint('fdfFile          : %s'%general.fdfFile,file)
-    myprint('Ef [eV]          : %f'%general.energy,file)
-    myprint('Res [Ang]        : %f'%general.res,file)
-    myprint('iSpin            : %i'%(general.iSpin+1),file)
-    myprint('kPoint           : [%f,%f]'%(general.kPoint[0],general.kPoint[1]),file)
-    myprint('Device [from,to] : [%i,%i]'%(general.from_atom, general.to_atom),file)
-    myprint('DestDir          : %s'%general.DestDir,file)
-    myprint('##################################################################################',file)
+    varanr[:] = N.array(geom.anr[DeviceAtoms[0]-1:DeviceAtoms[1]],N.int32)    
     file.close()
 
-################# Math helpers ################################
-def mm(* args):
-    # mm with arbitrary number of arguments
-    tmp=args[0].copy()
-    for mat in args[1:]:
-        tmp=N.dot(tmp,mat)
-    return tmp
-
-def outerAdd(* args):
-    # A_ijk=B_i+C_j+D_k
-    tmp=args[0].copy()
-    for ii in range(1,len(args)):
-        tmp=N.add.outer(tmp,args[ii])
-    return tmp
-
-def dist(x):
-    return N.sqrt(N.dot(x,x))
-
-def mysqrt(x):
-    # Square root of matrix    
-    ev,U = LA.eig(x)
-    U = N.transpose(U)
-
-    tmp=N.zeros((len(ev),len(ev)),N.complex)
-    for ii in range(len(ev)):
-        tmp[ii,ii]=N.sqrt(ev[ii])
-        
-    return mm(LA.inv(U),tmp,U)
-
-def dagger(x):
-    return N.conjugate(N.transpose(x))
-
-def sphericalHarmonic(ii):
-    pi=3.141592654
-
-    def Y00(sinth,costh,sinfi,cosfi):
-        # l=0 m=0
-        return 1/(2.*N.sqrt(pi))
-    def Y1m1(sinth,costh,sinfi,cosfi):
-        # l=1 m=-1
-        return -(N.sqrt(3/pi)*sinfi*sinth)/2.
-    def Y10(sinth,costh,sinfi,cosfi):
-        # l=1 m=0
-        return (costh*N.sqrt(3/pi))/2.
-    def Y11(sinth,costh,sinfi,cosfi):
-        # l=1 m=1
-        return -(cosfi*N.sqrt(3/pi)*sinth)/2.
-    def Y2m2(sinth,costh,sinfi,cosfi):
-        # l=2 m=-2
-        return (cosfi*N.sqrt(15/pi)*sinfi)/4. - \
-               (cosfi*costh**2*N.sqrt(15/pi)*sinfi)/4. + \
-               (cosfi*N.sqrt(15/pi)*sinfi*sinth**2)/4.
-    def Y2m1(sinth,costh,sinfi,cosfi):
-        # l=2 m=-1
-        return -(costh*N.sqrt(15/pi)*sinfi*sinth)/2.
-    def Y20(sinth,costh,sinfi,cosfi):
-        # l=2 m=0
-        return N.sqrt(5/pi)/8. + (3*costh**2*N.sqrt(5/pi))/8. - (3*N.sqrt(5/pi)*sinth**2)/8.
-    def Y21(sinth,costh,sinfi,cosfi):
-        # l=2 m=1
-        return -(cosfi*costh*N.sqrt(15/pi)*sinth)/2.
-    def Y22(sinth,costh,sinfi,cosfi):
-        # l=2 m=2
-        return (cosfi**2*N.sqrt(15/pi))/8. - (cosfi**2*costh**2*N.sqrt(15/pi))/    8. - (N.sqrt(15/pi)*sinfi**2)/8. + (costh**2*N.sqrt(15/pi)*sinfi**2)/    8. + (cosfi**2*N.sqrt(15/pi)*sinth**2)/8. - (N.sqrt(15/pi)*sinfi**2*sinth**2)/    8.
-    def Y3m3(sinth,costh,sinfi,cosfi):
-        # l=3 m=-3
-        return (-9*cosfi**2*N.sqrt(35/(2.*pi))*sinfi*sinth)/    16. + (9*cosfi**2*costh**2*N.sqrt(35/(2.*pi))*sinfi*sinth)/    16. + (3*N.sqrt(35/(2.*pi))*sinfi**3*sinth)/    16. - (3*costh**2*N.sqrt(35/(2.*pi))*sinfi**3*sinth)/    16. - (3*cosfi**2*N.sqrt(35/(2.*pi))*sinfi*sinth**3)/    16. + (N.sqrt(35/(2.*pi))*sinfi**3*sinth**3)/16.
-    def Y3m2(sinth,costh,sinfi,cosfi):
-        # l=3 m=-2
-        return (cosfi*costh*N.sqrt(105/pi)*sinfi)/8. - (cosfi*costh**3*N.sqrt(105/pi)*sinfi)/    8. + (3*cosfi*costh*N.sqrt(105/pi)*sinfi*sinth**2)/8.
-    def Y3m1(sinth,costh,sinfi,cosfi):
-        # l=3 m=-1
-        return -(N.sqrt(21/(2.*pi))*sinfi*sinth)/    16. - (15*costh**2*N.sqrt(21/(2.*pi))*sinfi*sinth)/    16. + (5*N.sqrt(21/(2.*pi))*sinfi*sinth**3)/16.
-    def Y30(sinth,costh,sinfi,cosfi):
-        # l=3 m=0
-        return (3*costh*N.sqrt(7/pi))/16. + (5*costh**3*N.sqrt(7/pi))/    16. - (15*costh*N.sqrt(7/pi)*sinth**2)/16.
-    def Y31(sinth,costh,sinfi,cosfi):
-        # l=3 m=1
-        return -(cosfi*N.sqrt(21/(2.*pi))*sinth)/    16. - (15*cosfi*costh**2*N.sqrt(21/(2.*pi))*sinth)/    16. + (5*cosfi*N.sqrt(21/(2.*pi))*sinth**3)/16.
-    def Y32(sinth,costh,sinfi,cosfi):
-        # l=3 m=2
-        return (cosfi**2*costh*N.sqrt(105/pi))/16. - (cosfi**2*costh**3*N.sqrt(105/pi))/    16. - (costh*N.sqrt(105/pi)*sinfi**2)/    16. + (costh**3*N.sqrt(105/pi)*sinfi**2)/    16. + (3*cosfi**2*costh*N.sqrt(105/pi)*sinth**2)/    16. - (3*costh*N.sqrt(105/pi)*sinfi**2*sinth**2)/16.
-    def Y33(sinth,costh,sinfi,cosfi):
-        # l=3 m=3
-        return (-3*cosfi**3*N.sqrt(35/(2.*pi))*sinth)/    16. + (3*cosfi**3*costh**2*N.sqrt(35/(2.*pi))*sinth)/    16. + (9*cosfi*N.sqrt(35/(2.*pi))*sinfi**2*sinth)/    16. - (9*cosfi*costh**2*N.sqrt(35/(2.*pi))*sinfi**2*sinth)/    16. - (cosfi**3*N.sqrt(35/(2.*pi))*sinth**3)/    16. + (3*cosfi*N.sqrt(35/(2.*pi))*sinfi**2*sinth**3)/16.
-      
-    l=basis.L[ii]
-    m=basis.M[ii]
-
-    tmp=[[Y00],[Y1m1,Y10,Y11],[Y2m2,Y2m1,Y20,Y21,Y22],[Y3m3,Y3m2,Y3m1,Y30,Y31,Y32,Y33]]
-
-    if l==3:
-        print 'f-shell : l=%i, m=%i (NOT TESTED!!)'%(l,m)
-
-    return tmp[l][m+l]
-
-    
 ##################### Start main routine #####################
-
 if __name__ == '__main__':
-    main()
+    from datetime import datetime
+    import profile 
+    start = datetime.now()
+    options = GetOptions(sys.argv[1:])
+    print(dir(options))
+    #profile.run('main(options)')
+    main(options)
+
+    dT = datetime.now()-start
+    CF.PrintScriptSummary(sys.argv,dT)
+
 

@@ -117,7 +117,6 @@ Provides:
                   'scripts/Bandstructures',
                   'scripts/ComputeDOS',
                   'scripts/siesta_cleanup',
-                  'scripts/STMimage',
                   'scripts/Vasp2Siesta',
                   'scripts/bands2xmgr',
                   'scripts/Phonons',
@@ -126,6 +125,7 @@ Provides:
                   'scripts/setupFCrun',
                   'scripts/setupOSrun',
                   'scripts/kaverage-TBT',
+                  'scripts/STM',
                   'scripts/kaverage-IETS',
                   'scripts/average-gridfunc',
                   'scripts/WriteWavefunctions'

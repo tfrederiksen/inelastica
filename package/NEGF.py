@@ -457,11 +457,11 @@ class ElectrodeSelfEnergy:
             kp = N.zeros((3),N.float)
 
             kp[0:2] = kpoint
-            self.HS.setkpoint(kp)
+            self.HS.setkpoint(kp,verbose=False)
             tmpH, tmpS = self.HS.H.copy(), self.HS.S.copy()
 
             kp[self.semiinf] = 0.5
-            self.HS.setkpoint(kp)
+            self.HS.setkpoint(kp,verbose=False)
             self.H = 0.5 * (tmpH + self.HS.H)
             self.S = 0.5 * (tmpS + self.HS.S)
 
@@ -470,7 +470,7 @@ class ElectrodeSelfEnergy:
             # 2: H(kz=0)-H  = H + H01 + H10 - H =  H01+H10
             # -> H10 = (-i*(H(kz=0.25)-H) + H(kz=0)-H)/2
             kp[self.semiinf] = 0.25
-            self.HS.setkpoint(kp)
+            self.HS.setkpoint(kp,verbose=False)
             self.H01 = 0.5*( -1j*( self.HS.H - self.H ) + tmpH - self.H)
             self.S01 = 0.5*( -1j*( self.HS.S - self.S ) + tmpS - self.S)
 
@@ -713,7 +713,7 @@ class GF:
 
         kpoint3 = N.zeros((3),N.float)
         kpoint3[0:2] = kpoint[:]
-        self.HS.setkpoint(kpoint3)
+        self.HS.setkpoint(kpoint3,verbose=False)
         # Remove PBC in z-direction
         if self.HS.gamma:
             self.H0 = self.HS.H[ispin,:,:].copy()
@@ -743,7 +743,7 @@ class GF:
             else:
                 # Default is along A3
                 kpoint3[2] = 0.5
-            self.HS.setkpoint(kpoint3)
+            self.HS.setkpoint(kpoint3,verbose=False)
             self.H0 = 0.5 * (tmpH + self.HS.H[ispin,:,:])
             self.S0 = 0.5 * (tmpS + self.HS.S)
         
