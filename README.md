@@ -9,3 +9,4 @@ All documentation is contained at the Inelastica wiki:
     	http://dipc.ehu.es/frederiksen/inelastica/index.php/Main_Page
 
 Please update the documentation when you solve a problem!
+
