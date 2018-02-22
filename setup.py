@@ -14,7 +14,6 @@ def test_prereq():
     except:
         print "#### ERROR ####"
         print "Inelastica needs the package 'numpy' to run."
-        print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
         print "#### ERROR ####"
         raise NameError('numpy package not found')
 
@@ -24,7 +23,6 @@ def test_prereq():
     except:
         print "#### ERROR ####"
         print "Inelastica requires the f2py extension of numpy."
-        print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
         print "#### ERROR ####"
         raise NameError('numpy f2py package not found')
 
@@ -34,7 +32,6 @@ def test_prereq():
         print "#### ERROR ####"
         print "Inelastica requires netCDF4 (1.2.7 or newer recommended)"
         print "https://pypi.python.org/pypi/netCDF4"
-        print "Please see http://sourceforge.net/apps/mediawiki/inelastica/"
         print "#### ERROR ####"
         raise NameError('netCDF4 package not found')
 
@@ -73,10 +70,10 @@ import numpy.distutils.extension as Next
 
 # Fortran helper files
 F90ext = Next.Extension('Inelastica.F90helpers',
-                        ['package/F90/expansion_SE.f90',
-                         'package/F90/readTSHS.f90',
-                         'package/F90/removeUnitCellXij.f90',
-                         'package/F90/setkpointhelper.f90'],
+                        ['inelastica/F90/expansion_SE.f90',
+                         'inelastica/F90/readTSHS.f90',
+                         'inelastica/F90/removeUnitCellXij.f90',
+                         'inelastica/F90/setkpointhelper.f90'],
                         )
 
 # Retrieve the LAPACK-library...
@@ -84,7 +81,7 @@ lapack_opt = get_info('lapack_opt')
 if not lapack_opt:
     raise NotFoundError('No LAPACK/BLAS resources found')
 F90extLapack = Next.Extension('Inelastica.F90_lapack',
-                              ['package/F90/surfaceGreen.f90'],
+                              ['inelastica/F90/surfaceGreen.f90'],
                               **lapack_opt)
 
 # Main setup of python modules
@@ -105,9 +102,9 @@ Provides:
 7:	Scripts to set up the above type of calculations.""",
       author='Magnus Paulsson and Thomas Frederiksen', 
       author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',  
-      url='https://sourceforge.net/apps/mediawiki/inelastica', 
+      url='https://github.com/tfrederiksen/inelastica', 
       license='GPL. Please cite: Frederiksen et al., PRB 75, 205413 (2007)', 
-      package_dir={'Inelastica': 'package'},
+      package_dir={'Inelastica': 'inelastica'},
       scripts  = ['scripts/agr2pdf',
                   'scripts/Inelastica',
                   'scripts/EigenChannels',
@@ -132,8 +129,5 @@ Provides:
                   ],
       packages=['Inelastica'],
       ext_modules=[F90ext,F90extLapack],
-      data_files=[('Inelastica/PBS', 
-                   ['PBS/RUN.OS.pbs','PBS/RUN.py.pbs', 'PBS/RUN.TS.pbs']
-                   )]
       )
 
