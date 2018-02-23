@@ -1,7 +1,13 @@
 # Inelastica #
-__Inelastica__ is a Python package for the SIESTA/TranSIESTA DFT codes
-as well as a script to compute inelastic transport
-(and inelastica is the corresponding repository name).
+
+__Inelastica__ is both the name of this whole Python package
+as well as the name of an included script to compute inelastic transport.
+The repository is called `inelastica`.
+
+__Inelastica__ is based on the [SIESTA/TranSIESTA][siesta] DFT codes.
+
+The project was initiated in 2003-2005 by Thomas Frederiksen and Magnus Paulsson
+while they worked in the group of Mads Brandbyge at the Technical University of Denmark.
 
 ## Features ##
 __Inelastica__ contains a number of scripts such as
@@ -11,18 +17,22 @@ __Inelastica__ contains a number of scripts such as
    - `pyTBT`: A Python version of tbtrans for elastic electron transport
    - `EigenChannels`: Eigenchannel analysis and generation of real-space scattering state wave functions
    - `Phonons`: Vibration modes/frequencies and electron-vibration couplings
-   - `Inelastica': Inelastic transport (IETS)
+   - `Inelastica`: Inelastic transport (IETS)
 
 ## Installation ##
 
 ### Dependencies ###
+These packages are required
+   - numpy
+   - scipy
+   - netCDF4
 
-## Usage ##
+## Citations ##
 If used to produce scientific contributions please include relevant citations to
 
     @Article{general-methods,
       Title = {Inelastic transport theory from first principles: Methodology and application to nanoscale devices},
-      Author = {Frederiksen, Thomas and Paulsson, Magnus and Brandbyge, Mads and Jauho, Antti-Pekka},
+      Author = {Frederiksen, T. and Paulsson, M. and Brandbyge, M. and Jauho, A.-P.},
       Journal = {Phys. Rev. B},
       Year = {2007},
       Number = {20},
@@ -30,6 +40,7 @@ If used to produce scientific contributions please include relevant citations to
       Volume= {75},
       Doi = {10.1103/PhysRevB.75.205413},
     }
+
 
     @Article{eigenchannels,
       Title = {Transmission eigenchannels from nonequilibrium Green's functions},
@@ -54,12 +65,12 @@ If you find any bugs please form a [bug report/issue][issues]
 If you have a fix please consider adding a [pull request][pulls].
 
 ## License ##
-
 The Inelastica license is [LGPL][lgpl], please see the LICENSE file.
 
 <!---
 Links to external and internal sites.
 -->
+[siesta]: https://launchpad.net/siesta
 [issues]: https://github.com/tfrederiksen/inelastica/issues
 [pulls]: https://github.com/tfrederiksen/inelastica/pulls
 [lgpl]: http://www.gnu.org/licenses/lgpl.html
