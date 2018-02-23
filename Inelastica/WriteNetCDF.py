@@ -1,6 +1,3 @@
-version = "SVN $Id$"
-print version
-
 import numpy as N
 import netCDF4 as NC4
 

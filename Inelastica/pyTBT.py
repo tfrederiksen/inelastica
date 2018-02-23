@@ -1,6 +1,3 @@
-version = "SVN $Id$"
-print version
-
 """
 ################################################################
 
@@ -27,8 +24,6 @@ import numpy as N
 import Kmesh
 import ValueCheck as VC
 import CommonFunctions as CF
-
-vinfo = [version,SIO.version,MM.version,NEGF.version,VC.version,CF.version]
 
 # For doing loops with pyTBT we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.
@@ -116,7 +111,7 @@ def GetOptions(argv,**kwargs):
 def main(options):
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options,'pyTBT')
-    CF.PrintMainHeader('pyTBT',vinfo,options)
+    CF.PrintMainHeader('pyTBT',options)
 
     # K-points
     if options.Gk1>1:

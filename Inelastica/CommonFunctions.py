@@ -1,12 +1,11 @@
 from __future__ import print_function, absolute_import
-version = "SVN $Id$"
-print(version)
 
 import sys, time
 
 # Save the stdout pipes
 _default_stdout = sys.stdout
 _default_stderr = sys.stderr
+
 def CreatePipeOutput(f):
     global _default_stdout, _default_stderr
     import subprocess, os, os.path as osp, errno
@@ -38,13 +37,10 @@ def CreatePipeOutput(f):
     sys.stdout = TeeLog(f,_default_stdout)
     sys.stderr = TeeLog(f,_default_stderr)
 
-def PrintMainHeader(name,versioninfo,options):
+def PrintMainHeader(name,options):
     print('=======================================================================')
     print('RUNNING %s : %s'%(name.upper(),time.ctime()))
     print()
-    print('VERSION INFO:')
-    for v in versioninfo:
-        print('    ',v)
     print('\nOPTIONS:')
     opts_dict = vars(options)
     keys = sorted(opts_dict)

@@ -1,5 +1,3 @@
-version = "SVN $Id$"
-
 import NEGF
 import SiestaIO as SIO
 import MakeGeom as MG
@@ -11,8 +9,6 @@ import sys
 import PhysicalConstants as PC
 import ValueCheck as VC
 import CommonFunctions as CF
-
-vinfo = [version,NEGF.version,SIO.version,MG.version,PC.version,VC.version,CF.version]
 
 # For doing loops with Inelastica we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.
@@ -108,7 +104,7 @@ def GetOptions(argv,**kwargs):
 def main(options):
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options,'Inelastica')
-    CF.PrintMainHeader('Inelastica',vinfo,options)
+    CF.PrintMainHeader('Inelastica',options)
 
     options.XV = '%s/%s.XV'%(options.head,options.systemlabel)
     options.geom = MG.Geom(options.XV,BufferAtoms=options.buffer)

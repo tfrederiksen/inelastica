@@ -1,10 +1,6 @@
 # Simple case for allowing the newer print function (Python3 compliant)
 from __future__ import print_function
 
-
-version = "SVN $Id$"
-print(version)
-
 """
 Contains general quantities that are used to do checks in the 
 Inelastica package.

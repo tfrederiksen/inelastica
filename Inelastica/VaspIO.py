@@ -1,6 +1,3 @@
-version = "SVN $Id$"
-print version
-
 import numpy as N
 import numpy.linalg as LA
 import string, struct, os.path, sys

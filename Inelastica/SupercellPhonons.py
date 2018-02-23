@@ -1,6 +1,3 @@
-version = "SVN $Id$"
-print version
-
 """
 A simple interface to evaluate electron and phonon bands on 
 a set of points in reciprocal space.
@@ -32,9 +29,6 @@ import numpy.linalg as LA
 import glob, os,sys,string
 import scipy.linalg as SLA
 import netCDF4 as NC4
-
-vinfo = [version,SIO.version,Symmetry.version,CF.version,
-         PH.version,PC.version,MM.version,VC.version]
 
 def GetOptions(argv,**kwargs):
     # if text string is specified, convert to list
@@ -453,7 +447,7 @@ def main(options):
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     #VC.OptionsCheck(options,'Phonons')
 
-    CF.PrintMainHeader('Bandstructures',vinfo,options)
+    CF.PrintMainHeader('Bandstructures',options)
 
     try:
         fdf = glob.glob(options.onlyTSdir+'/RUN.fdf')

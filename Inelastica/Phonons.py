@@ -1,6 +1,3 @@
-version = "SVN $Id$"
-print version
-
 """
 A completely rewritten Phonons.py script with various improvements
 and additional flexibility:
@@ -44,9 +41,6 @@ import netCDF4 as NC4
 import numpy as N
 import numpy.linalg as LA
 import glob, os,sys,string
-
-vinfo = [version,SIO.version,Symmetry.version,CF.version,
-         MG.version,PC.version,MM.version,VC.version]
 
 def GetOptions(argv,**kwargs):
     # if text string is specified, convert to list
@@ -790,7 +784,7 @@ def WriteAXSFFilesPer(filename,vectors,xyz,anr,hw,U,FCfirst,FClast):
     
 def main(options):
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    CF.PrintMainHeader('Phonons',vinfo,options)
+    CF.PrintMainHeader('Phonons',options)
 
     # Determine SIESTA input fdf files in FCruns
     fdf = glob.glob(options.FCwildcard+'/RUN.fdf')

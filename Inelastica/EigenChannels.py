@@ -1,6 +1,3 @@
-version = "SVN $Id$"
-print version
-
 """
 Eigenchannels:
 1: Eigenchannels, method from Paulsson and Brandbyge PRB 2007
@@ -18,8 +15,6 @@ import sys, string, struct, glob, os
 import PhysicalConstants as PC
 import ValueCheck as VC
 import CommonFunctions as CF
-
-vinfo = [version,NEGF.version,SIO.version,MG.version,MM.version,PC.version,VC.version,CF.version]
 
 # For doing loops with Eigenchannels we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.
@@ -100,7 +95,7 @@ def GetOptions(argv,**kwargs):
 def main(options):
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options,'EigenChannels')
-    CF.PrintMainHeader('EigenChannels',vinfo,options)
+    CF.PrintMainHeader('EigenChannels',options)
 
     # Read geometry
     XV = '%s/%s.XV'%(options.head,options.systemlabel)

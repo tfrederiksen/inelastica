@@ -1,5 +1,3 @@
-print "SVN $Id$"
-
 """
 Nudged elastic band
 """

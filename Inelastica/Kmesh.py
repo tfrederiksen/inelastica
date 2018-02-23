@@ -1,6 +1,3 @@
-version =  "SVN $Id$"
-print version
-
 # Kmesh module by T. Frederiksen
 import MiscMath as MM
 import numpy as N

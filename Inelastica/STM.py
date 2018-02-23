@@ -1,6 +1,4 @@
 from __future__ import absolute_import, print_function
-version = "SVN $Id$"
-print(version)
 
 import Inelastica.NEGF as NEGF
 import Inelastica.SiestaIO as SIO
@@ -29,8 +27,6 @@ import Inelastica.STMFD as STMFD
 zeroSide, wfSide, pbcSide = 1, 2, 3 # ID
 DEBUG = False
 DEBUGPDE = False
-
-vinfo = [version,NEGF.version,SIO.version,MG.version,MM.version,PC.version,VC.version,CF.version]
 
 def GetOptions(argv,**kwargs):
     # if text string is specified, convert to list
@@ -126,7 +122,7 @@ def main(options):
     
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options,'STM')
-    CF.PrintMainHeader('STM',vinfo,options)
+    CF.PrintMainHeader('STM',options)
     
     ## Step 1: Calculate scattering states from L/R on TranSiesta real space grid.    
     if glob.glob(options.DestDir+'/kpoints')!=[]: # Check previous k-points

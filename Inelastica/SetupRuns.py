@@ -1,5 +1,3 @@
-print "SVN $Id$"
-
 """
 Functions to setup (Tran)SIESTA calculation and submit pbs jobs.
 CG: Optimization including scaling of electrode distances

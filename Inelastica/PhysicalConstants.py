@@ -1,6 +1,3 @@
-version = "SVN $Id$"
-print version
-
 import numpy as N
 
 # From Kittel: Introd. Solid State Physics, 7th ed. (1996)
