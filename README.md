@@ -24,4 +24,14 @@ Inelastica contains a number of scripts such as
 Some documentation is contained at the Inelastica wiki http://dipc.ehu.es/frederiksen/inelastica
 
 
+## Contributions, issues and bugs ##
+Contributions are highly appreciated.
+
+If you find any bugs please form a [bug report/issue][https://github.com/tfrederiksen/inelastica/issues].
+
+If you have a fix please consider adding a [pull request][https://github.com/tfrederiksen/inelastica/pulls].
+
+## License ##
+
+The Inelastica license is [LGPL][http://www.gnu.org/licenses/lgpl.html], please see the LICENSE file.
 
