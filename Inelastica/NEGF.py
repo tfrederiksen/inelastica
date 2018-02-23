@@ -1,15 +1,15 @@
-import SiestaIO as SIO
-import MiscMath as MM
+import Inelastica.SiestaIO as SIO
+import Inelastica.MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
 import string
 import pickle, hashlib, glob, time, os 
 import netCDF4 as NC4
-import ValueCheck as VC
+import Inelastica.ValueCheck as VC
 
 # For speed some routines can be linked as F90 code
 try:
-    import F90_lapack as F90
+    import .F90_lapack as F90
     F90_lapack_imp = True
 except:
     F90_lapack_imp = False

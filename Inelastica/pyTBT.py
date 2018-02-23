@@ -17,13 +17,13 @@
 ################################################################
 """
 
-import SiestaIO as SIO
-import MiscMath as MM
-import NEGF
+import .SiestaIO as SIO
+import .MiscMath as MM
+import .NEGF
 import numpy as N
-import Kmesh
-import ValueCheck as VC
-import CommonFunctions as CF
+import .Kmesh
+import .ValueCheck as VC
+import .CommonFunctions as CF
 
 # For doing loops with pyTBT we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.

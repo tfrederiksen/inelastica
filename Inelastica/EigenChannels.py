@@ -4,17 +4,17 @@ Eigenchannels:
 2: Calculate "bond" currents
 """
 
-import NEGF
-import SiestaIO as SIO
-import MakeGeom as MG
-import MiscMath as MM
+import Inelastica.NEGF as NEGF
+import Inelastica.SiestaIO as SIO
+import Inelastica.MakeGeom as MG
+import Inelastica.MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
 import netCDF4 as NC4
 import sys, string, struct, glob, os
-import PhysicalConstants as PC
-import ValueCheck as VC
-import CommonFunctions as CF
+import Inelastica.PhysicalConstants as PC
+import Inelastica.ValueCheck as VC
+import Inelastica.CommonFunctions as CF
 
 # For doing loops with Eigenchannels we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.

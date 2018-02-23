@@ -9,11 +9,11 @@ Routines for IO in different formats:
 import numpy as N
 import numpy.linalg as LA
 import string, struct, os.path, sys
-import MakeGeom as MG
+import Inelastica.MakeGeom as MG
 import gzip
 import netCDF4 as NC4
-import PhysicalConstants as PC
-import ValueCheck as VC
+import Inelastica.PhysicalConstants as PC
+import Inelastica.ValueCheck as VC
 
 # For speed some routines can be linked as F90 code
 try:

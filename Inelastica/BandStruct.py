@@ -2,16 +2,16 @@
 Bandstructure and Fermi surface calculator
 """
 
-import Symmetry as SYM
-import SiestaIO as SIO
-import MakeGeom as MG
-import MiscMath as MM
+import Inelastica.Symmetry as SYM
+import Inelastica.SiestaIO as SIO
+import Inelastica.MakeGeom as MG
+import Inelastica.MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
 import sys, string, struct, glob,  os
 from optparse import OptionParser, OptionGroup
-import PhysicalConstants as PC
-import WriteXMGR as XMGR
+import Inelastica.PhysicalConstants as PC
+import Inelastica.WriteXMGR as XMGR
 
 mm = MM.mm
 outerAdd = MM.outerAdd

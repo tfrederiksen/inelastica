@@ -14,9 +14,9 @@ import os, glob, string, time, sys, shutil, os
 import netCDF4 as NC4
 import numpy as N
 import numpy.linalg as LA
-import MakeGeom as MG
-import SiestaIO as SIO
-import PhysicalConstants as PC
+import Inelastica.MakeGeom as MG
+import Inelastica.SiestaIO as SIO
+import Inelastica.PhysicalConstants as PC
 
 
 # -----------------------------------------------------------------------------------------------------

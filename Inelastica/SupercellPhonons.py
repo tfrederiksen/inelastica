@@ -16,13 +16,13 @@ Phase factors defined as: exp(i k.r)
 Thomas Frederiksen, March 2015
 """
 
-import SiestaIO as SIO
-import Symmetry
-import CommonFunctions as CF
-import Phonons as PH
-import PhysicalConstants as PC
-import MiscMath as MM
-import ValueCheck as VC
+import Inelastica.SiestaIO as SIO
+import Inelastica.Symmetry as Symmetry
+import Inelastica.CommonFunctions as CF
+import Inelastica.Phonons as PH
+import Inelastica.PhysicalConstants as PC
+import Inelastica.MiscMath as MM
+import Inelastica.ValueCheck as VC
 
 import numpy as N
 import numpy.linalg as LA
