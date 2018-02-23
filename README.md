@@ -1,9 +1,10 @@
 # Inelastica #
 __Inelastica__ is a Python package for the SIESTA/TranSIESTA DFT codes
-as well as a script to compute inelastic transport, while _inelastica_ is the repository name.
+as well as a script to compute inelastic transport
+(and inelastica is the corresponding repository name).
 
 ## Features ##
-Inelastica contains a number of scripts such as
+__Inelastica__ contains a number of scripts such as
 
    - `geom2geom`: Geometry conversion between different file formats
    - `Bandstructures`: Computation of electron and phonon band structures
@@ -17,7 +18,29 @@ Inelastica contains a number of scripts such as
 ### Dependencies ###
 
 ## Usage ##
+If used to produce scientific contributions please include relevant citations to
 
+    @Article{general-methods,
+      Title = {Inelastic transport theory from first principles: Methodology and application to nanoscale devices},
+      Author = {Frederiksen, Thomas and Paulsson, Magnus and Brandbyge, Mads and Jauho, Antti-Pekka},
+      Journal = {Phys. Rev. B},
+      Year = {2007},
+      Number = {20},
+      Pages = {205413},
+      Volume= {75},
+      Doi = {10.1103/PhysRevB.75.205413},
+    }
+
+    @Article{eigenchannels,
+      Title = {Transmission eigenchannels from nonequilibrium Green's functions},
+      Author = {Paulsson, M. and Brandbyge, M.},
+      Journal = {Phys. Rev. B},
+      Year = {2007},
+      Number = {11},
+      Pages = {115117},
+      Volume = {76},
+      Doi = {10.1103/PhysRevB.76.115117},
+    }
 
 ## Documentation ##
 Some documentation may be found at the Inelastica wiki [here][wiki].
