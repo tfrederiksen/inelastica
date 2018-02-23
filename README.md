@@ -6,7 +6,7 @@ The repository is called `inelastica`.
 
 __Inelastica__ is based on the [SIESTA/TranSIESTA][siesta] DFT codes.
 
-The project was initiated in 2003-2005 by Thomas Frederiksen and Magnus Paulsson
+The project was initiated around 2003-2005 by Thomas Frederiksen and Magnus Paulsson
 while they worked in the group of Mads Brandbyge at the Technical University of Denmark.
 
 ## Features ##
@@ -40,8 +40,7 @@ If used to produce scientific contributions please include relevant citations to
       Volume= {75},
       Doi = {10.1103/PhysRevB.75.205413},
     }
-
-
+ 
     @Article{eigenchannels,
       Title = {Transmission eigenchannels from nonequilibrium Green's functions},
       Author = {Paulsson, M. and Brandbyge, M.},
