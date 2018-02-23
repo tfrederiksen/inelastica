@@ -89,7 +89,7 @@ setup(name='Inelastica',
       version='1.2-rc',
       # Define the requirements for Inelastica
       # These probably needs to be adjusted... 
-      requires = ['python (>=2.5)','numpy (>=1.6)','netCDF4 (>=1.2.7)'],
+      requires = ['python (>=2.7)','numpy (>=1.8)','netCDF4 (>=1.2.7)'],
       description='Python tools for SIESTA/TranSIESTA', 
       long_description="""
 Provides:
