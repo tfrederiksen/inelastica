@@ -1,0 +1,64 @@
+language: python
+
+branches:
+  except:
+  - /.*gh-pages.*/
+
+sudo: false
+
+notifications:
+  email:
+     recipients:
+       - nickpapior@gmail.com
+     on_failure: always
+     on_success: change
+
+matrix:
+  include:
+   - python: 2.7
+     env: PYTHONOPTIMIZE=0
+   - python: 2.7
+     env: PYTHONOPTIMIZE=1
+   - python: 2.7
+     env: PYTHONOPTIMIZE=2
+   - python: 3.6
+   
+
+install:
+  - conda install hdf4 libnetcdf
+  - pip install pytest pytest-cov
+  - python setup.py install
+
+script:
+  - |
+    Inelastica --help
+
+#
+# These are setup scripts:
+#
+
+addons:
+  apt:
+    packages: &common_packages
+      - gcc
+      - gfortran
+      # Speedup builds, particularly when USE_CHROOT=1
+      - eatmydata
+
+before_install:
+  - |
+    if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+        wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+    elif [[ "$TRAVIS_PYTHON_VERSION" == "3.5" ]]; then
+        wget http://repo.continuum.io/miniconda/Miniconda3-4.2.12-Linux-x86_64.sh -O miniconda.sh
+    else
+        wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH=$HOME/miniconda/bin:$PATH
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+# Do actual package installations
+  - conda info -a
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file requirements.txt
+  - source activate test-environment
