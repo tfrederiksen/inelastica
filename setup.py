@@ -84,6 +84,15 @@ F90extLapack = Next.Extension('Inelastica.F90_lapack',
                               ['Inelastica/fortran/surfaceGreen.f90'],
                               **lapack_opt)
 
+
+# Create list of all sub-directories with
+#   __init__.py files...
+import os
+packages = []
+for subdir, dirs, files in os.walk('Inelastica'):
+    if '__init__.py' in files:
+        packages.append(subdir.replace(os.sep, '.'))
+
 # Main setup of python modules
 setup(name='Inelastica',
       version='1.2-rc',
@@ -95,7 +104,7 @@ setup(name='Inelastica',
       author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',  
       url='https://github.com/tfrederiksen/inelastica', 
       license='GPL', 
-      package_dir={'Inelastica': 'Inelastica'},
+      #package_dir={'Inelastica': 'Inelastica'},
       scripts  = ['Inelastica/scripts/Inelastica',
                   'Inelastica/scripts/EigenChannels',
                   'Inelastica/scripts/pyTBT',
@@ -118,7 +127,7 @@ setup(name='Inelastica',
                   'Inelastica/utils/bands2xmgr',
                   'Inelastica/utils/siesta_cleanup'
                   ],
-      packages=['Inelastica'],
+      packages=packages,
       ext_modules=[F90ext,F90extLapack],
       )
 
