@@ -70,10 +70,10 @@ import numpy.distutils.extension as Next
 
 # Fortran helper files
 F90ext = Next.Extension('Inelastica.F90helpers',
-                        ['Inelastica/F90/expansion_SE.f90',
-                         'Inelastica/F90/readTSHS.f90',
-                         'Inelastica/F90/removeUnitCellXij.f90',
-                         'Inelastica/F90/setkpointhelper.f90'],
+                        ['Inelastica/fortran/expansion_SE.f90',
+                         'Inelastica/fortran/readTSHS.f90',
+                         'Inelastica/fortran/removeUnitCellXij.f90',
+                         'Inelastica/fortran/setkpointhelper.f90'],
                         )
 
 # Retrieve the LAPACK-library...
@@ -81,7 +81,7 @@ lapack_opt = get_info('lapack_opt')
 if not lapack_opt:
     raise NotFoundError('No LAPACK/BLAS resources found')
 F90extLapack = Next.Extension('Inelastica.F90_lapack',
-                              ['Inelastica/F90/surfaceGreen.f90'],
+                              ['Inelastica/fortran/surfaceGreen.f90'],
                               **lapack_opt)
 
 # Main setup of python modules
