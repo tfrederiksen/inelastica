@@ -115,7 +115,7 @@ setup(name='Inelastica',
                   'Inelastica/scripts/average-gridfunc',
                   'Inelastica/scripts/WriteWavefunctions',
                   'Inelastica/utils/agr2pdf',
-                  'Inelastica/scripts/bands2xmgr',
+                  'Inelastica/utils/bands2xmgr',
                   'Inelastica/utils/siesta_cleanup'
                   ],
       packages=['Inelastica'],
