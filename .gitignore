@@ -1,3 +1,4 @@
 build
 *.pyc
 docs/build
+docs/api-gen
