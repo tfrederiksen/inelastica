@@ -67,6 +67,7 @@ Indices
    more
 
 
+
 .. |buildstatus| image:: https://travis-ci.org/tfrederiksen/inelastica.svg
 .. _buildstatus: https://travis-ci.org/tfrederiksen/inelastica
 
