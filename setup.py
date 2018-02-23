@@ -70,10 +70,10 @@ import numpy.distutils.extension as Next
 
 # Fortran helper files
 F90ext = Next.Extension('Inelastica.F90helpers',
-                        ['inelastica/F90/expansion_SE.f90',
-                         'inelastica/F90/readTSHS.f90',
-                         'inelastica/F90/removeUnitCellXij.f90',
-                         'inelastica/F90/setkpointhelper.f90'],
+                        ['Inelastica/F90/expansion_SE.f90',
+                         'Inelastica/F90/readTSHS.f90',
+                         'Inelastica/F90/removeUnitCellXij.f90',
+                         'Inelastica/F90/setkpointhelper.f90'],
                         )
 
 # Retrieve the LAPACK-library...
@@ -81,7 +81,7 @@ lapack_opt = get_info('lapack_opt')
 if not lapack_opt:
     raise NotFoundError('No LAPACK/BLAS resources found')
 F90extLapack = Next.Extension('Inelastica.F90_lapack',
-                              ['inelastica/F90/surfaceGreen.f90'],
+                              ['Inelastica/F90/surfaceGreen.f90'],
                               **lapack_opt)
 
 # Main setup of python modules
@@ -91,20 +91,11 @@ setup(name='Inelastica',
       # These probably needs to be adjusted... 
       requires = ['python (>=2.7)','numpy (>=1.8)','netCDF4 (>=1.2.7)'],
       description='Python tools for SIESTA/TranSIESTA', 
-      long_description="""
-Provides:
-1:	File format conversions for geometry, try: geom2geom --help
-2:	Phonon calculations (including e-ph coupling)
-3:	Transmission calculations, try: pyTBT --help
-4:	Eigenchannels analysis, try: EigenChannels --help
-5:	IETS calculations, try: Inelastica --help
-6:      grid2grid, try: grid2grid --help
-7:	Scripts to set up the above type of calculations.""",
       author='Magnus Paulsson and Thomas Frederiksen', 
       author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',  
       url='https://github.com/tfrederiksen/inelastica', 
-      license='GPL. Please cite: Frederiksen et al., PRB 75, 205413 (2007)', 
-      package_dir={'Inelastica': 'inelastica'},
+      license='GPL', 
+      package_dir={'Inelastica': 'Inelastica'},
       scripts  = ['scripts/agr2pdf',
                   'scripts/Inelastica',
                   'scripts/EigenChannels',
