@@ -1,11 +1,10 @@
 import numpy as N
 import numpy.linalg as LA
 import string, struct, os.path, sys
-import MakeGeom as MG
 import gzip
 
 def VIO_open(filename,mode='r'):
-    "A VaspIO redefinition of the function open() to handle gzip format"
+    "A io.vasp redefinition of the function open() to handle gzip format"
     try:
         if filename[-3:]=='.gz':
             # filename is explicitly a gzip file
@@ -23,7 +22,7 @@ def VIO_open(filename,mode='r'):
 
 def ReadCONTCAR(filename):
     "Read CONTCAR file"
-    print 'VaspIO.ReadCONTCAR: Reading', filename
+    print 'io.vasp.ReadCONTCAR: Reading', filename
     file = VIO_open(filename,'r')
     label = file.readline()
     scalefactor = float(file.readline())
@@ -76,7 +75,7 @@ def ReadCONTCAR(filename):
 
 def WritePOSCAR(filename,vectors,specieslabels,speciesnumbers,xyz,label='LABEL',scalefactor=1.0,constrained=[]):
     "Write POSCAR file"
-    print 'VaspIO.WritePOSCAR: Writing',filename
+    print 'io.vasp.WritePOSCAR: Writing',filename
     file = open(filename,'w')
     if label[:-2]!='\n':
         file.write(label+'\n')
@@ -111,7 +110,7 @@ def WritePOSCAR(filename,vectors,specieslabels,speciesnumbers,xyz,label='LABEL',
 
 def GetEnergies(OUTCAR):
     file = VIO_open(OUTCAR,'r')
-    print 'VaspIO.GetEnergies: Reading', OUTCAR
+    print 'io.vasp.GetEnergies: Reading', OUTCAR
     #
     freeE, Etot, EtotSigma0 = 1e100, 1e100, 1e100
     for line in file:
@@ -131,7 +130,7 @@ def GetEnergies(OUTCAR):
 
 def GetEnergiesFromOszi(OSZICAR):
     file = VIO_open(OSZICAR,'r')
-    print 'VaspIO.GetEnergiesFromOszi: Reading', OSZICAR
+    print 'io.vasp.GetEnergiesFromOszi: Reading', OSZICAR
     #
     f,e0 = 1e100,1e100
     for line in file:
@@ -143,7 +142,7 @@ def GetEnergiesFromOszi(OSZICAR):
 
 def GetMagnetization(OSZICAR):
     file = VIO_open(OSZICAR,'r')
-    print 'VaspIO.GetMagnetization: Reading', OSZICAR
+    print 'io.vasp.GetMagnetization: Reading', OSZICAR
     #
     mag = 1e100
     for line in file:
@@ -154,7 +153,7 @@ def GetMagnetization(OSZICAR):
 
 def GetSpecies(OUTCAR):
     file = VIO_open(OUTCAR,'r')
-    print 'VaspIO.GetSpecies: Reading', OUTCAR
+    print 'io.vasp.GetSpecies: Reading', OUTCAR
     atoms = []
     for line in file:
         if 'TITEL' in line:
@@ -165,7 +164,7 @@ def GetSpecies(OUTCAR):
 
 def GetVibModesNoScaling(OUTCAR):
     file = VIO_open(OUTCAR,'r')
-    print 'VaspIO.GetVibrations: Reading', OUTCAR
+    print 'io.vasp.GetVibrations: Reading', OUTCAR
     freq = []
     modes = []
     v = []    
@@ -195,7 +194,7 @@ def GetVibModesNoScaling(OUTCAR):
 
 def GetVibModesMassScaled(OUTCAR):
     file = VIO_open(OUTCAR,'r')
-    print 'VaspIO.GetVibrations: Reading', OUTCAR
+    print 'io.vasp.GetVibrations: Reading', OUTCAR
     freq = []
     modes = []
     v = []    
@@ -224,7 +223,7 @@ def GetVibModesMassScaled(OUTCAR):
 
 def ExtractPDOS(filename,outfile,atom_index=[]):
     "Read DOSCAR file and sum over group of atoms (python numbering)"
-    print 'VaspIO.ExtractPDOS: Reading',filename
+    print 'io.vasp.ExtractPDOS: Reading',filename
     f = VIO_open(filename,'r')
     # Read number of atoms on first line
     s = f.readline()
@@ -305,7 +304,7 @@ def ExtractPDOS(filename,outfile,atom_index=[]):
         sgn2 = N.array(pts*[sgn])
         dat = dat*sgn2
     # Write output
-    print 'VaspIO.ExtractPDOS: Writing',outfile
+    print 'io.vasp.ExtractPDOS: Writing',outfile
     fout = open(outfile,'w')
     for i in range(pts):
         s = ''

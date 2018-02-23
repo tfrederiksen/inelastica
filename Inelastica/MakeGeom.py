@@ -2,7 +2,7 @@
 Routines to read, write and manipulate geometries.
 """
 import SiestaIO as SIO
-import VaspIO as VIO
+import io.vasp as VIO
 import numpy as N
 import string, copy, math, sys
 import netCDF4 as NC4

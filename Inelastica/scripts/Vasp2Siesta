@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from Inelastica import VaspIO as VIO
+from Inelastica import io.vasp as VIO
 from Inelastica import SiestaIO as SIO
 from Inelastica import PhysicalConstants as PC
 import sys

@@ -70,10 +70,10 @@ import numpy.distutils.extension as Next
 
 # Fortran helper files
 F90ext = Next.Extension('Inelastica.F90helpers',
-                        ['Inelastica/F90/expansion_SE.f90',
-                         'Inelastica/F90/readTSHS.f90',
-                         'Inelastica/F90/removeUnitCellXij.f90',
-                         'Inelastica/F90/setkpointhelper.f90'],
+                        ['Inelastica/fortran/expansion_SE.f90',
+                         'Inelastica/fortran/readTSHS.f90',
+                         'Inelastica/fortran/removeUnitCellXij.f90',
+                         'Inelastica/fortran/setkpointhelper.f90'],
                         )
 
 # Retrieve the LAPACK-library...
@@ -81,8 +81,17 @@ lapack_opt = get_info('lapack_opt')
 if not lapack_opt:
     raise NotFoundError('No LAPACK/BLAS resources found')
 F90extLapack = Next.Extension('Inelastica.F90_lapack',
-                              ['Inelastica/F90/surfaceGreen.f90'],
+                              ['Inelastica/fortran/surfaceGreen.f90'],
                               **lapack_opt)
+
+
+# Create list of all sub-directories with
+#   __init__.py files...
+import os
+packages = []
+for subdir, dirs, files in os.walk('Inelastica'):
+    if '__init__.py' in files:
+        packages.append(subdir.replace(os.sep, '.'))
 
 # Main setup of python modules
 setup(name='Inelastica',
@@ -95,30 +104,30 @@ setup(name='Inelastica',
       author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',  
       url='https://github.com/tfrederiksen/inelastica', 
       license='GPL', 
-      package_dir={'Inelastica': 'Inelastica'},
-      scripts  = ['scripts/agr2pdf',
-                  'scripts/Inelastica',
-                  'scripts/EigenChannels',
-                  'scripts/pyTBT',
-                  'scripts/geom2geom',
-                  'scripts/geom2zmat',
-                  'scripts/Bandstructures',
-                  'scripts/ComputeDOS',
-                  'scripts/siesta_cleanup',
-                  'scripts/Vasp2Siesta',
-                  'scripts/bands2xmgr',
-                  'scripts/Phonons',
-                  'scripts/NEB',
-                  'scripts/grid2grid',
-                  'scripts/setupFCrun',
-                  'scripts/setupOSrun',
-                  'scripts/kaverage-TBT',
-                  'scripts/STM',
-                  'scripts/kaverage-IETS',
-                  'scripts/average-gridfunc',
-                  'scripts/WriteWavefunctions'
+      #package_dir={'Inelastica': 'Inelastica'},
+      scripts  = ['Inelastica/scripts/Inelastica',
+                  'Inelastica/scripts/EigenChannels',
+                  'Inelastica/scripts/pyTBT',
+                  'Inelastica/scripts/geom2geom',
+                  'Inelastica/scripts/geom2zmat',
+                  'Inelastica/scripts/Bandstructures',
+                  'Inelastica/scripts/ComputeDOS',
+                  'Inelastica/scripts/Vasp2Siesta',
+                  'Inelastica/scripts/Phonons',
+                  'Inelastica/scripts/NEB',
+                  'Inelastica/scripts/grid2grid',
+                  'Inelastica/scripts/setupFCrun',
+                  'Inelastica/scripts/setupOSrun',
+                  'Inelastica/scripts/kaverage-TBT',
+                  'Inelastica/scripts/STM',
+                  'Inelastica/scripts/kaverage-IETS',
+                  'Inelastica/scripts/average-gridfunc',
+                  'Inelastica/scripts/WriteWavefunctions',
+                  'Inelastica/utils/agr2pdf',
+                  'Inelastica/utils/bands2xmgr',
+                  'Inelastica/utils/siesta_cleanup'
                   ],
-      packages=['Inelastica'],
+      packages=packages,
       ext_modules=[F90ext,F90extLapack],
       )
 
