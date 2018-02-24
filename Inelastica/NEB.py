@@ -6,7 +6,7 @@ import Inelastica.SetupRuns as SUR
 import Inelastica.MakeGeom as MG
 import Inelastica.MiscMath as MM
 import Inelastica.PhysicalConstants as PC
-import Inelastica.WriteXMGR as XMGR
+import Inelastica.io.xmgrace as XMGR
 
 import numpy as N
 import numpy.linalg as LA

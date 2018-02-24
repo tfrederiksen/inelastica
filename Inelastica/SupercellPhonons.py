@@ -23,7 +23,7 @@ import Inelastica.Phonons as PH
 import Inelastica.PhysicalConstants as PC
 import Inelastica.MiscMath as MM
 import Inelastica.ValueCheck as VC
-import Inelastica.WriteXMGR as XMGR
+import Inelastica.io.xmgrace as XMGR
 
 import numpy as N
 import numpy.linalg as LA

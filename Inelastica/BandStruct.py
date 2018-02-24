@@ -11,7 +11,7 @@ import numpy.linalg as LA
 import sys, string, struct, glob,  os
 from optparse import OptionParser, OptionGroup
 import Inelastica.PhysicalConstants as PC
-import Inelastica.WriteXMGR as XMGR
+import Inelastica.io.xmgrace as XMGR
 
 mm = MM.mm
 outerAdd = MM.outerAdd

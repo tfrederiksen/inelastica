@@ -17,6 +17,5 @@ from .SupercellPhonons import *
 from .Symmetry import *
 from .ValueCheck import *
 from .WriteNetCDF import *
-from .WriteXMGR import *
 
 __all__ = [s for s in dir() if not s.startswith('_')]
