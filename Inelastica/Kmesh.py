@@ -1,5 +1,5 @@
 # Kmesh module by T. Frederiksen
-import MiscMath as MM
+import Inelastica.MiscMath as MM
 import numpy as N
 
 # This function is used in the class below for each of the

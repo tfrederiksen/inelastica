@@ -9,15 +9,15 @@ Routines for IO in different formats:
 import numpy as N
 import numpy.linalg as LA
 import string, struct, os.path, sys
-import MakeGeom as MG
+#import Inelastica.MakeGeom as MG
 import gzip
 import netCDF4 as NC4
-import PhysicalConstants as PC
-import ValueCheck as VC
+import Inelastica.PhysicalConstants as PC
+import Inelastica.ValueCheck as VC
 
 # For speed some routines can be linked as F90 code
 try:
-    import F90helpers as F90
+    import Inelastica.fortran.F90helpers as F90
     F90imported = True
 except:
     F90imported = False
@@ -25,9 +25,9 @@ except:
     print "Problems encountered with F90helpers.so"
     print "Falling back on a pure python (slower) implementation"
     print "Try compiling manually following these steps:"
-    print " $ cd Inelastica/package/F90"
+    print " $ cd Inelastica/fortran"
     print " $ source compile.bat (or compile_alternative.bat)"
-    print " $ cp F90helpers.so <python>/site-packages/Inelastica/"
+    print " $ cp F90helpers.so <python>/site-packages/Inelastica/fortran"
     print "########################################################"
 
 # Check length of int and long and use the one that has 8 bytes
@@ -210,7 +210,7 @@ def ReadANIFile(filename,InUnits='Ang',OutUnits='Ang'):
     newNN=file.readline()
     while newNN!='':
         NN=string.atoi(newNN)
-        newG=MG.Geom()
+        newG=MG.Geom() # Can't use MG because it leads to circular references!
         try:
             Energy.append(string.atof(file.readline()))
         except:

@@ -17,13 +17,14 @@
 ################################################################
 """
 
-import SiestaIO as SIO
-import MiscMath as MM
-import NEGF
+import Inelastica.SiestaIO as SIO
+import Inelastica.MiscMath as MM
+import Inelastica.NEGF
 import numpy as N
-import Kmesh
-import ValueCheck as VC
-import CommonFunctions as CF
+import Inelastica.Kmesh as Kmesh
+import Inelastica.ValueCheck as VC
+import Inelastica.CommonFunctions as CF
+import Inelastica.WriteXMGR as XMGR
 
 # For doing loops with pyTBT we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.
@@ -334,7 +335,6 @@ def WritePDOS(fn,options,DevGF,DOS,basis):
     plots += [[[atom],lVals,atom+' Tot'] for atom in atoms]
     plots += [[[atom],[lVal],atom+' L=%i'%lVal] for lVal in lVals for atom in atoms]
 
-    import WriteXMGR as XMGR
     g = XMGR.Graph()
     for atom, lVal, name in plots:
         nspin, ee, PDOS = SIO.ExtractPDOS(fn,None,FermiRef=False,llist=lVal,
@@ -373,7 +373,6 @@ def WriteMPSH(fn,options,DevGF,DOS,ev0):
     doc.writexml(gzip.GzipFile(fn,'w'))
 
     # Make plot
-    import WriteXMGR as XMGR
     g = XMGR.Graph()
     for ii in range(DevGF.nuo):
         for iS in range(DevGF.HS.nspin):
