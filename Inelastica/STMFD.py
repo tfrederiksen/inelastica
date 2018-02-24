@@ -10,7 +10,7 @@ import scipy.io
 import time,glob,os,shutil,sys
 import Inelastica.WriteNetCDF as wNC
 import Inelastica.PhysicalConstants as PC
-import Inelastica.SiestaIO as SIO
+import Inelastica.io.siesta as SIO
 
 def main(options,kpoint,ikpoint):
     Ef = SIO.HS(options.systemlabel+'.TSHS').ef/PC.Rydberg2eV

@@ -1,4 +1,4 @@
-import Inelastica.SiestaIO as SIO
+import Inelastica.io.siesta as SIO
 import Inelastica.MiscMath as MM
 import numpy as N
 import sys

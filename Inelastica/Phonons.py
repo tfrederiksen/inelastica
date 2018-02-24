@@ -30,7 +30,8 @@ Additional improvements to facilitate large-scale calcuations:
 
 Daniele Stradi, April 2015
 """
-import Inelastica.SiestaIO as SIO
+
+import Inelastica.io.siesta as SIO
 import Inelastica.Symmetry as Symmetry
 import Inelastica.CommonFunctions as CF
 import Inelastica.MakeGeom as MG

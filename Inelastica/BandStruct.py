@@ -3,7 +3,7 @@ Bandstructure and Fermi surface calculator
 """
 
 import Inelastica.Symmetry as SYM
-import Inelastica.SiestaIO as SIO
+import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
 import Inelastica.MiscMath as MM
 import numpy as N

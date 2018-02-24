@@ -1,7 +1,7 @@
 """
 Routines to read, write and manipulate geometries.
 """
-import Inelastica.SiestaIO as SIO
+import Inelastica.io.siesta as SIO
 import Inelastica.io.vasp as VIO
 import numpy as N
 import string, copy, math, sys

@@ -11,7 +11,6 @@ from .Phonons import *
 from .PhysicalConstants import *
 from .pyTBT import *
 from .SetupRuns import *
-from .SiestaIO import *
 from .STM import *
 from .STMFD import *
 from .SupercellPhonons import *

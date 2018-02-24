@@ -1,7 +1,7 @@
 """
 Nudged elastic band
 """
-import Inelastica.SiestaIO as SIO
+import Inelastica.io.siesta as SIO
 import Inelastica.SetupRuns as SUR
 import Inelastica.MakeGeom as MG
 import Inelastica.MiscMath as MM

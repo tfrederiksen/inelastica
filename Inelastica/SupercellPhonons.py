@@ -16,7 +16,7 @@ Phase factors defined as: exp(i k.r)
 Thomas Frederiksen, March 2015
 """
 
-import Inelastica.SiestaIO as SIO
+import Inelastica.io.iesta as SIO
 import Inelastica.Symmetry as Symmetry
 import Inelastica.CommonFunctions as CF
 import Inelastica.Phonons as PH
