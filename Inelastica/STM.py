@@ -18,7 +18,7 @@ import scipy
 import scipy.io
 import scipy.sparse.linalg as SLA
 import scipy.sparse as SS
-import Inelastica.WriteNetCDF as writeNC
+import Inelastica.io.netcdf as writeNC
 import Inelastica.STMFD as STMFD
 
 #Units: Bohr and Rydberg!

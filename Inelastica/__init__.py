@@ -1,4 +1,4 @@
-from BandStruct import *
+from .BandStruct import *
 from .CommonFunctions import *
 from .EigenChannels import *
 from .iets import *
@@ -16,6 +16,5 @@ from .STMFD import *
 from .SupercellPhonons import *
 from .Symmetry import *
 from .ValueCheck import *
-from .WriteNetCDF import *
 
 __all__ = [s for s in dir() if not s.startswith('_')]
