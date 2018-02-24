@@ -3,7 +3,7 @@
 import sys
 from datetime import datetime
 
-from Inelastica import Inelastica_mod as Module
+from Inelastica import iets as Module
 from Inelastica import CommonFunctions as CF
 
 start = datetime.now()
