@@ -11,7 +11,7 @@ import numpy.linalg as LA
 import string, struct, os.path, sys
 import gzip
 import netCDF4 as NC4
-import Inelastica.PhysicalConstants as PC
+import Inelastica.physics.constants as PC
 import Inelastica.ValueCheck as VC
 
 # For speed some routines can be linked as F90 code

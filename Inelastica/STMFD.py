@@ -9,7 +9,7 @@ from   datetime            import datetime
 import scipy.io
 import time,glob,os,shutil,sys
 import Inelastica.io.netcdf as wNC
-import Inelastica.PhysicalConstants as PC
+import Inelastica.physics.constants as PC
 import Inelastica.io.siesta as SIO
 
 def main(options,kpoint,ikpoint):

@@ -7,7 +7,6 @@ from .MiscMath import *
 from .NEB import *
 from .NEGF import *
 from .Phonons import *
-from .PhysicalConstants import *
 from .pyTBT import *
 from .SetupRuns import *
 from .STM import *

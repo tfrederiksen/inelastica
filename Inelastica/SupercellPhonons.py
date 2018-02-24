@@ -20,7 +20,7 @@ import Inelastica.io.siesta as SIO
 import Inelastica.Symmetry as Symmetry
 import Inelastica.CommonFunctions as CF
 import Inelastica.Phonons as PH
-import Inelastica.PhysicalConstants as PC
+import Inelastica.physics.constants as PC
 import Inelastica.MiscMath as MM
 import Inelastica.ValueCheck as VC
 import Inelastica.io.xmgrace as XMGR

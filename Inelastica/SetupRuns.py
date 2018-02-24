@@ -16,7 +16,7 @@ import numpy as N
 import numpy.linalg as LA
 import Inelastica.MakeGeom as MG
 import Inelastica.io.siesta as SIO
-import Inelastica.PhysicalConstants as PC
+import Inelastica.physics.constants as PC
 
 
 # -----------------------------------------------------------------------------------------------------
