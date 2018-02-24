@@ -1,7 +1,7 @@
 # Inelastica #
 
 __Inelastica__ is both the name of this whole Python package
-as well as of an included script to compute inelastic transport characteristics.
+as well as that of an included script to compute inelastic transport characteristics.
 __Inelastica__ is based on the [SIESTA/TranSIESTA][siesta] DFT codes.
 
 The project was initiated around 2003-2005 by Thomas Frederiksen and Magnus Paulsson
