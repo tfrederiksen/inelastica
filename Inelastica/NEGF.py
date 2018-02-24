@@ -9,7 +9,7 @@ import Inelastica.ValueCheck as VC
 
 # For speed some routines can be linked as F90 code
 try:
-    import .F90_lapack as F90
+    import Inelastica.fortran.F90_lapack as F90
     F90_lapack_imp = True
 except:
     F90_lapack_imp = False
@@ -18,9 +18,9 @@ except:
     print "The linking/finding of LAPACK routines does not work"
     print "Ensure the placement of LAPACK in your LD_LIBRARY_PATH" 
     print "Try compiling manually following these steps:" 
-    print " $ cd Inelastica/package/F90"
+    print " $ cd Inelastica/fortran"
     print " $ source compile.bat (or compile_alternative.bat)"
-    print " $ cp F90_lapack.so <python>/site-packages/Inelastica/"
+    print " $ cp F90_lapack.so <python>/site-packages/Inelastica/fortran/"
     print "########################################################"
 
 #try:
