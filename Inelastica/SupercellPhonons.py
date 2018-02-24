@@ -461,7 +461,7 @@ def main(options):
     # Write mesh
     k1,k2,k3 = eval(options.mesh)
     rvec = 2*N.pi*N.array([SCDM.Sym.b1,SCDM.Sym.b2,SCDM.Sym.b3])
-    import Inelastica.Kmesh as Kmesh
+    import Inelastica.physics.mesh as Kmesh
     # Full mesh
     kmesh = Kmesh.kmesh(2**k1,2**k2,2**k3,meshtype=['LIN','LIN','LIN'],invsymmetry=False)
     WriteKpoints(options.DestDir+'/mesh_%ix%ix%i'%tuple(kmesh.Nk),N.dot(kmesh.k,rvec))

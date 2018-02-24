@@ -2,7 +2,6 @@ from .BandStruct import *
 from .CommonFunctions import *
 from .EigenChannels import *
 from .iets import *
-from .Kmesh import *
 from .MakeGeom import *
 from .MiscMath import *
 from .NEB import *

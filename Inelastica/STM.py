@@ -5,7 +5,7 @@ import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
 import Inelastica.MiscMath as MM
 import Inelastica.PhysicalConstants as PC
-import Inelastica.Kmesh as Kmesh
+import Inelastica.physics.mesh as Kmesh
 import Inelastica.Symmetry as SYM
 import numpy as N
 import numpy.linalg as LA
