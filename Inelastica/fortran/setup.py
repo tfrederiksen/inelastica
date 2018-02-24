@@ -21,7 +21,7 @@ def configuration(parent_package='', top_path=None):
     lapack_opt = get_info('lapack_opt')
     if not lapack_opt:
         raise NotFoundError('No LAPACK/BLAS resources found')
-    sources = ['expansion_SE.f90']
+    sources = ['surfaceGreen.f90']
     config.add_extension('F90_lapack',
                          #sources=[osp_join('fortran', s) for s in sources],
                          sources=sources,
