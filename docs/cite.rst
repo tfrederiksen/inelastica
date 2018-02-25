@@ -3,7 +3,7 @@
 Citing
 ======
 
-If `Inelastica <doc_>`_ is used to produce scientific contributions please include relevant citations to:
+If `Inelastica <docs_>`_ is used to produce scientific contributions please include relevant citations to:
 
 
 .. code-block:: bash

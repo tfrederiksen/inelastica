@@ -53,7 +53,7 @@ List of research publication where `Inelastica <docs_>`_ was used.
 
 * Y. Kim, A. Garcia-Lekue, D. Sysoiev, T. Frederiksen, U. Groth, and E. Scheer, *Charge Transport in Azobenzene-Based Single-Molecule Junctions*, Phys. Rev. Lett. **109**, `226801 (2012) <http://link.aps.org/doi/10.1103/PhysRevLett.109.226801>`_.
 
-* R. Avriller and T. Frederiksen, *Inelastic shot noise characteristics of nanoscale junctions from first principles*, <a rel="nofollow", Phys. Rev. B **86**, `155411 (2012) <http://prb.aps.org/abstract/PRB/v86/i15/e155411>`_. `[arXiv:1209.3599] <http://arxiv.org/abs/1209.3599">arXiv.org>`_
+* R. Avriller and T. Frederiksen, *Inelastic shot noise characteristics of nanoscale junctions from first principles*, <a rel="nofollow", Phys. Rev. B **86**, `155411 (2012) <http://prb.aps.org/abstract/PRB/v86/i15/e155411>`_. `[arXiv:1209.3599] <http://arxiv.org/abs/1209.3599>`_
 
 * H. Okuyama, A. Shiotari, T. Kumagai, S. Hatta, T. Aruga, Y. Ootsuka, M. Paulsson, and H. Ueba, *Modifying current-voltage characteristics of a single molecule junction by isotope substitution: OHOD dimer on Cu(110)*, Phys. Rev. B **85**, `205424 (2012) <http://link.aps.org/doi/10.1103/PhysRevB.85.205424>`_.
 
