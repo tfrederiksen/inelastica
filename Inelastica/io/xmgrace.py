@@ -1,6 +1,6 @@
 """
 ###########################################################################
-#   Module WriteXMGR.py                                                   #
+#   Module WriteXMGR.py / Inelastica.io.xmgrace                           #
 #   Written by Thomas Frederiksen, July 2007.                             #
 #   Copyright (c), All Rights Reserved                                    #
 #                                                                         #

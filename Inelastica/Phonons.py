@@ -30,13 +30,14 @@ Additional improvements to facilitate large-scale calcuations:
 
 Daniele Stradi, April 2015
 """
-import SiestaIO as SIO
-import Symmetry
-import CommonFunctions as CF
-import MakeGeom as MG
-import PhysicalConstants as PC
-import MiscMath as MM
-import ValueCheck as VC
+
+import Inelastica.io.siesta as SIO
+import Inelastica.Symmetry as Symmetry
+import Inelastica.CommonFunctions as CF
+import Inelastica.MakeGeom as MG
+import Inelastica.physics.constants as PC
+import Inelastica.MiscMath as MM
+import Inelastica.ValueCheck as VC
 import netCDF4 as NC4
 import numpy as N
 import numpy.linalg as LA

@@ -95,7 +95,7 @@ def OptionsCheck(opts,exe):
     Generic routine for adjusting most used options for routines.
     I.e. Inelastica/EigenChannels/pyTBT.
     """
-    import SiestaIO as SIO
+    import Inelastica.io.siesta as SIO
     import os, os.path as osp
         
     # Destination directory

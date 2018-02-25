@@ -16,13 +16,14 @@ Phase factors defined as: exp(i k.r)
 Thomas Frederiksen, March 2015
 """
 
-import SiestaIO as SIO
-import Symmetry
-import CommonFunctions as CF
-import Phonons as PH
-import PhysicalConstants as PC
-import MiscMath as MM
-import ValueCheck as VC
+import Inelastica.io.siesta as SIO
+import Inelastica.Symmetry as Symmetry
+import Inelastica.CommonFunctions as CF
+import Inelastica.Phonons as PH
+import Inelastica.physics.constants as PC
+import Inelastica.MiscMath as MM
+import Inelastica.ValueCheck as VC
+import Inelastica.io.xmgrace as XMGR
 
 import numpy as N
 import numpy.linalg as LA
@@ -366,7 +367,6 @@ def SortBands(ev):
     
 def PlotElectronBands(filename,dk,elist,ticks):
     # Make xmgrace plots
-    import WriteXMGR as XMGR
     if len(dk)>1:
         x = N.array([dk])
     else:
@@ -382,7 +382,6 @@ def PlotElectronBands(filename,dk,elist,ticks):
 
 def PlotPhononBands(filename,dq,phlist,ticks):
     # Make xmgrace plots
-    import WriteXMGR as XMGR
     if len(dq)>1:
         x = N.array([dq])
     else:
@@ -431,7 +430,6 @@ def WriteDOS(outfile,bands,emin,emax,pts,smear):
     w = N.exp(-dE**2/(2*smear**2))/(smear*(2*N.pi)**.5) # [e,b]
     dos = N.sum(w,axis=1)/len(bands) # sum over bands
     # Write plot
-    import WriteXMGR as XMGR
     ps = XMGR.XYset(egrid,dos,Lwidth=2,Lcolor=1)
     gp = XMGR.Graph(ps)
     gp.SetXaxis(label='E (eV)',min=emin,max=emax,majorUnit=emax/5)
@@ -463,7 +461,7 @@ def main(options):
     # Write mesh
     k1,k2,k3 = eval(options.mesh)
     rvec = 2*N.pi*N.array([SCDM.Sym.b1,SCDM.Sym.b2,SCDM.Sym.b3])
-    import Kmesh
+    import Inelastica.physics.mesh as Kmesh
     # Full mesh
     kmesh = Kmesh.kmesh(2**k1,2**k2,2**k3,meshtype=['LIN','LIN','LIN'],invsymmetry=False)
     WriteKpoints(options.DestDir+'/mesh_%ix%ix%i'%tuple(kmesh.Nk),N.dot(kmesh.k,rvec))

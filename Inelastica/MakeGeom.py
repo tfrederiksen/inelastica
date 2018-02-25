@@ -1,12 +1,12 @@
 """
 Routines to read, write and manipulate geometries.
 """
-import SiestaIO as SIO
-import io.vasp as VIO
+import Inelastica.io.siesta as SIO
+import Inelastica.io.vasp as VIO
 import numpy as N
 import string, copy, math, sys
 import netCDF4 as NC4
-import PhysicalConstants as PC
+import Inelastica.physics.constants as PC
 import os
 
 def interpolateGeom(g0,g1,newlength):

@@ -66,24 +66,6 @@ test_prereq()
 
 from numpy.distutils.core import setup
 from numpy.distutils.system_info import get_info, NotFoundError
-import numpy.distutils.extension as Next
-
-# Fortran helper files
-F90ext = Next.Extension('Inelastica.F90helpers',
-                        ['Inelastica/fortran/expansion_SE.f90',
-                         'Inelastica/fortran/readTSHS.f90',
-                         'Inelastica/fortran/removeUnitCellXij.f90',
-                         'Inelastica/fortran/setkpointhelper.f90'],
-                        )
-
-# Retrieve the LAPACK-library...
-lapack_opt = get_info('lapack_opt')
-if not lapack_opt:
-    raise NotFoundError('No LAPACK/BLAS resources found')
-F90extLapack = Next.Extension('Inelastica.F90_lapack',
-                              ['Inelastica/fortran/surfaceGreen.f90'],
-                              **lapack_opt)
-
 
 # Create list of all sub-directories with
 #   __init__.py files...
@@ -93,41 +75,54 @@ for subdir, dirs, files in os.walk('Inelastica'):
     if '__init__.py' in files:
         packages.append(subdir.replace(os.sep, '.'))
 
+# Generate configuration
+def configuration(parent_package='', top_path=None):
+    from numpy.distutils.misc_util import Configuration
+    config = Configuration(None, parent_package, top_path)
+    config.set_options(ignore_setup_xxx_py=True,
+                       assume_default_configuration=True,
+                       delegate_options_to_subpackages=True,
+                       quiet=True)
+
+    config.add_subpackage('Inelastica')
+
+    return config
+
+
 # Main setup of python modules
 setup(name='Inelastica',
       version='1.2-rc',
       # Define the requirements for Inelastica
       # These probably needs to be adjusted... 
-      requires = ['python (>=2.7)','numpy (>=1.8)','netCDF4 (>=1.2.7)'],
+      requires = ['python (>=2.7)','numpy (>=1.8)', 'scipy (>=0.17)', 'netCDF4 (>=1.2.7)'],
       description='Python tools for SIESTA/TranSIESTA', 
       author='Magnus Paulsson and Thomas Frederiksen', 
       author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',  
       url='https://github.com/tfrederiksen/inelastica', 
       license='GPL', 
-      #package_dir={'Inelastica': 'Inelastica'},
-      scripts  = ['Inelastica/scripts/Inelastica',
-                  'Inelastica/scripts/EigenChannels',
-                  'Inelastica/scripts/pyTBT',
-                  'Inelastica/scripts/geom2geom',
-                  'Inelastica/scripts/geom2zmat',
-                  'Inelastica/scripts/Bandstructures',
-                  'Inelastica/scripts/ComputeDOS',
-                  'Inelastica/scripts/Vasp2Siesta',
-                  'Inelastica/scripts/Phonons',
-                  'Inelastica/scripts/NEB',
-                  'Inelastica/scripts/grid2grid',
-                  'Inelastica/scripts/setupFCrun',
-                  'Inelastica/scripts/setupOSrun',
-                  'Inelastica/scripts/kaverage-TBT',
-                  'Inelastica/scripts/STM',
-                  'Inelastica/scripts/kaverage-IETS',
-                  'Inelastica/scripts/average-gridfunc',
-                  'Inelastica/scripts/WriteWavefunctions',
-                  'Inelastica/utils/agr2pdf',
-                  'Inelastica/utils/bands2xmgr',
-                  'Inelastica/utils/siesta_cleanup'
-                  ],
+      scripts= ['Inelastica/scripts/Inelastica',
+                'Inelastica/scripts/EigenChannels',
+                'Inelastica/scripts/pyTBT',
+                'Inelastica/scripts/geom2geom',
+                'Inelastica/scripts/geom2zmat',
+                'Inelastica/scripts/Bandstructures',
+                'Inelastica/scripts/ComputeDOS',
+                'Inelastica/scripts/Vasp2Siesta',
+                'Inelastica/scripts/Phonons',
+                'Inelastica/scripts/NEB',
+                'Inelastica/scripts/grid2grid',
+                'Inelastica/scripts/setupFCrun',
+                'Inelastica/scripts/setupOSrun',
+                'Inelastica/scripts/kaverage-TBT',
+                'Inelastica/scripts/STM',
+                'Inelastica/scripts/kaverage-IETS',
+                'Inelastica/scripts/average-gridfunc',
+                'Inelastica/scripts/WriteWavefunctions',
+                'Inelastica/utils/agr2pdf',
+                'Inelastica/utils/bands2xmgr',
+                'Inelastica/utils/siesta_cleanup'
+      ],
       packages=packages,
-      ext_modules=[F90ext,F90extLapack],
+      configuration=configuration,
       )
 

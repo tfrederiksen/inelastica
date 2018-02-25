@@ -1,20 +1,12 @@
 """
 Nudged elastic band
 """
-try: 
-    import SiestaIO as SIO
-    import SetupRuns as SUR
-    import MakeGeom as MG
-    import MiscMath as MM
-    import PhysicalConstants as PC
-    import WriteXMGR as XMGR
-except:
-    import Inelastica.SiestaIO as SIO
-    import Inelastica.SetupRuns as SUR
-    import Inelastica.MakeGeom as MG
-    import Inelastica.MiscMath as MM
-    import Inelastica.PhysicalConstants as PC
-    import Inelastica.WriteXMGR as XMGR
+import Inelastica.io.siesta as SIO
+import Inelastica.SetupRuns as SUR
+import Inelastica.MakeGeom as MG
+import Inelastica.MiscMath as MM
+import Inelastica.physics.constants as PC
+import Inelastica.io.xmgrace as XMGR
 
 import numpy as N
 import numpy.linalg as LA

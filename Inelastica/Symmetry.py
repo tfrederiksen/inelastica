@@ -1,5 +1,5 @@
-import SiestaIO as SIO
-import MiscMath as MM
+import Inelastica.io.siesta as SIO
+import Inelastica.MiscMath as MM
 import numpy as N
 import sys
 mm = MM.mm

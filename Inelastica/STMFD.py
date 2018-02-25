@@ -8,9 +8,9 @@ from   scipy               import interpolate
 from   datetime            import datetime
 import scipy.io
 import time,glob,os,shutil,sys
-import WriteNetCDF as wNC
-import PhysicalConstants as PC
-import SiestaIO as SIO
+import Inelastica.io.netcdf as wNC
+import Inelastica.physics.constants as PC
+import Inelastica.io.siesta as SIO
 
 def main(options,kpoint,ikpoint):
     Ef = SIO.HS(options.systemlabel+'.TSHS').ef/PC.Rydberg2eV

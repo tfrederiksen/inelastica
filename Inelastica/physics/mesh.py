@@ -1,5 +1,5 @@
 # Kmesh module by T. Frederiksen
-import MiscMath as MM
+import Inelastica.MiscMath as MM
 import numpy as N
 
 # This function is used in the class below for each of the
@@ -134,11 +134,8 @@ class kmesh:
                 s += '%.8e '%self.w[j,i]
             f.write(s+'\n')
         f.close()
-        
 
-
-# Test example
-if __name__ == '__main__':
+def test():
     mesh = kmesh(4,3,1,meshtype=['LIN','GK','LIN'])
     keys = mesh.__dict__.keys()
     print keys
@@ -150,3 +147,6 @@ if __name__ == '__main__':
     for i in range(len(mesh.k)):
         print mesh.k[i], mesh.w[0,i]
     mesh.mesh2file('mesh-test.dat')
+
+if __name__ == '__main__':
+    test()

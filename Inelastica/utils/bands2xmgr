@@ -44,10 +44,10 @@ where the optional keyword flags are:
 
 import sys, os.path, time
 from Inelastica import SiestaIO as SIO
-from Inelastica import WriteXMGR as XMGR
+import Inelastica.io.xmgrace as XMGR
 import numpy as N
 
-    
+
 def SortOnce(EvsK,factor,firstband='',lastband=''):
     "Sorts the eigenvalues for smooth band lines (minimizes the change in curvature)."
     if firstband=='': firstband = 0
