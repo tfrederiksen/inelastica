@@ -11,11 +11,21 @@
 Welcome to Inelastica's documentation!
 ======================================
 
-Inelastica is a `Python`_ package for the `SIESTA`_/`TranSIESTA`_ DFT codes
-as well as a script to compute inelastic transport (and inelastica 
-is the corresponding repository name).
+Inelastica is a `Python`_ package for the `SIESTA`_/`TranSIESTA`_ DFT codes as well as a script to compute inelastic transport (and inelastica is the corresponding repository name).
 
-Inelastica is hosted here http://github.com/tfrederiksen/inelastica.
+Inelastica was originaly hosted at `SourceForge <inelastica-old_>`_, but since 2018 is on `GitHub <inelastica_>`_.
+
+Release 1.2 can obtained `here <releases_>`_ and the development version through:
+
+.. code-block:: bash
+
+    git clone https://github.com/tfrederiksen/inelastica.git
+
+
+History
+-------
+
+The original Inelastica were originally written by Thomas Frederiksen. However, the parts included here were developed jointly by Thomas Frederiksen and Magnus Paulsson in the group of Mads Brandbyge at the Technical University of Denmark 2003-2005. The code has then gone through different editions with features added/removed and is still being developed.
 
 
 Features
@@ -30,17 +40,6 @@ Inelastica contains a number of scripts such as:
  * **Phonons**: Vibration modes/frequencies and electron-vibration couplings
  * **Inelastica**: Inelastic transport (IETS)
 
-Installation
-------------
-
-Dependencies
-~~~~~~~~~~~~
-
-These packages are required:
-
- * `numpy`_
- * `scipy`_
- * `netCDF4-python <netcdf4-py_>`_
 
 Contributions, issues and bugs
 ------------------------------
@@ -50,6 +49,7 @@ Contributions are highly appreciated.
 If you find any bugs please form a `bug report/issue <issue_>`_.
 
 If you have a fix please consider adding a `pull request <pr_>`_.
+
 
 Indices
 -------
@@ -63,7 +63,11 @@ Indices
    :hidden:
    :maxdepth: 2
 
+   install
+   examples
    cite
+   publications
+   faq
    more
 
 

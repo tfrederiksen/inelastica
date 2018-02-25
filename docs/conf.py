@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(_this_dir)))
 
 project = u'Inelastica'
 author = u'Magnus Paulsson and Thomas Frederiksen'
-copyright = u'2012-2018, ' + author
+copyright = u'2002-2018, ' + author
 
 # The short X.Y version
 version = u'1.2'
@@ -79,7 +79,13 @@ rst_epilog = ''.join(open('epilog.dummy').readlines())
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = u'en'
+language = None
+#language = u'en'
+
+# Add __init__ classes to the documentation
+autoclass_content = 'class'
+autodoc_default_flags = ['members', 'undoc-members',
+                         'inherited-members', 'no-show-inheritance']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -128,6 +134,8 @@ else:
 #
 # html_sidebars = {}
 
+# Project logo.
+html_logo = '82px-Inelastica-logo-mini.png'
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
@@ -201,4 +209,12 @@ intersphinx_mapping = {
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+# These two options should solve the "toctree contains reference to nonexisting document"
+# problem.
+# See here: numpydoc #69
+class_members_toctree = False
+# If this is false we do not have double method sections
+numpydoc_show_class_members = False
+
 
