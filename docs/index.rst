@@ -15,7 +15,7 @@ Inelastica is a `Python`_ package for the `SIESTA`_/`TranSIESTA`_ DFT codes as w
 
 Inelastica was originaly hosted at `SourceForge <inelastica-old_>`_, but since 2018 is on `GitHub <inelastica_>`_.
 
-Release 1.2 can obtained `here <releases_>`_ and the development version through:
+Release 1.3 can obtained `here <releases_>`_ and the development version through:
 
 .. code-block:: bash
 

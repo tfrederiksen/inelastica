@@ -1,3 +1,30 @@
+"""
+===================================
+Input/Output (:mod:`Inelastica.io`)
+===================================
+
+.. module:: Inelastica.io
+
+All classes for reading/writing
+
+IO classes
+==========
+
+.. autosummary::
+   :toctree:
+
+   HS
+   Dataset
+   XYset
+   XYDXset
+   XYDYset
+   XYDXDYset
+   XYSIZEset
+   Graph
+   Plot
+
+"""
+
 from .siesta import *
 from .vasp import *
 from .xmgrace import *
