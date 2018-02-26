@@ -38,7 +38,9 @@ def CreatePipeOutput(f):
     sys.stderr = TeeLog(f,_default_stderr)
 
 def PrintMainHeader(name,options):
+    import Inelastica.info as info
     print('=======================================================================')
+    print('INELASTICA VERSION %s [ GIT %s ]'%(info.version,info.git_revision_short))
     print('RUNNING %s : %s'%(name.upper(),time.ctime()))
     print()
     print('\nOPTIONS:')
