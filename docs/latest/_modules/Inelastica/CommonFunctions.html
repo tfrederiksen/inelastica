@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Inelastica.CommonFunctions &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-10
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>Inelastica.CommonFunctions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Inelastica.CommonFunctions</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
+
+<span class="c1"># Save the stdout pipes</span>
+<span class="n">_default_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+<span class="n">_default_stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+
+<div class="viewcode-block" id="CreatePipeOutput"><a class="viewcode-back" href="../../api-gen/Inelastica.CommonFunctions.html#Inelastica.CreatePipeOutput">[docs]</a><span class="k">def</span> <span class="nf">CreatePipeOutput</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">_default_stdout</span><span class="p">,</span> <span class="n">_default_stderr</span>
+    <span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">osp</span><span class="o">,</span> <span class="nn">errno</span>
+
+    <span class="c1"># First ensure that the path to the file exists</span>
+    <span class="c1"># In case one wishes to create a log folder this should</span>
+    <span class="c1"># not be limited.</span>
+    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Create directory tree</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">head</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">exc</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span> <span class="ow">and</span> <span class="n">osp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">head</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span> <span class="k">raise</span> <span class="c1"># forward error...</span>
+
+    <span class="k">class</span> <span class="nc">TeeLog</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">term</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">term</span> <span class="o">=</span> <span class="n">term</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="c1"># Consider doing this optionally appending?</span>
+        <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">message</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="c1"># Overwrite the std-out and std-err</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">TeeLog</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">_default_stdout</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">TeeLog</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">_default_stderr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PrintMainHeader"><a class="viewcode-back" href="../../api-gen/Inelastica.CommonFunctions.html#Inelastica.PrintMainHeader">[docs]</a><span class="k">def</span> <span class="nf">PrintMainHeader</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">options</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">Inelastica.info</span> <span class="kn">as</span> <span class="nn">info</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;INELASTICA VERSION </span><span class="si">%s</span><span class="s1"> [ GIT </span><span class="si">%s</span><span class="s1"> ]&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">version</span><span class="p">,</span><span class="n">info</span><span class="o">.</span><span class="n">git_revision_short</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;RUNNING </span><span class="si">%s</span><span class="s1"> : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span><span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()))</span>
+    <span class="k">print</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">OPTIONS:&#39;</span><span class="p">)</span>
+    <span class="n">opts_dict</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">opts_dict</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;    &#39;</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;--&gt;&#39;</span><span class="p">,</span><span class="n">opts_dict</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PrintMainFooter"><a class="viewcode-back" href="../../api-gen/Inelastica.CommonFunctions.html#Inelastica.PrintMainFooter">[docs]</a><span class="k">def</span> <span class="nf">PrintMainFooter</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;FINISHED </span><span class="si">%s</span><span class="s1"> : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span><span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PrintScriptSummary"><a class="viewcode-back" href="../../api-gen/Inelastica.CommonFunctions.html#Inelastica.PrintScriptSummary">[docs]</a><span class="k">def</span> <span class="nf">PrintScriptSummary</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span><span class="n">dT</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;SCRIPT SUMMARY:&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Write function call</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Call:&#39;</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">argv</span><span class="p">))</span>
+
+    <span class="c1"># Timing</span>
+    <span class="n">hours</span> <span class="o">=</span> <span class="n">dT</span><span class="o">.</span><span class="n">days</span><span class="o">/</span><span class="mf">24.</span><span class="o">+</span><span class="p">(</span><span class="n">dT</span><span class="o">.</span><span class="n">seconds</span><span class="o">+</span><span class="n">dT</span><span class="o">.</span><span class="n">microseconds</span><span class="o">*</span><span class="mf">1.e-6</span><span class="p">)</span><span class="o">/</span><span class="mf">60.</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">minutes</span> <span class="o">=</span> <span class="n">hours</span><span class="o">*</span><span class="mf">60.</span>
+    <span class="n">seconds</span> <span class="o">=</span> <span class="n">minutes</span><span class="o">*</span><span class="mf">60.</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Program finished:  </span><span class="si">%s</span><span class="s1"> &#39;</span><span class="o">%</span><span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">())</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Walltime: </span><span class="si">%.2f</span><span class="s1"> hrs = </span><span class="si">%.2f</span><span class="s1"> min = </span><span class="si">%.2f</span><span class="s1"> sec&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">hours</span><span class="p">,</span><span class="n">minutes</span><span class="p">,</span><span class="n">seconds</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span></div>
+
+<span class="c1">######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># Multiprocessing</span>
+
+<div class="viewcode-block" id="runParallel"><a class="viewcode-back" href="../../api-gen/Inelastica.CommonFunctions.html#Inelastica.runParallel">[docs]</a><span class="k">def</span> <span class="nf">runParallel</span><span class="p">(</span><span class="n">function</span><span class="p">,</span><span class="n">argList</span><span class="p">,</span><span class="n">nCPU</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="c1"># Run in parallel the function with arguments given in the list</span>
+    <span class="c1"># return list of results. You have to wrap the normal function with:</span>
+    <span class="c1"># def myFuncPar(resQue, ii, *args):</span>
+    <span class="c1">#     resQue.put( (ii,)+(myFunc(*args),))</span>
+    <span class="c1"># Which returns the results of the arguments</span>
+
+    <span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="kn">as</span> <span class="nn">MP</span>
+    <span class="kn">import</span> <span class="nn">os</span> 
+
+    <span class="k">try</span><span class="p">:</span> <span class="c1"># Remove interfering OMP threading</span>
+        <span class="n">OMP</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OMP_NUM_THREADS&#39;</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">OMP</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">OBLAS</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OPENBLAS_NUM_THREADS&#39;</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">OBLAS</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OMP_NUM_THREADS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;1&#39;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OPENBLAS_NUM_THREADS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;1&#39;</span>
+    <span class="k">if</span> <span class="n">nCPU</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+        <span class="n">nCPU</span><span class="o">=</span><span class="n">MP</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Running on </span><span class="si">%i</span><span class="s2"> CPUS&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">nCPU</span><span class="p">))</span>
+
+    <span class="n">resQue</span> <span class="o">=</span> <span class="n">MP</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span> <span class="c1"># return que</span>
+    <span class="n">chunks</span> <span class="o">=</span> <span class="p">[</span><span class="n">argList</span><span class="p">[</span><span class="n">ii</span><span class="o">*</span><span class="n">nCPU</span><span class="p">:(</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">nCPU</span><span class="p">]</span> <span class="k">for</span> <span class="n">ii</span><span class="p">,</span><span class="n">jj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">argList</span><span class="p">[::</span><span class="n">nCPU</span><span class="p">])]</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">argList</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ii</span><span class="p">,</span><span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunks</span><span class="p">):</span>
+        <span class="n">threads</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">jj</span><span class="p">,</span><span class="n">args</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunk</span><span class="p">):</span>
+            <span class="n">t</span><span class="o">=</span> <span class="n">MP</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">function</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span><span class="p">(</span><span class="n">resQue</span><span class="p">,</span><span class="n">ii</span><span class="o">*</span><span class="n">nCPU</span><span class="o">+</span><span class="n">jj</span><span class="p">,)</span><span class="o">+</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">threads</span> <span class="o">+=</span> <span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">threads</span><span class="p">)):</span>
+            <span class="c1">#print(&#39;Joining&#39;)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">resQue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="c1">#print(&#39;Joined&#39;,out[0])</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">=</span><span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">threads</span><span class="p">[</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">ii</span><span class="o">*</span><span class="n">nCPU</span><span class="p">]</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">threads</span><span class="p">[</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">ii</span><span class="o">*</span><span class="n">nCPU</span><span class="p">]</span><span class="o">.</span><span class="n">exitcode</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Something wrong inside process ....&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">OMP</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span> <span class="c1"># Reset threading</span>
+        <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OMP_NUM_THREADS&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OMP_NUM_THREADS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">OMP</span>
+    <span class="k">if</span> <span class="n">OBLAS</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OPENBLAS_NUM_THREADS&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OPENBLAS_NUM_THREADS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">OBLAS</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.3.0-10',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

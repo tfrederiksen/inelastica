@@ -1,0 +1,1184 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>&lt;no title&gt; &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../index.html"/>
+        <link rel="up" title="Inelastica.io package" href="Inelastica.io.html"/>
+        <link rel="next" title="Inelastica.physics package" href="Inelastica.physics.html"/>
+        <link rel="prev" title="&lt;no title&gt;" href="Inelastica.io.vasp.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-10
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="Inelastica.html">Inelastica package</a> &raquo;</li>
+        
+          <li><a href="Inelastica.io.html">Inelastica.io package</a> &raquo;</li>
+        
+      <li>&lt;no title&gt;</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-gen/Inelastica.io.xmgrace.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-Inelastica.io.xmgrace"></span><p>#   Copyright (c), All Rights Reserved                                    #
+#                                                                         #
+#   This program is free software; you can redistribute it and/or modify  #
+#   it under the terms of the GNU General Public License as published by  #
+#   the Free Software Foundation; either version 3 of the License, or     #
+#   (at your option) any later version.                                   #
+#                                                                         #
+#   This program is distributed in the hope that it will be useful,       #
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of        #
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
+#   GNU General Public License for more details.                          #
+#                                                                         #
+#   You should have received a copy of the GNU General Public License     #
+#   along with this program.  If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;. #
+###########################################################################</p>
+<p>This module provides a Python interface to XMGR/GRACE (get the newest
+information about GRACE and download the latest version at
+<a class="reference external" href="http://plasma-gate.weizmann.ac.il/Grace/">http://plasma-gate.weizmann.ac.il/Grace/</a>).</p>
+<p>To create a GRACE file from a given data set, the minimal script
+structure will take the following form:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">XYset</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="s1">&#39;test.agr&#39;</span><span class="p">,</span><span class="n">graph</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>...Done!</p>
+<p>More graphs and data sets are easily appended. Continuing on
+the example above:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">XYset</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graph2</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">AddGraphs</span><span class="p">(</span><span class="n">graph2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">ArrangeGraphs</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">ny</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">(</span><span class="s1">&#39;test2.agr&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With these additional lines we end up with a plot containing
+two graphs. The function &#8220;ArrangeGraphs(...)&#8221; is called
+to arrange the graphs nicely on the canvas (side by side).</p>
+<p>A more detailed demonstration of this module can be generated
+by typing &#8220;python WriteXMGR.py&#8221; in the command promt. This
+will create a file &#8220;test.agr&#8221;.</p>
+<dl class="function">
+<dt id="Inelastica.io.xmgrace.Array2XYsets">
+<code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">Array2XYsets</code><span class="sig-paren">(</span><em>A</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Array2XYsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Array2XYsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a matrix A = [[x0,y0(x0),y1(x0),...],[x1,y0(x1),y1(x1),...],...]
+into a list of XYset objects. Keywords for the format (Lcolor, Stype, etc.)
+are applied to all the generated XYsets.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.xmgrace.Datafile2XYsets">
+<code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">Datafile2XYsets</code><span class="sig-paren">(</span><em>fn</em>, <em>Sort=False</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Datafile2XYsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Datafile2XYsets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.xmgrace.Dataset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">Dataset</code><span class="sig-paren">(</span><em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetEBcolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetEBlinewidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetEBsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetLcolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetLegend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetLstyle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetLtype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetLwidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetScolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetSfillcolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetSfillpattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetSlinestyle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetSlinewidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetSsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Dataset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetStype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Dataset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.xmgrace.Graph">
+<em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">Graph</code><span class="sig-paren">(</span><em>*datasets</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.Add2View">
+<code class="descname">Add2View</code><span class="sig-paren">(</span><em>xmin=''</em>, <em>xmax=''</em>, <em>ymin=''</em>, <em>ymax=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.Add2View"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.Add2View" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds value(s) to the graph view.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.AddDatasets">
+<code class="descname">AddDatasets</code><span class="sig-paren">(</span><em>*datasets</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.AddDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.AddDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append data set object(s) to graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.GetWorldOfDatasets">
+<code class="descname">GetWorldOfDatasets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.GetWorldOfDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.GetWorldOfDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data included in the graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the graph and its data sets.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.HideLegend">
+<code class="descname">HideLegend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.HideLegend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.HideLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the graph legend flag to False.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>showlegend=''</em>, <em>xpos=''</em>, <em>ypos=''</em>, <em>boxLstyle=0</em>, <em>fillpattern=0</em>, <em>Csize=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetLegend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the graph legend flag and its position/style.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.SetSpecial">
+<code class="descname">SetSpecial</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetSpecial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetSpecial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a special GRACE command string to the graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.SetSubtitle">
+<code class="descname">SetSubtitle</code><span class="sig-paren">(</span><em>subtitle</em>, <em>font=0</em>, <em>size=1.0</em>, <em>color=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetSubtitle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetSubtitle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the subtitle of the graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.SetTitle">
+<code class="descname">SetTitle</code><span class="sig-paren">(</span><em>title</em>, <em>font=0</em>, <em>size=1.5</em>, <em>color=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetTitle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetTitle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the title of the graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.SetView">
+<code class="descname">SetView</code><span class="sig-paren">(</span><em>xmin=''</em>, <em>xmax=''</em>, <em>ymin=''</em>, <em>ymax=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the graph view (defining the position of the graph on the canvas).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.SetWorld">
+<code class="descname">SetWorld</code><span class="sig-paren">(</span><em>xmin=False</em>, <em>xmax=False</em>, <em>ymin=False</em>, <em>ymax=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetWorld"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the graph world (defining the axis limits).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.SetXaxis">
+<code class="descname">SetXaxis</code><span class="sig-paren">(</span><em>min=''</em>, <em>max=''</em>, <em>label=''</em>, <em>labelsize=''</em>, <em>labelautopos=''</em>, <em>labelpospar=''</em>, <em>labelposper=''</em>, <em>majorUnit=''</em>, <em>minorUnit=''</em>, <em>useticks=''</em>, <em>useticklabels=''</em>, <em>ticklabelsize=''</em>, <em>majorGridlines=''</em>, <em>minorGridlines=''</em>, <em>autoscale=''</em>, <em>scale=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetXaxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetXaxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the axis parameters (if specified):
+- min/max        = [float]
+- label          = [string]
+- labelsize      = [float]
+- labelautopos   = [bool]
+- labelpospar    = [float]
+- labelposper    = [float]
+- majorUnit      = [float]
+- minorUnit      = [float]
+- useticks       = [bool]
+- useticklabels  = [bool]
+- ticklabelsize  = [float]
+- majorGridlines = [bool]
+- minorGridlines = [bool]
+- autoscale      = [bool]
+- scale          = [&#8220;Normal&#8221;/&#8221;Logarithmic&#8221;]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.SetXaxisSpecialTicks">
+<code class="descname">SetXaxisSpecialTicks</code><span class="sig-paren">(</span><em>ticklist</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetXaxisSpecialTicks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetXaxisSpecialTicks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],...].</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.SetYaxis">
+<code class="descname">SetYaxis</code><span class="sig-paren">(</span><em>min=''</em>, <em>max=''</em>, <em>label=''</em>, <em>labelsize=''</em>, <em>labelautopos=''</em>, <em>labelpospar=''</em>, <em>labelposper=''</em>, <em>majorUnit=''</em>, <em>minorUnit=''</em>, <em>useticks=''</em>, <em>useticklabels=''</em>, <em>ticklabelsize=''</em>, <em>majorGridlines=''</em>, <em>minorGridlines=''</em>, <em>autoscale=''</em>, <em>scale=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetYaxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetYaxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the axis parameters (if specified):
+- min/max        = [float]
+- label          = [string]
+- labelsize      = [float]
+- labelautopos   = [bool]
+- labelpospar    = [float]
+- labelposper    = [float]
+- majorUnit      = [float]
+- minorUnit      = [float]
+- useticks       = [bool]
+- useticklabels  = [bool]
+- ticklabelsize  = [float]
+- majorGridlines = [bool]
+- minorGridlines = [bool]
+- autoscale      = [bool]
+- scale          = [&#8220;Normal&#8221;/&#8221;Logarithmic&#8221;]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.SetYaxisSpecialTicks">
+<code class="descname">SetYaxisSpecialTicks</code><span class="sig-paren">(</span><em>ticklist</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetYaxisSpecialTicks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetYaxisSpecialTicks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],...].</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Graph.ShowLegend">
+<code class="descname">ShowLegend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.ShowLegend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.ShowLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the graph legend flag to True.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.xmgrace.Plot">
+<em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">Plot</code><span class="sig-paren">(</span><em>filename='Default.agr'</em>, <em>*graphs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Inelastica.io.xmgrace.Plot.AddGraphs">
+<code class="descname">AddGraphs</code><span class="sig-paren">(</span><em>*graphs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.AddGraphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot.AddGraphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append graph object(s) to plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Plot.ArrangeGraphs">
+<code class="descname">ArrangeGraphs</code><span class="sig-paren">(</span><em>nx=1</em>, <em>ny=1</em>, <em>vspace=0.1</em>, <em>hspace=0.1</em>, <em>order=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.ArrangeGraphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot.ArrangeGraphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Arranges the graphs on the plot frame with nx rows and ny columns.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Plot.DefineColor">
+<code class="descname">DefineColor</code><span class="sig-paren">(</span><em>colornr</em>, <em>RGB</em>, <em>description='UserDefined'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.DefineColor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot.DefineColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines an arbitrary RGB color for use in the plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Plot.Print">
+<code class="descname">Print</code><span class="sig-paren">(</span><em>printcmd='lp -c'</em>, <em>path2grace='xmgrace'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.Print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot.Print" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends plot to printer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Plot.Print2File">
+<code class="descname">Print2File</code><span class="sig-paren">(</span><em>printfile</em>, <em>path2grace='xmgrace'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.Print2File"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot.Print2File" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the GRACE plot to a file [PS/EPS/MIF/SVG/PDF/PNM/JPEG/PNG/Metafile]
+according to the file extension (provided that the necessary device library
+is installed).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Plot.PutText">
+<code class="descname">PutText</code><span class="sig-paren">(</span><em>string</em>, <em>posx</em>, <em>posy</em>, <em>color=1</em>, <em>rot=0</em>, <em>font=0</em>, <em>just=0</em>, <em>charsize=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.PutText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot.PutText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts text in plot at specified position</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Plot.SetAxesFontSizes">
+<code class="descname">SetAxesFontSizes</code><span class="sig-paren">(</span><em>labelsize=1.0</em>, <em>ticklabelsize=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.SetAxesFontSizes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot.SetAxesFontSizes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets font sizes on all axis labels in the plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Plot.SetDefaults">
+<code class="descname">SetDefaults</code><span class="sig-paren">(</span><em>backgroundcolor=0</em>, <em>backgroundfill=False</em>, <em>linewidth=1.0</em>, <em>linestyle=1</em>, <em>color=1</em>, <em>pattern=1</em>, <em>font=0</em>, <em>charsize=1.0</em>, <em>symbolsize=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.SetDefaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot.SetDefaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the defaults for the plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Plot.SetSpecial">
+<code class="descname">SetSpecial</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.SetSpecial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot.SetSpecial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a special GRACE command string to the plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Plot.ShowTimestamp">
+<code class="descname">ShowTimestamp</code><span class="sig-paren">(</span><em>xpos=0.03</em>, <em>ypos=0.03</em>, <em>color=1</em>, <em>rot=0</em>, <em>font=0</em>, <em>charsize=0.75</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.ShowTimestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot.ShowTimestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a timestamp into the plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.Plot.WriteFile">
+<code class="descname">WriteFile</code><span class="sig-paren">(</span><em>filename=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.WriteFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Plot.WriteFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the GRACE commands that describe the whole plot to a file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.xmgrace.XYDXDYset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">XYDXDYset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dx</em>, <em>dy</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDXDYset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.GetWorld">
+<code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.GetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em>, <em>setnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDXDYset.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXDYset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.xmgrace.XYDXset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">XYDXset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dx</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDXset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.GetWorld">
+<code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.GetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em>, <em>setnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDXset.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDXset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.xmgrace.XYDYset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">XYDYset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dy</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDYset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.GetWorld">
+<code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.GetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em>, <em>setnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDYset.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYDYset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.xmgrace.XYSIZEset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">XYSIZEset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>size</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYSIZEset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.GetWorld">
+<code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.GetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em>, <em>setnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYSIZEset.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYSIZEset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.xmgrace.XYset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">XYset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.Dataset" title="Inelastica.io.xmgrace.Dataset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.Dataset</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.GetWorld">
+<code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYset.GetWorld"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.GetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em>, <em>setnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYset.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.xmgrace.XYset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Inelastica.physics.html" class="btn btn-neutral float-right" title="Inelastica.physics package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Inelastica.io.vasp.html" class="btn btn-neutral" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.3.0-10',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

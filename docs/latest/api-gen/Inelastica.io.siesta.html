@@ -1,0 +1,739 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>&lt;no title&gt; &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../index.html"/>
+        <link rel="up" title="Inelastica.io package" href="Inelastica.io.html"/>
+        <link rel="next" title="&lt;no title&gt;" href="Inelastica.io.vasp.html"/>
+        <link rel="prev" title="&lt;no title&gt;" href="Inelastica.io.netcdf.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-10
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="Inelastica.html">Inelastica package</a> &raquo;</li>
+        
+          <li><a href="Inelastica.io.html">Inelastica.io package</a> &raquo;</li>
+        
+      <li>&lt;no title&gt;</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-gen/Inelastica.io.siesta.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-Inelastica.io.siesta"></span><p>Routines for IO in different formats:
+1: Geometries in xyz, XV, ANI, fdf, mkl etc formats
+2: Read Hamiltonian and Overlap from .TSHS file.
+3: fdf manipulations
+4: Real space Gaussian cube files
+5: Obtain information of basis orbitals for calculation (.ion.nc)</p>
+<dl class="function">
+<dt id="Inelastica.io.siesta.BuildBasis">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">BuildBasis</code><span class="sig-paren">(</span><em>FDFfile</em>, <em>FirstAtom</em>, <em>LastAtom</em>, <em>lasto</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#BuildBasis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.BuildBasis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the information for each basis orbital in the Hamiltonian</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.CheckTermination">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">CheckTermination</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#CheckTermination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.CheckTermination" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ConvertBandsFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ConvertBandsFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ConvertBandsFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ConvertBandsFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.CrossProd">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">CrossProd</code><span class="sig-paren">(</span><em>A</em>, <em>B</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#CrossProd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.CrossProd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the cross product of two geometric vectors</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ExtractPDOS">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ExtractPDOS</code><span class="sig-paren">(</span><em>filename</em>, <em>outfile</em>, <em>index=[]</em>, <em>atom_index=[]</em>, <em>species=[]</em>, <em>nlist=[]</em>, <em>llist=[]</em>, <em>mlist=[]</em>, <em>FermiRef=True</em>, <em>Normalize=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ExtractPDOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ExtractPDOS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ExtractPROJBANDS">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ExtractPROJBANDS</code><span class="sig-paren">(</span><em>filename</em>, <em>outfile</em>, <em>index=[]</em>, <em>atom_index=[]</em>, <em>species=[]</em>, <em>nlist=[]</em>, <em>llist=[]</em>, <em>emin=-5.0</em>, <em>emax=5.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ExtractPROJBANDS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ExtractPROJBANDS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetBufferAtomsList">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetBufferAtomsList</code><span class="sig-paren">(</span><em>fn</em>, <em>fdf</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetBufferAtomsList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetBufferAtomsList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetFDFblock">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetFDFblock</code><span class="sig-paren">(</span><em>infile</em>, <em>KeyWord=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetFDFblock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetFDFblock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the values in a block as strings
+infile = FDF input file
+KeyWord = block to find</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetFDFline">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetFDFline</code><span class="sig-paren">(</span><em>infile</em>, <em>KeyWord=''</em>, <em>printAlot=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetFDFline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetFDFline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a line and gives the value as a string
+infile = FDF input file
+KeyWord = line to find</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetFDFlineWithDefault">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetFDFlineWithDefault</code><span class="sig-paren">(</span><em>infile</em>, <em>key</em>, <em>type</em>, <em>default</em>, <em>error</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetFDFlineWithDefault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetFDFlineWithDefault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a line and gives the value of type type.
+If not found, default returned.
+If default=None, print error and exit.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetFermiEnergy">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetFermiEnergy</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetFermiEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetFermiEnergy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetPDOSenergyValues">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetPDOSenergyValues</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPDOSenergyValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetPDOSenergyValues" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetPDOSfromOrbitals">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetPDOSfromOrbitals</code><span class="sig-paren">(</span><em>dom</em>, <em>index=[]</em>, <em>atom_index=[]</em>, <em>species=[]</em>, <em>nlist=[]</em>, <em>llist=[]</em>, <em>mlist=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPDOSfromOrbitals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetPDOSfromOrbitals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetPDOSnorbitals">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetPDOSnorbitals</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPDOSnorbitals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetPDOSnorbitals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetPDOSnspin">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetPDOSnspin</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPDOSnspin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetPDOSnspin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an integer for the number of spins (variable nspin)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetPROJBANDSenergies">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetPROJBANDSenergies</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPROJBANDSenergies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetPROJBANDSenergies" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns an array with the band energies (in units of eV):</dt>
+<dd>energies = energies[ k-index, band-index, n-spin ]</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetPROJBANDSfromOrbitals">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetPROJBANDSfromOrbitals</code><span class="sig-paren">(</span><em>dom</em>, <em>index=[]</em>, <em>atom_index=[]</em>, <em>species=[]</em>, <em>nlist=[]</em>, <em>llist=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPROJBANDSfromOrbitals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetPROJBANDSfromOrbitals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an array of the DOS projected onto bands, summing up contributions from
+orbitals as specified in the function call. The indexing is the following:</p>
+<blockquote>
+<div>pdos = pdos[ k-index, band-index, spin-index ]</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetPROJBANDSkpoint">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetPROJBANDSkpoint</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPROJBANDSkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetPROJBANDSkpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an array with the (3D) k-points</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetPROJBANDSnbands">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetPROJBANDSnbands</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPROJBANDSnbands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetPROJBANDSnbands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the (integer) number of bands</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetReciprocalLatticeVectors">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetReciprocalLatticeVectors</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetReciprocalLatticeVectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetReciprocalLatticeVectors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetSiestaEndtime">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetSiestaEndtime</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetSiestaEndtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetSiestaEndtime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetSiestaStarttime">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetSiestaStarttime</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetSiestaStarttime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetSiestaStarttime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetSiestaWalltime">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetSiestaWalltime</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetSiestaWalltime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetSiestaWalltime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the walltime (in hours)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetTotalEnergy">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetTotalEnergy</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetTotalEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetTotalEnergy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.GetXMLFermiEnergy">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">GetXMLFermiEnergy</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetXMLFermiEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.GetXMLFermiEnergy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks for the Fermi energy in xml file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.Getanr">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">Getanr</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#Getanr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.Getanr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a list of the atomic numbers in a FDF file
+infile = FDF input file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.Getnatoms">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">Getnatoms</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#Getnatoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.Getnatoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives the number of atoms included in an FDF file
+infile = FDF input file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.Getpbc">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">Getpbc</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#Getpbc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.Getpbc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a list of the lattice vectores in a FDF file
+infile = FDF input file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.Getsnr">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">Getsnr</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#Getsnr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.Getsnr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a list of the species numbers in a FDF file
+infile = FDF input file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.Getxyz">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">Getxyz</code><span class="sig-paren">(</span><em>infile</em>, <em>pbc=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#Getxyz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.Getxyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a list of the xyz posistions in a FDF file
+infile = FDF input file</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.siesta.HS">
+<em class="property">class </em><code class="descclassname">Inelastica.io.siesta.</code><code class="descname">HS</code><span class="sig-paren">(</span><em>fn</em>, <em>BufferAtoms=array([]</em>, <em>dtype=float64)</em>, <em>UseF90helpers=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.HS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create full HS from TSHS file. Read fn and assemble for specified k-point</p>
+<p>External variables:
+N            : Size of matrices
+H[ispin,i,j] : Hamiltonian
+S[i,j]       : Overlap</p>
+<p>Internal variables from TS (index described as fortran def):
+(NOTE all python lists start with index 0!)
+nua          : Number of atoms in unitcell
+nuo          : Number of orbitals in unitcell
+nspin        : Number of spin
+no           : Number of orbitals in supercell
+maxnh        : Size of sparse matrices
+isa(1:nua)   : Atomic number (not in netcdf)
+lasto(0:nua) : Last orbital of atom in unitcell
+xa(1:nua,1:3): Position of atoms (NOTE transpose of TS standard)
+indxuo(1:no) : Index of equivalent orbital in unitcell
+numh(1:nuo)  : Number of non-zero elements in row of H
+listh(1:nuo) : Column index of H element 
+Hsparse(1:nspin,1:maxnh) : Sparse H
+Ssparse(1:nspin,1:maxnh) : Sparse S
+qtot         : ??
+temp         : ??
+ef           : Fermi energy (why spin dependent?)
+cell(1:3,1:3): Unitcell (ixyz,ivec)
+gamma        : Logical Gamma-point
+xij(1:maxnh,1:3) : Vector between orbital centers (NOTE transpose of TS)</p>
+<blockquote>
+<div>NOTE: xij=Rj-Ri where i,j correspond to Hij</div></blockquote>
+<p>Derived internal variables:
+listhptr(1:nuo) : Start of row-1 in sparse matrix 
+atomindx(1:nuo) : Atom index corresponding to orbital in unitcell
+rcell(1:3,1:3) : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)</p>
+<dl class="docutils">
+<dt>For onlyS: Hsparse is not avalable and gamma point is assumed</dt>
+<dd>gamma: xij is set to 0 and indxuo set manually to 1:nou and -1 for nou+1:no to catch errors!</dd>
+</dl>
+<dl class="method">
+<dt id="Inelastica.io.siesta.HS.makeDerivedQuant">
+<code class="descname">makeDerivedQuant</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.makeDerivedQuant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.HS.makeDerivedQuant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create derived internal variables:
+listhptr(1:nuo) : Start of row-1 in sparse matrix 
+atomindx(1:nuo) : Atom index corresponding to orbital in unitcell
+rcell(1:3,1:3)  : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.siesta.HS.removeUnitCellXij">
+<code class="descname">removeUnitCellXij</code><span class="sig-paren">(</span><em>UseF90helpers=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.removeUnitCellXij"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.HS.removeUnitCellXij" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove displacements within unitcell from xij
+NOTE: We remove the in cell difference so xij corresponds to</p>
+<blockquote>
+<div>lattice vectors to the relevant part of the supercell.</div></blockquote>
+<p>NOTE: xij = Rj-Ri where Ri,j corresponds to positions of the orbitals H_{i,j} 
+TODO: Check why some orbitals in sparse matrix reported within cell but have xij!</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.siesta.HS.resetkpoint">
+<code class="descname">resetkpoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.resetkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.HS.resetkpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the kpoint and H,S.
+The garbage collector cannot tell if H or S will be used subsequently</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.siesta.HS.setkpoint">
+<code class="descname">setkpoint</code><span class="sig-paren">(</span><em>kpoint</em>, <em>UseF90helpers=True</em>, <em>atype=&lt;type 'complex'&gt;</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.setkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.HS.setkpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make full matrices from sparse for specific k-point</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.siesta.HS.setkpointhelper">
+<code class="descname">setkpointhelper</code><span class="sig-paren">(</span><em>Sparse</em>, <em>kpoint</em>, <em>UseF90helpers=True</em>, <em>atype=&lt;type 'complex'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.setkpointhelper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.HS.setkpointhelper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make full matrices from sparse for specific k-point
+NOTE: Assumption for Fourier transform                     
+Psi(i) =           sum_R exp(i k.R) Psi_k(i)               NOTE sign!
+(Full waveunction)                   (Unit cell part of wavefunction)</p>
+<blockquote>
+<div>which gives:</div></blockquote>
+<dl class="docutils">
+<dt>i,j part of unitcell gives from the rows of the full H: </dt>
+<dd>H_k(i,j) = H_(i,j) + sum_R H(i,j+R) exp(i*k*R)         NOTE sign!
+where R corresponds to R_j-R_0 which is Xij            NOTE sign!</dd>
+</dl>
+<p>For efficiency this routine is normally run in Fortran90. Compile with f2py:
+cd F90;source compile.bat</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadANIFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadANIFile</code><span class="sig-paren">(</span><em>filename</em>, <em>InUnits='Ang'</em>, <em>OutUnits='Ang'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadANIFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadANIFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (Geometry,Energy[Ry?],) from an ANI-file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadAXVFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadAXVFile</code><span class="sig-paren">(</span><em>filename</em>, <em>MDstep</em>, <em>tmpXVfile='tmp.XV'</em>, <em>ReadVelocity=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadAXVFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadAXVFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read concatenated XV files from an MD simulation</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadBandsFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadBandsFile</code><span class="sig-paren">(</span><em>filename</em>, <em>origformat=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadBandsFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadBandsFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadBlock">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadBlock</code><span class="sig-paren">(</span><em>file</em>, <em>lines</em>, <em>type='float'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadBlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadBlock" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadCubeFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadCubeFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadCubeFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadCubeFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadDOSFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadDOSFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadDOSFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadDOSFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadEIGfile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadEIGfile</code><span class="sig-paren">(</span><em>infile</em>, <em>printing=False</em>, <em>FermiRef=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadEIGfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadEIGfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadFAFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadFAFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadFAFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadFAFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns forces from a FA-file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadFCFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadFCFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadFCFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadFCFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns FC from an FC-file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadFDFFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadFDFFile</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadFDFFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadFDFFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads an FDF file and gives the output values: pbc, xyz, snr, anr, natoms
+infile = FDF inputfile</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadFDFLines">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadFDFLines</code><span class="sig-paren">(</span><em>infile</em>, <em>head=''</em>, <em>printAlot=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadFDFLines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadFDFLines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an FDF file and all the %include files as split strings
+infile = input file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadForces">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadForces</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadForces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadForces" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadFortranBin">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadFortranBin</code><span class="sig-paren">(</span><em>file</em>, <em>type</em>, <em>num</em>, <em>printLength=False</em>, <em>unpack=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadFortranBin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadFortranBin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads Fortran binary data structures</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadIonNCFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadIonNCFile</code><span class="sig-paren">(</span><em>filename</em>, <em>printnorm=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadIonNCFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadIonNCFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a NetCDF file that describes the basis orbitals of a given species</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadMullikenPop">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadMullikenPop</code><span class="sig-paren">(</span><em>infile</em>, <em>outfile</em>, <em>writeallblocks=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadMullikenPop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadMullikenPop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadPDOSFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadPDOSFile</code><span class="sig-paren">(</span><em>filename</em>, <em>index=[]</em>, <em>atom_index=[]</em>, <em>species=[]</em>, <em>nlist=[]</em>, <em>llist=[]</em>, <em>mlist=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadPDOSFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadPDOSFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadPROJBANDSfile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadPROJBANDSfile</code><span class="sig-paren">(</span><em>filename</em>, <em>index=[]</em>, <em>atom_index=[]</em>, <em>species=[]</em>, <em>nlist=[]</em>, <em>llist=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadPROJBANDSfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadPROJBANDSfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadSTRUCT_OUTFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadSTRUCT_OUTFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadSTRUCT_OUTFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadSTRUCT_OUTFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadTRANSAVfile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadTRANSAVfile</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadTRANSAVfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadTRANSAVfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadTSHS">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadTSHS</code><span class="sig-paren">(</span><em>fn</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadTSHS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadTSHS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadWFSFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadWFSFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadWFSFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadWFSFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>TF/071008
+Returns the WF coefficients etc. from SIESTA systemlabe.WFS files
+(see siesta/utils/readwf.f for details)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadXVFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadXVFile</code><span class="sig-paren">(</span><em>filename</em>, <em>InUnits='Bohr'</em>, <em>OutUnits='Ang'</em>, <em>ReadVelocity=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadXVFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadXVFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (vectors,speciesnumber,atomnumber,xyz,[v,]) from an XV-file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.ReadXYZFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">ReadXYZFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadXYZFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.ReadXYZFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.SIO_open">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">SIO_open</code><span class="sig-paren">(</span><em>filename</em>, <em>mode='r'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#SIO_open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.SIO_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>A io.siesta redefinition of the function open() to handle gzip format</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.WriteANIFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">WriteANIFile</code><span class="sig-paren">(</span><em>filename</em>, <em>Geom</em>, <em>Energy</em>, <em>InUnits='Ang'</em>, <em>OutUnits='Ang'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteANIFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.WriteANIFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write .ANI file from list of geometries with Energy=[E1,E2..]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.WriteAXSFFiles">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">WriteAXSFFiles</code><span class="sig-paren">(</span><em>filename</em>, <em>geoms</em>, <em>forces=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteAXSFFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.WriteAXSFFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes [geom1, geom2 ...] to AXSF format</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.WriteBandLinesFDF">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">WriteBandLinesFDF</code><span class="sig-paren">(</span><em>infile</em>, <em>outfile</em>, <em>res=0.05</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteBandLinesFDF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.WriteBandLinesFDF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.WriteBandsFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">WriteBandsFile</code><span class="sig-paren">(</span><em>filename</em>, <em>eF</em>, <em>EvsK</em>, <em>labels</em>, <em>spins</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteBandsFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.WriteBandsFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes SIESTA <a href="#id1"><span class="problematic" id="id2">*</span></a>.bands files</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.WriteFDFFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">WriteFDFFile</code><span class="sig-paren">(</span><em>filename</em>, <em>vectors</em>, <em>speciesnumber</em>, <em>atomnumber</em>, <em>xyz</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteFDFFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.WriteFDFFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write STRUCT.fdf file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.WriteFDFFileZmat">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">WriteFDFFileZmat</code><span class="sig-paren">(</span><em>filename</em>, <em>vectors</em>, <em>speciesnumber</em>, <em>atomnumber</em>, <em>xyz</em>, <em>first=0</em>, <em>last=0</em>, <em>zmat=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteFDFFileZmat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.WriteFDFFileZmat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write STRUCT.fdf file using the z-matrix format
+xyz        : all cartesian coordinates
+first/last : first,last atoms in molecule block
+zmat[:,:3] : integer part of z-matrix (indices)
+zmat[:,3:] : fractional part of z-matrix (angles)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.WriteFortranBin">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">WriteFortranBin</code><span class="sig-paren">(</span><em>file</em>, <em>type</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteFortranBin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.WriteFortranBin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes Fortran binary data structures</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.WriteMKLFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">WriteMKLFile</code><span class="sig-paren">(</span><em>filename</em>, <em>atomnumber</em>, <em>xyz</em>, <em>freq</em>, <em>vec</em>, <em>FCfirst</em>, <em>FClast</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteMKLFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.WriteMKLFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a MKL-file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.WriteXVFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">WriteXVFile</code><span class="sig-paren">(</span><em>filename</em>, <em>vectors</em>, <em>speciesnumber</em>, <em>atomnumber</em>, <em>xyz</em>, <em>InUnits='Ang'</em>, <em>OutUnits='Bohr'</em>, <em>Velocity=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteXVFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.WriteXVFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes (vectors,speciesnumber,atomnumber,xyz,[V],) to the XV-file format</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.WriteXYZFile">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">WriteXYZFile</code><span class="sig-paren">(</span><em>filename</em>, <em>atomnumber</em>, <em>xyz</em>, <em>write_ghosts=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteXYZFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.WriteXYZFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes atomic geometry in xyz-file format</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.siesta.printDone">
+<code class="descclassname">Inelastica.io.siesta.</code><code class="descname">printDone</code><span class="sig-paren">(</span><em>i</em>, <em>n</em>, <em>mess</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#printDone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.printDone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Inelastica.io.vasp.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Inelastica.io.netcdf.html" class="btn btn-neutral" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.3.0-10',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

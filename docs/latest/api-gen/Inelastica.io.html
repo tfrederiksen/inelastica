@@ -1,0 +1,1717 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Inelastica.io package &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../index.html"/>
+        <link rel="up" title="Inelastica package" href="Inelastica.html"/>
+        <link rel="next" title="&lt;no title&gt;" href="Inelastica.io.netcdf.html"/>
+        <link rel="prev" title="Inelastica.fortran package" href="Inelastica.fortran.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-10
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="Inelastica.html">Inelastica package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="Inelastica.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="Inelastica.fortran.html">Inelastica.fortran package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Inelastica.io package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Inelastica.physics.html">Inelastica.physics package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="Inelastica.html">Inelastica package</a> &raquo;</li>
+        
+      <li>Inelastica.io package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-gen/Inelastica.io.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-Inelastica.io">
+<span id="inelastica-io-package"></span><h1>Inelastica.io package<a class="headerlink" href="#module-Inelastica.io" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="Inelastica.io.Array2XYsets">
+<code class="descclassname">Inelastica.io.</code><code class="descname">Array2XYsets</code><span class="sig-paren">(</span><em>A</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Array2XYsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Array2XYsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a matrix A = [[x0,y0(x0),y1(x0),...],[x1,y0(x1),y1(x1),...],...]
+into a list of XYset objects. Keywords for the format (Lcolor, Stype, etc.)
+are applied to all the generated XYsets.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.BuildBasis">
+<code class="descclassname">Inelastica.io.</code><code class="descname">BuildBasis</code><span class="sig-paren">(</span><em>FDFfile</em>, <em>FirstAtom</em>, <em>LastAtom</em>, <em>lasto</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#BuildBasis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.BuildBasis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the information for each basis orbital in the Hamiltonian</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.CheckTermination">
+<code class="descclassname">Inelastica.io.</code><code class="descname">CheckTermination</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#CheckTermination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.CheckTermination" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ConvertBandsFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ConvertBandsFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ConvertBandsFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ConvertBandsFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.CrossProd">
+<code class="descclassname">Inelastica.io.</code><code class="descname">CrossProd</code><span class="sig-paren">(</span><em>A</em>, <em>B</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#CrossProd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.CrossProd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the cross product of two geometric vectors</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.Datafile2XYsets">
+<code class="descclassname">Inelastica.io.</code><code class="descname">Datafile2XYsets</code><span class="sig-paren">(</span><em>fn</em>, <em>Sort=False</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Datafile2XYsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Datafile2XYsets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.Dataset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.</code><code class="descname">Dataset</code><span class="sig-paren">(</span><em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Inelastica.io.Dataset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetEBcolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetEBlinewidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetEBsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetLcolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetLegend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetLstyle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetLtype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetLwidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetScolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetSfillcolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetSfillpattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetSlinestyle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetSlinewidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetSsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Dataset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Dataset.SetStype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Dataset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ExtractPDOS">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ExtractPDOS</code><span class="sig-paren">(</span><em>filename</em>, <em>outfile</em>, <em>atom_index=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/vasp.html#ExtractPDOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ExtractPDOS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read DOSCAR file and sum over group of atoms (python numbering)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ExtractPROJBANDS">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ExtractPROJBANDS</code><span class="sig-paren">(</span><em>filename</em>, <em>outfile</em>, <em>index=[]</em>, <em>atom_index=[]</em>, <em>species=[]</em>, <em>nlist=[]</em>, <em>llist=[]</em>, <em>emin=-5.0</em>, <em>emax=5.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ExtractPROJBANDS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ExtractPROJBANDS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetBufferAtomsList">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetBufferAtomsList</code><span class="sig-paren">(</span><em>fn</em>, <em>fdf</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetBufferAtomsList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetBufferAtomsList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetEnergies">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetEnergies</code><span class="sig-paren">(</span><em>OUTCAR</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/vasp.html#GetEnergies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetEnergies" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetEnergiesFromOszi">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetEnergiesFromOszi</code><span class="sig-paren">(</span><em>OSZICAR</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/vasp.html#GetEnergiesFromOszi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetEnergiesFromOszi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetFDFblock">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetFDFblock</code><span class="sig-paren">(</span><em>infile</em>, <em>KeyWord=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetFDFblock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetFDFblock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the values in a block as strings
+infile = FDF input file
+KeyWord = block to find</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetFDFline">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetFDFline</code><span class="sig-paren">(</span><em>infile</em>, <em>KeyWord=''</em>, <em>printAlot=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetFDFline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetFDFline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a line and gives the value as a string
+infile = FDF input file
+KeyWord = line to find</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetFDFlineWithDefault">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetFDFlineWithDefault</code><span class="sig-paren">(</span><em>infile</em>, <em>key</em>, <em>type</em>, <em>default</em>, <em>error</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetFDFlineWithDefault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetFDFlineWithDefault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a line and gives the value of type type.
+If not found, default returned.
+If default=None, print error and exit.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetFermiEnergy">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetFermiEnergy</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetFermiEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetFermiEnergy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetMagnetization">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetMagnetization</code><span class="sig-paren">(</span><em>OSZICAR</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/vasp.html#GetMagnetization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetMagnetization" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetPDOSenergyValues">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetPDOSenergyValues</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPDOSenergyValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetPDOSenergyValues" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetPDOSfromOrbitals">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetPDOSfromOrbitals</code><span class="sig-paren">(</span><em>dom</em>, <em>index=[]</em>, <em>atom_index=[]</em>, <em>species=[]</em>, <em>nlist=[]</em>, <em>llist=[]</em>, <em>mlist=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPDOSfromOrbitals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetPDOSfromOrbitals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetPDOSnorbitals">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetPDOSnorbitals</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPDOSnorbitals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetPDOSnorbitals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetPDOSnspin">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetPDOSnspin</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPDOSnspin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetPDOSnspin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an integer for the number of spins (variable nspin)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetPROJBANDSenergies">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetPROJBANDSenergies</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPROJBANDSenergies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetPROJBANDSenergies" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns an array with the band energies (in units of eV):</dt>
+<dd>energies = energies[ k-index, band-index, n-spin ]</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetPROJBANDSfromOrbitals">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetPROJBANDSfromOrbitals</code><span class="sig-paren">(</span><em>dom</em>, <em>index=[]</em>, <em>atom_index=[]</em>, <em>species=[]</em>, <em>nlist=[]</em>, <em>llist=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPROJBANDSfromOrbitals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetPROJBANDSfromOrbitals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an array of the DOS projected onto bands, summing up contributions from
+orbitals as specified in the function call. The indexing is the following:</p>
+<blockquote>
+<div>pdos = pdos[ k-index, band-index, spin-index ]</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetPROJBANDSkpoint">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetPROJBANDSkpoint</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPROJBANDSkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetPROJBANDSkpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an array with the (3D) k-points</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetPROJBANDSnbands">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetPROJBANDSnbands</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetPROJBANDSnbands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetPROJBANDSnbands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the (integer) number of bands</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetReciprocalLatticeVectors">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetReciprocalLatticeVectors</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetReciprocalLatticeVectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetReciprocalLatticeVectors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetSiestaEndtime">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetSiestaEndtime</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetSiestaEndtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetSiestaEndtime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetSiestaStarttime">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetSiestaStarttime</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetSiestaStarttime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetSiestaStarttime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetSiestaWalltime">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetSiestaWalltime</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetSiestaWalltime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetSiestaWalltime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the walltime (in hours)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetSpecies">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetSpecies</code><span class="sig-paren">(</span><em>OUTCAR</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/vasp.html#GetSpecies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetSpecies" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetTotalEnergy">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetTotalEnergy</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetTotalEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetTotalEnergy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetVibModesMassScaled">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetVibModesMassScaled</code><span class="sig-paren">(</span><em>OUTCAR</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/vasp.html#GetVibModesMassScaled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetVibModesMassScaled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetVibModesNoScaling">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetVibModesNoScaling</code><span class="sig-paren">(</span><em>OUTCAR</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/vasp.html#GetVibModesNoScaling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetVibModesNoScaling" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.GetXMLFermiEnergy">
+<code class="descclassname">Inelastica.io.</code><code class="descname">GetXMLFermiEnergy</code><span class="sig-paren">(</span><em>dom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#GetXMLFermiEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.GetXMLFermiEnergy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks for the Fermi energy in xml file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.Getanr">
+<code class="descclassname">Inelastica.io.</code><code class="descname">Getanr</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#Getanr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Getanr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a list of the atomic numbers in a FDF file
+infile = FDF input file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.Getnatoms">
+<code class="descclassname">Inelastica.io.</code><code class="descname">Getnatoms</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#Getnatoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Getnatoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives the number of atoms included in an FDF file
+infile = FDF input file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.Getpbc">
+<code class="descclassname">Inelastica.io.</code><code class="descname">Getpbc</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#Getpbc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Getpbc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a list of the lattice vectores in a FDF file
+infile = FDF input file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.Getsnr">
+<code class="descclassname">Inelastica.io.</code><code class="descname">Getsnr</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#Getsnr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Getsnr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a list of the species numbers in a FDF file
+infile = FDF input file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.Getxyz">
+<code class="descclassname">Inelastica.io.</code><code class="descname">Getxyz</code><span class="sig-paren">(</span><em>infile</em>, <em>pbc=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#Getxyz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Getxyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a list of the xyz posistions in a FDF file
+infile = FDF input file</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.Graph">
+<em class="property">class </em><code class="descclassname">Inelastica.io.</code><code class="descname">Graph</code><span class="sig-paren">(</span><em>*datasets</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Inelastica.io.Graph.Add2View">
+<code class="descname">Add2View</code><span class="sig-paren">(</span><em>xmin=''</em>, <em>xmax=''</em>, <em>ymin=''</em>, <em>ymax=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.Add2View"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.Add2View" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds value(s) to the graph view.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.AddDatasets">
+<code class="descname">AddDatasets</code><span class="sig-paren">(</span><em>*datasets</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.AddDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.AddDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append data set object(s) to graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.GetWorldOfDatasets">
+<code class="descname">GetWorldOfDatasets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.GetWorldOfDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.GetWorldOfDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data included in the graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the graph and its data sets.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.HideLegend">
+<code class="descname">HideLegend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.HideLegend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.HideLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the graph legend flag to False.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>showlegend=''</em>, <em>xpos=''</em>, <em>ypos=''</em>, <em>boxLstyle=0</em>, <em>fillpattern=0</em>, <em>Csize=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetLegend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the graph legend flag and its position/style.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.SetSpecial">
+<code class="descname">SetSpecial</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetSpecial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.SetSpecial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a special GRACE command string to the graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.SetSubtitle">
+<code class="descname">SetSubtitle</code><span class="sig-paren">(</span><em>subtitle</em>, <em>font=0</em>, <em>size=1.0</em>, <em>color=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetSubtitle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.SetSubtitle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the subtitle of the graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.SetTitle">
+<code class="descname">SetTitle</code><span class="sig-paren">(</span><em>title</em>, <em>font=0</em>, <em>size=1.5</em>, <em>color=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetTitle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.SetTitle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the title of the graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.SetView">
+<code class="descname">SetView</code><span class="sig-paren">(</span><em>xmin=''</em>, <em>xmax=''</em>, <em>ymin=''</em>, <em>ymax=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.SetView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the graph view (defining the position of the graph on the canvas).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.SetWorld">
+<code class="descname">SetWorld</code><span class="sig-paren">(</span><em>xmin=False</em>, <em>xmax=False</em>, <em>ymin=False</em>, <em>ymax=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetWorld"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.SetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the graph world (defining the axis limits).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.SetXaxis">
+<code class="descname">SetXaxis</code><span class="sig-paren">(</span><em>min=''</em>, <em>max=''</em>, <em>label=''</em>, <em>labelsize=''</em>, <em>labelautopos=''</em>, <em>labelpospar=''</em>, <em>labelposper=''</em>, <em>majorUnit=''</em>, <em>minorUnit=''</em>, <em>useticks=''</em>, <em>useticklabels=''</em>, <em>ticklabelsize=''</em>, <em>majorGridlines=''</em>, <em>minorGridlines=''</em>, <em>autoscale=''</em>, <em>scale=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetXaxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.SetXaxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the axis parameters (if specified):
+- min/max        = [float]
+- label          = [string]
+- labelsize      = [float]
+- labelautopos   = [bool]
+- labelpospar    = [float]
+- labelposper    = [float]
+- majorUnit      = [float]
+- minorUnit      = [float]
+- useticks       = [bool]
+- useticklabels  = [bool]
+- ticklabelsize  = [float]
+- majorGridlines = [bool]
+- minorGridlines = [bool]
+- autoscale      = [bool]
+- scale          = [&#8220;Normal&#8221;/&#8221;Logarithmic&#8221;]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.SetXaxisSpecialTicks">
+<code class="descname">SetXaxisSpecialTicks</code><span class="sig-paren">(</span><em>ticklist</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetXaxisSpecialTicks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.SetXaxisSpecialTicks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],...].</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.SetYaxis">
+<code class="descname">SetYaxis</code><span class="sig-paren">(</span><em>min=''</em>, <em>max=''</em>, <em>label=''</em>, <em>labelsize=''</em>, <em>labelautopos=''</em>, <em>labelpospar=''</em>, <em>labelposper=''</em>, <em>majorUnit=''</em>, <em>minorUnit=''</em>, <em>useticks=''</em>, <em>useticklabels=''</em>, <em>ticklabelsize=''</em>, <em>majorGridlines=''</em>, <em>minorGridlines=''</em>, <em>autoscale=''</em>, <em>scale=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetYaxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.SetYaxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the axis parameters (if specified):
+- min/max        = [float]
+- label          = [string]
+- labelsize      = [float]
+- labelautopos   = [bool]
+- labelpospar    = [float]
+- labelposper    = [float]
+- majorUnit      = [float]
+- minorUnit      = [float]
+- useticks       = [bool]
+- useticklabels  = [bool]
+- ticklabelsize  = [float]
+- majorGridlines = [bool]
+- minorGridlines = [bool]
+- autoscale      = [bool]
+- scale          = [&#8220;Normal&#8221;/&#8221;Logarithmic&#8221;]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.SetYaxisSpecialTicks">
+<code class="descname">SetYaxisSpecialTicks</code><span class="sig-paren">(</span><em>ticklist</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetYaxisSpecialTicks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.SetYaxisSpecialTicks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],...].</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Graph.ShowLegend">
+<code class="descname">ShowLegend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.ShowLegend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Graph.ShowLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the graph legend flag to True.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.HS">
+<em class="property">class </em><code class="descclassname">Inelastica.io.</code><code class="descname">HS</code><span class="sig-paren">(</span><em>fn</em>, <em>BufferAtoms=array([]</em>, <em>dtype=float64)</em>, <em>UseF90helpers=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.HS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create full HS from TSHS file. Read fn and assemble for specified k-point</p>
+<p>External variables:
+N            : Size of matrices
+H[ispin,i,j] : Hamiltonian
+S[i,j]       : Overlap</p>
+<p>Internal variables from TS (index described as fortran def):
+(NOTE all python lists start with index 0!)
+nua          : Number of atoms in unitcell
+nuo          : Number of orbitals in unitcell
+nspin        : Number of spin
+no           : Number of orbitals in supercell
+maxnh        : Size of sparse matrices
+isa(1:nua)   : Atomic number (not in netcdf)
+lasto(0:nua) : Last orbital of atom in unitcell
+xa(1:nua,1:3): Position of atoms (NOTE transpose of TS standard)
+indxuo(1:no) : Index of equivalent orbital in unitcell
+numh(1:nuo)  : Number of non-zero elements in row of H
+listh(1:nuo) : Column index of H element 
+Hsparse(1:nspin,1:maxnh) : Sparse H
+Ssparse(1:nspin,1:maxnh) : Sparse S
+qtot         : ??
+temp         : ??
+ef           : Fermi energy (why spin dependent?)
+cell(1:3,1:3): Unitcell (ixyz,ivec)
+gamma        : Logical Gamma-point
+xij(1:maxnh,1:3) : Vector between orbital centers (NOTE transpose of TS)</p>
+<blockquote>
+<div>NOTE: xij=Rj-Ri where i,j correspond to Hij</div></blockquote>
+<p>Derived internal variables:
+listhptr(1:nuo) : Start of row-1 in sparse matrix 
+atomindx(1:nuo) : Atom index corresponding to orbital in unitcell
+rcell(1:3,1:3) : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)</p>
+<dl class="docutils">
+<dt>For onlyS: Hsparse is not avalable and gamma point is assumed</dt>
+<dd>gamma: xij is set to 0 and indxuo set manually to 1:nou and -1 for nou+1:no to catch errors!</dd>
+</dl>
+<dl class="method">
+<dt id="Inelastica.io.HS.makeDerivedQuant">
+<code class="descname">makeDerivedQuant</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.makeDerivedQuant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.HS.makeDerivedQuant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create derived internal variables:
+listhptr(1:nuo) : Start of row-1 in sparse matrix 
+atomindx(1:nuo) : Atom index corresponding to orbital in unitcell
+rcell(1:3,1:3)  : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.HS.removeUnitCellXij">
+<code class="descname">removeUnitCellXij</code><span class="sig-paren">(</span><em>UseF90helpers=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.removeUnitCellXij"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.HS.removeUnitCellXij" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove displacements within unitcell from xij
+NOTE: We remove the in cell difference so xij corresponds to</p>
+<blockquote>
+<div>lattice vectors to the relevant part of the supercell.</div></blockquote>
+<p>NOTE: xij = Rj-Ri where Ri,j corresponds to positions of the orbitals H_{i,j} 
+TODO: Check why some orbitals in sparse matrix reported within cell but have xij!</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.HS.resetkpoint">
+<code class="descname">resetkpoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.resetkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.HS.resetkpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the kpoint and H,S.
+The garbage collector cannot tell if H or S will be used subsequently</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.HS.setkpoint">
+<code class="descname">setkpoint</code><span class="sig-paren">(</span><em>kpoint</em>, <em>UseF90helpers=True</em>, <em>atype=&lt;type 'complex'&gt;</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.setkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.HS.setkpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make full matrices from sparse for specific k-point</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.HS.setkpointhelper">
+<code class="descname">setkpointhelper</code><span class="sig-paren">(</span><em>Sparse</em>, <em>kpoint</em>, <em>UseF90helpers=True</em>, <em>atype=&lt;type 'complex'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.setkpointhelper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.HS.setkpointhelper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make full matrices from sparse for specific k-point
+NOTE: Assumption for Fourier transform                     
+Psi(i) =           sum_R exp(i k.R) Psi_k(i)               NOTE sign!
+(Full waveunction)                   (Unit cell part of wavefunction)</p>
+<blockquote>
+<div>which gives:</div></blockquote>
+<dl class="docutils">
+<dt>i,j part of unitcell gives from the rows of the full H: </dt>
+<dd>H_k(i,j) = H_(i,j) + sum_R H(i,j+R) exp(i*k*R)         NOTE sign!
+where R corresponds to R_j-R_0 which is Xij            NOTE sign!</dd>
+</dl>
+<p>For efficiency this routine is normally run in Fortran90. Compile with f2py:
+cd F90;source compile.bat</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.NCfile">
+<em class="property">class </em><code class="descclassname">Inelastica.io.</code><code class="descname">NCfile</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/netcdf.html#NCfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.NCfile" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Inelastica.io.NCfile.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/netcdf.html#NCfile.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.NCfile.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the file instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.NCfile.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>A</em>, <em>label</em>, <em>vartype='d'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/netcdf.html#NCfile.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.NCfile.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes numpy array to file</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.Plot">
+<em class="property">class </em><code class="descclassname">Inelastica.io.</code><code class="descname">Plot</code><span class="sig-paren">(</span><em>filename='Default.agr'</em>, <em>*graphs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Inelastica.io.Plot.AddGraphs">
+<code class="descname">AddGraphs</code><span class="sig-paren">(</span><em>*graphs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.AddGraphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot.AddGraphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append graph object(s) to plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Plot.ArrangeGraphs">
+<code class="descname">ArrangeGraphs</code><span class="sig-paren">(</span><em>nx=1</em>, <em>ny=1</em>, <em>vspace=0.1</em>, <em>hspace=0.1</em>, <em>order=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.ArrangeGraphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot.ArrangeGraphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Arranges the graphs on the plot frame with nx rows and ny columns.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Plot.DefineColor">
+<code class="descname">DefineColor</code><span class="sig-paren">(</span><em>colornr</em>, <em>RGB</em>, <em>description='UserDefined'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.DefineColor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot.DefineColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines an arbitrary RGB color for use in the plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Plot.Print">
+<code class="descname">Print</code><span class="sig-paren">(</span><em>printcmd='lp -c'</em>, <em>path2grace='xmgrace'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.Print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot.Print" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends plot to printer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Plot.Print2File">
+<code class="descname">Print2File</code><span class="sig-paren">(</span><em>printfile</em>, <em>path2grace='xmgrace'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.Print2File"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot.Print2File" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the GRACE plot to a file [PS/EPS/MIF/SVG/PDF/PNM/JPEG/PNG/Metafile]
+according to the file extension (provided that the necessary device library
+is installed).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Plot.PutText">
+<code class="descname">PutText</code><span class="sig-paren">(</span><em>string</em>, <em>posx</em>, <em>posy</em>, <em>color=1</em>, <em>rot=0</em>, <em>font=0</em>, <em>just=0</em>, <em>charsize=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.PutText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot.PutText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts text in plot at specified position</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Plot.SetAxesFontSizes">
+<code class="descname">SetAxesFontSizes</code><span class="sig-paren">(</span><em>labelsize=1.0</em>, <em>ticklabelsize=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.SetAxesFontSizes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot.SetAxesFontSizes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets font sizes on all axis labels in the plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Plot.SetDefaults">
+<code class="descname">SetDefaults</code><span class="sig-paren">(</span><em>backgroundcolor=0</em>, <em>backgroundfill=False</em>, <em>linewidth=1.0</em>, <em>linestyle=1</em>, <em>color=1</em>, <em>pattern=1</em>, <em>font=0</em>, <em>charsize=1.0</em>, <em>symbolsize=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.SetDefaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot.SetDefaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the defaults for the plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Plot.SetSpecial">
+<code class="descname">SetSpecial</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.SetSpecial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot.SetSpecial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a special GRACE command string to the plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Plot.ShowTimestamp">
+<code class="descname">ShowTimestamp</code><span class="sig-paren">(</span><em>xpos=0.03</em>, <em>ypos=0.03</em>, <em>color=1</em>, <em>rot=0</em>, <em>font=0</em>, <em>charsize=0.75</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.ShowTimestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot.ShowTimestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a timestamp into the plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.Plot.WriteFile">
+<code class="descname">WriteFile</code><span class="sig-paren">(</span><em>filename=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Plot.WriteFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.Plot.WriteFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the GRACE commands that describe the whole plot to a file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadANIFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadANIFile</code><span class="sig-paren">(</span><em>filename</em>, <em>InUnits='Ang'</em>, <em>OutUnits='Ang'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadANIFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadANIFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (Geometry,Energy[Ry?],) from an ANI-file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadAXVFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadAXVFile</code><span class="sig-paren">(</span><em>filename</em>, <em>MDstep</em>, <em>tmpXVfile='tmp.XV'</em>, <em>ReadVelocity=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadAXVFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadAXVFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read concatenated XV files from an MD simulation</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadBandsFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadBandsFile</code><span class="sig-paren">(</span><em>filename</em>, <em>origformat=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadBandsFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadBandsFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadBlock">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadBlock</code><span class="sig-paren">(</span><em>file</em>, <em>lines</em>, <em>type='float'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadBlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadBlock" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadCONTCAR">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadCONTCAR</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/vasp.html#ReadCONTCAR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadCONTCAR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read CONTCAR file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadCubeFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadCubeFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadCubeFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadCubeFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadDOSFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadDOSFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadDOSFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadDOSFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadEIGfile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadEIGfile</code><span class="sig-paren">(</span><em>infile</em>, <em>printing=False</em>, <em>FermiRef=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadEIGfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadEIGfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadFAFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadFAFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadFAFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadFAFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns forces from a FA-file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadFCFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadFCFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadFCFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadFCFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns FC from an FC-file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadFDFFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadFDFFile</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadFDFFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadFDFFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads an FDF file and gives the output values: pbc, xyz, snr, anr, natoms
+infile = FDF inputfile</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadFDFLines">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadFDFLines</code><span class="sig-paren">(</span><em>infile</em>, <em>head=''</em>, <em>printAlot=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadFDFLines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadFDFLines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an FDF file and all the %include files as split strings
+infile = input file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadForces">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadForces</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadForces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadForces" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadFortranBin">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadFortranBin</code><span class="sig-paren">(</span><em>file</em>, <em>type</em>, <em>num</em>, <em>printLength=False</em>, <em>unpack=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadFortranBin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadFortranBin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads Fortran binary data structures</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadIonNCFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadIonNCFile</code><span class="sig-paren">(</span><em>filename</em>, <em>printnorm=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadIonNCFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadIonNCFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a NetCDF file that describes the basis orbitals of a given species</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadMullikenPop">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadMullikenPop</code><span class="sig-paren">(</span><em>infile</em>, <em>outfile</em>, <em>writeallblocks=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadMullikenPop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadMullikenPop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadPDOSFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadPDOSFile</code><span class="sig-paren">(</span><em>filename</em>, <em>index=[]</em>, <em>atom_index=[]</em>, <em>species=[]</em>, <em>nlist=[]</em>, <em>llist=[]</em>, <em>mlist=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadPDOSFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadPDOSFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadPROJBANDSfile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadPROJBANDSfile</code><span class="sig-paren">(</span><em>filename</em>, <em>index=[]</em>, <em>atom_index=[]</em>, <em>species=[]</em>, <em>nlist=[]</em>, <em>llist=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadPROJBANDSfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadPROJBANDSfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadSTRUCT_OUTFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadSTRUCT_OUTFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadSTRUCT_OUTFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadSTRUCT_OUTFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadTRANSAVfile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadTRANSAVfile</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadTRANSAVfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadTRANSAVfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadTSHS">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadTSHS</code><span class="sig-paren">(</span><em>fn</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadTSHS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadTSHS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadWFSFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadWFSFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadWFSFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadWFSFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>TF/071008
+Returns the WF coefficients etc. from SIESTA systemlabe.WFS files
+(see siesta/utils/readwf.f for details)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadXVFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadXVFile</code><span class="sig-paren">(</span><em>filename</em>, <em>InUnits='Bohr'</em>, <em>OutUnits='Ang'</em>, <em>ReadVelocity=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadXVFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadXVFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (vectors,speciesnumber,atomnumber,xyz,[v,]) from an XV-file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.ReadXYZFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">ReadXYZFile</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#ReadXYZFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.ReadXYZFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.SIO_open">
+<code class="descclassname">Inelastica.io.</code><code class="descname">SIO_open</code><span class="sig-paren">(</span><em>filename</em>, <em>mode='r'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#SIO_open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.SIO_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>A io.siesta redefinition of the function open() to handle gzip format</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.VIO_open">
+<code class="descclassname">Inelastica.io.</code><code class="descname">VIO_open</code><span class="sig-paren">(</span><em>filename</em>, <em>mode='r'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/vasp.html#VIO_open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.VIO_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>A io.vasp redefinition of the function open() to handle gzip format</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.WriteANIFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">WriteANIFile</code><span class="sig-paren">(</span><em>filename</em>, <em>Geom</em>, <em>Energy</em>, <em>InUnits='Ang'</em>, <em>OutUnits='Ang'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteANIFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.WriteANIFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write .ANI file from list of geometries with Energy=[E1,E2..]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.WriteAXSFFiles">
+<code class="descclassname">Inelastica.io.</code><code class="descname">WriteAXSFFiles</code><span class="sig-paren">(</span><em>filename</em>, <em>geoms</em>, <em>forces=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteAXSFFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.WriteAXSFFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes [geom1, geom2 ...] to AXSF format</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.WriteBandLinesFDF">
+<code class="descclassname">Inelastica.io.</code><code class="descname">WriteBandLinesFDF</code><span class="sig-paren">(</span><em>infile</em>, <em>outfile</em>, <em>res=0.05</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteBandLinesFDF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.WriteBandLinesFDF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.WriteBandsFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">WriteBandsFile</code><span class="sig-paren">(</span><em>filename</em>, <em>eF</em>, <em>EvsK</em>, <em>labels</em>, <em>spins</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteBandsFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.WriteBandsFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes SIESTA <a href="#id1"><span class="problematic" id="id2">*</span></a>.bands files</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.WriteFDFFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">WriteFDFFile</code><span class="sig-paren">(</span><em>filename</em>, <em>vectors</em>, <em>speciesnumber</em>, <em>atomnumber</em>, <em>xyz</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteFDFFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.WriteFDFFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write STRUCT.fdf file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.WriteFDFFileZmat">
+<code class="descclassname">Inelastica.io.</code><code class="descname">WriteFDFFileZmat</code><span class="sig-paren">(</span><em>filename</em>, <em>vectors</em>, <em>speciesnumber</em>, <em>atomnumber</em>, <em>xyz</em>, <em>first=0</em>, <em>last=0</em>, <em>zmat=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteFDFFileZmat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.WriteFDFFileZmat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write STRUCT.fdf file using the z-matrix format
+xyz        : all cartesian coordinates
+first/last : first,last atoms in molecule block
+zmat[:,:3] : integer part of z-matrix (indices)
+zmat[:,3:] : fractional part of z-matrix (angles)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.WriteFortranBin">
+<code class="descclassname">Inelastica.io.</code><code class="descname">WriteFortranBin</code><span class="sig-paren">(</span><em>file</em>, <em>type</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteFortranBin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.WriteFortranBin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes Fortran binary data structures</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.WriteMKLFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">WriteMKLFile</code><span class="sig-paren">(</span><em>filename</em>, <em>atomnumber</em>, <em>xyz</em>, <em>freq</em>, <em>vec</em>, <em>FCfirst</em>, <em>FClast</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteMKLFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.WriteMKLFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a MKL-file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.WritePOSCAR">
+<code class="descclassname">Inelastica.io.</code><code class="descname">WritePOSCAR</code><span class="sig-paren">(</span><em>filename</em>, <em>vectors</em>, <em>specieslabels</em>, <em>speciesnumbers</em>, <em>xyz</em>, <em>label='LABEL'</em>, <em>scalefactor=1.0</em>, <em>constrained=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/vasp.html#WritePOSCAR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.WritePOSCAR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write POSCAR file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.WriteXVFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">WriteXVFile</code><span class="sig-paren">(</span><em>filename</em>, <em>vectors</em>, <em>speciesnumber</em>, <em>atomnumber</em>, <em>xyz</em>, <em>InUnits='Ang'</em>, <em>OutUnits='Bohr'</em>, <em>Velocity=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteXVFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.WriteXVFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes (vectors,speciesnumber,atomnumber,xyz,[V],) to the XV-file format</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.WriteXYZFile">
+<code class="descclassname">Inelastica.io.</code><code class="descname">WriteXYZFile</code><span class="sig-paren">(</span><em>filename</em>, <em>atomnumber</em>, <em>xyz</em>, <em>write_ghosts=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#WriteXYZFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.WriteXYZFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes atomic geometry in xyz-file format</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.XYDXDYset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.</code><code class="descname">XYDXDYset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dx</em>, <em>dy</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDXDYset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.XYDXDYset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.GetWorld">
+<code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.GetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em>, <em>setnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDXDYset.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.XYDXDYset.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXDYset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXDYset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.XYDXset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.</code><code class="descname">XYDXset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dx</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDXset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.XYDXset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.GetWorld">
+<code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.GetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em>, <em>setnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDXset.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.XYDXset.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDXset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDXset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.XYDYset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.</code><code class="descname">XYDYset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dy</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDYset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.XYDYset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.GetWorld">
+<code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.GetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em>, <em>setnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDYset.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.XYDYset.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYDYset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYDYset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.XYSIZEset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.</code><code class="descname">XYSIZEset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>size</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYSIZEset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.XYSIZEset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.GetWorld">
+<code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.GetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em>, <em>setnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYSIZEset.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.XYSIZEset.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYSIZEset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYSIZEset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.io.XYset">
+<em class="property">class </em><code class="descclassname">Inelastica.io.</code><code class="descname">XYset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.XYset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Dataset" title="Inelastica.io.xmgrace.Dataset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.Dataset</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.io.XYset.GetWorld">
+<code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYset.GetWorld"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.XYset.GetWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (xmin,ymin,xmax,ymax) of the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.GetXMGRstring">
+<code class="descname">GetXMGRstring</code><span class="sig-paren">(</span><em>graphnr</em>, <em>setnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYset.GetXMGRstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.XYset.GetXMGRstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing the GRACE commands that describe the data set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetEBcolor">
+<code class="descname">SetEBcolor</code><span class="sig-paren">(</span><em>EBcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetEBcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetEBlinewidth">
+<code class="descname">SetEBlinewidth</code><span class="sig-paren">(</span><em>EBlinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetEBlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetEBsize">
+<code class="descname">SetEBsize</code><span class="sig-paren">(</span><em>EBsize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetEBsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the error bar size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetFormat">
+<code class="descname">SetFormat</code><span class="sig-paren">(</span><em>legend=''</em>, <em>Ltype=''</em>, <em>Lstyle=''</em>, <em>Lwidth=''</em>, <em>Lcolor=''</em>, <em>Stype=''</em>, <em>Ssize=''</em>, <em>Scolor=''</em>, <em>Sfillcolor=''</em>, <em>Sfillpattern=''</em>, <em>Slinewidth=''</em>, <em>Slinestyle=''</em>, <em>EBsize=''</em>, <em>EBcolor=''</em>, <em>EBlinewidth=''</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the formatting options (linestyle, symbol type, etc.).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetLcolor">
+<code class="descname">SetLcolor</code><span class="sig-paren">(</span><em>Lcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetLcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetLegend">
+<code class="descname">SetLegend</code><span class="sig-paren">(</span><em>legend</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the legend (string).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetLstyle">
+<code class="descname">SetLstyle</code><span class="sig-paren">(</span><em>Lstyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetLstyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetLtype">
+<code class="descname">SetLtype</code><span class="sig-paren">(</span><em>Ltype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetLtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line type (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetLwidth">
+<code class="descname">SetLwidth</code><span class="sig-paren">(</span><em>Lwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetLwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the line width (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetScolor">
+<code class="descname">SetScolor</code><span class="sig-paren">(</span><em>Scolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetScolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetSfillcolor">
+<code class="descname">SetSfillcolor</code><span class="sig-paren">(</span><em>Sfillcolor</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetSfillcolor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill color (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetSfillpattern">
+<code class="descname">SetSfillpattern</code><span class="sig-paren">(</span><em>Sfillpattern</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetSfillpattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol fill pattern (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetSlinestyle">
+<code class="descname">SetSlinestyle</code><span class="sig-paren">(</span><em>Slinestyle</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetSlinestyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol line style (integer).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetSlinewidth">
+<code class="descname">SetSlinewidth</code><span class="sig-paren">(</span><em>Slinewidth</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetSlinewidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol linewidth (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetSsize">
+<code class="descname">SetSsize</code><span class="sig-paren">(</span><em>Ssize</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetSsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol size (float).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.io.XYset.SetStype">
+<code class="descname">SetStype</code><span class="sig-paren">(</span><em>Stype</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.XYset.SetStype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the symbol type (integer).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.printDone">
+<code class="descclassname">Inelastica.io.</code><code class="descname">printDone</code><span class="sig-paren">(</span><em>i</em>, <em>n</em>, <em>mess</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#printDone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.printDone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.test">
+<code class="descclassname">Inelastica.io.</code><code class="descname">test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/netcdf.html#test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.io.write">
+<code class="descclassname">Inelastica.io.</code><code class="descname">write</code><span class="sig-paren">(</span><em>fn</em>, <em>array</em>, <em>label</em>, <em>vartype='d'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/netcdf.html#write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>The simplest possible way to write an array to
+a new or existing NetCDF file</p>
+</dd></dl>
+
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Inelastica.io.netcdf.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Inelastica.fortran.html" class="btn btn-neutral" title="Inelastica.fortran package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.3.0-10',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
