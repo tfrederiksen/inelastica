@@ -110,4 +110,3 @@ List of research publication where `Inelastica <docs_>`_ was used.
 #. M. Paulsson, T. Frederiksen, and M. Brandbyge, *Modeling Inelastic Phonon Scattering in Atomic- and Molecular-wire Junctions*, Phys. Rev. B **72**, `201101(R) (2005) <http://link.aps.org/doi/10.1103/PhysRevB.72.201101>`_; **75**, 129901(E) (2007). `[arXiv:0505473] <http://arxiv.org/abs/cond-mat/0505473>`_
 
 #. T. Frederiksen, M. Brandbyge, N. Lorente, and A.-P. Jauho, *Inelastic Scattering and Local Heating in Atomic Gold Wires*, Phys. Rev. Lett. **93**, `256601 (2004) <http://link.aps.org/doi/10.1103/PhysRevLett.93.256601>`_. `[arXiv:0410700] <http://arxiv.org/abs/cond-mat/0410700>`_
-

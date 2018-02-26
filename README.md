@@ -1,3 +1,6 @@
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+[![Build Status](https://travis-ci.org/tfrederiksen/inelastica.svg?branch=master)](https://travis-ci.org/tfrederiksen/inelastica)
+
 # Inelastica #
 
 __Inelastica__ is both the name of this whole Python package
@@ -48,6 +51,16 @@ If used to produce scientific contributions please include relevant citations to
       Pages = {115117},
       Volume = {76},
       Doi = {10.1103/PhysRevB.76.115117},
+    }
+
+    @Article{stm,
+      Title = {Scanning tunneling microscopy current from localized basis orbital density functional theory},
+      Author = {Gustafsson, A. and Paulsson, M.},
+      Journal = {Phys. Rev. B},
+      Year = {2016},
+      Pages = {115434},
+      Volume = {93},
+      Doi = {10.1103/PhysRevB.93.115434},
     }
 
 ## Documentation ##
