@@ -168,9 +168,7 @@ write_version()
 
 # Main setup of python modules
 setup(name='Inelastica',
-      version='1.2-rc',
-      # Define the requirements for Inelastica
-      # These probably needs to be adjusted... 
+      # version=git_version()[0],
       requires = ['python (>=2.7)','numpy (>=1.8)', 'scipy (>=0.17)', 'netCDF4 (>=1.2.7)'],
       description='Python tools for SIESTA/TranSIESTA', 
       author='Magnus Paulsson and Thomas Frederiksen', 
