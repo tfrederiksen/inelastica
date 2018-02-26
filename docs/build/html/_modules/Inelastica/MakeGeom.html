@@ -1,0 +1,961 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Inelastica.MakeGeom &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>Inelastica.MakeGeom</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Inelastica.MakeGeom</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Routines to read, write and manipulate geometries.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
+<span class="kn">import</span> <span class="nn">Inelastica.io.vasp</span> <span class="kn">as</span> <span class="nn">VIO</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+<span class="kn">import</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">copy</span><span class="o">,</span> <span class="nn">math</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span> <span class="kn">as</span> <span class="nn">NC4</span>
+<span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<div class="viewcode-block" id="interpolateGeom"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.interpolateGeom">[docs]</a><span class="k">def</span> <span class="nf">interpolateGeom</span><span class="p">(</span><span class="n">g0</span><span class="p">,</span><span class="n">g1</span><span class="p">,</span><span class="n">newlength</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Interpolate (extra-) to give new length</span>
+<span class="sd">        g0 has to have findContacts data</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dz</span><span class="o">=</span><span class="p">(</span><span class="n">newlength</span><span class="o">-</span><span class="n">g0</span><span class="o">.</span><span class="n">ContactSeparation</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">dz</span><span class="o">=</span><span class="p">(</span><span class="n">newlength</span><span class="o">-</span><span class="n">g0</span><span class="o">.</span><span class="n">zlength</span><span class="p">)</span>
+
+    <span class="c1"># Find unit cell length</span>
+    <span class="n">NN</span><span class="p">,</span> <span class="n">z0len</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">g0</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="n">z0len</span><span class="p">:</span>
+                <span class="n">NN</span><span class="p">,</span> <span class="n">z0len</span><span class="o">=</span><span class="n">ii</span><span class="p">,</span> <span class="n">g0</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">z1len</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g1</span><span class="o">.</span><span class="n">pbc</span><span class="p">)[:,</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">scale</span><span class="o">=</span><span class="n">dz</span><span class="o">/</span><span class="p">(</span><span class="n">z1len</span><span class="o">-</span><span class="n">z0len</span><span class="p">)</span>
+    
+    <span class="n">new</span><span class="o">=</span><span class="n">Geom</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">g0</span><span class="o">.</span><span class="n">natoms</span><span class="p">):</span>
+        <span class="n">r0</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g0</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+        <span class="n">r1</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g1</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+        <span class="n">rn</span><span class="o">=</span><span class="p">(</span><span class="n">r1</span><span class="o">-</span><span class="n">r0</span><span class="p">)</span><span class="o">*</span><span class="n">scale</span><span class="o">+</span><span class="n">r0</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">addAtom</span><span class="p">(</span><span class="n">rn</span><span class="p">,</span><span class="n">g0</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span><span class="n">g0</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+    
+    <span class="n">new</span><span class="o">.</span><span class="n">pbc</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g0</span><span class="o">.</span><span class="n">pbc</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">new</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">NN</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">z0len</span><span class="o">+</span><span class="n">dz</span>
+    <span class="k">print</span> <span class="s1">&#39;MakeGeom.interpolateGeom: Electrode separation interpolated to L = </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">newlength</span>
+    <span class="k">return</span> <span class="n">new</span></div>
+
+<div class="viewcode-block" id="CrossProd"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.CrossProd">[docs]</a><span class="k">def</span> <span class="nf">CrossProd</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">):</span>
+    <span class="s2">&quot;Returns the cross product of two geometric vectors&quot;</span>
+    <span class="p">[</span><span class="n">ax</span><span class="p">,</span><span class="n">ay</span><span class="p">,</span><span class="n">az</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span>
+    <span class="p">[</span><span class="n">bx</span><span class="p">,</span><span class="n">by</span><span class="p">,</span><span class="n">bz</span><span class="p">]</span> <span class="o">=</span> <span class="n">B</span>
+    <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ay</span><span class="o">*</span><span class="n">bz</span><span class="o">-</span><span class="n">az</span><span class="o">*</span><span class="n">by</span><span class="p">,</span><span class="n">az</span><span class="o">*</span><span class="n">bx</span><span class="o">-</span><span class="n">ax</span><span class="o">*</span><span class="n">bz</span><span class="p">,</span><span class="n">ax</span><span class="o">*</span><span class="n">by</span><span class="o">-</span><span class="n">ay</span><span class="o">*</span><span class="n">bx</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="GetDist"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.GetDist">[docs]</a><span class="k">def</span> <span class="nf">GetDist</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span><span class="n">r2</span><span class="p">):</span>
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r2</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">v12</span> <span class="o">=</span> <span class="n">r2</span><span class="o">-</span><span class="n">r1</span>
+    <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v12</span><span class="p">,</span><span class="n">v12</span><span class="p">)</span><span class="o">**.</span><span class="mi">5</span></div>
+
+<div class="viewcode-block" id="GetAngle"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.GetAngle">[docs]</a><span class="k">def</span> <span class="nf">GetAngle</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span><span class="n">r2</span><span class="p">,</span><span class="n">r3</span><span class="p">):</span>
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r2</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">r3</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r3</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">v12</span> <span class="o">=</span> <span class="n">r1</span><span class="o">-</span><span class="n">r2</span>
+    <span class="n">v23</span> <span class="o">=</span> <span class="n">r3</span><span class="o">-</span><span class="n">r2</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v12</span><span class="p">,</span><span class="n">v23</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v12</span><span class="p">,</span><span class="n">v12</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v23</span><span class="p">,</span><span class="n">v23</span><span class="p">))</span><span class="o">**.</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mf">360.0</span><span class="o">*</span><span class="n">angle</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GetDihedral"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.GetDihedral">[docs]</a><span class="k">def</span> <span class="nf">GetDihedral</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span><span class="n">r2</span><span class="p">,</span><span class="n">r3</span><span class="p">,</span><span class="n">r4</span><span class="p">):</span>
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r2</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">r3</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r3</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">r4</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r4</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">v12</span> <span class="o">=</span> <span class="n">r2</span><span class="o">-</span><span class="n">r1</span>
+    <span class="n">v23</span> <span class="o">=</span> <span class="n">r3</span><span class="o">-</span><span class="n">r2</span>
+    <span class="n">v34</span> <span class="o">=</span> <span class="n">r4</span><span class="o">-</span><span class="n">r3</span>
+    <span class="n">n123</span> <span class="o">=</span> <span class="n">CrossProd</span><span class="p">(</span><span class="n">v12</span><span class="p">,</span><span class="n">v23</span><span class="p">)</span>
+    <span class="n">n234</span> <span class="o">=</span> <span class="n">CrossProd</span><span class="p">(</span><span class="n">v23</span><span class="p">,</span><span class="n">v34</span><span class="p">)</span>
+    <span class="c1"># atan2-definition of torsion angle with sign</span>
+    <span class="c1"># see http://en.wikipedia.org/wiki/Dihedral_angle</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v23</span><span class="p">,</span><span class="n">v23</span><span class="p">)</span><span class="o">**.</span><span class="mi">5</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v12</span><span class="p">,</span><span class="n">CrossProd</span><span class="p">(</span><span class="n">v23</span><span class="p">,</span><span class="n">v34</span><span class="p">))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">CrossProd</span><span class="p">(</span><span class="n">v12</span><span class="p">,</span><span class="n">v23</span><span class="p">),</span><span class="n">CrossProd</span><span class="p">(</span><span class="n">v23</span><span class="p">,</span><span class="n">v34</span><span class="p">))</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mf">360.0</span><span class="o">*</span><span class="n">angle</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom">[docs]</a><span class="k">class</span> <span class="nc">Geom</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Geom class:</span>
+<span class="sd">       pbc : repetition vectors</span>
+<span class="sd">       xyz : list of positions</span>
+<span class="sd">       snr : list of Siesta number for each atom</span>
+<span class="sd">       anr : list of atomic numbers</span>
+<span class="sd">       natoms : number of atoms</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">BufferAtoms</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,))):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="o">=</span><span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.XV&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.XV.gz&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.XV2&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.XV2.gz&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">readXV</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xyz&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xyz.gz&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">readXYZ</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.fdf&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.fdf.gz&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">readFDF</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.STRUCT_OUT&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.STRUCT_OUT.gz&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">readSTRUCT_OUT</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s1">&#39;CONTCAR&#39;</span> <span class="ow">in</span> <span class="n">fn</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">readCONTCAR</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s1">&#39;POSCAR&#39;</span> <span class="ow">in</span> <span class="n">fn</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">readCONTCAR</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR: Input file format unknown</span><span class="se">\n</span><span class="s1"> ... currently .XV, .xyz, .fdf, and POSCAR/CONTCAR are supported&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">constrained</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">constrained</span> <span class="o">=</span> <span class="mi">0</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+
+        <span class="c1"># Remove buffer atoms</span>
+        <span class="k">if</span> <span class="n">BufferAtoms</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">BufferAtoms</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span><span class="n">tmp</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">anr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span><span class="n">tmp</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">,</span><span class="n">tmp</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">constrained</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constrained</span><span class="p">,</span><span class="n">tmp</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># BASIC FUNCTIONS</span>
+        
+<div class="viewcode-block" id="Geom.rmAtom"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.rmAtom">[docs]</a>    <span class="k">def</span> <span class="nf">rmAtom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rmnr</span><span class="p">):</span>
+        <span class="s2">&quot;Remove the offending atom&quot;</span>
+        <span class="k">if</span> <span class="n">rmnr</span><span class="o">&lt;</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">rmnr</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">&quot;ERROR: You tried to remove an atom that isn&#39;t there&quot;</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">rmnr</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">rmnr</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">rmnr</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">rmnr</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">rmnr</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">rmnr</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="o">-</span><span class="mi">1</span></div>
+    
+<div class="viewcode-block" id="Geom.addAtom"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.addAtom">[docs]</a>    <span class="k">def</span> <span class="nf">addAtom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xyz</span><span class="p">,</span><span class="n">snr</span><span class="p">,</span><span class="n">anr</span><span class="p">,</span><span class="n">constrained</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="s2">&quot;Add atom&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xyz</span><span class="p">[:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">anr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constrained</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constrained</span><span class="p">)</span><span class="o">+</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">constrained</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">natoms</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Geom.prependAtom"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.prependAtom">[docs]</a>    <span class="k">def</span> <span class="nf">prependAtom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xyz</span><span class="p">,</span><span class="n">snr</span><span class="p">,</span><span class="n">anr</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="s2">&quot;Add atom&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span><span class="n">xyz</span><span class="p">[:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span><span class="n">snr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span><span class="n">anr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">natoms</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Geom.sort"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">raw_input</span><span class="p">(</span><span class="s1">&#39;Sure you want to sort the structure?&#39;</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">Geom</span><span class="p">()</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">):</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>\
+                        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">constrained</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+        <span class="n">tmp</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">):</span>
+            <span class="c1">#print i,tmp[i][0],tmp[i][5]</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">addAtom</span><span class="p">([</span><span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span><span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span><span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span><span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span><span class="n">constrained</span><span class="o">=</span><span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">5</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">xyz</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">snr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">anr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constrained</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">constrained</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.reverse"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TF/051114</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="Geom.roundDigits"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.roundDigits">[docs]</a>    <span class="k">def</span> <span class="nf">roundDigits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">digits</span><span class="o">=</span><span class="mi">9</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">digits</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.repeteGeom"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.repeteGeom">[docs]</a>    <span class="k">def</span> <span class="nf">repeteGeom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">vec</span><span class="p">,</span><span class="n">rep</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="c1"># TF 050606: MP 140302 changed repetition order to keep unitcells together</span>
+        <span class="c1"># TF 140313: Vectorial implementation (much faster for large systems)</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="n">dr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xyz</span><span class="p">)),</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vec</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">rep</span><span class="p">):</span>
+            <span class="n">xyz</span> <span class="o">+=</span> <span class="n">dr</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xyz</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">addAtom</span><span class="p">(</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Geom.addGeom"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.addGeom">[docs]</a>    <span class="k">def</span> <span class="nf">addGeom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Other</span><span class="p">):</span>
+        <span class="c1">#TF/050606</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Other</span><span class="o">.</span><span class="n">natoms</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addAtom</span><span class="p">(</span><span class="n">Other</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Other</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Other</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>      </div>
+
+<div class="viewcode-block" id="Geom.prependGeom"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.prependGeom">[docs]</a>    <span class="k">def</span> <span class="nf">prependGeom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Other</span><span class="p">):</span>
+        <span class="c1">#TF/051114</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Other</span><span class="o">.</span><span class="n">natoms</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prependAtom</span><span class="p">(</span><span class="n">Other</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Other</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Other</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>    </div>
+
+<div class="viewcode-block" id="Geom.move"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dr</span><span class="p">):</span>
+        <span class="s2">&quot;Move atoms by dr&quot;</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span><span class="o">+</span><span class="n">dr</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Geom.move2origo"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.move2origo">[docs]</a>    <span class="k">def</span> <span class="nf">move2origo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">([</span><span class="o">-</span><span class="nb">min</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)[:,</span><span class="mi">0</span><span class="p">]),</span>\
+            <span class="o">-</span><span class="nb">min</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]),</span>\
+            <span class="o">-</span><span class="nb">min</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)[:,</span><span class="mi">2</span><span class="p">])])</span></div>
+
+<div class="viewcode-block" id="Geom.rotate"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">axisvector</span><span class="p">,</span><span class="n">angle</span><span class="p">,</span><span class="n">RotationCenter</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">RotateSubset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">Degrees</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+               <span class="n">RotateLatticeVectors</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="c1"># Rotation around an axis specified by some axisvector</span>
+        <span class="c1"># See the &quot;rotation formula&quot; in Goldstein 2nd ed. p. 165</span>
+        <span class="kn">import</span> <span class="nn">math</span>
+        <span class="n">vec</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">axisvector</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">axisvector</span><span class="p">,</span><span class="n">axisvector</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span> <span class="c1"># Normalized unit vector</span>
+        <span class="k">if</span> <span class="n">Degrees</span><span class="p">:</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">360.0</span><span class="o">*</span><span class="n">angle</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">RotateSubset</span><span class="p">:</span>
+            <span class="n">RotateThese</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">)</span> <span class="c1"># Rotate all atoms</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">RotateThese</span> <span class="o">=</span> <span class="n">RotateSubset</span>
+        <span class="k">if</span> <span class="n">RotationCenter</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="c1"># Move origo to center of rotation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">([</span><span class="o">-</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">RotationCenter</span><span class="p">])</span> 
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">RotateThese</span><span class="p">:</span>
+            <span class="n">r0</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">r0</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> \
+                <span class="o">+</span> <span class="n">vec</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span><span class="n">r0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span> \
+                <span class="o">+</span> <span class="n">CrossProd</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span><span class="n">vec</span><span class="p">)</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">RotationCenter</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="c1"># Move back after rotation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">RotationCenter</span><span class="p">)</span>
+        <span class="c1"># Lattice vectors will only be rotated around origo</span>
+        <span class="k">if</span> <span class="n">RotateLatticeVectors</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">r0</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">r0</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> \
+                    <span class="o">+</span> <span class="n">vec</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span><span class="n">r0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span> \
+                    <span class="o">+</span> <span class="n">CrossProd</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span><span class="n">vec</span><span class="p">)</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="Geom.AlignPlane"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.AlignPlane">[docs]</a>    <span class="k">def</span> <span class="nf">AlignPlane</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span><span class="n">normal</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="c1"># Align a plane (specified by v1 and v2) such that &quot;normal&quot; becomes a normal vector</span>
+        <span class="kn">import</span> <span class="nn">math</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">v2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">normal</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">normal</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">p12</span> <span class="o">=</span> <span class="n">CrossProd</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">)</span>
+        <span class="n">p12n</span> <span class="o">=</span> <span class="n">CrossProd</span><span class="p">(</span><span class="n">p12</span><span class="p">,</span><span class="n">normal</span><span class="p">)</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p12</span><span class="p">,</span><span class="n">normal</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p12</span><span class="p">,</span><span class="n">p12</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">normal</span><span class="p">,</span><span class="n">normal</span><span class="p">))</span><span class="o">**.</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">p12n</span><span class="p">,</span><span class="o">-</span><span class="n">angle</span><span class="p">,</span><span class="n">Degrees</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.PlaceInXYplane"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.PlaceInXYplane">[docs]</a>    <span class="k">def</span> <span class="nf">PlaceInXYplane</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">atomindices</span><span class="p">):</span>
+        <span class="c1"># This function orientates the geometry such that three specified</span>
+        <span class="c1"># atom indices fall in the same xy-plane</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">atomindices</span><span class="p">)</span><span class="o">!=</span><span class="mi">3</span><span class="p">:</span> 
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You need at least 3 atoms here&quot;</span><span class="p">)</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">atomindices</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span><span class="o">-</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">atomindices</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">v2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">atomindices</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span><span class="o">-</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">atomindices</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AlignPlane</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.GetGeometricCenter"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.GetGeometricCenter">[docs]</a>    <span class="k">def</span> <span class="nf">GetGeometricCenter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Subset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">x0</span><span class="p">,</span><span class="n">y0</span><span class="p">,</span><span class="n">z0</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Subset</span><span class="p">:</span>
+            <span class="nb">set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">set</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Subset</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">:</span>
+            <span class="n">x0</span> <span class="o">+=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">y0</span> <span class="o">+=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">z0</span> <span class="o">+=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x0</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">),</span><span class="n">y0</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">),</span><span class="n">z0</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="Geom.MoveInsideUnitCell"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.MoveInsideUnitCell">[docs]</a>    <span class="k">def</span> <span class="nf">MoveInsideUnitCell</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Assuming xyz-basis vectors</span>
+        <span class="c1">#self.move2origo()</span>
+        <span class="k">print</span> <span class="s1">&#39;MakeGeom.MoveInsideUnitCell: Moving atoms.&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Geom.CalcZmatrix"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.CalcZmatrix">[docs]</a>    <span class="k">def</span> <span class="nf">CalcZmatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">first</span><span class="p">,</span><span class="n">last</span><span class="p">):</span>
+        <span class="s1">&#39;Calculates the Zmatrix for a molecule (SIESTA numbering)&#39;</span>
+        <span class="n">zmat</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">last</span><span class="o">-</span><span class="n">first</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s1">&#39;MakeGeom.CalcZmatrix: Calculating Zmatrix (from atom </span><span class="si">%i</span><span class="s1"> to </span><span class="si">%i</span><span class="s1">, SIESTA numbering)...&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">first</span><span class="p">,</span><span class="n">last</span><span class="p">),</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">first</span><span class="o">-</span><span class="mi">1</span> <span class="c1"># Python numbering</span>
+        <span class="c1"># 1st - Cartesian coordinates</span>
+        <span class="k">if</span> <span class="n">last</span><span class="o">-</span><span class="n">first</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">zmat</span><span class="p">[</span><span class="mi">0</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">zmat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="p">]</span>
+
+        <span class="c1"># 2nd - Spherical coordinates</span>
+        <span class="k">if</span> <span class="n">last</span><span class="o">-</span><span class="n">first</span><span class="o">&gt;=</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">origo</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">])</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">GetDist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">v01</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">GetAngle</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">],</span><span class="n">origo</span><span class="p">,</span><span class="n">v01</span><span class="p">)</span>
+            <span class="n">v01</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c1"># project into xy-plane</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="n">GetAngle</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span><span class="n">origo</span><span class="p">,</span><span class="n">v01</span><span class="p">)</span>
+            <span class="n">zmat</span><span class="p">[</span><span class="mi">1</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">zmat</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d</span><span class="p">,</span><span class="n">theta</span><span class="p">,</span><span class="n">phi</span><span class="p">])</span>
+
+        <span class="c1"># 3rd - Dihedral angle with pseudoatom coordinate r0</span>
+        <span class="k">if</span> <span class="n">last</span><span class="o">-</span><span class="n">first</span><span class="o">&gt;=</span><span class="mi">2</span><span class="p">:</span>
+            <span class="n">r0</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="p">])</span><span class="o">+</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">10.</span><span class="p">])</span>
+            <span class="n">zmat</span><span class="p">[</span><span class="mi">2</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">zmat</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">GetDist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="o">+</span><span class="mi">2</span><span class="p">]),</span>\
+                                    <span class="n">GetAngle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="o">+</span><span class="mi">2</span><span class="p">]),</span>\
+                                    <span class="n">GetDihedral</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">f</span><span class="o">+</span><span class="mi">2</span><span class="p">])])</span>
+        <span class="c1"># Remaining atoms</span>
+        <span class="k">if</span> <span class="n">last</span><span class="o">-</span><span class="n">first</span><span class="o">&gt;=</span><span class="mi">3</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">f</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span><span class="n">last</span><span class="p">):</span>
+                <span class="n">zmat</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">f</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">-</span><span class="n">f</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="n">f</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="n">f</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">zmat</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">f</span><span class="p">,</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">GetDist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>\
+                                      <span class="n">GetAngle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>\
+                                      <span class="n">GetDihedral</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">3</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+        <span class="k">print</span> <span class="s1">&#39;Done!&#39;</span>
+        <span class="k">return</span> <span class="n">zmat</span></div>
+
+    <span class="c1"># PURPOSE SPECIFIC FUNCTIONS</span>
+    
+<div class="viewcode-block" id="Geom.findContactsAndDevice"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.findContactsAndDevice">[docs]</a>    <span class="k">def</span> <span class="nf">findContactsAndDevice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">AtomsPerLayer</span><span class="p">,</span><span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        If there exists AtomsPerLayer of atoms with the same z-coordinate</span>
+<span class="sd">        these are assumed to be belonging to the contacts.</span>
+<span class="sd">        The remaining atoms are taken to be the device.</span>
+<span class="sd">        The left contact atoms are assumed to appear before the device,</span>
+<span class="sd">        and the right contact atoms after the device.</span>
+
+<span class="sd">        The function identifies and sets the following variables:</span>
+<span class="sd">        - leftContactList</span>
+<span class="sd">        - rightContactList</span>
+<span class="sd">        - deviceList</span>
+<span class="sd">        - zLeftContact</span>
+<span class="sd">        - ContactSeparation        </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deviceList</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">AtomsPerLayer</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">):</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span> <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span><span class="o">==</span><span class="n">AtomsPerLayer</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deviceList</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Siesta numbering starts from 1</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span><span class="o">==</span><span class="n">AtomsPerLayer</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deviceList</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># Siesta numbering starts from 1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">deviceList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># Siesta numbering starts from 1</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># AtomsPerLayer == 1</span>
+            <span class="n">lsep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+            <span class="c1"># First atom belongs per definition to the left contact:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># Siesta numbering starts from 1</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">distL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">distR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">distL</span><span class="o">-</span><span class="n">lsep</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">distR</span><span class="o">-</span><span class="n">lsep</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">deviceList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Last atom belongs per definition to the right contact:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">)</span> <span class="c1"># Siesta numbering starts from 1</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zLeftContact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ContactSeparation</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> \
+                                     <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">zLeftContact</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zLeftContact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ContactSeparation</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">)[:,</span><span class="mi">2</span><span class="p">])</span> \
+                                     <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zLeftContact</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ContactSeparation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zLeftContact</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ContactSeparation</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
+        <span class="k">print</span> <span class="s1">&#39;MakeGeom.findContactsAndDevice: Electrode separation detected was L = </span><span class="si">%f</span><span class="s1">&#39;</span> \
+              <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">ContactSeparation</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deviceList</span><span class="p">),</span> \
+                 <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">counts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">counts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">counts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="n">counts</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Non conforming&quot;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s1">&#39;   ... Atoms (Left/Device/Right):  </span><span class="si">%i</span><span class="s1"> / </span><span class="si">%i</span><span class="s1"> / </span><span class="si">%i</span><span class="s1">  =  </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">counts</span>
+        <span class="k">print</span> <span class="s1">&#39;   ... DeviceFirst, DeviceLast = </span><span class="si">%i</span><span class="s1">, </span><span class="si">%i</span><span class="s1">  (Siesta numbering)&#39;</span>\
+              <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deviceList</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">deviceList</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+        
+<div class="viewcode-block" id="Geom.stretch2NewContactSeparation"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.stretch2NewContactSeparation">[docs]</a>    <span class="k">def</span> <span class="nf">stretch2NewContactSeparation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">NewContactSeparation</span><span class="p">,</span><span class="n">AtomsPerLayer</span><span class="p">,</span>
+                                     <span class="n">ListL</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">ListR</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s2">&quot;Stretch system to NewContactSeparation&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">findContactsAndDevice</span><span class="p">(</span><span class="n">AtomsPerLayer</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s1">&#39;MakeGeom.stretch2NewContactSeparation:&#39;</span>
+        <span class="k">print</span> <span class="s1">&#39;   ... Stretching from L = </span><span class="si">%f</span><span class="s1"> Ang --&gt; L = </span><span class="si">%f</span><span class="s1"> Ang&#39;</span> \
+              <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ContactSeparation</span><span class="p">,</span><span class="n">NewContactSeparation</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ListL</span><span class="p">:</span> <span class="k">print</span> <span class="s1">&#39;   ... ListL = [</span><span class="si">%i</span><span class="s1">:</span><span class="si">%i</span><span class="s1">] (Siesta numbering)&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">ListL</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ListL</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">ListL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leftContactList</span>
+        <span class="k">if</span> <span class="n">ListR</span><span class="p">:</span> <span class="k">print</span> <span class="s1">&#39;   ... ListR = [</span><span class="si">%i</span><span class="s1">:</span><span class="si">%i</span><span class="s1">] (Siesta numbering)&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">ListR</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ListR</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">ListR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span>
+
+        <span class="c1"># Scale device coordinates</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">deviceList</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ii</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ListL</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ii</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ListR</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">zLeftContact</span><span class="p">)</span><span class="o">*</span>\
+                                    <span class="p">(</span><span class="n">NewContactSeparation</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">ContactSeparation</span><span class="p">)</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">zLeftContact</span>
+            <span class="k">if</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">ListR</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">NewContactSeparation</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">ContactSeparation</span>
+        <span class="c1"># Move right contact to new position</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rightContactList</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">NewContactSeparation</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">ContactSeparation</span>
+        <span class="c1"># Set new size of unit cell</span>
+        <span class="n">NN</span><span class="p">,</span><span class="n">zmax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="c1"># Find cell vector with largest z-component</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="n">zmax</span><span class="p">:</span>
+                <span class="n">NN</span><span class="p">,</span><span class="n">zmax</span> <span class="o">=</span> <span class="n">ii</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">NN</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">zmax</span><span class="o">+</span><span class="n">NewContactSeparation</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">ContactSeparation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ContactSeparation</span> <span class="o">=</span> <span class="n">NewContactSeparation</span></div>
+
+        
+<div class="viewcode-block" id="Geom.PasteElectrodeLayers"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.PasteElectrodeLayers">[docs]</a>    <span class="k">def</span> <span class="nf">PasteElectrodeLayers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">BlockSize</span><span class="p">,</span><span class="n">AtomsPerLayer</span><span class="p">,</span><span class="n">LayersLeft</span><span class="p">,</span><span class="n">LayersRight</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy atoms from range(BlockSize) as many times as specified by</span>
+<span class="sd">        BlocksLeft/BlocksRight, and including enlargement of the unit cell.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Determine interlayer separation</span>
+        <span class="n">LayersPerBlock</span> <span class="o">=</span> <span class="n">BlockSize</span><span class="o">/</span><span class="n">AtomsPerLayer</span>
+        <span class="n">LayerSep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">AtomsPerLayer</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        
+        <span class="k">print</span> <span class="s1">&#39;MakeGeom.PasteElectrodeLayers:&#39;</span>
+        <span class="k">print</span> <span class="s1">&#39;   ... Initial number of atoms      = </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s1">&#39;   ... AtomsPerLayer                = </span><span class="si">%i</span><span class="s1"> atoms&#39;</span> <span class="o">%</span><span class="n">AtomsPerLayer</span>
+        <span class="k">print</span> <span class="s1">&#39;   ... Block size                   = </span><span class="si">%i</span><span class="s1"> atoms&#39;</span> <span class="o">%</span><span class="n">BlockSize</span>
+        <span class="k">print</span> <span class="s1">&#39;   ... Block periodicity            = </span><span class="si">%.4f</span><span class="s1"> Ang&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">LayersPerBlock</span><span class="o">*</span><span class="n">LayerSep</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s1">&#39;   ... Layer separation             = </span><span class="si">%.4f</span><span class="s1"> Ang&#39;</span><span class="o">%</span><span class="n">LayerSep</span>
+        <span class="k">print</span> <span class="s1">&#39;   ... Layer(s) pasted to left      = </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">LayersLeft</span>
+        <span class="k">print</span> <span class="s1">&#39;   ... Layer(s) pasted to right     = </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">LayersRight</span>
+
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="c1"># Make block geometry</span>
+        <span class="n">pieceR</span> <span class="o">=</span> <span class="n">Geom</span><span class="p">()</span>
+        <span class="n">pieceL</span> <span class="o">=</span> <span class="n">Geom</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">BlockSize</span><span class="p">):</span>
+            <span class="n">pieceR</span><span class="o">.</span><span class="n">addAtom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">pieceL</span><span class="o">.</span><span class="n">addAtom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+       
+        <span class="c1"># Append layers to the right</span>
+        <span class="n">BlocksRight</span> <span class="o">=</span> <span class="n">LayersRight</span><span class="o">/</span><span class="n">LayersPerBlock</span>
+        <span class="n">ExtraLayersRight</span> <span class="o">=</span> <span class="n">LayersRight</span><span class="o">%</span><span class="n">LayersPerBlock</span>
+        <span class="n">pieceR</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">BlocksRight</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addGeom</span><span class="p">(</span><span class="n">pieceR</span><span class="p">)</span>
+            <span class="n">pieceR</span><span class="o">.</span><span class="n">move</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">LayersPerBlock</span><span class="o">*</span><span class="n">LayerSep</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">AtomsPerLayer</span><span class="o">*</span><span class="n">ExtraLayersRight</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addAtom</span><span class="p">(</span><span class="n">pieceR</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">pieceR</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">pieceR</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">BlocksRight</span><span class="o">*</span><span class="n">LayersPerBlock</span><span class="o">+</span><span class="n">ExtraLayersRight</span><span class="p">)</span><span class="o">*</span><span class="n">LayerSep</span>
+
+        <span class="c1"># Prepend layers to the left</span>
+        <span class="n">BlocksLeft</span> <span class="o">=</span> <span class="n">LayersLeft</span><span class="o">/</span><span class="n">LayersPerBlock</span>
+        <span class="n">ExtraLayersLeft</span> <span class="o">=</span> <span class="n">LayersLeft</span><span class="o">%</span><span class="n">LayersPerBlock</span>
+        <span class="n">pieceL</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">BlocksLeft</span><span class="p">):</span>
+            <span class="n">pieceL</span><span class="o">.</span><span class="n">move</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">LayersPerBlock</span><span class="o">*</span><span class="n">LayerSep</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prependGeom</span><span class="p">(</span><span class="n">pieceL</span><span class="p">)</span>
+        <span class="n">pieceL</span><span class="o">.</span><span class="n">move</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">LayersPerBlock</span><span class="o">*</span><span class="n">LayerSep</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">AtomsPerLayer</span><span class="o">*</span><span class="n">ExtraLayersLeft</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prependAtom</span><span class="p">(</span><span class="n">pieceL</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">pieceL</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">pieceL</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">BlocksLeft</span><span class="o">*</span><span class="n">LayersPerBlock</span><span class="o">+</span><span class="n">ExtraLayersLeft</span><span class="p">)</span><span class="o">*</span><span class="n">LayerSep</span>
+        
+        <span class="k">print</span> <span class="s1">&#39;   ... Final number of atoms        = </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.BuildOnlyS"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.BuildOnlyS">[docs]</a>    <span class="k">def</span> <span class="nf">BuildOnlyS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">displacement</span><span class="o">=</span><span class="mf">0.02</span><span class="p">):</span>
+        <span class="s2">&quot;Returns a new geometry object with 7 times as many atoms&quot;</span>
+        <span class="n">geom</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">new</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">displ</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">]</span>
+                <span class="n">displ</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span><span class="o">*</span><span class="n">displacement</span>
+                <span class="n">new</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">displ</span><span class="p">)</span>
+                <span class="n">geom</span><span class="o">.</span><span class="n">addGeom</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">geom</span></div>
+
+<div class="viewcode-block" id="Geom.ShiftPeriodicCellAlongZ"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.ShiftPeriodicCellAlongZ">[docs]</a>    <span class="k">def</span> <span class="nf">ShiftPeriodicCellAlongZ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">IndexShift</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;MakeGeom.ShiftPeriodicCellAlongZ: Shifting </span><span class="si">%i</span><span class="s1"> atoms from LEFT to RIGHT side of the unit cell&#39;</span><span class="o">%</span><span class="n">IndexShift</span>
+        <span class="c1"># Find cell vector with largest z-component</span>
+        <span class="n">NN</span><span class="p">,</span><span class="n">zmax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>    
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="n">zmax</span><span class="p">:</span>
+                <span class="n">NN</span><span class="p">,</span><span class="n">zmax</span> <span class="o">=</span> <span class="n">ii</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">IndexShift</span><span class="p">):</span>
+            <span class="c1"># add z-periodicity to z-coordinate</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">zmax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="c1"># Bring first layer to z=0.0 </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="nb">min</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)[:,</span><span class="mi">2</span><span class="p">])])</span></div>
+
+
+<div class="viewcode-block" id="Geom.PasteLists"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.PasteLists">[docs]</a>    <span class="k">def</span> <span class="nf">PasteLists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">AddLeftList</span><span class="o">=</span><span class="p">[],</span><span class="n">AddRightList</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="c1"># Extend a geometry with coordinates in the specified lists</span>
+        <span class="c1"># along the z-direction, automatically shifting the z-coordinates</span>
+        <span class="c1"># to match the lattice structure. The supercell vector</span>
+        <span class="c1"># in the z-direction is enlarged correspondingly.</span>
+        <span class="n">AddLeftList</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">AddLeftList</span><span class="p">)</span>
+        <span class="n">AddRightList</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">AddRightList</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">AddLeftList</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">dz</span><span class="o">=</span><span class="n">AddLeftList</span><span class="p">[</span><span class="n">AtomsPerLayer</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">AddLeftList</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">tmp</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+            <span class="n">minz</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">tmp</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">maxz</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">AddLeftList</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">AddLeftList</span><span class="p">))):</span>
+                <span class="n">geom</span><span class="o">.</span><span class="n">prependAtom</span><span class="p">(</span><span class="n">AddLeftList</span><span class="p">[</span><span class="n">ii</span><span class="p">,:]</span><span class="o">+</span>
+                                 <span class="p">(</span><span class="o">-</span><span class="n">maxz</span><span class="o">+</span><span class="n">minz</span><span class="o">-</span><span class="n">dz</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
+                                 <span class="n">geom</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">+=</span><span class="nb">len</span><span class="p">(</span><span class="n">AddLeftList</span><span class="p">)</span><span class="o">/</span><span class="n">AtomsPerLayer</span><span class="o">*</span><span class="n">dz</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">AddRightList</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">tmp</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+            <span class="n">maxz</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">tmp</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">minz</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">AddRightList</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">AddRightList</span><span class="p">)):</span>
+                <span class="n">geom</span><span class="o">.</span><span class="n">addAtom</span><span class="p">(</span><span class="n">AddRightList</span><span class="p">[</span><span class="n">ii</span><span class="p">,:]</span><span class="o">+</span>
+                             <span class="p">(</span><span class="n">maxz</span><span class="o">-</span><span class="n">minz</span><span class="o">+</span><span class="n">dz</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
+                             <span class="n">geom</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">+=</span><span class="nb">len</span><span class="p">(</span><span class="n">AddRightList</span><span class="p">)</span><span class="o">/</span><span class="n">AtomsPerLayer</span><span class="o">*</span><span class="n">dz</span></div>
+
+
+<div class="viewcode-block" id="Geom.StretchAlongEigenvector"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.StretchAlongEigenvector">[docs]</a>    <span class="k">def</span> <span class="nf">StretchAlongEigenvector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ncfile</span><span class="p">,</span><span class="n">modeindex</span><span class="p">,</span><span class="n">displacement</span><span class="o">=</span><span class="mf">0.04</span><span class="o">*</span><span class="n">PC</span><span class="o">.</span><span class="n">Bohr2Ang</span><span class="p">):</span>
+        <span class="s1">&#39;Displace a geometry along a calculated eigenmode&#39;</span>
+        <span class="c1"># TF/080527 </span>
+        <span class="nb">file</span> <span class="o">=</span> <span class="n">NC4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">hw</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;hw&#39;</span><span class="p">][</span><span class="n">modeindex</span><span class="p">]</span>
+        <span class="n">U</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">][</span><span class="n">modeindex</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s1">&#39;MakeGeom.StretchAlongEigenvector: Stretching </span><span class="si">%.3e</span><span class="s1"> Ang along mode #</span><span class="si">%i</span><span class="s1"> (hw = </span><span class="si">%.4f</span><span class="s1"> eV).&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">displacement</span><span class="p">,</span><span class="n">modeindex</span><span class="p">,</span><span class="n">hw</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">U</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span>
+        <span class="n">U</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">U</span><span class="p">,(</span><span class="n">d</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+        <span class="n">firstdynatom</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;DynamicAtoms&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">firstdynatom</span><span class="p">]</span> <span class="o">+=</span> <span class="n">displacement</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">U</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
+
+    <span class="c1"># GENERAL IO-FUNCTIONS</span>
+    
+<div class="viewcode-block" id="Geom.readXV"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.readXV">[docs]</a>    <span class="k">def</span> <span class="nf">readXV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">):</span>
+        <span class="s2">&quot;Read XV file&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">ReadXVFile</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span></div>
+        <span class="c1">#self.move2origo()</span>
+
+<div class="viewcode-block" id="Geom.writeXV"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.writeXV">[docs]</a>    <span class="k">def</span> <span class="nf">writeXV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">,</span><span class="n">rep</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">repeteGeom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">rep</span><span class="o">=</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">SIO</span><span class="o">.</span><span class="n">WriteXVFile</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">snr</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.readXYZ"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.readXYZ">[docs]</a>    <span class="k">def</span> <span class="nf">readXYZ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">):</span>
+        <span class="n">label</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">ReadXYZFile</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="c1">#self.move2origo()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">raw_input</span><span class="p">(</span><span class="s1">&#39;Input snr expression:&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span><span class="o">!=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s1">&#39;Error assigning snr!&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">vec</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">raw_input</span><span class="p">(</span><span class="s1">&#39;Input cell vector (</span><span class="si">%i</span><span class="s1">):&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span><span class="o">!=</span><span class="mi">3</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s1">&#39;Error assigning cell vector!&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span>    </div>
+
+<div class="viewcode-block" id="Geom.writeXYZ"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.writeXYZ">[docs]</a>    <span class="k">def</span> <span class="nf">writeXYZ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">,</span><span class="n">rep</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">write_ghosts</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="s2">&quot;Write .mkl file with unitcell repeated rep times&quot;</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">repeteGeom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">rep</span><span class="o">=</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">SIO</span><span class="o">.</span><span class="n">WriteXYZFile</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span><span class="n">write_ghosts</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.readFDF"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.readFDF">[docs]</a>    <span class="k">def</span> <span class="nf">readFDF</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">natoms</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">ReadFDFFile</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.writeFDF"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.writeFDF">[docs]</a>    <span class="k">def</span> <span class="nf">writeFDF</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">,</span><span class="n">rep</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="s2">&quot;Write STRUCT.fdf file&quot;</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">repeteGeom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">rep</span><span class="o">=</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">SIO</span><span class="o">.</span><span class="n">WriteFDFFile</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">snr</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.writeFDFZmat"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.writeFDFZmat">[docs]</a>    <span class="k">def</span> <span class="nf">writeFDFZmat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">,</span><span class="n">first</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">last</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">rep</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="s2">&quot;Write STRUCT.fdf file&quot;</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">repeteGeom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">rep</span><span class="o">=</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">first</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">last</span> <span class="o">&gt;=</span> <span class="n">first</span><span class="p">:</span>
+            <span class="n">zmat</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">CalcZmatrix</span><span class="p">(</span><span class="n">first</span><span class="p">,</span><span class="n">last</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">zmat</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">SIO</span><span class="o">.</span><span class="n">WriteFDFFileZmat</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">snr</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span><span class="n">first</span><span class="p">,</span><span class="n">last</span><span class="p">,</span><span class="n">zmat</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.readMKL"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.readMKL">[docs]</a>    <span class="k">def</span> <span class="nf">readMKL</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">):</span>
+        <span class="s2">&quot;not implemented yet&quot;</span></div>
+
+<div class="viewcode-block" id="Geom.writeMKL"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.writeMKL">[docs]</a>    <span class="k">def</span> <span class="nf">writeMKL</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">,</span><span class="n">rep</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="s2">&quot;Write .mkl file with unitcell repeated rep times&quot;</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">repeteGeom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">rep</span><span class="o">=</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">SIO</span><span class="o">.</span><span class="n">WriteMKLFile</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,[],[],</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.readSTRUCT_OUT"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.readSTRUCT_OUT">[docs]</a>    <span class="k">def</span> <span class="nf">readSTRUCT_OUT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">ReadSTRUCT_OUTFile</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Geom.readCONTCAR"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.readCONTCAR">[docs]</a>    <span class="k">def</span> <span class="nf">readCONTCAR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">):</span>
+        <span class="s2">&quot;Read geometry from VASP CONTCAR file&quot;</span>
+        <span class="n">label</span><span class="p">,</span><span class="n">scalefactor</span><span class="p">,</span><span class="n">vectors</span><span class="p">,</span><span class="n">specieslabels</span><span class="p">,</span><span class="n">speciesnumbers</span><span class="p">,</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">VIO</span><span class="o">.</span><span class="n">ReadCONTCAR</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbc</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xyz</span><span class="p">[:,:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constrained</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xyz</span><span class="p">[:,</span><span class="mi">3</span><span class="p">:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">natoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anr</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">speciesnumbers</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">snr</span> <span class="o">+=</span> <span class="n">speciesnumbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">anr</span> <span class="o">+=</span> <span class="n">speciesnumbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">[</span><span class="n">PC</span><span class="o">.</span><span class="n">PeriodicTable</span><span class="p">[</span><span class="n">specieslabels</span><span class="p">[</span><span class="n">i</span><span class="p">]]]</span></div>
+
+<span class="c1">#--------------------------------------------------------------------------------</span>
+<span class="c1"># Interface with VASP</span>
+
+<div class="viewcode-block" id="Geom.writePOSCAR"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.Geom.writePOSCAR">[docs]</a>    <span class="k">def</span> <span class="nf">writePOSCAR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">,</span><span class="n">constrained</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="s2">&quot;Write POSCAR coordinate file for VASP&quot;</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">anrlist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">anrnum</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">tmp</span> <span class="o">+=</span> <span class="p">[[</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">i</span><span class="p">]]</span>
+                <span class="n">anrnum</span><span class="p">[</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">tmp</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cons</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)):</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">xyz</span> <span class="o">+=</span> <span class="p">[</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
+            <span class="n">cons</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">constrained</span><span class="p">[</span><span class="n">j</span><span class="p">])]</span>
+        <span class="n">speciesnumbers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">specieslabels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">anrnum</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">anrnum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">speciesnumbers</span> <span class="o">+=</span> <span class="p">[</span><span class="n">anrnum</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                <span class="n">specieslabels</span> <span class="o">+=</span> <span class="p">[</span><span class="n">PC</span><span class="o">.</span><span class="n">PeriodicTable</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">VIO</span><span class="o">.</span><span class="n">WritePOSCAR</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span><span class="n">specieslabels</span><span class="p">,</span><span class="n">speciesnumbers</span><span class="p">,</span><span class="n">xyz</span><span class="p">,</span><span class="n">constrained</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cons</span><span class="p">))</span>          </div></div>
+
+<span class="c1">#--------------------------------------------------------------------------------</span>
+<span class="c1"># Conversion functions:</span>
+<span class="c1">#</span>
+
+<div class="viewcode-block" id="convert"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.convert">[docs]</a><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span><span class="n">outfile</span><span class="p">,</span><span class="n">rep</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">MoveInsideUnitCell</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">RoundOff</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Reads and writes according to the file extensions specified.&quot;&quot;&quot;</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">Geom</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">MoveInsideUnitCell</span><span class="p">:</span> <span class="n">geom</span><span class="o">.</span><span class="n">MoveInsideUnitCell</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">RoundOff</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s1">&#39;MakeGeom.convert: Performing rounding...&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">natoms</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e5</span>
+                <span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="mi">4</span><span class="p">)</span>
+                <span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">1e5</span>
+    <span class="k">if</span> <span class="n">outfile</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;.XYZ&#39;</span><span class="p">:</span>
+        <span class="n">geom</span><span class="o">.</span><span class="n">writeXYZ</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="n">rep</span><span class="p">,</span><span class="n">write_ghosts</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">outfile</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;.xyz&#39;</span><span class="p">:</span>
+        <span class="n">geom</span><span class="o">.</span><span class="n">writeXYZ</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="n">rep</span><span class="p">,</span><span class="n">write_ghosts</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">outfile</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;.fdf&#39;</span><span class="p">:</span>
+        <span class="n">geom</span><span class="o">.</span><span class="n">writeFDF</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="n">rep</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">outfile</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;.XV&#39;</span><span class="p">:</span>
+        <span class="n">geom</span><span class="o">.</span><span class="n">writeXV</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="n">rep</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">outfile</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;.mkl&#39;</span><span class="p">:</span>
+        <span class="n">geom</span><span class="o">.</span><span class="n">writeMKL</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="n">rep</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">outfile</span><span class="p">[</span><span class="o">-</span><span class="mi">6</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;POSCAR&#39;</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s1">&#39;Repetition not implemented with the POSCAR conversion&#39;</span>
+        <span class="n">geom</span><span class="o">.</span><span class="n">writePOSCAR</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="n">constrained</span><span class="o">=</span><span class="n">geom</span><span class="o">.</span><span class="n">constrained</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s1">&#39;Error - did not recognize output format in </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">outfile</span></div>
+
+
+<div class="viewcode-block" id="repeteANI"><a class="viewcode-back" href="../../api-gen/Inelastica.MakeGeom.html#Inelastica.repeteANI">[docs]</a><span class="k">def</span> <span class="nf">repeteANI</span><span class="p">(</span><span class="n">ANIinfile</span><span class="p">,</span><span class="n">XVinfile</span><span class="p">,</span><span class="n">outfile</span><span class="p">,</span><span class="n">rep</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Generates a new ANI-file with cell repetitions&quot;&quot;&quot;</span>
+    <span class="n">GeomList</span><span class="p">,</span><span class="n">Energy</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">ReadANIFile</span><span class="p">(</span><span class="n">ANIinfile</span><span class="p">)</span>
+    <span class="n">initGeom</span> <span class="o">=</span> <span class="n">Geom</span><span class="p">(</span><span class="n">XVinfile</span><span class="p">)</span>
+    <span class="n">newGeomList</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">GeomList</span><span class="p">)):</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">GeomList</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">geom</span><span class="o">.</span><span class="n">pbc</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">repeteGeom</span><span class="p">(</span><span class="n">initGeom</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">rep</span><span class="o">=</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">rep</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">initGeom</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">newGeomList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span>
+    <span class="n">SIO</span><span class="o">.</span><span class="n">WriteANIFile</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="n">newGeomList</span><span class="p">,</span><span class="n">Energy</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.3.0-7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

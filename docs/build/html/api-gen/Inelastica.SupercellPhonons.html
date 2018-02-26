@@ -1,0 +1,411 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>&lt;no title&gt; &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../index.html"/>
+        <link rel="up" title="Inelastica package" href="Inelastica.html"/>
+        <link rel="next" title="&lt;no title&gt;" href="Inelastica.Symmetry.html"/>
+        <link rel="prev" title="&lt;no title&gt;" href="Inelastica.SetupRuns.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="Inelastica.html">Inelastica package</a> &raquo;</li>
+        
+      <li>&lt;no title&gt;</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-gen/Inelastica.SupercellPhonons.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-Inelastica.SupercellPhonons"></span><p>A simple interface to evaluate electron and phonon bands on 
+a set of points in reciprocal space.</p>
+<p>The input file format with N points is simply:</p>
+<blockquote>
+<div>kx(1) ky(1) kz(1) [label]
+kx(2) ky(2) kz(2) [label]</div></blockquote>
+<dl class="docutils">
+<dt>...</dt>
+<dd>kx(N) ky(N) kz(N) [label]</dd>
+</dl>
+<p>Units: 1/Ang.</p>
+<p>Phase factors defined as: exp(i k.r)</p>
+<p>Thomas Frederiksen, March 2015</p>
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.ComputeDOS">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">ComputeDOS</code><span class="sig-paren">(</span><em>ncfile</em>, <em>outfile</em>, <em>emin=0.0</em>, <em>emax=1.0</em>, <em>pts=1001</em>, <em>smear=0.001</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#ComputeDOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.ComputeDOS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.GetOptions">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">GetOptions</code><span class="sig-paren">(</span><em>argv</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#GetOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.GetOptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.PlotElectronBands">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">PlotElectronBands</code><span class="sig-paren">(</span><em>filename</em>, <em>dk</em>, <em>elist</em>, <em>ticks</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#PlotElectronBands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.PlotElectronBands" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.PlotPhononBands">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">PlotPhononBands</code><span class="sig-paren">(</span><em>filename</em>, <em>dq</em>, <em>phlist</em>, <em>ticks</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#PlotPhononBands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.PlotPhononBands" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.ReadKpoints">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">ReadKpoints</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#ReadKpoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.ReadKpoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.ReadKpoints_ascii">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">ReadKpoints_ascii</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#ReadKpoints_ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.ReadKpoints_ascii" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.ReadKpoints_netcdf">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">ReadKpoints_netcdf</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#ReadKpoints_netcdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.ReadKpoints_netcdf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.SortBands">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">SortBands</code><span class="sig-paren">(</span><em>ev</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#SortBands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.SortBands" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix">
+<em class="property">class </em><code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">Supercell_DynamicalMatrix</code><span class="sig-paren">(</span><em>fdf</em>, <em>TSrun=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#Supercell_DynamicalMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix" title="Inelastica.Phonons.DynamicalMatrix"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.Phonons.DynamicalMatrix</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ApplySumRule">
+<code class="descname">ApplySumRule</code><span class="sig-paren">(</span><em>FC</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ApplySumRule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.CheckSymmetries">
+<code class="descname">CheckSymmetries</code><span class="sig-paren">(</span><em>TSrun=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#Supercell_DynamicalMatrix.CheckSymmetries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.CheckSymmetries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputeEPHcouplings">
+<code class="descname">ComputeEPHcouplings</code><span class="sig-paren">(</span><em>PBCFirst</em>, <em>PBCLast</em>, <em>EPHAtoms</em>, <em>Restart</em>, <em>CheckPointNetCDF</em>, <em>WriteGradients=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputeEPHcouplings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputeEPHcouplings_kq">
+<code class="descname">ComputeEPHcouplings_kq</code><span class="sig-paren">(</span><em>kpoint</em>, <em>qpoint</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#Supercell_DynamicalMatrix.ComputeEPHcouplings_kq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputeEPHcouplings_kq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputeElectronStates">
+<code class="descname">ComputeElectronStates</code><span class="sig-paren">(</span><em>kpoint</em>, <em>verbose=True</em>, <em>TSrun=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#Supercell_DynamicalMatrix.ComputeElectronStates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputeElectronStates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputePhononModes">
+<code class="descname">ComputePhononModes</code><span class="sig-paren">(</span><em>FC</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputePhononModes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputePhononModes_q">
+<code class="descname">ComputePhononModes_q</code><span class="sig-paren">(</span><em>qpoint</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#Supercell_DynamicalMatrix.ComputePhononModes_q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputePhononModes_q" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.Fold2PrimitiveCell">
+<code class="descname">Fold2PrimitiveCell</code><span class="sig-paren">(</span><em>H</em>, <em>kpoint</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#Supercell_DynamicalMatrix.Fold2PrimitiveCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.Fold2PrimitiveCell" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.FoldMatrix_DoubleSum">
+<code class="descname">FoldMatrix_DoubleSum</code><span class="sig-paren">(</span><em>H</em>, <em>kpoint</em>, <em>qpoint</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#Supercell_DynamicalMatrix.FoldMatrix_DoubleSum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.FoldMatrix_DoubleSum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.GetGradient">
+<code class="descname">GetGradient</code><span class="sig-paren">(</span><em>Atom</em>, <em>Axis</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.GetGradient" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.PrepareGradients">
+<code class="descname">PrepareGradients</code><span class="sig-paren">(</span><em>onlySdir</em>, <em>kpoint</em>, <em>DeviceFirst</em>, <em>DeviceLast</em>, <em>AbsEref</em>, <em>atype</em>, <em>TSrun=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.PrepareGradients" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ReadGradients">
+<code class="descname">ReadGradients</code><span class="sig-paren">(</span><em>AbsEref=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#Supercell_DynamicalMatrix.ReadGradients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ReadGradients" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.SetDynamicAtoms">
+<code class="descname">SetDynamicAtoms</code><span class="sig-paren">(</span><em>DynamicAtoms</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.SetDynamicAtoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.SetMasses">
+<code class="descname">SetMasses</code><span class="sig-paren">(</span><em>Isotopes=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.SetMasses" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.SymmetrizeFC">
+<code class="descname">SymmetrizeFC</code><span class="sig-paren">(</span><em>radius</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#Supercell_DynamicalMatrix.SymmetrizeFC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.SymmetrizeFC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.WriteOutput">
+<code class="descname">WriteOutput</code><span class="sig-paren">(</span><em>label</em>, <em>SinglePrec</em>, <em>GammaPoint</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.WriteOutput" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.WriteDOS">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">WriteDOS</code><span class="sig-paren">(</span><em>outfile</em>, <em>bands</em>, <em>emin</em>, <em>emax</em>, <em>pts</em>, <em>smear</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#WriteDOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.WriteDOS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.WriteKpoints">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">WriteKpoints</code><span class="sig-paren">(</span><em>filename</em>, <em>klist</em>, <em>labels=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#WriteKpoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.WriteKpoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.WritePath">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">WritePath</code><span class="sig-paren">(</span><em>filename</em>, <em>path</em>, <em>steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#WritePath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.WritePath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SupercellPhonons.main">
+<code class="descclassname">Inelastica.SupercellPhonons.</code><code class="descname">main</code><span class="sig-paren">(</span><em>options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SupercellPhonons.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Inelastica.Symmetry.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Inelastica.SetupRuns.html" class="btn btn-neutral" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.3.0-7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,531 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>&lt;no title&gt; &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../index.html"/>
+        <link rel="up" title="Inelastica package" href="Inelastica.html"/>
+        <link rel="next" title="&lt;no title&gt;" href="Inelastica.SupercellPhonons.html"/>
+        <link rel="prev" title="&lt;no title&gt;" href="Inelastica.STMFD.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="Inelastica.html">Inelastica package</a> &raquo;</li>
+        
+      <li>&lt;no title&gt;</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-gen/Inelastica.SetupRuns.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-Inelastica.SetupRuns"></span><p>Functions to setup (Tran)SIESTA calculation and submit pbs jobs.
+CG: Optimization including scaling of electrode distances
+FC: For phonon and e-ph calculations
+OS: only overlap (S) calculation used to obtain e-ph coupling
+PH: Phonon frequencies and e-ph coupling
+TS: Transiesta adding electrode layers to CG geometry
+IN: (not working at the moment)</p>
+<p>The basic idea is to use an existing CG (geometry optimization) setup
+to create all the other calculation directories needed.</p>
+<dl class="function">
+<dt id="Inelastica.SetupRuns.BuildOSstruct">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">BuildOSstruct</code><span class="sig-paren">(</span><em>infile, outfile, axes=[0, 1, 2], direction=[-1, 1], displacement=0.02116708</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#BuildOSstruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.BuildOSstruct" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.CheckIfFinished">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">CheckIfFinished</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#CheckIfFinished"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.CheckIfFinished" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.CopyInputFiles">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">CopyInputFiles</code><span class="sig-paren">(</span><em>infolder</em>, <em>outfolder</em>, <em>suffixes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#CopyInputFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.CopyInputFiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.CopyTree">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">CopyTree</code><span class="sig-paren">(</span><em>templateFolder</em>, <em>newFolder</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#CopyTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.CopyTree" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.FindElectrodeSep">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">FindElectrodeSep</code><span class="sig-paren">(</span><em>dir</em>, <em>AtomsPerLayer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#FindElectrodeSep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.FindElectrodeSep" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.MakePBS">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">MakePBS</code><span class="sig-paren">(</span><em>PBStemplate</em>, <em>PBSout</em>, <em>PBSsubs</em>, <em>submitJob</em>, <em>type='TS'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#MakePBS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.MakePBS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.RemoveOutputFiles">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">RemoveOutputFiles</code><span class="sig-paren">(</span><em>folder</em>, <em>suffixes=[]</em>, <em>DryRun=True</em>, <em>FullCleanup=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#RemoveOutputFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.RemoveOutputFiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.RunTBT">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">RunTBT</code><span class="sig-paren">(</span><em>TSrun</em>, <em>Emin</em>, <em>Emax</em>, <em>NPoints</em>, <em>NumKxy_A1=1</em>, <em>NumKxy_A2=1</em>, <em>AtomsPerLayer=0</em>, <em>DeviceLayerInclLeft=0</em>, <em>DeviceLayerInclRight=0</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#RunTBT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.RunTBT" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>overwrite <span class="classifier-delimiter">:</span> <span class="classifier">(True/False) Specifies if one is allowed to write in existing</span></dt>
+<dd>directories</dd>
+</dl>
+<p>PBStemplate          : Path+foldername to a template RUN.pbs file for PBS queueing
+PBSsubs              : A list of string substitutions to be applied to the template</p>
+<blockquote>
+<div>PBS script in order to generate a new PBS script
+(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+any JOBNAME string with newjobname)</div></blockquote>
+<p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.SetupCGrun">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SetupCGrun</code><span class="sig-paren">(</span><em>templateCGrun</em>, <em>newCGrun</em>, <em>NewContactSeparation</em>, <em>AtomsPerLayer</em>, <em>IndexShift=0</em>, <em>ListL=None</em>, <em>ListR=None</em>, <em>ZmatRanges=None</em>, <em>RotationAngle=None</em>, <em>RotationCenter=None</em>, <em>RotationAxis=None</em>, <em>RotationSubset=None</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupCGrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SetupCGrun" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>templateCGrun <span class="classifier-delimiter">:</span> <span class="classifier">Path+foldername to a template CGrun folder which contain</span></dt>
+<dd>the necessary SIESTA files and a structure which is to
+be modified for a new electrode separation
+(this function writes a new STRUCT.fdf file)</dd>
+</dl>
+<p>newCGrun             : Path+foldername for the CGrun to be created
+NewContactSeparation : The new electrode separation in Ang (defined as the z-distance</p>
+<blockquote>
+<div>over the device between two electrode layers which has not
+been relaxed)</div></blockquote>
+<dl class="docutils">
+<dt>AtomsPerLayer <span class="classifier-delimiter">:</span> <span class="classifier">Number of atoms in one electrode layer in a cross-section wrt.</span></dt>
+<dd>the transport direction</dd>
+<dt>IndexShift <span class="classifier-delimiter">:</span> <span class="classifier">Number of atoms which is periodically translated from left to</span></dt>
+<dd>right during the formation of the new STRUCT.fdf from the
+template <a href="#id1"><span class="problematic" id="id2">*</span></a>.XV file</dd>
+<dt>ListL/ListR <span class="classifier-delimiter">:</span> <span class="classifier">These atom indices (SIESTA numbering) are forced to be a part of </span></dt>
+<dd>the electrodes and hence not affected by stretching</dd>
+</dl>
+<p>RotationAngle/       : Rotate whole CG geometry (or only RotationSubset if specified)
+RotationCenter/           an angle RotationAngle (in degrees) around RotationAxis vector through
+RotationAxis/             atom index RotationCenter (SIESTA numbering). These manipulations
+RotationSubset            are implemented BEFORE electrode separation is adjusted.
+overwrite            : (True/False) Specifies if one is allowed to write in existing</p>
+<blockquote>
+<div>directories</div></blockquote>
+<p>PBStemplate          : Path+foldername to a template RUN.pbs file for PBS queueing
+PBSsubs              : A list of string substitutions to be applied to the template</p>
+<blockquote>
+<div>PBS script in order to generate a new PBS script
+(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+any JOBNAME string with newjobname)</div></blockquote>
+<p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.SetupFCrun">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SetupFCrun</code><span class="sig-paren">(</span><em>CGrun</em>, <em>newFCrun</em>, <em>FCfirst</em>, <em>FClast</em>, <em>displacement=0.02</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupFCrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SetupFCrun" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>CGrun <span class="classifier-delimiter">:</span> <span class="classifier">Path+foldername to a relaxed structure CGrun folder on</span></dt>
+<dd>which to perform a FCrun calculation. This folder must
+contain an <a href="#id3"><span class="problematic" id="id4">*</span></a>.XV file</dd>
+</dl>
+<p>newFCrun             : Path+foldername for the FCrun to be created
+FCfirst              : Number of the first atom to displace (SIESTA numbering)
+FClast               : Number of the last atom to displace (SIESTA numbering)
+displacement         : Displacement
+overwrite            : (True/False) Specifies if one is allowed to write in existing</p>
+<blockquote>
+<div>directories</div></blockquote>
+<p>PBStemplate          : Path+foldername to a template RUN.pbs file for PBS queueing
+PBSsubs              : A list of string substitutions to be applied to the template</p>
+<blockquote>
+<div>PBS script in order to generate a new PBS script
+(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+any JOBNAME string with newjobname)</div></blockquote>
+<p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.SetupInelastica">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SetupInelastica</code><span class="sig-paren">(</span><em>templateInelastica</em>, <em>newInelastica</em>, <em>TSrun</em>, <em>templateInputFile</em>, <em>newInputFilename</em>, <em>PhononNCfile</em>, <em>kPoints=1</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupInelastica"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SetupInelastica" title="Permalink to this definition">¶</a></dt>
+<dd><p>templateInelastica   : Path+foldername to the latest version of Inelastica
+newInelastica        : Path+foldername for the Inelastica folder to be created
+TSrun                : Path+foldername to the TSrun where TBTRANS outputs &#8216;HSSigmaLR.nc&#8217;
+templateInputFile    : Path+filename to an Inelastica input file which holds all</p>
+<blockquote>
+<div>input variables except for the references to
+RunThis.ncfile_e and RunThis.ncfile_ph (which are appended
+automatically)</div></blockquote>
+<dl class="docutils">
+<dt>newInputFilename <span class="classifier-delimiter">:</span> <span class="classifier">Filename for the Inelastica input file to be created in folder</span></dt>
+<dd>newInelastica with the above references appended</dd>
+<dt>PhononNCfile <span class="classifier-delimiter">:</span> <span class="classifier">Path+filename to the NetCDF-file with phonon modes and couplings</span></dt>
+<dd>(RunThis.ncfile_ph)</dd>
+</dl>
+<p>kPoints              : Number of k-points written by TBTrans
+overwrite            : (True/False) Specifies if one is allowed to write in existing</p>
+<blockquote>
+<div>directories</div></blockquote>
+<p>PBStemplate          : Path+foldername to a template RUN.pbs file for PBS queueing
+PBSsubs              : A list of string substitutions to be applied to the template</p>
+<blockquote>
+<div>PBS script in order to generate a new PBS script
+(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+any JOBNAME string with newjobname)</div></blockquote>
+<p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.SetupOSrun">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SetupOSrun</code><span class="sig-paren">(</span><em>CGrun</em>, <em>newOSrun</em>, <em>displacement=0.02</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupOSrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SetupOSrun" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>CGrun <span class="classifier-delimiter">:</span> <span class="classifier">Path+foldername to a relaxed structure CGrun folder on</span></dt>
+<dd>which to run an onlyS calculation. This folder must
+contain an <a href="#id5"><span class="problematic" id="id6">*</span></a>.XV file</dd>
+</dl>
+<p>newOSrun             : Path+foldername for the onlyS folder to be created
+displacement         : Displacement used in the FCrun displacements
+overwrite            : (True/False) Specifies if one is allowed to write in existing</p>
+<blockquote>
+<div>directories</div></blockquote>
+<p>PBStemplate          : Path+foldername to a template RUN.pbs file for PBS queueing
+PBSsubs              : A list of string substitutions to be applied to the template</p>
+<blockquote>
+<div>PBS script in order to generate a new PBS script
+(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+any JOBNAME string with newjobname)</div></blockquote>
+<p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.SetupPHrun">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SetupPHrun</code><span class="sig-paren">(</span><em>newPHrun</em>, <em>wildcard</em>, <em>onlySdir='../OSrun'</em>, <em>DeviceFirst=1</em>, <em>DeviceLast=1000.0</em>, <em>FCfirst=1</em>, <em>FClast=1000.0</em>, <em>CalcCoupl=True</em>, <em>outlabel='Out'</em>, <em>PerBoundCorrFirst=-1</em>, <em>PerBoundCorrLast=-1</em>, <em>PrintSOrbitals=True</em>, <em>AuxNCfile=False</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupPHrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SetupPHrun" title="Permalink to this definition">¶</a></dt>
+<dd><p>wildcard             : Path+wildcard used in the search for FCrun folders
+onlySdir             : Path+foldername to the relevant onlyS directory
+DeviceFirst/Last     : SIESTA atom numbers for the first/last atom to be included</p>
+<blockquote>
+<div>in the device region (subspace of the Hamiltonian etc.)</div></blockquote>
+<dl class="docutils">
+<dt>FCfirst/last <span class="classifier-delimiter">:</span> <span class="classifier">SIESTA atom numbers for the first/last atom to be allowed</span></dt>
+<dd>to move in the phonon calculation</dd>
+</dl>
+<p>PerBoundCorrFirst/   : Optional argument to be passed to Phonons.py script
+PerBoundCorrLast
+PrintSOrbitals       : Optional argument to be passed to Phonons.py script
+AuxNCfile            : Optional argument to be passed to Phonons.py script
+overwrite            : (True/False) Specifies if one is allowed to write in existing</p>
+<blockquote>
+<div>directories</div></blockquote>
+<p>PBStemplate          : Path+foldername to a template RUN.pbs file for PBS queueing
+PBSsubs              : A list of string substitutions to be applied to the template</p>
+<blockquote>
+<div>PBS script in order to generate a new PBS script
+(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+any JOBNAME string with newjobname)</div></blockquote>
+<p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.SetupTSrun">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SetupTSrun</code><span class="sig-paren">(</span><em>CGrun</em>, <em>templateTSrun</em>, <em>newTSrun</em>, <em>AtomsPerLayer</em>, <em>BlockSize</em>, <em>LayersLeft</em>, <em>LayersRight</em>, <em>DeviceLayerInclLeft=0</em>, <em>DeviceLayerInclRight=0</em>, <em>IndexShift=0</em>, <em>AddLeftList=[]</em>, <em>AddRightList=[]</em>, <em>ListL=None</em>, <em>ListR=None</em>, <em>NewContactSeparation=None</em>, <em>RotationAngle=None</em>, <em>RotationCenter=None</em>, <em>RotationAxis=None</em>, <em>RotationSubset=None</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupTSrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SetupTSrun" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>CGrun <span class="classifier-delimiter">:</span> <span class="classifier">Path+foldername to a relaxed structure CGrun folder on</span></dt>
+<dd>which to run a TranSIESTA calculation. This folder must
+contain an <a href="#id7"><span class="problematic" id="id8">*</span></a>.XV file</dd>
+<dt>templateTSrun <span class="classifier-delimiter">:</span> <span class="classifier">Path+foldername to an existing TSrun folder which contains</span></dt>
+<dd>all relevant electrode calculations and <a href="#id9"><span class="problematic" id="id10">*</span></a>.fdf files
+except for STRUCT.fdf</dd>
+</dl>
+<p>newTSrun             : Path+foldername for the TSrun folder to be created
+AtomsPerLayer        : Number of atoms in the electrodes in a cross section along</p>
+<blockquote>
+<div>the transport direction</div></blockquote>
+<p>BlockSize            : Number of atoms in the electrode block from CGrun/<a href="#id11"><span class="problematic" id="id12">*</span></a>.XV file
+LayersLeft/Right     : Number of blocks to be pasted to the new enlarged STRUCT.fdf.
+DeviceLayerInclLeft  : As default TBTRANS takes all relaxed atoms to be the device</p>
+<blockquote>
+<div>If DeviceLayerInclLeft is larger than 0 then TBTRANS
+includes the specified number of electode atomic planes into
+the device region.</div></blockquote>
+<p>DeviceLayerInclRight : See DeviceLayerInclLeft
+IndexShift           : Number of atoms which is periodically translated from left to</p>
+<blockquote>
+<div>right contact BEFORE eventual electrode layers are pasted.</div></blockquote>
+<p>AddLeftList          : Add list of atoms to the left side
+AddRightList         : Add list of atoms to the right side
+ListL/ListR          : These atom indices (SIESTA numbering) are forced to be a part of</p>
+<blockquote>
+<div>the electrodes and hence not affected by stretching</div></blockquote>
+<dl class="docutils">
+<dt>NewContactSeparation <span class="classifier-delimiter">:</span> <span class="classifier">(Optional) value to set a different electrode separation</span></dt>
+<dd>than in the CG geometry</dd>
+</dl>
+<p>RotationAngle/       : Rotate whole CG geometry (or only RotationSubset if specified)
+RotationCenter/           an angle RotationAngle (in degrees) around RotationAxis vector through
+RotationAxis/             atom index RotationCenter (SIESTA numbering). These manipulations
+RotationSubset            are implemented BEFORE electrode separation is adjusted.
+overwrite            : (True/False) Specifies if one is allowed to write in existing</p>
+<blockquote>
+<div>directories</div></blockquote>
+<p>PBStemplate          : Path+foldername to a template RUN.pbs file for PBS queueing
+PBSsubs              : A list of string substitutions to be applied to the template</p>
+<blockquote>
+<div>PBS script in order to generate a new PBS script
+(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+any JOBNAME string with newjobname)</div></blockquote>
+<p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.SubmitPBS">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SubmitPBS</code><span class="sig-paren">(</span><em>workingfolder</em>, <em>pbsfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SubmitPBS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SubmitPBS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.UnitConvertTBOutput">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">UnitConvertTBOutput</code><span class="sig-paren">(</span><em>TBncfile</em>, <em>newTBncfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#UnitConvertTBOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.UnitConvertTBOutput" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.UnzipFolder">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">UnzipFolder</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#UnzipFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.UnzipFolder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.WritePBS">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">WritePBS</code><span class="sig-paren">(</span><em>PBStemplate</em>, <em>PBSout</em>, <em>PBSsubs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#WritePBS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.WritePBS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.SetupRuns.ZipFolder">
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">ZipFolder</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#ZipFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.ZipFolder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Inelastica.SupercellPhonons.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Inelastica.STMFD.html" class="btn btn-neutral" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.3.0-7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

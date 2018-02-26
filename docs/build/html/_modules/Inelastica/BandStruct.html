@@ -1,0 +1,523 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Inelastica.BandStruct &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>Inelastica.BandStruct</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Inelastica.BandStruct</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Bandstructure and Fermi surface calculator</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">Inelastica.Symmetry</span> <span class="kn">as</span> <span class="nn">SYM</span>
+<span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
+<span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
+<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">struct</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span>  <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">optparse</span> <span class="kn">import</span> <span class="n">OptionParser</span><span class="p">,</span> <span class="n">OptionGroup</span>
+<span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
+<span class="kn">import</span> <span class="nn">Inelastica.io.xmgrace</span> <span class="kn">as</span> <span class="nn">XMGR</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MM</span><span class="o">.</span><span class="n">mm</span>
+<span class="n">outerAdd</span> <span class="o">=</span> <span class="n">MM</span><span class="o">.</span><span class="n">outerAdd</span>
+<span class="n">dist</span> <span class="o">=</span> <span class="n">MM</span><span class="o">.</span><span class="n">dist</span>
+<span class="n">mysqrt</span> <span class="o">=</span> <span class="n">MM</span><span class="o">.</span><span class="n">mysqrt</span>
+
+<span class="c1"># Dummy classes for global variables</span>
+<span class="c1"># general, HS, basis and geom are a global variables</span>
+
+<span class="c1">########################################################</span>
+<span class="c1">##################### Main routine #####################</span>
+<span class="c1">########################################################</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.BandStruct.html#Inelastica.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">setupParameters</span><span class="p">()</span>
+
+    <span class="n">readxv</span><span class="p">()</span>
+    <span class="n">readHS</span><span class="p">()</span>
+    <span class="n">readbasis</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">ispin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">HS</span><span class="o">.</span><span class="n">nspin</span><span class="p">):</span>
+        <span class="n">calcBands</span><span class="p">(</span><span class="n">ispin</span><span class="p">)</span>
+        <span class="n">calcFS</span><span class="p">(</span><span class="n">ispin</span><span class="p">)</span></div>
+
+<span class="c1">########################################################</span>
+<div class="viewcode-block" id="readxv"><a class="viewcode-back" href="../../api-gen/Inelastica.BandStruct.html#Inelastica.readxv">[docs]</a><span class="k">def</span> <span class="nf">readxv</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">geom</span>
+    <span class="c1"># Read geometry from first .XV file found in dir</span>
+    <span class="n">fns</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*.XV&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fns</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;ERROR: BandStruct: More than one .XV file ... which geometry to choose???&quot;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">fns</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;ERROR: BandStruct: Error ... No .XV file found!&quot;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Reading geometry from &quot;</span><span class="si">%s</span><span class="s1">&quot; file&#39;</span> <span class="o">%</span> <span class="n">fns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">fns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">geom</span><span class="o">.</span><span class="n">sym</span> <span class="o">=</span> <span class="n">SYM</span><span class="o">.</span><span class="n">Symmetry</span><span class="p">(</span><span class="n">fns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">onlyLatticeSym</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">NNbasis</span> <span class="o">!=</span> <span class="n">geom</span><span class="o">.</span><span class="n">natoms</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;ERROR: Siesta cell does not contain one unit cell&quot;</span>
+        <span class="n">kuk</span></div>
+
+<span class="c1">########################################################</span>
+<div class="viewcode-block" id="readbasis"><a class="viewcode-back" href="../../api-gen/Inelastica.BandStruct.html#Inelastica.readbasis">[docs]</a><span class="k">def</span> <span class="nf">readbasis</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">basis</span>
+    <span class="n">fn</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;RUN.fdf&#39;</span><span class="p">)</span>
+    <span class="n">basis</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">BuildBasis</span><span class="p">(</span><span class="n">fn</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">NN</span><span class="p">,</span> <span class="n">HS</span><span class="o">.</span><span class="n">lasto</span><span class="p">)</span></div>
+
+<span class="c1">########################################################</span>
+<div class="viewcode-block" id="readHS"><a class="viewcode-back" href="../../api-gen/Inelastica.BandStruct.html#Inelastica.readHS">[docs]</a><span class="k">def</span> <span class="nf">readHS</span><span class="p">():</span>
+    <span class="c1"># Setup H, S and self-energies</span>
+    <span class="k">global</span> <span class="n">HS</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*.TSHS&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;ERROR: BandStruct: More than one .TSHS file ... which to choose???&quot;</span>
+        <span class="n">kuk</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;ERROR: BandStruct: No .TSHS file ???&quot;</span>
+        <span class="n">kuk</span>
+    <span class="n">HS</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">HS</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+    
+
+<span class="c1">########################################################</span>
+<div class="viewcode-block" id="calcFS"><a class="viewcode-back" href="../../api-gen/Inelastica.BandStruct.html#Inelastica.calcFS">[docs]</a><span class="k">def</span> <span class="nf">calcFS</span><span class="p">(</span><span class="n">ispin</span><span class="p">):</span>
+    <span class="c1"># Calculate Fermi-surface</span>
+    <span class="n">NNk</span> <span class="o">=</span> <span class="n">general</span><span class="o">.</span><span class="n">NNk</span>    
+    <span class="n">bands</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">NNk</span><span class="p">,</span><span class="n">NNk</span><span class="p">,</span><span class="n">NNk</span><span class="p">,</span><span class="n">HS</span><span class="o">.</span><span class="n">N</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">NNk</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">NNk</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">iz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">NNk</span><span class="p">):</span>
+                <span class="c1"># &quot;unitless&quot; k-vect</span>
+                <span class="n">kpnt</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ix</span><span class="p">,</span><span class="n">iy</span><span class="p">,</span><span class="n">iz</span><span class="p">],</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">NNk</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">HS</span><span class="o">.</span><span class="n">setkpoint</span><span class="p">(</span><span class="n">kpnt</span><span class="p">)</span>
+                <span class="nb">eval</span><span class="p">,</span><span class="n">evec</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">LA</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">HS</span><span class="o">.</span><span class="n">S</span><span class="p">),</span><span class="n">HS</span><span class="o">.</span><span class="n">H</span><span class="p">[</span><span class="n">ispin</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]))</span>
+                <span class="n">ipiv</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="nb">eval</span><span class="p">)</span>
+                <span class="n">bands</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span><span class="n">iy</span><span class="p">,</span><span class="n">iz</span><span class="p">,:]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">[</span><span class="n">ipiv</span><span class="p">]</span>
+        <span class="n">SIO</span><span class="o">.</span><span class="n">printDone</span><span class="p">(</span><span class="n">ix</span><span class="p">,</span><span class="n">NNk</span><span class="p">,</span><span class="s1">&#39;Fermi Surface: &#39;</span><span class="p">)</span>
+    <span class="n">writeFS</span><span class="p">(</span><span class="n">ispin</span><span class="p">,</span><span class="n">NNk</span><span class="p">,</span><span class="n">bands</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="writeFS"><a class="viewcode-back" href="../../api-gen/Inelastica.BandStruct.html#Inelastica.writeFS">[docs]</a><span class="k">def</span> <span class="nf">writeFS</span><span class="p">(</span><span class="n">ispin</span><span class="p">,</span> <span class="n">NNk</span><span class="p">,</span> <span class="n">bands</span><span class="p">):</span>
+    <span class="c1"># Write output</span>
+    <span class="k">if</span> <span class="n">HS</span><span class="o">.</span><span class="n">nspin</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">sspin</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;.up&#39;</span><span class="p">,</span><span class="s1">&#39;.down&#39;</span><span class="p">][</span><span class="n">ispin</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sspin</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="c1"># How many bands to include ?</span>
+    <span class="n">indx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">HS</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">bands</span><span class="p">[:,:,:,</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span><span class="o">&lt;</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">)</span><span class="o">*</span>\
+                     <span class="p">(</span><span class="n">bands</span><span class="p">[:,:,:,</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span><span class="o">&gt;</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)):</span>
+            <span class="n">indx</span> <span class="o">+=</span> <span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="s1">&#39;FermiSurface&#39;</span><span class="o">+</span><span class="n">sspin</span><span class="o">+</span><span class="s1">&#39;.BXSF&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">BEGIN_INFO</span>
+<span class="s2">   # Band-XCRYSDEN-Structure-File </span>
+<span class="s2">   # Generated by Inelastica.BandStruct</span>
+<span class="s2">   # Launch as: xcrysden --bxsf example.bxsf</span>
+<span class="s2">   #</span>
+<span class="s2">   Fermi Energy: 0.0000</span>
+<span class="s2">END_INFO</span>
+<span class="s2">BEGIN_BLOCK_BANDGRID_3D</span>
+<span class="s2">   What_is_this_text</span>
+<span class="s2">   BEGIN_BANDGRID_3D_simple_example</span>
+<span class="s2">     </span><span class="si">%i</span><span class="s2">&quot;&quot;&quot;</span><span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="n">indx</span><span class="p">))</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">     </span><span class="si">%i</span><span class="s2"> </span><span class="si">%i</span><span class="s2"> </span><span class="si">%i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">NNk</span><span class="p">,</span><span class="n">NNk</span><span class="p">,</span><span class="n">NNk</span><span class="p">))</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">     0.0 0.0 0.0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">rlat</span> <span class="o">=</span> <span class="p">[</span><span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">b1</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">b2</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">b3</span><span class="p">]</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">     </span><span class="si">%f</span><span class="s2"> </span><span class="si">%f</span><span class="s2"> </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">rlat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">rlat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">rlat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">     </span><span class="si">%f</span><span class="s2"> </span><span class="si">%f</span><span class="s2"> </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">rlat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">rlat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">rlat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">     </span><span class="si">%f</span><span class="s2"> </span><span class="si">%f</span><span class="s2"> </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">rlat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">rlat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">rlat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">indx</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   BAND:  </span><span class="si">%i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">ii</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NNk</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NNk</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">iz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NNk</span><span class="p">):</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%f</span><span class="s1"> &#39;</span><span class="o">%</span><span class="n">bands</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span><span class="n">iy</span><span class="p">,</span><span class="n">iz</span><span class="p">,</span><span class="n">ii</span><span class="p">])</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">   END_BANDGRID_3D</span>
+<span class="s2">END_BLOCK_BANDGRID_3D</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1">########################################################</span>
+<div class="viewcode-block" id="calcBands"><a class="viewcode-back" href="../../api-gen/Inelastica.BandStruct.html#Inelastica.calcBands">[docs]</a><span class="k">def</span> <span class="nf">calcBands</span><span class="p">(</span><span class="n">ispin</span><span class="p">):</span>
+    <span class="c1"># Calculate bandstructure along high symmetry directions</span>
+    <span class="c1"># what = [[&quot;text&quot;,k-direction, k-origin, Num k-points], ...]</span>
+    <span class="n">what</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">what</span><span class="p">()</span>
+    
+    <span class="n">bands</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">txt</span><span class="p">,</span> <span class="n">kdir</span><span class="p">,</span> <span class="n">korig</span><span class="p">,</span> <span class="n">Nk</span> <span class="ow">in</span> <span class="n">what</span><span class="p">:</span>
+        <span class="n">ev</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Nk</span><span class="p">,</span><span class="n">HS</span><span class="o">.</span><span class="n">N</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nk</span><span class="p">):</span>
+            <span class="n">kpnt</span> <span class="o">=</span> <span class="n">korig</span> <span class="o">+</span> <span class="n">kdir</span><span class="o">*</span><span class="p">(</span><span class="n">ii</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">Nk</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="c1"># Change to &quot;unitless&quot; k-vect</span>
+            <span class="n">kpnt2</span> <span class="o">=</span> <span class="n">mm</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">a1</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">a2</span><span class="p">,</span><span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">a3</span><span class="p">]),</span> <span class="n">kpnt</span><span class="p">)</span>
+
+            <span class="n">HS</span><span class="o">.</span><span class="n">setkpoint</span><span class="p">(</span><span class="n">kpnt2</span><span class="p">)</span>
+            <span class="nb">eval</span><span class="p">,</span><span class="n">evec</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">LA</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">HS</span><span class="o">.</span><span class="n">S</span><span class="p">),</span><span class="n">HS</span><span class="o">.</span><span class="n">H</span><span class="p">[</span><span class="n">ispin</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]))</span>
+            <span class="n">ipiv</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="nb">eval</span><span class="p">)</span>
+            <span class="n">ev</span><span class="p">[</span><span class="n">ii</span><span class="p">,:]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">[</span><span class="n">ipiv</span><span class="p">]</span>
+        <span class="n">bands</span> <span class="o">+=</span> <span class="p">[</span><span class="n">ev</span><span class="p">]</span>
+    
+    <span class="n">writeBands</span><span class="p">(</span><span class="n">ispin</span><span class="p">,</span><span class="n">what</span><span class="p">,</span><span class="n">bands</span><span class="p">)</span></div>
+
+
+<span class="c1">########################################################</span>
+<div class="viewcode-block" id="writeBands"><a class="viewcode-back" href="../../api-gen/Inelastica.BandStruct.html#Inelastica.writeBands">[docs]</a><span class="k">def</span> <span class="nf">writeBands</span><span class="p">(</span><span class="n">ispin</span><span class="p">,</span><span class="n">what</span><span class="p">,</span><span class="n">bands</span><span class="p">):</span>
+    <span class="c1"># Write output</span>
+    <span class="k">if</span> <span class="n">HS</span><span class="o">.</span><span class="n">nspin</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">sspin</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;.up&#39;</span><span class="p">,</span><span class="s1">&#39;.down&#39;</span><span class="p">][</span><span class="n">ispin</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sspin</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">Graphs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">jj</span><span class="p">,</span>  <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">what</span><span class="p">):</span>
+        <span class="n">f</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">elem</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">sspin</span><span class="o">+</span><span class="s1">&#39;.dat&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">elem</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">elem</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">iColor</span><span class="p">,</span> <span class="n">Datasets</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="mi">0</span><span class="p">,:])):</span>
+            <span class="c1"># Choose bands within +-5 eV from Ef</span>
+            <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">bands</span><span class="p">[</span><span class="n">jj</span><span class="p">][:,</span><span class="n">ii</span><span class="p">]</span><span class="o">&lt;</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">)</span><span class="o">*</span>\
+                         <span class="p">(</span><span class="n">bands</span><span class="p">[</span><span class="n">jj</span><span class="p">][:,</span><span class="n">ii</span><span class="p">]</span><span class="o">&gt;</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">))</span><span class="o">&gt;</span><span class="mf">1e-5</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"># Band </span><span class="si">%i</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">ii</span><span class="p">))</span>                
+                <span class="k">for</span> <span class="n">kk</span><span class="p">,</span><span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bands</span><span class="p">[</span><span class="n">jj</span><span class="p">][:,</span><span class="n">ii</span><span class="p">]):</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="s2"> </span><span class="si">%e</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">kk</span><span class="p">,</span><span class="n">data</span><span class="p">))</span>
+                <span class="n">Datasets</span> <span class="o">+=</span> <span class="p">[</span><span class="n">XMGR</span><span class="o">.</span><span class="n">XYset</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">bands</span><span class="p">[</span><span class="n">jj</span><span class="p">][:,</span><span class="n">ii</span><span class="p">],</span><span class="n">Lcolor</span><span class="o">=</span><span class="n">iColor</span><span class="p">)]</span>
+                <span class="n">iColor</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">g</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">Datasets</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">AddDatasets</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">SetSubtitle</span><span class="p">(</span><span class="n">what</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">g</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">majorUnit</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>     
+        <span class="k">if</span> <span class="n">jj</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span><span class="n">majorUnit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>\
+                           <span class="nb">max</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">,</span><span class="nb">min</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">majorUnit</span><span class="o">=</span><span class="mf">1e10</span><span class="p">,</span><span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>\
+                           <span class="nb">max</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">,</span><span class="nb">min</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)</span>
+        <span class="n">Graphs</span><span class="o">+=</span><span class="p">[</span><span class="n">g</span><span class="p">]</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/BandStruct.agr&#39;</span><span class="p">,</span><span class="n">Graphs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">Graphs</span><span class="p">)):</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">AddGraphs</span><span class="p">(</span><span class="n">Graphs</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">ArrangeGraphs</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Graphs</span><span class="p">),</span><span class="n">ny</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">vspace</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="c1"># Finally, write the plot file</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">ShowTimestamp</span><span class="p">()</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">Print2File</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/BandStruct.eps&#39;</span><span class="p">)</span></div>
+
+
+<span class="c1">###########################################################</span>
+<div class="viewcode-block" id="setupParameters"><a class="viewcode-back" href="../../api-gen/Inelastica.BandStruct.html#Inelastica.setupParameters">[docs]</a><span class="k">def</span> <span class="nf">setupParameters</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">general</span>
+    
+    <span class="n">usage</span> <span class="o">=</span> <span class="s2">&quot;usage: %prog [options] DestinationDirectory&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculation of Fermi surface.</span>
+
+<span class="s2">For help use --help!</span>
+<span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">OptionParser</span><span class="p">(</span><span class="n">usage</span><span class="p">,</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
+    <span class="n">EC</span> <span class="o">=</span> <span class="n">OptionGroup</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="s2">&quot;Options for Fermi surface&quot;</span><span class="p">)</span>
+    <span class="n">EC</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-N&quot;</span><span class="p">,</span> <span class="s2">&quot;--NumPoints&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;NNk&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">,</span>
+                  <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of k-points for Fermi-surface calculation [</span><span class="si">%d</span><span class="s2">efault]&quot;</span><span class="p">)</span>
+    <span class="n">EC</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="s2">&quot;--fdf&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;fdfFile&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;./RUN.fdf&#39;</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">,</span>
+                  <span class="n">help</span><span class="o">=</span><span class="s2">&quot;fdf file used for transiesta calculation [</span><span class="si">%d</span><span class="s2">efault]&quot;</span><span class="p">)</span>
+    <span class="n">EC</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;--min&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;eMin&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=-</span><span class="mf">5.0</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">,</span>
+                  <span class="n">help</span><span class="o">=</span><span class="s2">&quot;min of energy range to plot [</span><span class="si">%d</span><span class="s2">efault]&quot;</span><span class="p">)</span>
+    <span class="n">EC</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="s2">&quot;--max&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;eMax&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">,</span>
+                  <span class="n">help</span><span class="o">=</span><span class="s2">&quot;max of energy range to plot [</span><span class="si">%d</span><span class="s2">efault]&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option_group</span><span class="p">(</span><span class="n">EC</span><span class="p">)</span>
+    
+    <span class="p">(</span><span class="n">general</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">description</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">fdfFile</span><span class="p">):</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)&quot;</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="n">args</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">!=</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: You need to specify destination directory&#39;</span><span class="p">)</span>
+    <span class="n">general</span><span class="o">.</span><span class="n">DestDir</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">BandStruct : Creating folder </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: destination directory </span><span class="si">%s</span><span class="s1"> already exist!&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">myprint</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span><span class="nb">file</span><span class="p">):</span>
+        <span class="c1"># Save in parameter file</span>
+        <span class="k">print</span> <span class="n">arg</span>
+        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">arg</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">myopen</span><span class="p">:</span>
+        <span class="c1"># Double stdout to RUN.out and stdout</span>
+        <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">fo</span> <span class="o">=</span> <span class="n">myopen</span><span class="p">()</span>
+    <span class="n">fo</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">fo</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/RUN.out&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">fo</span>
+
+    <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Parameters&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>    
+    <span class="n">argv</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">:</span> <span class="n">argv</span><span class="o">+=</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">ii</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span><span class="nb">file</span><span class="p">)</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;##################################################################################&#39;</span><span class="p">,</span><span class="nb">file</span><span class="p">)</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;## Band structure &#39;</span><span class="p">,</span><span class="nb">file</span><span class="p">)</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;fdfFile            : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">fdfFile</span><span class="p">,</span><span class="nb">file</span><span class="p">)</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;Number of k-points : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">NNk</span><span class="p">,</span><span class="nb">file</span><span class="p">)</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;##################################################################################&#39;</span><span class="p">,</span><span class="nb">file</span><span class="p">)</span>
+    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    
+<span class="c1">##################### Start main routine #####################</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.3.0-7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
