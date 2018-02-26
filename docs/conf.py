@@ -79,8 +79,7 @@ rst_epilog = ''.join(open('epilog.dummy').readlines())
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
-#language = u'en'
+language = u'en'
 
 # Add __init__ classes to the documentation
 autoclass_content = 'class'

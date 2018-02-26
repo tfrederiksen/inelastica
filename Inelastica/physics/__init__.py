@@ -1,3 +1,20 @@
+"""
+============================================
+Physical objects (:mod:`Inelastica.physics`)
+============================================
+
+.. module:: Inelastica.physics
+
+Available classes
+=================
+
+.. autosummary::
+   :toctree:
+
+   kmesh
+
+"""
+
 from .mesh import *
 from .constants import *
 

@@ -1152,7 +1152,7 @@ def ExtractPDOS(filename,outfile,index=[],atom_index=[],species=[],nlist=[],llis
 # (k-resolved PDOS is available from a modified SIESTA by D. Sanchez-Portal)
 
 def GetPROJBANDSnbands(dom):
-    "Returns the (integer) number of bands"
+    """ Returns the (integer) number of bands """
     node = dom.getElementsByTagName('nbands')[0] # First (and only) entry
     return int(node.childNodes[0].data)
 

@@ -1,3 +1,6 @@
+import time, math, os, string
+import numpy as N
+
 """
 ###########################################################################
 #   Module WriteXMGR.py / Inelastica.io.xmgrace                           #
@@ -50,9 +53,6 @@ A more detailed demonstration of this module can be generated
 by typing \"python WriteXMGR.py\" in the command promt. This
 will create a file \"test.agr\".
 """
-
-import time, math, os, string
-import numpy as N
 
 symbols = {'\alpha':'\\f{Symbol}a',
            '\beta':'\\f{Symbol}b',

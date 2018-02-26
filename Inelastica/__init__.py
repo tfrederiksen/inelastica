@@ -1,3 +1,35 @@
+"""
+==============================
+Inelastica (:mod:`Inelastica`)
+==============================
+
+.. module:: Inelastica
+
+All classes defined in Inelastica.
+
+All classes
+===========
+
+.. autosummary::
+   :toctree:
+
+   Geom
+   SpectralMatrix
+   savedData
+   step
+   SigDir
+   SavedSigClass
+   ElectrodeSelfEnergy
+   GF
+   FCrun
+   OTSrun
+   OSrun
+   DynamicalMatrix
+   Supercell_DynamicalMatrix
+   Symmetry
+
+"""
+
 # Import version string and the major, minor, micro as well
 from . import info
 from .info import git_revision as __git_revision__

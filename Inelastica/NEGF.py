@@ -173,10 +173,10 @@ class ElectrodeSelfEnergy:
         """
         Get self-energy for specified 2-D surface k-point 
         Copy out g0 (surface greens function for smaller electrode calculation) 
-          onto NA1*NA2*nuo matrix with the idiotic (TS) orbital order 
-          a1(0,0) a1(1,0) .. a1(0,1) a1(1,1) ...... a2(0,0)
-          Where a1, a2 ... are the atoms in the electrode calculation
-          and (0,0) (1,0) indicate the replicating position.
+        onto NA1*NA2*nuo matrix with the idiotic (TS) orbital order 
+        a1(0,0) a1(1,0) .. a1(0,1) a1(1,1) ...... a2(0,0)
+        Where a1, a2 ... are the atoms in the electrode calculation
+        and (0,0) (1,0) indicate the replicating position.
         
         This gives self-energy from the solution of:
         Gs = (E S - H -Sigma)^-1 for Sigma
