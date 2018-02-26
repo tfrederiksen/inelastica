@@ -65,11 +65,23 @@ Indices
 
    install
    examples
-   cite
-   publications
    faq
    more
 
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: Publications
+
+   cite
+   publications
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: Reference documentation
+
+   api
 
 
 .. |buildstatus| image:: https://travis-ci.org/tfrederiksen/inelastica.svg
