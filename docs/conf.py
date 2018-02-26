@@ -28,10 +28,28 @@ project = u'Inelastica'
 author = u'Magnus Paulsson and Thomas Frederiksen'
 copyright = u'2002-2018, ' + author
 
+# The version info for the project you're documenting, acts as replacement for
+# |version| and |release|, also used in various other places throughout the
+# built documents.
 # The short X.Y version
-version = u'1.3'
+#version = u'1.3'
 # The full version, including alpha/beta/rc tags
-release = u'1.3.0'
+#release = u'1.3.0'
+try:
+    import subprocess
+    pv = subprocess.Popen(['git', 'describe','--tags'],
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = pv.communicate()
+    out = out[1:]
+    out = out.split('-')
+    if len(out) > 1:
+        version = '-'.join(out[0:2])
+    else:
+        version = out[0]
+except:
+    version = 'unknown'
+release = version
+
 # The default language to highlight source code in.
 highlight_language = 'python'
 
