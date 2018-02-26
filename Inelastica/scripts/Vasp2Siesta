@@ -8,7 +8,7 @@ import sys
 # File to read
 fn = sys.argv[1]
 
-label,scalefactor,vectors,specieslabels,speciesnumbers,xyz = VIO.ReadCONTCAR(fn)
+label, scalefactor, vectors, specieslabels, speciesnumbers, xyz = VIO.ReadCONTCAR(fn)
 
 anr = []
 snr = []
@@ -44,6 +44,6 @@ for i in range(len(xyz)):
     for j in range(3):
         if xyz[i][j]-vectors[j][j]>0: xyz[i][j] -= vectors[j][j]
         if xyz[i][j]<0: xyz[i][j] += vectors[j][j]
-        
-SIO.WriteXVFile(fn+'.XV',vectors,snr,anr,xyz)
-SIO.WriteXYZFile(fn+'.xyz',anr,xyz)
+
+SIO.WriteXVFile(fn+'.XV', vectors, snr, anr, xyz)
+SIO.WriteXYZFile(fn+'.xyz', anr, xyz)

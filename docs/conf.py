@@ -28,9 +28,16 @@ project = u'Inelastica'
 author = u'Magnus Paulsson and Thomas Frederiksen'
 copyright = u'2002-2018, ' + author
 
+# The version info for the project you're documenting, acts as replacement for
+# |version| and |release|, also used in various other places throughout the
+# built documents.
+# The short X.Y version
+#version = u'1.3'
+# The full version, including alpha/beta/rc tags
+#release = u'1.3.0'
 try:
     import subprocess
-    pv = subprocess.Popen(['git', 'describe','--tags'],
+    pv = subprocess.Popen(['git', 'describe', '--tags'],
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = pv.communicate()
     out = out[1:]
@@ -90,8 +97,7 @@ rst_epilog = ''.join(open('epilog.dummy').readlines())
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
-#language = u'en'
+language = u'en'
 
 # Add __init__ classes to the documentation
 autoclass_content = 'class'
@@ -229,5 +235,3 @@ todo_include_todos = True
 class_members_toctree = False
 # If this is false we do not have double method sections
 numpydoc_show_class_members = False
-
-

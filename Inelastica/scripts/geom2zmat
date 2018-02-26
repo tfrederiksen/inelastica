@@ -10,25 +10,25 @@ Currently supports XV, xyz, fdf, ANI, and mkl.
 """
 
 parser = argparse.ArgumentParser(description=description)
-parser.add_argument('GIN',help='Input geometry file')
-parser.add_argument('GOUT',help='Output zmat-fdf filename')
-parser.add_argument('-F', '--first',type=int,default=1,
+parser.add_argument('GIN', help='Input geometry file')
+parser.add_argument('GOUT', help='Output zmat-fdf filename')
+parser.add_argument('-F', '--first', type=int, default=1,
                     help='First atom in Z-matrix range (default: %(default)s)')
-parser.add_argument('-L', '--last',type=int,default=1,
+parser.add_argument('-L', '--last', type=int, default=1,
                     help='Last atom in Z-matrix range (default: %(default)s)')
-parser.add_argument('-x', '--A1',type=int,default=1,
+parser.add_argument('-x', '--A1', type=int, default=1,
                     help='Repeat unitcell along lattice vector A1')
-parser.add_argument('-y', '--A2',type=int,default=1,
+parser.add_argument('-y', '--A2', type=int, default=1,
                     help='Repeat unitcell along lattice vector A2')
-parser.add_argument('-z', '--A3',type=int,default=1,
+parser.add_argument('-z', '--A3', type=int, default=1,
                     help='Repeat unitcell along lattice vector A3')
 args = parser.parse_args()
 
-rep = [args.A1,args.A2,args.A3]
-print 'Converting %s to %s with repetition'%(args.GIN,args.GOUT),rep
+rep = [args.A1, args.A2, args.A3]
+print 'Converting %s to %s with repetition'%(args.GIN, args.GOUT), rep
 g = MG.Geom(args.GIN)
 for i in range(3):
     if rep[i]>1:
-        g.repeteGeom(g.pbc[i],rep=rep[i])
+        g.repeteGeom(g.pbc[i], rep=rep[i])
         g.pbc[i]=g.pbc[i]*rep[i]
-g.writeFDFZmat(args.GOUT,args.first,args.last)
+g.writeFDFZmat(args.GOUT, args.first, args.last)

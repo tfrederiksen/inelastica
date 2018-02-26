@@ -10,23 +10,23 @@ import argparse
 start = datetime.now()
 
 parser = argparse.ArgumentParser(description='Computing density of states (DOS) from a band calculation on its underlying k-mesh (assuming equal weights to each k-point).')
-parser.add_argument('NC',help='Input netCDF file from SupercellPhonons (containing eigenvalues and k-grid)')
-parser.add_argument('XMG',help='Output xmgrace filename (to be created)')
-parser.add_argument('-a','--emin',type=float,default=0.0,
+parser.add_argument('NC', help='Input netCDF file from SupercellPhonons (containing eigenvalues and k-grid)')
+parser.add_argument('XMG', help='Output xmgrace filename (to be created)')
+parser.add_argument('-a', '--emin', type=float, default=0.0,
                help='Energy minimum (default: %(default)s eV)')
-parser.add_argument('-b','--emax',type=float,default=1.0,
+parser.add_argument('-b', '--emax', type=float, default=1.0,
                help='Energy maximum (default: %(default)s eV)')
-parser.add_argument('-n','--pts',type=int,default=1001,
+parser.add_argument('-n', '--pts', type=int, default=1001,
                help='Points on energy grid (default: %(default)s eV)')
-parser.add_argument('-s','--smear',type=float, default=1e-4,
+parser.add_argument('-s', '--smear', type=float, default=1e-4,
                help='Gaussian smearing of eigenvalues (default: %(default)s eV)')
 
 args = parser.parse_args()
 
-SP.ComputeDOS(args.NC,args.XMG,
-              emin=args.emin,emax=args.emax,pts=args.pts,
+SP.ComputeDOS(args.NC, args.XMG,
+              emin=args.emin, emax=args.emax, pts=args.pts,
               smear=args.smear)
 
 dT = datetime.now()-start
 
-CF.PrintScriptSummary(sys.argv,dT)
+CF.PrintScriptSummary(sys.argv, dT)

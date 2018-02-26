@@ -2,7 +2,7 @@ def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
     from numpy.distutils.system_info import get_info
     #from os.path import join as osp_join
-    
+
     config = Configuration('fortran', parent_package, top_path)
 
     # Build the generic fortran helper routines

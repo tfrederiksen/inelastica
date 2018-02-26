@@ -4,16 +4,16 @@ import Inelastica.SetupRuns as SR
 import argparse
 
 parser = argparse.ArgumentParser(description='Tool for generating a FCrun folder starting from CGrun')
-parser.add_argument('CGrun',metavar='CG',
+parser.add_argument('CGrun', metavar='CG',
                     help='Input CGrun (or TSrun) directory name')
-parser.add_argument('FCrun',metavar='FC',
+parser.add_argument('FCrun', metavar='FC',
                     help='Output FCrun directory name (to be created)')
-parser.add_argument('-F', '--FCfirst',dest='FCfirst',type=int,default=1,
+parser.add_argument('-F', '--FCfirst', dest='FCfirst', type=int, default=1,
                     help='First dynamic atom (default: %(default)s)')
-parser.add_argument('-L', '--FClast',dest='FClast',type=int,default=1,
+parser.add_argument('-L', '--FClast', dest='FClast', type=int, default=1,
                     help='Last dynamic atom (default: %(default)s)')
-parser.add_argument('-d', '--displacement',dest='displacement',type=float,default=0.02,
+parser.add_argument('-d', '--displacement', dest='displacement', type=float, default=0.02,
                     help='Finite displacement amplitude (default: %(default)s Ang')
 args = parser.parse_args()
 
-SR.SetupFCrun(args.CGrun,args.FCrun,args.FCfirst,args.FClast,args.displacement)
+SR.SetupFCrun(args.CGrun, args.FCrun, args.FCfirst, args.FClast, args.displacement)

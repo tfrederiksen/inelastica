@@ -85,7 +85,7 @@ Known problems
 Problems in version 1.1
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Using more than one basis set for one type of atom is problematic. The reason is that the *pyTBT* and *EigenChannel* scripts identify the basis for each atom using only the atom number, i.e., not the internal numbering used inside Siesta. This should be solved in `release 1.2 <releases_>`_.
+Using more than one basis set for one type of atom is problematic. The reason is that the *pyTBT* and *EigenChannel* scripts identify the basis for each atom using only the atom number, i.e., not the internal numbering used inside Siesta. This should be solved in `release 1.3 <releases_>`_.
 
 Problems in version 1.0 (but solved in 1.1)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

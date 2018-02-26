@@ -10,12 +10,3 @@ different routines for electronic structure calculations.
 
    api-gen/Inelastica
 
-.. autosummary::
-   :toctree: api-gen
-   :hidden:
-
-   Inelastica.*
-
-
-
-
