@@ -2,4 +2,3 @@
 
 import Inelastica.NEB as NEB
 NEB.main()
-

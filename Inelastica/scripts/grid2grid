@@ -2,7 +2,10 @@
 """
 Read DRHO, RHO, VT, VH and TOCH files from siesta and output reasonable file formats.
 """
-import sys, profile, glob, os
+import sys
+import profile
+import glob
+import os
 #sys.path+=['../..']
 
 import numpy as N
@@ -14,6 +17,8 @@ from optparse import OptionParser
 
 #####################################################
 # Read options
+
+
 def readOptions():
     usage = "usage: %prog [options] infile.format outfile.format"
     description = """
@@ -26,7 +31,7 @@ TODO: Add more formats and make sure what the units are.
 
 For help use --help!
 """
-    parser = OptionParser(usage,description=description)
+    parser = OptionParser(usage, description=description)
     (general, args) = parser.parse_args()
     print description
     if len(args)!=2:
@@ -35,7 +40,9 @@ For help use --help!
 
 #####################################################
 # Main program
-def main():    
+
+
+def main():
     # Read arguments
     general, parser, args = readOptions()
     infile, outfile = args[0], args[1]
@@ -51,24 +58,26 @@ def main():
         fns=[path+'/RUN.fdf']
 
     geom = MG.Geom(fns[0])
-            
-    file=open(infile,'r')
-    tmp=SIO.ReadFortranBin(file,'d',9)
-    cell=N.array([tmp[0:3],tmp[3:6],tmp[6:9]])
+
+    file=open(infile, 'r')
+    tmp=SIO.ReadFortranBin(file, 'd', 9)
+    cell=N.array([tmp[0:3], tmp[3:6], tmp[6:9]])
     print cell
-    Nx,Ny,Nz,Nspin = SIO.ReadFortranBin(file,'i',4)
-    
-    data=N.zeros((Nx,Ny,Nz),N.float32)
+    Nx, Ny, Nz, Nspin = SIO.ReadFortranBin(file, 'i', 4)
+
+    data=N.zeros((Nx, Ny, Nz), N.float32)
     for iz in range(Nz):
         for iy in range(Ny):
-	    data[:,iy,iz]=SIO.ReadFortranBin(file,'f',Nx)
+            data[:, iy, iz]=SIO.ReadFortranBin(file, 'f', Nx)
     file.close()
-    
+
     if outformat == '.cube':
-        writecube(outfile,data,Nx,Ny,Nz,cell,geom)
+        writecube(outfile, data, Nx, Ny, Nz, cell, geom)
 
 ################# Write cube file ######################
-def writecube(fn,YY,nx,ny,nz,cell,geom):
+
+
+def writecube(fn, YY, nx, ny, nz, cell, geom):
     """
     Write data to cube file.
     """
@@ -77,22 +86,22 @@ def writecube(fn,YY,nx,ny,nz,cell,geom):
     anr=geom.anr
     cellB = cell/PC.Bohr2Ang
 
-    foR=file(fn,'w')
+    foR=file(fn, 'w')
     foR.write('Grid data\n%s\n'%fn)
-    foR.write('%i %f %f %f\n'% (len(xyz),0,0,0))
-    foR.write('%i %f %f %f\n'% (nx,cell[0,0]/nx,cell[0,1]/nx,cell[0,2]/nx))
-    foR.write('%i %f %f %f\n'% (ny,cell[1,0]/ny,cell[1,1]/ny,cell[1,2]/nz))
-    foR.write('%i %f %f %f\n'% (nz,cell[2,0]/nx,cell[2,1]/ny,cell[2,2]/nz))
+    foR.write('%i %f %f %f\n'% (len(xyz), 0, 0, 0))
+    foR.write('%i %f %f %f\n'% (nx, cell[0, 0]/nx, cell[0, 1]/nx, cell[0, 2]/nx))
+    foR.write('%i %f %f %f\n'% (ny, cell[1, 0]/ny, cell[1, 1]/ny, cell[1, 2]/nz))
+    foR.write('%i %f %f %f\n'% (nz, cell[2, 0]/nx, cell[2, 1]/ny, cell[2, 2]/nz))
     # Write atom coordinates
     for ii in range(len(xyz)):
-        foR.write('%i %f '% (anr[ii],0.0))
-        tmp=xyz[ii,:]/PC.Bohr2Ang
-        foR.write('%f %f %f\n'% (tmp[0],tmp[1],tmp[2]))
+        foR.write('%i %f '% (anr[ii], 0.0))
+        tmp=xyz[ii, :]/PC.Bohr2Ang
+        foR.write('%f %f %f\n'% (tmp[0], tmp[1], tmp[2]))
     # Write wavefunction
     for ix in range(nx):
         for iy in range(ny):
             for iz in range(nz):
-                foR.write('%1.3e\n' % YY[ix,iy,iz])
+                foR.write('%1.3e\n' % YY[ix, iy, iz])
     foR.close()
 
 #####################################################

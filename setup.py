@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
-import sys, time
+import sys
+import time
 import subprocess
 
 # TODO: Compile F90helpers
 # TODO: Check prerequireies
 # TODO: Testcalculations
+
 
 def test_prereq():
 
@@ -40,9 +42,9 @@ def test_prereq():
     st = time.time()
 
     # For release 600!
-    a = N.ones((600,600),N.complex)
-    b = N.dot(a,a)
-    c,d = LA.eigh(b)
+    a = N.ones((600, 600), N.complex)
+    b = N.dot(a, a)
+    c, d = LA.eigh(b)
     en = time.time()
     if en - st > 4.0:
         print "#### Warning ####"
@@ -85,6 +87,8 @@ VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 GIT_REVISION = "unknown"
 
 # Generate configuration
+
+
 def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration(None, parent_package, top_path)
@@ -169,12 +173,12 @@ write_version()
 # Main setup of python modules
 setup(name='Inelastica',
       # version=git_version()[0],
-      requires = ['python (>=2.7)','numpy (>=1.8)', 'scipy (>=0.17)', 'netCDF4 (>=1.2.7)'],
-      description='Python tools for SIESTA/TranSIESTA', 
-      author='Magnus Paulsson and Thomas Frederiksen', 
-      author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',  
-      url='https://github.com/tfrederiksen/inelastica', 
-      license='GPL', 
+      requires = ['python (>=2.7)', 'numpy (>=1.8)', 'scipy (>=0.17)', 'netCDF4 (>=1.2.7)'],
+      description='Python tools for SIESTA/TranSIESTA',
+      author='Magnus Paulsson and Thomas Frederiksen',
+      author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',
+      url='https://github.com/tfrederiksen/inelastica',
+      license='GPL',
       scripts= ['Inelastica/scripts/Inelastica',
                 'Inelastica/scripts/EigenChannels',
                 'Inelastica/scripts/pyTBT',
@@ -200,4 +204,3 @@ setup(name='Inelastica',
       packages=packages,
       configuration=configuration,
       )
-

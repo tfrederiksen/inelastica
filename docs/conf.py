@@ -37,7 +37,7 @@ copyright = u'2002-2018, ' + author
 #release = u'1.3.0'
 try:
     import subprocess
-    pv = subprocess.Popen(['git', 'describe','--tags'],
+    pv = subprocess.Popen(['git', 'describe', '--tags'],
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = pv.communicate()
     out = out[1:]
@@ -235,5 +235,3 @@ todo_include_todos = True
 class_members_toctree = False
 # If this is false we do not have double method sections
 numpydoc_show_class_members = False
-
-

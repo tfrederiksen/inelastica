@@ -10,13 +10,23 @@ import Inelastica.io.xmgrace as XMGR
 
 import numpy as N
 import numpy.linalg as LA
-import sys, string, struct, glob, os, copy, time, pickle
+import sys
+import string
+import struct
+import glob
+import os
+import copy
+import time
+import pickle
 from optparse import OptionParser, OptionGroup
 
 ##################### Global variabels #################
+
+
 class general:
     pass
 steps=[]
+
 
 class savedData:
     pass
@@ -24,6 +34,8 @@ class savedData:
 ########################################################
 ##################### Main routine #####################
 ########################################################
+
+
 def main():
     setupParameters()
     runNEB()
@@ -32,39 +44,39 @@ def main():
 ########################################################
 def runNEB():
     global general, steps, savedData
-    
+
     # Restarting?
     fns=glob.glob('NEB_*/CGrun')
     if len(fns)==0:
         restart = False
     elif len(fns)!=general.NNEB:
-        sys.exit('Number of NEB_??? directories %i does not match number of steps %i'%(len(fns),general.NNEB))
+        sys.exit('Number of NEB_??? directories %i does not match number of steps %i'%(len(fns), general.NNEB))
     else:
         restart=True
-        
+
     fns = ["NEB_%i/CGrun"%ii for ii in range(general.NNEB)]
     fns = [general.initial+"/CGrun"]+fns+[general.final+"/CGrun"]
-    
-    i, f = step(fns[0],False,0), step(fns[general.NNEB+1],False,general.NNEB+1)
-    checkConst(i,f)
+
+    i, f = step(fns[0], False, 0), step(fns[general.NNEB+1], False, general.NNEB+1)
+    checkConst(i, f)
 
     if restart:
         try:
-            savedData.E,savedData.F,savedData.Fmax,savedData.geom,savedData.v=pickle.load(open('NEB_%i/savedData.pickle'%0,'r'))
+            savedData.E, savedData.F, savedData.Fmax, savedData.geom, savedData.v=pickle.load(open('NEB_%i/savedData.pickle'%0, 'r'))
         except:
             savedData.E    = []
             savedData.F    = []
             savedData.geom = []
             savedData.Fmax = []
-            savedData.v    = N.zeros((general.NNEB+2,len(i.XVgeom.xyz),3),N.float)
+            savedData.v    = N.zeros((general.NNEB+2, len(i.XVgeom.xyz), 3), N.float)
     else:
         savedData.E    = []
         savedData.F    = []
         savedData.geom = []
         savedData.Fmax = []
-        savedData.v    = N.zeros((general.NNEB+2,len(i.XVgeom.xyz),3),N.float)
+        savedData.v    = N.zeros((general.NNEB+2, len(i.XVgeom.xyz), 3), N.float)
 
-    steps = [step(fn,restart,ii,initial=i,final=f) for ii,fn in enumerate(fns)]
+    steps = [step(fn, restart, ii, initial=i, final=f) for ii, fn in enumerate(fns)]
 
     done=False
 
@@ -78,66 +90,69 @@ def runNEB():
             for ii in steps:
                 if not ii.checkDone():
                     break
-            else: 
+            else:
                 nextstep=True
             if not nextstep:
                 time.sleep(30)
-        
+
         savedData.E += [[SIO.GetTotalEnergy(ii.dir+'/RUN.out') for ii in steps]]
         savedData.geom += [[copy.copy(ii.XVgeom) for ii in steps]]
 
         oldgeom = [copy.deepcopy(ii.XVgeom) for ii in steps]
-        for ii,jj in enumerate(steps[1:-1]):
-            jj.update(oldgeom[ii],oldgeom[ii+2])
+        for ii, jj in enumerate(steps[1:-1]):
+            jj.update(oldgeom[ii], oldgeom[ii+2])
 
         # Write status
         savedData.F += [[ii.Ftot for ii in steps]]
         savedData.Fmax += [[ii.Fmax for ii in steps]]
-        for ii in range(1,len(steps)-1):
+        for ii in range(1, len(steps)-1):
             geoms = [savedData.geom[jj][ii] for jj in range(len(savedData.geom))]
             Ftots = [savedData.Fmax[jj][ii] for jj in range(len(savedData.geom))]
             Fs    = [savedData.F[jj][ii] for jj in range(len(savedData.geom))]
-            SIO.WriteANIFile('NEB_%i/Steps.ANI'%(ii-1),geoms,Ftots)
-            SIO.WriteAXSFFiles('NEB_%i/Steps.XASF'%(ii-1),geoms,forces=Fs)
+            SIO.WriteANIFile('NEB_%i/Steps.ANI'%(ii-1), geoms, Ftots)
+            SIO.WriteAXSFFiles('NEB_%i/Steps.XASF'%(ii-1), geoms, forces=Fs)
 
         geoms = [ii.XVgeom for ii in steps]
         Fmax  = [ii.Fmax for ii in steps]
         Ftot  = [ii.Ftot for ii in steps]
-        SIO.WriteANIFile('NEB_%i/NextStep.ANI'%0,geoms,Fmax)
-        SIO.WriteAXSFFiles('NEB_%i/NextStep.XASF'%0,geoms,forces=Ftot)
+        SIO.WriteANIFile('NEB_%i/NextStep.ANI'%0, geoms, Fmax)
+        SIO.WriteAXSFFiles('NEB_%i/NextStep.XASF'%0, geoms, forces=Ftot)
         done = True
         for ii in steps:
-            done = done and ii.converged    
-        pickle.dump((savedData.E,savedData.F,savedData.Fmax,savedData.geom,savedData.v),\
-                    open('NEB_%i/savedData.pickle'%0,'w'))
+            done = done and ii.converged
+        pickle.dump((savedData.E, savedData.F, savedData.Fmax, savedData.geom, savedData.v),\
+                    open('NEB_%i/savedData.pickle'%0, 'w'))
 
 #################### Class for each step ###############
+
+
 class step:
     global steps, general
-    def __init__(self,dir,restart,iistep,initial=None,final=None):
+
+    def __init__(self, dir, restart, iistep, initial=None, final=None):
         self.dir=dir
         self.converged, self.Fmax = False, 0.0
         self.ii=iistep
         self.fixed = (iistep==0) or (iistep==general.NNEB+1)
-        
+
         if not restart and not self.fixed:
             os.makedirs(dir)
-            SUR.CopyInputFiles(general.initial+"/CGrun/",dir,\
-                                   ['.fdf','.vps','.psf'])
+            SUR.CopyInputFiles(general.initial+"/CGrun/", dir,\
+                                   ['.fdf', '.vps', '.psf'])
             # Interpolate
             ixyz, fxyz = N.array(initial.XVgeom.xyz), N.array(final.XVgeom.xyz)
             mix = float(iistep)/(general.NNEB+1.0)
             xyz = (1-mix)*ixyz+mix*fxyz
             self.FDFgeom = copy.copy(initial.XVgeom)
-            self.FDFgeom.xyz = [xyz[ii,:] for ii in range(len(xyz))]
+            self.FDFgeom.xyz = [xyz[ii, :] for ii in range(len(xyz))]
             self.FDFgeom.writeFDF(self.dir+"/STRUCT.fdf")
-            
+
             # Append lines to RUN.fdf
             elm = dir+"/RUN.fdf"
-            f = open(elm,'r')
+            f = open(elm, 'r')
             lines = f.readlines()
             f.close()
-            f = open(elm,'w')
+            f = open(elm, 'w')
             f.write('### Lines appended %s \n' %time.ctime())
             f.write("SolutionMethod       diagon\n")
             f.write("MD.TypeOfRun         CG\n")
@@ -150,7 +165,7 @@ class step:
             f.close()
 
         self.done = self.checkDone()
-        self.const = SIO.GetFDFblock(dir+"/RUN.fdf","GeometryConstraints")
+        self.const = SIO.GetFDFblock(dir+"/RUN.fdf", "GeometryConstraints")
 
     def checkDone(self):
         if self.fixed==True:
@@ -169,7 +184,7 @@ class step:
                 self.XVgeom  = readxv(self.dir)
                 self.forces  = SIO.ReadForces(self.dir+"/RUN.out")
                 print len(self.forces[0])
-                if N.allclose(self.XVgeom.xyz,self.FDFgeom.xyz,1e-6):
+                if N.allclose(self.XVgeom.xyz, self.FDFgeom.xyz, 1e-6):
                     done=True
             except:
                 done=False
@@ -187,16 +202,16 @@ class step:
             for fn in fns: os.remove(fn)
             self.FDFgeom.writeFDF(self.dir+"/STRUCT.fdf")
             SUR.MakePBS(None, self.dir+"/RUN.pbs",\
-                            [['$NODES$','1:ppn=%i'%general.proc]],\
+                            [['$NODES$', '1:ppn=%i'%general.proc]],\
                             True, type = 'TS')
 
-    def update(self,left,right):
+    def update(self, left, right):
         # calculate new geometry
         xyz, F = N.array(self.XVgeom.xyz), N.array(self.forces)
         if len(F[0])!=4:
             print F
             print F.shape
-        F = F[:,1:4]
+        F = F[:, 1:4]
         lxyz, rxyz = N.array(left.xyz), N.array(right.xyz)
 
         tangent = rxyz-lxyz
@@ -205,41 +220,44 @@ class step:
         FS = N.sum(FS*tangent)*tangent    # Allong tangent
         F  = F-N.sum(F*tangent)*tangent  # orthogonal to tangent
         Ftot = F+FS
-        
+
         # Apply constraints
-        for s,f in general.const:
-            for ii in range(s,f+1):
-                Ftot[ii,:]=0
+        for s, f in general.const:
+            for ii in range(s, f+1):
+                Ftot[ii, :]=0
 
         self.Ftot=Ftot
-        savedData.v[self.ii,:,:]=savedData.v[self.ii,:,:]-N.sum(savedData.v[self.ii,:,:]*tangent)*tangent
-        if N.sum(Ftot*savedData.v[self.ii,:,:])<0:
-            savedData.v[self.ii,:,:]=0
-        savedData.v[self.ii,:,:]=savedData.v[self.ii,:,:]+Ftot*general.moveK
-        steplen=N.sqrt(N.sum(savedData.v[self.ii,:,:]*savedData.v[self.ii,:,:]))
+        savedData.v[self.ii, :, :]=savedData.v[self.ii, :, :]-N.sum(savedData.v[self.ii, :, :]*tangent)*tangent
+        if N.sum(Ftot*savedData.v[self.ii, :, :])<0:
+            savedData.v[self.ii, :, :]=0
+        savedData.v[self.ii, :, :]=savedData.v[self.ii, :, :]+Ftot*general.moveK
+        steplen=N.sqrt(N.sum(savedData.v[self.ii, :, :]*savedData.v[self.ii, :, :]))
         if steplen>general.maxDist:
-            savedData.v[self.ii,:,:]=savedData.v[self.ii,:,:]/steplen*general.maxDist
-        xyz = xyz+savedData.v[self.ii,:,:]
-        xyz=[xyz[ii,:] for ii in range(len(xyz))]
+            savedData.v[self.ii, :, :]=savedData.v[self.ii, :, :]/steplen*general.maxDist
+        xyz = xyz+savedData.v[self.ii, :, :]
+        xyz=[xyz[ii, :] for ii in range(len(xyz))]
         self.FDFgeom.xyz = xyz
         self.XVgeom.xyz = xyz
 
-        self.Fmax = N.max(N.sqrt(N.sum(Ftot*Ftot,1)))
+        self.Fmax = N.max(N.sqrt(N.sum(Ftot*Ftot, 1)))
         self.converged = self.Fmax<general.convCrit
         self.done = False
 
-def checkConst(initial,final):
+
+def checkConst(initial, final):
     if initial.const!=final.const:
         print "Error: NEB: constraints on initial and final states not the same"
         sys.exit(1)
     general.const = []
     for ii in initial.const:
-        general.const+=[[int(ii[2])-1,int(ii[4])-1]]
+        general.const+=[[int(ii[2])-1, int(ii[4])-1]]
     print "Constraints on atoms:"
     for ii in general.const:
-        print "from %i to %i (Siesta numbering)"%(ii[0]+1,ii[1]+1)
+        print "from %i to %i (Siesta numbering)"%(ii[0]+1, ii[1]+1)
 
 ########################################################
+
+
 def readxv(dir):
     global geom
     # Read geometry from first .XV file found in dir
@@ -256,9 +274,11 @@ def readxv(dir):
     return geom
 
 ###########################################################
+
+
 def setupParameters():
     global general
-    
+
     usage = "usage: %prog [options] Initial Final"
     description = """
 Nudged elastic band calculation.
@@ -272,7 +292,7 @@ NEB_.../CGrun directories
 
 For help use --help!
 """
-    parser = OptionParser(usage,description=description)
+    parser = OptionParser(usage, description=description)
     EC = OptionGroup(parser, "Options for NEB")
     EC.add_option("-n", "--NumNEB", dest="NNEB",\
                       help="Number of intermediate steps [%default]",\
@@ -294,7 +314,7 @@ For help use --help!
                       type='float', default=0.08)
 
     parser.add_option_group(EC)
-    
+
     (general, args) = parser.parse_args()
     print description
 
@@ -309,12 +329,12 @@ For help use --help!
 
     class myopen:
         # Double stdout to RUN.out and stdout
-        def write(self,x):
+        def write(self, x):
             self.stdout.write(x)
             self.file.write(x)
 
     fo = myopen()
-    fo.stdout, fo.file = sys.stdout, open('NEB.out','w',0)
+    fo.stdout, fo.file = sys.stdout, open('NEB.out', 'w', 0)
     sys.stdout = fo
 
     argv=""
@@ -336,9 +356,8 @@ outerAdd = MM.outerAdd
 dist = MM.dist
 mysqrt = MM.mysqrt
 dagger = MM.dagger
-    
+
 ##################### Start main routine #####################
 
 if __name__ == '__main__':
     main()
-
