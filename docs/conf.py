@@ -95,6 +95,8 @@ exclude_patterns = ['build', '**/setupegg.py', '**/setup.rst', '**/tests', '**.i
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+# A list of ignored prefixes for module index sorting.
+modindex_common_prefix = ['Inelastica.']
 
 # -- Options for HTML output -------------------------------------------------
 

@@ -1,7 +1,7 @@
 .. _publications:
 
-Publications
-============
+Publications using Inelastica
+=============================
 
 List of research publication where `Inelastica <docs_>`_ was used.
 
