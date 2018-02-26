@@ -79,7 +79,7 @@ for subdir, dirs, files in os.walk('Inelastica'):
 
 # Inelastica version info
 MAJOR = 1
-MINOR = 1
+MINOR = 3
 MICRO = 0
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 GIT_REVISION = "unknown"
