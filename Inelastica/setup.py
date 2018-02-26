@@ -6,6 +6,7 @@ def configuration(parent_package='', top_path=None):
 
     config.add_subpackage('fortran')
     config.add_subpackage('io')
+    config.add_subpackage('physics')
     config.make_config_py()
     return config
 

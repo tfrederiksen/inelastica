@@ -33,7 +33,7 @@ class NCfile:
     def write(self,A,label,vartype='d'):
         "Writes numpy array to file"
         dim = self.__checkDimensions(A)
-        print 'WriteNetCDF: Writing variable %s(%s) to file %s'%(label,vartype,self.fn)
+        print 'io.netcdf: Writing variable %s(%s) to file %s'%(label,vartype,self.fn)
         try:
             self.file.createVariable(label,vartype,dim)
         except:
@@ -48,14 +48,14 @@ class NCfile:
                 d = self.invdim[i]
             except:
                 d = 'd%.2i'%len(self.dimensions)
-                'WriteNetCDF: Generating dimension %s'%d                
+                'io.netcdf: Generating dimension %s'%d                
                 self.file.createDimension(d,i)
                 self.invdim[i] = d
             dim.append(d)
         return tuple(dim)
     
-if __name__ == '__main__':
 
+def test():
     # sample arrays
     a = N.ones((3,3))
     b = N.diag([1,2,3])
@@ -70,5 +70,9 @@ if __name__ == '__main__':
     write(fn,c,'c')
     write(fn,d,'mytest')
     write(fn,e,'energy')
-    write(fn,c,'He_ph',True)
+    write(fn,c,'He_ph','d')
     nc.close()
+
+
+if __name__ == '__main__':
+    test()

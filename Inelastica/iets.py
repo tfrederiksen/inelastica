@@ -6,7 +6,7 @@ import numpy as N
 import numpy.linalg as LA
 import netCDF4 as NC4
 import sys
-import Inelastica.PhysicalConstants as PC
+import Inelastica.physics.constants as PC
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
 

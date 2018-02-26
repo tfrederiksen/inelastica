@@ -9,7 +9,7 @@ import numpy as N
 import numpy.linalg as LA
 import Inelastica.SiestaIO as SIO
 import Inelastica.MakeGeom as MG
-import Inelastica.PhysicalConstants as PC
+import Inelastica.physics.constants as PC
 from optparse import OptionParser
 
 #####################################################

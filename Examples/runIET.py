@@ -2,7 +2,7 @@
 
 import sys,os
 from Inelastica import ValueCheck as VC
-from Inelastica import Inelastica as I
+import Inelastica.iets as I
 from Inelastica import EigenChannels as E
 from Inelastica import pyTBT as T
 

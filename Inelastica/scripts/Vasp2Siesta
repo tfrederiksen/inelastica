@@ -2,7 +2,7 @@
 
 from Inelastica import io.vasp as VIO
 from Inelastica import SiestaIO as SIO
-from Inelastica import PhysicalConstants as PC
+import Inelastica.physics.constants as PC
 import sys
 
 # File to read

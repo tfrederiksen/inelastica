@@ -9,10 +9,9 @@ Routines for IO in different formats:
 import numpy as N
 import numpy.linalg as LA
 import string, struct, os.path, sys
-#import Inelastica.MakeGeom as MG
 import gzip
 import netCDF4 as NC4
-import Inelastica.PhysicalConstants as PC
+import Inelastica.physics.constants as PC
 import Inelastica.ValueCheck as VC
 
 # For speed some routines can be linked as F90 code
@@ -198,6 +197,7 @@ def WriteANIFile(filename,Geom,Energy,InUnits='Ang',OutUnits='Ang'):
 
 def ReadANIFile(filename,InUnits='Ang',OutUnits='Ang'):
     "Returns tuple (Geometry,Energy[Ry?],) from an ANI-file"
+    import Inelastica.MakeGeom as MG
     print 'io.siesta.ReadANIFile: Reading',filename
     if (InUnits=='Bohr') and (OutUnits=='Ang'): convFactor = PC.Bohr2Ang
     elif (InUnits=='Ang') and (OutUnits=='Bohr'): convFactor = PC.Ang2Bohr
@@ -210,7 +210,7 @@ def ReadANIFile(filename,InUnits='Ang',OutUnits='Ang'):
     newNN=file.readline()
     while newNN!='':
         NN=string.atoi(newNN)
-        newG=MG.Geom() # Can't use MG because it leads to circular references!
+        newG = MG.Geom()
         try:
             Energy.append(string.atof(file.readline()))
         except:

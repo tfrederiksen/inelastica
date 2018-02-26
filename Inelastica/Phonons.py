@@ -35,7 +35,7 @@ import Inelastica.io.siesta as SIO
 import Inelastica.Symmetry as Symmetry
 import Inelastica.CommonFunctions as CF
 import Inelastica.MakeGeom as MG
-import Inelastica.PhysicalConstants as PC
+import Inelastica.physics.constants as PC
 import Inelastica.MiscMath as MM
 import Inelastica.ValueCheck as VC
 import netCDF4 as NC4

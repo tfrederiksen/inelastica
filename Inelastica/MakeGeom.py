@@ -6,7 +6,7 @@ import Inelastica.io.vasp as VIO
 import numpy as N
 import string, copy, math, sys
 import netCDF4 as NC4
-import Inelastica.PhysicalConstants as PC
+import Inelastica.physics.constants as PC
 import os
 
 def interpolateGeom(g0,g1,newlength):

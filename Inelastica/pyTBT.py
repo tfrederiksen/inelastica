@@ -21,10 +21,10 @@ import Inelastica.io.siesta as SIO
 import Inelastica.MiscMath as MM
 import Inelastica.NEGF
 import numpy as N
-import Inelastica.Kmesh as Kmesh
+import Inelastica.physics.mesh as Kmesh
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
-import Inelastica.WriteXMGR as XMGR
+import Inelastica.io.xmgrace as XMGR
 
 # For doing loops with pyTBT we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.

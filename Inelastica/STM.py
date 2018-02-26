@@ -4,21 +4,20 @@ import Inelastica.NEGF as NEGF
 import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
 import Inelastica.MiscMath as MM
-import Inelastica.PhysicalConstants as PC
-import Inelastica.Kmesh as Kmesh
+import Inelastica.physics.constants as PC
+import Inelastica.physics.mesh as Kmesh
 import Inelastica.Symmetry as SYM
 import numpy as N
 import numpy.linalg as LA
 import netCDF4 as NC
 import sys, string, struct, glob, os, time, resource
-import Inelastica.PhysicalConstants as PC
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
 import scipy
 import scipy.io
 import scipy.sparse.linalg as SLA
 import scipy.sparse as SS
-import Inelastica.WriteNetCDF as writeNC
+import Inelastica.io.netcdf as writeNC
 import Inelastica.STMFD as STMFD
 
 #Units: Bohr and Rydberg!
