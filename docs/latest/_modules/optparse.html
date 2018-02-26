@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-10
+                1.3.0-12
               </div>
             
           
@@ -1270,13 +1270,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">option_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_share_option_mappings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="p">)</span>
 
-<div class="viewcode-block" id="OptionGroup.set_title"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionGroup.set_title">[docs]</a>    <span class="k">def</span> <span class="nf">set_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span></div>
+<div class="viewcode-block" id="OptionGroup.set_title"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionGroup.set_title">[docs]</a>    <span class="k">def</span> <span class="nf">set_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
 
 <div class="viewcode-block" id="OptionGroup.destroy"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionGroup.destroy">[docs]</a>    <span class="k">def</span> <span class="nf">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;see OptionParser.destroy().&quot;&quot;&quot;</span>
-        <span class="n">OptionContainer</span><span class="o">.</span><span class="n">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">option_list</span></div>
+        <span class="n">OptionContainer</span><span class="o">.</span><span class="n">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">option_list</span>
 
     <span class="c1"># -- Help-formatting methods ---------------------------------------</span>
 
@@ -1284,8 +1284,8 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">formatter</span><span class="o">.</span><span class="n">format_heading</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
         <span class="n">formatter</span><span class="o">.</span><span class="n">indent</span><span class="p">()</span>
         <span class="n">result</span> <span class="o">+=</span> <span class="n">OptionContainer</span><span class="o">.</span><span class="n">format_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatter</span><span class="p">)</span>
-        <span class="n">formatter</span><span class="o">.</span><span class="n">dedent</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">result</span></div></div>
+        <span class="n">formatter</span><span class="o">.</span><span class="n">dedent</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="n">result</span>
 
 
 <div class="viewcode-block" id="OptionParser"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser">[docs]</a><span class="k">class</span> <span class="nc">OptionParser</span> <span class="p">(</span><span class="n">OptionContainer</span><span class="p">):</span>
@@ -1405,8 +1405,8 @@
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">option_groups</span><span class="p">:</span>
             <span class="n">group</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">option_list</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">option_groups</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span></div>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">option_groups</span></div>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span>
 
 
     <span class="c1"># -- Private methods -----------------------------------------------</span>
@@ -1454,33 +1454,33 @@
         <span class="c1"># For backwards compatibility with Optik 1.3 and earlier.</span>
         <span class="k">elif</span> <span class="n">usage</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;usage: &quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="n">usage</span><span class="p">[</span><span class="mi">7</span><span class="p">:]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="n">usage</span></div>
+        <span class="k">else</span><span class="p">:</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="n">usage</span>
 
 <div class="viewcode-block" id="OptionParser.enable_interspersed_args"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.enable_interspersed_args">[docs]</a>    <span class="k">def</span> <span class="nf">enable_interspersed_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set parsing to not stop on the first non-option, allowing</span>
 <span class="sd">        interspersing switches with command arguments. This is the</span>
 <span class="sd">        default behavior. See also disable_interspersed_args() and the</span>
 <span class="sd">        class documentation description of the attribute</span>
-<span class="sd">        allow_interspersed_args.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">allow_interspersed_args</span> <span class="o">=</span> <span class="bp">True</span></div>
+<span class="sd">        allow_interspersed_args.&quot;&quot;&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_interspersed_args</span> <span class="o">=</span> <span class="bp">True</span>
 
 <div class="viewcode-block" id="OptionParser.disable_interspersed_args"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.disable_interspersed_args">[docs]</a>    <span class="k">def</span> <span class="nf">disable_interspersed_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set parsing to stop on the first non-option. Use this if</span>
 <span class="sd">        you have a command processor which runs another command that</span>
 <span class="sd">        has options of its own and you want to make sure these options</span>
 <span class="sd">        don&#39;t get confused.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">allow_interspersed_args</span> <span class="o">=</span> <span class="bp">False</span></div>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_interspersed_args</span> <span class="o">=</span> <span class="bp">False</span>
 
-<div class="viewcode-block" id="OptionParser.set_process_default_values"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.set_process_default_values">[docs]</a>    <span class="k">def</span> <span class="nf">set_process_default_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">process</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">process_default_values</span> <span class="o">=</span> <span class="n">process</span></div>
+<div class="viewcode-block" id="OptionParser.set_process_default_values"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.set_process_default_values">[docs]</a>    <span class="k">def</span> <span class="nf">set_process_default_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">process</span><span class="p">):</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_default_values</span> <span class="o">=</span> <span class="n">process</span>
 
-<div class="viewcode-block" id="OptionParser.set_default"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.set_default">[docs]</a>    <span class="k">def</span> <span class="nf">set_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="n">dest</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+<div class="viewcode-block" id="OptionParser.set_default"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.set_default">[docs]</a>    <span class="k">def</span> <span class="nf">set_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="n">dest</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="OptionParser.set_defaults"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.set_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">set_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
+<div class="viewcode-block" id="OptionParser.set_defaults"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.set_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">set_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_all_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">option_list</span><span class="p">[:]</span>
@@ -1499,8 +1499,8 @@
             <span class="k">if</span> <span class="n">isbasestring</span><span class="p">(</span><span class="n">default</span><span class="p">):</span>
                 <span class="n">opt_str</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">get_opt_string</span><span class="p">()</span>
                 <span class="n">defaults</span><span class="p">[</span><span class="n">option</span><span class="o">.</span><span class="n">dest</span><span class="p">]</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">check_value</span><span class="p">(</span><span class="n">opt_str</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">Values</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span></div>
+</div>
+        <span class="k">return</span> <span class="n">Values</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
 
 
     <span class="c1"># -- OptionGroup methods -------------------------------------------</span>
@@ -1518,15 +1518,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="s2">&quot;invalid arguments&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">option_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">group</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">option_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">group</span>
 
 <div class="viewcode-block" id="OptionParser.get_option_group"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.get_option_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_option_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt_str</span><span class="p">):</span>
         <span class="n">option</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_short_opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">opt_str</span><span class="p">)</span> <span class="ow">or</span>
                   <span class="bp">self</span><span class="o">.</span><span class="n">_long_opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">opt_str</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">option</span> <span class="ow">and</span> <span class="n">option</span><span class="o">.</span><span class="n">container</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">option</span><span class="o">.</span><span class="n">container</span>
-        <span class="k">return</span> <span class="bp">None</span></div>
+            <span class="k">return</span> <span class="n">option</span><span class="o">.</span><span class="n">container</span></div>
+        <span class="k">return</span> <span class="bp">None</span>
 
 
     <span class="c1"># -- Option-parsing methods ----------------------------------------</span>
@@ -1573,8 +1573,8 @@
         <span class="k">except</span> <span class="p">(</span><span class="n">BadOptionError</span><span class="p">,</span> <span class="n">OptionValueError</span><span class="p">),</span> <span class="n">err</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
 
-        <span class="n">args</span> <span class="o">=</span> <span class="n">largs</span> <span class="o">+</span> <span class="n">rargs</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_values</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span></div>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">largs</span> <span class="o">+</span> <span class="n">rargs</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_values</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
 <div class="viewcode-block" id="OptionParser.check_values"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.check_values">[docs]</a>    <span class="k">def</span> <span class="nf">check_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1586,8 +1586,8 @@
 <span class="sd">        (possibly adjusted, possibly completely new -- whatever you</span>
 <span class="sd">        like).  Default implementation just returns the passed-in</span>
 <span class="sd">        values; subclasses may override as desired.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span></div>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_process_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">largs</span><span class="p">,</span> <span class="n">rargs</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;_process_args(largs : [string],</span>
@@ -1731,19 +1731,19 @@
 <div class="viewcode-block" id="OptionParser.get_prog_name"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.get_prog_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_prog_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prog</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prog</span></div>
+        <span class="k">else</span><span class="p">:</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prog</span>
 
-<div class="viewcode-block" id="OptionParser.expand_prog_name"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.expand_prog_name">[docs]</a>    <span class="k">def</span> <span class="nf">expand_prog_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;%prog&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prog_name</span><span class="p">())</span></div>
+<div class="viewcode-block" id="OptionParser.expand_prog_name"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.expand_prog_name">[docs]</a>    <span class="k">def</span> <span class="nf">expand_prog_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span></div>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;%prog&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prog_name</span><span class="p">())</span>
 
-<div class="viewcode-block" id="OptionParser.get_description"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.get_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_prog_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span></div>
+<div class="viewcode-block" id="OptionParser.get_description"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.get_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_prog_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
 
 <div class="viewcode-block" id="OptionParser.exit"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.exit">[docs]</a>    <span class="k">def</span> <span class="nf">exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">status</span><span class="p">)</span></div>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
 
 <div class="viewcode-block" id="OptionParser.error"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;error(msg : string)</span>
@@ -1752,15 +1752,15 @@
 <span class="sd">        If you override this in a subclass, it should not return -- it</span>
 <span class="sd">        should either exit or raise an exception.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">print_usage</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: error: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_prog_name</span><span class="p">(),</span> <span class="n">msg</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_usage</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: error: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_prog_name</span><span class="p">(),</span> <span class="n">msg</span><span class="p">))</span>
 
 <div class="viewcode-block" id="OptionParser.get_usage"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.get_usage">[docs]</a>    <span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span><span class="o">.</span><span class="n">format_usage</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">expand_prog_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+        <span class="k">else</span><span class="p">:</span></div>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
 <div class="viewcode-block" id="OptionParser.print_usage"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.print_usage">[docs]</a>    <span class="k">def</span> <span class="nf">print_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;print_usage(file : file = stdout)</span>
@@ -1771,14 +1771,14 @@
 <span class="sd">        (basename of sys.argv[0]).  Does nothing if self.usage is empty</span>
 <span class="sd">        or not defined.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">:</span>
-            <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="nb">file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_usage</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">:</span></div>
+            <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="nb">file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_usage</span><span class="p">()</span>
 
 <div class="viewcode-block" id="OptionParser.get_version"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.get_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_prog_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+        <span class="k">else</span><span class="p">:</span></div>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
 <div class="viewcode-block" id="OptionParser.print_version"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.print_version">[docs]</a>    <span class="k">def</span> <span class="nf">print_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;print_version(file : file = stdout)</span>
@@ -1788,8 +1788,8 @@
 <span class="sd">        of &quot;%prog&quot; in self.version is replaced by the current program&#39;s</span>
 <span class="sd">        name.  Does nothing if self.version is empty or undefined.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
-            <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="nb">file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">:</span></div>
+            <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="nb">file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
 
 <div class="viewcode-block" id="OptionParser.format_option_help"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.format_option_help">[docs]</a>    <span class="k">def</span> <span class="nf">format_option_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">formatter</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -1805,11 +1805,11 @@
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">format_help</span><span class="p">(</span><span class="n">formatter</span><span class="p">))</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">formatter</span><span class="o">.</span><span class="n">dedent</span><span class="p">()</span>
-        <span class="c1"># Drop the last &quot;\n&quot;, or the header if no options or option groups:</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+        <span class="c1"># Drop the last &quot;\n&quot;, or the header if no options or option groups:</span></div>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
-<div class="viewcode-block" id="OptionParser.format_epilog"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.format_epilog">[docs]</a>    <span class="k">def</span> <span class="nf">format_epilog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatter</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">formatter</span><span class="o">.</span><span class="n">format_epilog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epilog</span><span class="p">)</span></div>
+<div class="viewcode-block" id="OptionParser.format_epilog"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.format_epilog">[docs]</a>    <span class="k">def</span> <span class="nf">format_epilog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatter</span><span class="p">):</span></div>
+        <span class="k">return</span> <span class="n">formatter</span><span class="o">.</span><span class="n">format_epilog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epilog</span><span class="p">)</span>
 
 <div class="viewcode-block" id="OptionParser.format_help"><a class="viewcode-back" href="../api-gen/Inelastica.html#Inelastica.OptionParser.format_help">[docs]</a>    <span class="k">def</span> <span class="nf">format_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">formatter</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -1820,8 +1820,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_description</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_option_help</span><span class="p">(</span><span class="n">formatter</span><span class="p">))</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_epilog</span><span class="p">(</span><span class="n">formatter</span><span class="p">))</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_epilog</span><span class="p">(</span><span class="n">formatter</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
     <span class="c1"># used by test suite</span>
     <span class="k">def</span> <span class="nf">_get_encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">file</span><span class="p">):</span>
@@ -1838,8 +1838,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">file</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="nb">file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
-        <span class="n">encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_encoding</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_help</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">))</span></div></div>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_encoding</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span></div></div>
+        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_help</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">))</span>
 
 <span class="c1"># class OptionParser</span>
 
@@ -1910,7 +1910,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.3.0-10',
+            VERSION:'1.3.0-12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1920,7 +1920,7 @@
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

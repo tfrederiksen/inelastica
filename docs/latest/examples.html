@@ -36,7 +36,7 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Inelastica |release| documentation" href="index.html"/>
-        <link rel="next" title="FAQ" href="faq.html"/>
+        <link rel="next" title="Au FCC" href="examples/au_fcc.html"/>
         <link rel="prev" title="Installation" href="install.html"/> 
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.3.0-10
+                1.3.0-12
               </div>
             
           
@@ -96,15 +96,10 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#au-fcc">Au FCC</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#electrons">Electrons</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phonons">Phonons</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reference-results">Reference results</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#auh2">AuH2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#na-bcc">Na BCC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#nacl">NaCl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/au_fcc.html">Au FCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/auh2.html">AuH2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/na_bcc.html">Na BCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/nacl.html">NaCl</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
@@ -183,51 +178,13 @@
             
   <div class="section" id="examples">
 <span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="au-fcc">
-<h2>Au FCC<a class="headerlink" href="#au-fcc" title="Permalink to this headline">¶</a></h2>
-<p>Phonon band structure for Au (see &#8216;Examples/Phonon_bands/Au_FCC&#8217;).</p>
-<p>Lattice parameter a = 4.08 Å and a 6x6x6 repetition of the primitive cell. Main computational settings:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>PAO.EnergyShift <span class="m">0</span>.01 Ry
-PAO.BasisSize   DZP
-XC.functional   GGA
-XC.authors      PBE
-MeshCutoff      <span class="m">500</span>. Ry
-MD.FCDispl      <span class="m">0</span>.02 Ang
-</pre></div>
-</div>
-<div class="section" id="electrons">
-<h3>Electrons<a class="headerlink" href="#electrons" title="Permalink to this headline">¶</a></h3>
-<p><strong>Band structure</strong></p>
-<a class="reference internal image-reference" href="_images/Au_FCC_Electrons.png"><img alt="electronic band structure" class="align-center" src="_images/Au_FCC_Electrons.png" style="width: 604.8px; height: 406.8px;" /></a>
-<p><strong>Desity of states</strong></p>
-<p>Density of states (DOS) sampled on a grid of 64x64x64 k-points:</p>
-<a class="reference internal image-reference" href="_images/ElectronDOS-AuFCC.png"><img alt="electronic density of states" class="align-center" src="_images/ElectronDOS-AuFCC.png" style="width: 601.2px; height: 425.7px;" /></a>
-</div>
-<div class="section" id="phonons">
-<h3>Phonons<a class="headerlink" href="#phonons" title="Permalink to this headline">¶</a></h3>
-<p><strong>Band structure</strong></p>
-<p>Phonon band structure computed with different force cutoff radii r = 5.0, 7.0, 9.0 Å:</p>
-<a class="reference internal image-reference" href="_images/AuFCC_r5.0_Phonons.png"><img alt="phonon band structure with force cutoff radii of 5.0 angstroms" class="align-center" src="_images/AuFCC_r5.0_Phonons.png" style="width: 529.6px; height: 361.6px;" /></a>
-<a class="reference internal image-reference" href="_images/AuFCC_r7.0_Phonons.png"><img alt="phonon band structure with force cutoff radii of 7.0 angstroms" class="align-center" src="_images/AuFCC_r7.0_Phonons.png" style="width: 529.6px; height: 361.6px;" /></a>
-<a class="reference internal image-reference" href="_images/AuFCC_r9.0_Phonons.png"><img alt="phonon band structure with force cutoff radii of 9.0 angstroms" class="align-center" src="_images/AuFCC_r9.0_Phonons.png" style="width: 529.6px; height: 361.6px;" /></a>
-<p><strong>Desity of states</strong></p>
-<p>Density of states (DOS) sampled on a grid of 64x64x64 k-points:</p>
-<a class="reference internal image-reference" href="_images/PhononDOS-AuFCC.png"><img alt="phonon density of states" class="align-center" src="_images/PhononDOS-AuFCC.png" style="width: 614.7px; height: 421.2px;" /></a>
-</div>
-<div class="section" id="reference-results">
-<h3>Reference results<a class="headerlink" href="#reference-results" title="Permalink to this headline">¶</a></h3>
-<p>Lynn, J. W.; Smith, H. G. &amp; Nicklow, R. M. <em>Lattice-dynamics of gold</em>, Phys. Rev B <strong>8</strong>, <a class="reference external" href="https://journals.aps.org/prb/abstract/10.1103/PhysRevB.8.3493">3493-3499 (1973)</a>.</p>
-<a class="reference internal image-reference" href="_images/Lynn_1973.png"><img alt="reference phonon density of statesband structure" class="align-center" src="_images/Lynn_1973.png" style="width: 1231.2px; height: 531.0px;" /></a>
-</div>
-</div>
-<div class="section" id="auh2">
-<h2>AuH2<a class="headerlink" href="#auh2" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="na-bcc">
-<h2>Na BCC<a class="headerlink" href="#na-bcc" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="nacl">
-<h2>NaCl<a class="headerlink" href="#nacl" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/au_fcc.html">Au FCC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/auh2.html">AuH2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/na_bcc.html">Na BCC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/nacl.html">NaCl</a></li>
+</ul>
 </div>
 </div>
 
@@ -241,7 +198,7 @@ MD.FCDispl      <span class="m">0</span>.02 Ang
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="faq.html" class="btn btn-neutral float-right" title="FAQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="examples/au_fcc.html" class="btn btn-neutral float-right" title="Au FCC" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="install.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -275,7 +232,7 @@ MD.FCDispl      <span class="m">0</span>.02 Ang
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.3.0-10',
+            VERSION:'1.3.0-12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -285,7 +242,7 @@ MD.FCDispl      <span class="m">0</span>.02 Ang
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                1.3.0-10
+                1.3.0-12
               </div>
             
           
@@ -177,52 +177,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <span class="target" id="module-Inelastica.io.xmgrace"></span><p>#   Copyright (c), All Rights Reserved                                    #
-#                                                                         #
-#   This program is free software; you can redistribute it and/or modify  #
-#   it under the terms of the GNU General Public License as published by  #
-#   the Free Software Foundation; either version 3 of the License, or     #
-#   (at your option) any later version.                                   #
-#                                                                         #
-#   This program is distributed in the hope that it will be useful,       #
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of        #
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
-#   GNU General Public License for more details.                          #
-#                                                                         #
-#   You should have received a copy of the GNU General Public License     #
-#   along with this program.  If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;. #
-###########################################################################</p>
-<p>This module provides a Python interface to XMGR/GRACE (get the newest
-information about GRACE and download the latest version at
-<a class="reference external" href="http://plasma-gate.weizmann.ac.il/Grace/">http://plasma-gate.weizmann.ac.il/Grace/</a>).</p>
-<p>To create a GRACE file from a given data set, the minimal script
-structure will take the following form:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">XYset</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="s1">&#39;test.agr&#39;</span><span class="p">,</span><span class="n">graph</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>...Done!</p>
-<p>More graphs and data sets are easily appended. Continuing on
-the example above:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">XYset</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">graph2</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">AddGraphs</span><span class="p">(</span><span class="n">graph2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">ArrangeGraphs</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">ny</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">(</span><span class="s1">&#39;test2.agr&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>With these additional lines we end up with a plot containing
-two graphs. The function &#8220;ArrangeGraphs(...)&#8221; is called
-to arrange the graphs nicely on the canvas (side by side).</p>
-<p>A more detailed demonstration of this module can be generated
-by typing &#8220;python WriteXMGR.py&#8221; in the command promt. This
-will create a file &#8220;test.agr&#8221;.</p>
-<dl class="function">
+  <span class="target" id="module-Inelastica.io.xmgrace"></span><dl class="function">
 <dt id="Inelastica.io.xmgrace.Array2XYsets">
 <code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">Array2XYsets</code><span class="sig-paren">(</span><em>A</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Array2XYsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Array2XYsets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts a matrix A = [[x0,y0(x0),y1(x0),...],[x1,y0(x1),y1(x1),...],...]
+<dd><p>Converts a matrix A = [[x0,y0(x0),y1(x0),…],[x1,y0(x1),y1(x1),…],…]
 into a list of XYset objects. Keywords for the format (Lcolor, Stype, etc.)
 are applied to all the generated XYsets.</p>
 </dd></dl>
@@ -420,13 +378,13 @@ are applied to all the generated XYsets.</p>
 - majorGridlines = [bool]
 - minorGridlines = [bool]
 - autoscale      = [bool]
-- scale          = [&#8220;Normal&#8221;/&#8221;Logarithmic&#8221;]</p>
+- scale          = [“Normal”/”Logarithmic”]</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="Inelastica.io.xmgrace.Graph.SetXaxisSpecialTicks">
 <code class="descname">SetXaxisSpecialTicks</code><span class="sig-paren">(</span><em>ticklist</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetXaxisSpecialTicks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetXaxisSpecialTicks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],...].</p>
+<dd><p>Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],…].</p>
 </dd></dl>
 
 <dl class="method">
@@ -447,13 +405,13 @@ are applied to all the generated XYsets.</p>
 - majorGridlines = [bool]
 - minorGridlines = [bool]
 - autoscale      = [bool]
-- scale          = [&#8220;Normal&#8221;/&#8221;Logarithmic&#8221;]</p>
+- scale          = [“Normal”/”Logarithmic”]</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="Inelastica.io.xmgrace.Graph.SetYaxisSpecialTicks">
 <code class="descname">SetYaxisSpecialTicks</code><span class="sig-paren">(</span><em>ticklist</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#Graph.SetYaxisSpecialTicks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.Graph.SetYaxisSpecialTicks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],...].</p>
+<dd><p>Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],…].</p>
 </dd></dl>
 
 <dl class="method">
@@ -540,7 +498,7 @@ is installed).</p>
 <dl class="class">
 <dt id="Inelastica.io.xmgrace.XYDXDYset">
 <em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">XYDXDYset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dx</em>, <em>dy</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDXDYset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
 <dl class="method">
 <dt id="Inelastica.io.xmgrace.XYDXDYset.GetWorld">
 <code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXDYset.GetWorld" title="Permalink to this definition">¶</a></dt>
@@ -654,7 +612,7 @@ is installed).</p>
 <dl class="class">
 <dt id="Inelastica.io.xmgrace.XYDXset">
 <em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">XYDXset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dx</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDXset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
 <dl class="method">
 <dt id="Inelastica.io.xmgrace.XYDXset.GetWorld">
 <code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDXset.GetWorld" title="Permalink to this definition">¶</a></dt>
@@ -768,7 +726,7 @@ is installed).</p>
 <dl class="class">
 <dt id="Inelastica.io.xmgrace.XYDYset">
 <em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">XYDYset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dy</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYDYset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
 <dl class="method">
 <dt id="Inelastica.io.xmgrace.XYDYset.GetWorld">
 <code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYDYset.GetWorld" title="Permalink to this definition">¶</a></dt>
@@ -882,7 +840,7 @@ is installed).</p>
 <dl class="class">
 <dt id="Inelastica.io.xmgrace.XYSIZEset">
 <em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">XYSIZEset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>size</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYSIZEset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.XYset" title="Inelastica.io.xmgrace.XYset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inelastica.io.xmgrace.XYset</span></code></a></p>
 <dl class="method">
 <dt id="Inelastica.io.xmgrace.XYSIZEset.GetWorld">
 <code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.io.xmgrace.XYSIZEset.GetWorld" title="Permalink to this definition">¶</a></dt>
@@ -996,7 +954,7 @@ is installed).</p>
 <dl class="class">
 <dt id="Inelastica.io.xmgrace.XYset">
 <em class="property">class </em><code class="descclassname">Inelastica.io.xmgrace.</code><code class="descname">XYset</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.Dataset" title="Inelastica.io.xmgrace.Dataset"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.io.xmgrace.Dataset</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.io.xmgrace.Dataset" title="Inelastica.io.xmgrace.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inelastica.io.xmgrace.Dataset</span></code></a></p>
 <dl class="method">
 <dt id="Inelastica.io.xmgrace.XYset.GetWorld">
 <code class="descname">GetWorld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/xmgrace.html#XYset.GetWorld"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.xmgrace.XYset.GetWorld" title="Permalink to this definition">¶</a></dt>
@@ -1152,7 +1110,7 @@ is installed).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.3.0-10',
+            VERSION:'1.3.0-12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1162,7 +1120,7 @@ is installed).</p>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

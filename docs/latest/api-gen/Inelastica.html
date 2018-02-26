@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.3.0-10
+                1.3.0-12
               </div>
             
           
@@ -108,6 +108,10 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Inelastica package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-Inelastica">Inelastica (<code class="docutils literal notranslate"><span class="pre">Inelastica</span></code>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#all-classes">All classes</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.fortran.html">Inelastica.fortran package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.io.html">Inelastica.io package</a></li>
@@ -188,6 +192,61 @@
             
   <div class="section" id="module-Inelastica">
 <span id="inelastica-package"></span><h1>Inelastica package<a class="headerlink" href="#module-Inelastica" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-Inelastica">
+<span id="inelastica-inelastica"></span><h2>Inelastica (<a class="reference internal" href="#module-Inelastica" title="Inelastica"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Inelastica</span></code></a>)<a class="headerlink" href="#module-Inelastica" title="Permalink to this headline">¶</a></h2>
+<p>All classes defined in Inelastica.</p>
+<div class="section" id="all-classes">
+<h3>All classes<a class="headerlink" href="#all-classes" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.Geom" title="Inelastica.Geom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Geom</span></code></a>([fn,&nbsp;BufferAtoms,&nbsp;dtype])</td>
+<td>Geom class:</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Inelastica.SpectralMatrix" title="Inelastica.SpectralMatrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpectralMatrix</span></code></a>([A,&nbsp;cutoff])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.savedData" title="Inelastica.savedData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">savedData</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Inelastica.step" title="Inelastica.step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">step</span></code></a>(dir,&nbsp;restart,&nbsp;iistep[,&nbsp;initial,&nbsp;final])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.SigDir" title="Inelastica.SigDir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SigDir</span></code></a>(path)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Inelastica.SavedSigClass" title="Inelastica.SavedSigClass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SavedSigClass</span></code></a>()</td>
+<td>Saves calculated Sig in files in the directory of the TSHS file for the electrode.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.ElectrodeSelfEnergy" title="Inelastica.ElectrodeSelfEnergy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElectrodeSelfEnergy</span></code></a>(fn,&nbsp;NA1,&nbsp;NA2[,&nbsp;voltage,&nbsp;…])</td>
+<td>Calculate surface Greens function and self energy</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Inelastica.GF" title="Inelastica.GF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GF</span></code></a>(TSHSfile,&nbsp;elecL,&nbsp;elecR[,&nbsp;Bulk,&nbsp;…])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.FCrun" title="Inelastica.FCrun"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FCrun</span></code></a>(runfdf)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Inelastica.OTSrun" title="Inelastica.OTSrun"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OTSrun</span></code></a>(runfdf)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.OSrun" title="Inelastica.OSrun"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OSrun</span></code></a>(onlySdir,&nbsp;kpoint[,&nbsp;atype])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Inelastica.DynamicalMatrix" title="Inelastica.DynamicalMatrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DynamicalMatrix</span></code></a>(fdfs[,&nbsp;DynamicAtoms,&nbsp;TSrun])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.Supercell_DynamicalMatrix" title="Inelastica.Supercell_DynamicalMatrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Supercell_DynamicalMatrix</span></code></a>(fdf[,&nbsp;TSrun])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="Inelastica.Symmetry.html#module-Inelastica.Symmetry" title="Inelastica.Symmetry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Symmetry</span></code></a>([fn,&nbsp;accuracy,&nbsp;onlyLatticeSym])</td>
+<td>Classify symmetry of lattice and basis.</td>
+</tr>
+</tbody>
+</table>
 <dl class="function">
 <dt id="Inelastica.AssertReal">
 <code class="descclassname">Inelastica.</code><code class="descname">AssertReal</code><span class="sig-paren">(</span><em>x</em>, <em>label</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/NEGF.html#AssertReal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.AssertReal" title="Permalink to this definition">¶</a></dt>
@@ -209,7 +268,7 @@ to match a common voltage list</p>
 <dl class="function">
 <dt id="Inelastica.Check">
 <code class="descclassname">Inelastica.</code><code class="descname">Check</code><span class="sig-paren">(</span><em>name</em>, <em>val</em>, <em>*msgs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/ValueCheck.html#Check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Check" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks the value and exits if the value &#8220;val&#8221; is
+<dd><p>Checks the value and exits if the value “val” is
 above the one specified</p>
 </dd></dl>
 
@@ -297,7 +356,7 @@ above the one specified</p>
 <dl class="function">
 <dt id="Inelastica.EditCheck">
 <code class="descclassname">Inelastica.</code><code class="descname">EditCheck</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/ValueCheck.html#EditCheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.EditCheck" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the check of &#8220;name&#8221; to the value &#8220;value&#8221;.
+<dd><p>Sets the check of “name” to the value “value”.
 It will notify the user so that any log files will retain
 this information.</p>
 </dd></dl>
@@ -306,7 +365,7 @@ this information.</p>
 <dt id="Inelastica.ElectrodeSelfEnergy">
 <em class="property">class </em><code class="descclassname">Inelastica.</code><code class="descname">ElectrodeSelfEnergy</code><span class="sig-paren">(</span><em>fn</em>, <em>NA1</em>, <em>NA2</em>, <em>voltage=0.0</em>, <em>UseF90helpers=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/NEGF.html#ElectrodeSelfEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.ElectrodeSelfEnergy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate surface Greens function and self energy
-(should probably be renamed selfEnergy ...)
+(should probably be renamed selfEnergy …)
 For spinpolarized use the ispin given, for nonpolarized use 
 the same self-energy for both spin</p>
 <dl class="method">
@@ -326,13 +385,13 @@ Coded by Nick Papior Andersen</p>
 <dt id="Inelastica.ElectrodeSelfEnergy.calcg0_old">
 <code class="descname">calcg0_old</code><span class="sig-paren">(</span><em>ee</em>, <em>ispin=0</em>, <em>left=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/NEGF.html#ElectrodeSelfEnergy.calcg0_old"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.ElectrodeSelfEnergy.calcg0_old" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only used if SciPy is not installed!
-For the left surface Green&#8217;s function  (1 is surface layer, 0 is all the other atoms):
+For the left surface Green’s function  (1 is surface layer, 0 is all the other atoms):
 (E S00-H00  E S01-H01)   (g00 g01)    ( I 0 )
 (E S10-H10  E S11-H11) * (g01 g11)  = ( 0 I ) -&gt;
-call E S - H for t ...</p>
+call E S - H for t …</p>
 <p>t00 g01 + t01 g11 = 0  -&gt; g01 = - t00^-1 t01 g11
 t10 g01 + t11 g11 = I -&gt; - t10 t00^-1 t01 g11 + t11 g11 = I -&gt;</p>
-<p>And we get the surface Green&#8217;s function:</p>
+<p>And we get the surface Green’s function:</p>
 <p>g11 = (t11 - t10 t00^-1 t01)^-1 with the right size of unitcell t00^-1 = g11!
 g11 = (E S11 - H11 - (E S10 - H10) g11 (E S01 - H01))^-1</p>
 <p>In the calculations H01^+ and S01^+ are used instead of S10 and H10.
@@ -340,7 +399,7 @@ g11 = (E S11 - H11 - (E S10 - H10) g11 (E S01 - H01))^-1</p>
 <p>For the right surface greens function same but different order on the MM.daggers!
 i.e., (E S - H - (E S01 - H01) gs (E S01^+ -H01^+)</p>
 <p>Algorith: Lopez Sancho*2 J Phys F:Met Phys 15 (1985) 851</p>
-<p>I&#8217;m still very suspicios of this algorithm ... but it works and is really quick! 
+<p>I’m still very suspicios of this algorithm … but it works and is really quick! 
 The convergence is always checked against gs (E S - H - (E S01^+ - H01^+) gs (E S01 -H01) ) = I!</p>
 </dd></dl>
 
@@ -348,12 +407,11 @@ The convergence is always checked against gs (E S - H - (E S01^+ - H01^+) gs (E 
 <dt id="Inelastica.ElectrodeSelfEnergy.getSig">
 <code class="descname">getSig</code><span class="sig-paren">(</span><em>ee</em>, <em>qp=array([ 0.</em>, <em>0.])</em>, <em>left=True</em>, <em>Bulk=False</em>, <em>ispin=0</em>, <em>UseF90helpers=True</em>, <em>etaLead=0.0</em>, <em>useSigNCfiles=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/NEGF.html#ElectrodeSelfEnergy.getSig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.ElectrodeSelfEnergy.getSig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get self-energy for specified 2-D surface k-point 
-Copy out g0 (surface greens function for smaller electrode calculation)</p>
-<blockquote>
-<div>onto NA1*NA2*nuo matrix with the idiotic (TS) orbital order 
-a1(0,0) a1(1,0) .. a1(0,1) a1(1,1) ...... a2(0,0)
-Where a1, a2 ... are the atoms in the electrode calculation
-and (0,0) (1,0) indicate the replicating position.</div></blockquote>
+Copy out g0 (surface greens function for smaller electrode calculation) 
+onto NA1*NA2*nuo matrix with the idiotic (TS) orbital order 
+a1(0,0) a1(1,0) .. a1(0,1) a1(1,1) …… a2(0,0)
+Where a1, a2 … are the atoms in the electrode calculation
+and (0,0) (1,0) indicate the replicating position.</p>
 <p>This gives self-energy from the solution of:
 Gs = (E S - H -Sigma)^-1 for Sigma</p>
 <p>For Bulk = True: Return E S - H - Sig (which we substitute into the bigger H)
@@ -369,8 +427,8 @@ The voltage is assumed to be applied symmetrically and just shifts the energies 
 <dt id="Inelastica.ElectrodeSelfEnergy.setupHS">
 <code class="descname">setupHS</code><span class="sig-paren">(</span><em>kpoint</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/NEGF.html#ElectrodeSelfEnergy.setupHS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.ElectrodeSelfEnergy.setupHS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup H, S, H01 and S01 where H01 has large elements in the lower left corner, i.e., H01 = Hi,i+1
-(... 0     H01^+ H     H01   0      ...  )
-(... 0     0     H01^+ H     H01    0      ...  )</p>
+(… 0     H01^+ H     H01   0      …  )
+(… 0     0     H01^+ H     H01    0      …  )</p>
 </dd></dl>
 
 </dd></dl>
@@ -729,7 +787,7 @@ and the right contact atoms after the device.</p>
 <dl class="class">
 <dt id="Inelastica.OTSrun">
 <em class="property">class </em><code class="descclassname">Inelastica.</code><code class="descname">OTSrun</code><span class="sig-paren">(</span><em>runfdf</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#OTSrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.OTSrun" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="Inelastica.Phonons.html#Inelastica.Phonons.FCrun" title="Inelastica.Phonons.FCrun"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.Phonons.FCrun</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="Inelastica.Phonons.html#Inelastica.Phonons.FCrun" title="Inelastica.Phonons.FCrun"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inelastica.Phonons.FCrun</span></code></a></p>
 <dl class="method">
 <dt id="Inelastica.OTSrun.GetOrbitalIndices">
 <code class="descname">GetOrbitalIndices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.OTSrun.GetOrbitalIndices" title="Permalink to this definition">¶</a></dt>
@@ -740,7 +798,7 @@ and the right contact atoms after the device.</p>
 <dl class="class">
 <dt id="Inelastica.OptionGroup">
 <em class="property">class </em><code class="descclassname">Inelastica.</code><code class="descname">OptionGroup</code><span class="sig-paren">(</span><em>parser</em>, <em>title</em>, <em>description=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/optparse.html#OptionGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.OptionGroup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">optparse.OptionContainer</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">optparse.OptionContainer</span></code></p>
 <dl class="method">
 <dt id="Inelastica.OptionGroup.add_option">
 <code class="descname">add_option</code><span class="sig-paren">(</span><em>Option) add_option(opt_str</em>, <em>...</em>, <em>kwarg=val</em>, <em>...</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.OptionGroup.add_option" title="Permalink to this definition">¶</a></dt>
@@ -812,7 +870,7 @@ and the right contact atoms after the device.</p>
 <dl class="class">
 <dt id="Inelastica.OptionParser">
 <em class="property">class </em><code class="descclassname">Inelastica.</code><code class="descname">OptionParser</code><span class="sig-paren">(</span><em>usage=None</em>, <em>option_list=None</em>, <em>option_class=&lt;class optparse.Option&gt;</em>, <em>version=None</em>, <em>conflict_handler='error'</em>, <em>description=None</em>, <em>formatter=None</em>, <em>add_help_option=True</em>, <em>prog=None</em>, <em>epilog=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/optparse.html#OptionParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.OptionParser" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">optparse.OptionContainer</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">optparse.OptionContainer</span></code></p>
 <dl class="docutils">
 <dt>Class attributes:</dt>
 <dd><dl class="first last docutils">
@@ -825,7 +883,7 @@ of this parser class (intended to be overridden by subclasses).</dd>
 <dd><dl class="first last docutils">
 <dt>usage <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>a usage string for your program.  Before it is displayed
-to the user, &#8220;%prog&#8221; will be expanded to the name of
+to the user, “%prog” will be expanded to the name of
 your program (self.prog or os.path.basename(sys.argv[0])).</dd>
 <dt>prog <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>the name of the current program (to override
@@ -848,19 +906,19 @@ Assuming -a and -b each take a single argument, the command-line</p>
 <div>-ablah foo bar -bboo baz</div></blockquote>
 <dl class="docutils">
 <dt>will be interpreted the same as</dt>
-<dd>-ablah -bboo &#8211; foo bar baz</dd>
+<dd>-ablah -bboo – foo bar baz</dd>
 <dt>If this flag were false, that command line would be interpreted as</dt>
-<dd>-ablah &#8211; foo bar -bboo baz</dd>
+<dd>-ablah – foo bar -bboo baz</dd>
 </dl>
-<p class="last">&#8211; ie. we stop processing options as soon as we see the first
+<p class="last">– ie. we stop processing options as soon as we see the first
 non-option argument.  (This is the tradition followed by
-Python&#8217;s getopt module, Perl&#8217;s Getopt::Std, and other argument-
+Python’s getopt module, Perl’s Getopt::Std, and other argument-
 parsing libraries, but it is generally annoying to users.)</p>
 </dd>
 <dt>process_default_values <span class="classifier-delimiter">:</span> <span class="classifier">bool = true</span></dt>
 <dd>if true, option default values are processed similarly to option
 values from the command line: that is, they are passed to the
-type-checking function for the option&#8217;s type (as long as the
+type-checking function for the option’s type (as long as the
 default value is a string).  (This really only matters if you
 have defined custom types; see SF bug #955889.)  Set it to false
 to restore the behaviour of Optik 1.4.1 and earlier.</dd>
@@ -879,7 +937,7 @@ set when parse_args() is active.  Also mainly for callbacks.</dd>
 </dl>
 </dd>
 </dl>
-<p>Because of the &#8216;rargs&#8217;, &#8216;largs&#8217;, and &#8216;values&#8217; attributes,
+<p>Because of the ‘rargs’, ‘largs’, and ‘values’ attributes,
 OptionParser is not thread-safe.  If, for some perverse reason, you
 need to parse command-line arguments simultaneously in different
 threads, use different OptionParser instances.</p>
@@ -904,7 +962,7 @@ threads, use different OptionParser instances.</p>
 <dd><p>-&gt; (values : Values, args : [string])</p>
 <p>Check that the supplied option values and leftover arguments are
 valid.  Returns the option values and leftover arguments
-(possibly adjusted, possibly completely new &#8211; whatever you
+(possibly adjusted, possibly completely new – whatever you
 like).  Default implementation just returns the passed-in
 values; subclasses may override as desired.</p>
 </dd></dl>
@@ -924,7 +982,7 @@ OptionParser is unusable.</p>
 <dd><p>Set parsing to stop on the first non-option. Use this if
 you have a command processor which runs another command that
 has options of its own and you want to make sure these options
-don&#8217;t get confused.</p>
+don’t get confused.</p>
 </dd></dl>
 
 <dl class="method">
@@ -940,8 +998,8 @@ allow_interspersed_args.</p>
 <dl class="method">
 <dt id="Inelastica.OptionParser.error">
 <code class="descname">error</code><span class="sig-paren">(</span><em>msg : string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/optparse.html#OptionParser.error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.OptionParser.error" title="Permalink to this definition">¶</a></dt>
-<dd><p>Print a usage message incorporating &#8216;msg&#8217; to stderr and exit.
-If you override this in a subclass, it should not return &#8211; it
+<dd><p>Print a usage message incorporating ‘msg’ to stderr and exit.
+If you override this in a subclass, it should not return – it
 should either exit or raise an exception.</p>
 </dd></dl>
 
@@ -1018,12 +1076,12 @@ should either exit or raise an exception.</p>
 <dl class="method">
 <dt id="Inelastica.OptionParser.parse_args">
 <code class="descname">parse_args</code><span class="sig-paren">(</span><em>args : [string] = sys.argv[1:], values : Values = None) -&gt; (values : Values, args : [string]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/optparse.html#OptionParser.parse_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.OptionParser.parse_args" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse the command-line options found in &#8216;args&#8217; (default:
-sys.argv[1:]).  Any errors result in a call to &#8216;error()&#8217;, which
+<dd><p>Parse the command-line options found in ‘args’ (default:
+sys.argv[1:]).  Any errors result in a call to ‘error()’, which
 by default prints the usage message to stderr and calls
 sys.exit() with an error message.  On success returns a pair
-(values, args) where &#8216;values&#8217; is a Values instance (with all
-your option values) and &#8216;args&#8217; is the list of arguments left
+(values, args) where ‘values’ is a Values instance (with all
+your option values) and ‘args’ is the list of arguments left
 over after parsing options.</p>
 </dd></dl>
 
@@ -1031,14 +1089,14 @@ over after parsing options.</p>
 <dt id="Inelastica.OptionParser.print_help">
 <code class="descname">print_help</code><span class="sig-paren">(</span><em>file : file = stdout</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/optparse.html#OptionParser.print_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.OptionParser.print_help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print an extended help message, listing all options and any
-help text provided with them, to &#8216;file&#8217; (default stdout).</p>
+help text provided with them, to ‘file’ (default stdout).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="Inelastica.OptionParser.print_usage">
 <code class="descname">print_usage</code><span class="sig-paren">(</span><em>file : file = stdout</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/optparse.html#OptionParser.print_usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.OptionParser.print_usage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print the usage message for the current program (self.usage) to
-&#8216;file&#8217; (default stdout).  Any occurrence of the string &#8220;%prog&#8221; in
+‘file’ (default stdout).  Any occurrence of the string “%prog” in
 self.usage is replaced with the name of the current program
 (basename of sys.argv[0]).  Does nothing if self.usage is empty
 or not defined.</p>
@@ -1048,8 +1106,8 @@ or not defined.</p>
 <dt id="Inelastica.OptionParser.print_version">
 <code class="descname">print_version</code><span class="sig-paren">(</span><em>file : file = stdout</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/optparse.html#OptionParser.print_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.OptionParser.print_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print the version message for this program (self.version) to
-&#8216;file&#8217; (default stdout).  As with print_usage(), any occurrence
-of &#8220;%prog&#8221; in self.version is replaced by the current program&#8217;s
+‘file’ (default stdout).  As with print_usage(), any occurrence
+of “%prog” in self.version is replaced by the current program’s
 name.  Does nothing if self.version is empty or undefined.</p>
 </dd></dl>
 
@@ -1158,7 +1216,7 @@ I.e. Inelastica/EigenChannels/pyTBT.</p>
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…] will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -1226,7 +1284,7 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -1250,7 +1308,7 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -1260,7 +1318,7 @@ any JOBNAME string with newjobname)</div></blockquote>
 <code class="descclassname">Inelastica.</code><code class="descname">SetupInelastica</code><span class="sig-paren">(</span><em>templateInelastica</em>, <em>newInelastica</em>, <em>TSrun</em>, <em>templateInputFile</em>, <em>newInputFilename</em>, <em>PhononNCfile</em>, <em>kPoints=1</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupInelastica"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupInelastica" title="Permalink to this definition">¶</a></dt>
 <dd><p>templateInelastica   : Path+foldername to the latest version of Inelastica
 newInelastica        : Path+foldername for the Inelastica folder to be created
-TSrun                : Path+foldername to the TSrun where TBTRANS outputs &#8216;HSSigmaLR.nc&#8217;
+TSrun                : Path+foldername to the TSrun where TBTRANS outputs ‘HSSigmaLR.nc’
 templateInputFile    : Path+filename to an Inelastica input file which holds all</p>
 <blockquote>
 <div>input variables except for the references to
@@ -1280,7 +1338,7 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -1302,7 +1360,7 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -1330,7 +1388,7 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -1381,7 +1439,7 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -1439,7 +1497,7 @@ any JOBNAME string with newjobname)</div></blockquote>
 <dl class="class">
 <dt id="Inelastica.Supercell_DynamicalMatrix">
 <em class="property">class </em><code class="descclassname">Inelastica.</code><code class="descname">Supercell_DynamicalMatrix</code><span class="sig-paren">(</span><em>fdf</em>, <em>TSrun=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SupercellPhonons.html#Supercell_DynamicalMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Supercell_DynamicalMatrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix" title="Inelastica.Phonons.DynamicalMatrix"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.Phonons.DynamicalMatrix</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix" title="Inelastica.Phonons.DynamicalMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">Inelastica.Phonons.DynamicalMatrix</span></code></a></p>
 <dl class="method">
 <dt id="Inelastica.Supercell_DynamicalMatrix.ApplySumRule">
 <code class="descname">ApplySumRule</code><span class="sig-paren">(</span><em>FC</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.Supercell_DynamicalMatrix.ApplySumRule" title="Permalink to this definition">¶</a></dt>
@@ -1555,7 +1613,7 @@ U33      : List of symmetry operations for lattice + basis, i.e.,</p>
 <p>All arrays are numpy type.</p>
 <dl class="docutils">
 <dt>Use:</dt>
-<dd>sym = Symmetry.Symmetry(fn=&#8217;filename.XV&#8217;,accuracy=1e-4)
+<dd>sym = Symmetry.Symmetry(fn=’filename.XV’,accuracy=1e-4)
 Where accuracy is the fudge factor in Ang.</dd>
 </dl>
 <dl class="method">
@@ -1683,7 +1741,7 @@ such that a_i b_j=delta_ij</p>
 <dl class="function">
 <dt id="Inelastica.WritePDOS">
 <code class="descclassname">Inelastica.</code><code class="descname">WritePDOS</code><span class="sig-paren">(</span><em>fn</em>, <em>options</em>, <em>DevGF</em>, <em>DOS</em>, <em>basis</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/pyTBT.html#WritePDOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.WritePDOS" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDOS from the surface Green&#8217;s function from electrode calculations</p>
+<dd><p>PDOS from the surface Green’s function from electrode calculations</p>
 <p>NOTE! The DOS is a sum over the atoms of the unitcell.
 NOTE! The outfile contains the DOS divided into s,p,d,f shells.
 This decomposition is not perfect since polarized basis orbitals
@@ -1773,10 +1831,10 @@ nx, ny, nz : number of grid points</p>
 <dt id="Inelastica.calcWF2">
 <code class="descclassname">Inelastica.</code><code class="descname">calcWF2</code><span class="sig-paren">(</span><em>options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=None, fn=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/STM.html#calcWF2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.calcWF2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate wavefunction on real space mesh with optional folding
-of the periodic boundary conditions. If Fold==True the vectors &#8216;a&#8217;
+of the periodic boundary conditions. If Fold==True the vectors ‘a’
 will be choosen to be the periodic boundary condition vectors and
 the real space wavefunction folded into the cell using the k-vector.
-If Folded==False, you can choose any &#8216;a&#8217; but folding by the PBC will
+If Folded==False, you can choose any ‘a’ but folding by the PBC will
 not be done.
 Note: Folding assumes coupling only between N.N. cells</p>
 <dl class="docutils">
@@ -1792,7 +1850,7 @@ NN          : [N1,N2,N3,minN3,maxN3] number of points along [a1, a2, a3]</p>
 k           : k-vector to use for folding [-0.5,0.5]
 a           : if Fold==True, uses geom.pbc, if false: [a1, a2, a3]</p>
 <blockquote class="last">
-<div>along these directions, i.e., da1=a1/N1 ...</div></blockquote>
+<div>along these directions, i.e., da1=a1/N1 …</div></blockquote>
 </dd>
 </dl>
 <p>RETURNS:
@@ -1818,7 +1876,7 @@ YY : complex wavefunction as N1, N2, N3 matrix</p>
 <dl class="class">
 <dt id="Inelastica.datetime">
 <em class="property">class </em><code class="descclassname">Inelastica.</code><code class="descname">datetime</code><a class="headerlink" href="#Inelastica.datetime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#Inelastica.datetime.date" title="Inelastica.datetime.date"><code class="xref py py-class docutils literal"><span class="pre">datetime.date</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.datetime.date" title="Inelastica.datetime.date"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.date</span></code></a></p>
 <p>The year, month and day arguments are required. tzinfo may be None, or an
 instance of a tzinfo subclass. The remaining arguments may be ints or longs.</p>
 <dl class="method">
@@ -1865,7 +1923,7 @@ instance of a tzinfo subclass. The remaining arguments may be ints or longs.</p>
 <dl class="method">
 <dt id="Inelastica.datetime.fromtimestamp">
 <code class="descname">fromtimestamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.datetime.fromtimestamp" title="Permalink to this definition">¶</a></dt>
-<dd><p>timestamp[, tz] -&gt; tz&#8217;s local time from POSIX timestamp.</p>
+<dd><p>timestamp[, tz] -&gt; tz’s local time from POSIX timestamp.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1883,14 +1941,14 @@ instance of a tzinfo subclass. The remaining arguments may be ints or longs.</p>
 <dt id="Inelastica.datetime.isoformat">
 <code class="descname">isoformat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.datetime.isoformat" title="Permalink to this definition">¶</a></dt>
 <dd><p>[sep] -&gt; string in ISO 8601 format, YYYY-MM-DDTHH:MM:SS[.mmmmmm][+HH:MM].</p>
-<p>sep is used to separate the year from the time, and defaults to &#8216;T&#8217;.</p>
+<p>sep is used to separate the year from the time, and defaults to ‘T’.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="Inelastica.datetime.isoweekday">
 <code class="descname">isoweekday</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.datetime.isoweekday" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the day of the week represented by the date.
-Monday == 1 ... Sunday == 7</p>
+Monday == 1 … Sunday == 7</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1921,7 +1979,7 @@ Monday == 1 ... Sunday == 7</p>
 <dl class="method">
 <dt id="Inelastica.datetime.now">
 <code class="descname">now</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.datetime.now" title="Permalink to this definition">¶</a></dt>
-<dd><p>[tz] -&gt; new datetime with tz&#8217;s local day and time.</p>
+<dd><p>[tz] -&gt; new datetime with tz’s local day and time.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2021,7 +2079,7 @@ Monday == 1 ... Sunday == 7</p>
 <dt id="Inelastica.datetime.weekday">
 <code class="descname">weekday</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.datetime.weekday" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the day of the week represented by the date.
-Monday == 0 ... Sunday == 6</p>
+Monday == 0 … Sunday == 6</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -2080,11 +2138,13 @@ Monday == 0 ... Sunday == 6</p>
 <dl class="class">
 <dt id="Inelastica.interp1d">
 <em class="property">class </em><code class="descclassname">Inelastica.</code><code class="descname">interp1d</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>kind='linear'</em>, <em>axis=-1</em>, <em>copy=True</em>, <em>bounds_error=None</em>, <em>fill_value=nan</em>, <em>assume_sorted=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scipy/interpolate/interpolate.html#interp1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.interp1d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">scipy.interpolate.polyint._Interpolator1D</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.polyint._Interpolator1D</span></code></p>
 <p>Interpolate a 1-D function.</p>
 <p><cite>x</cite> and <cite>y</cite> are arrays of values used to approximate some function f:
-<code class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">f(x)</span></code>.  This class returns a function whose call method uses
+<code class="docutils literal notranslate"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">f(x)</span></code>.  This class returns a function whose call method uses
 interpolation to find the value of new points.</p>
+<p>Note that calling <cite>interp1d</cite> with NaNs present in input values results in
+undefined behaviour.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2093,7 +2153,7 @@ interpolation to find the value of new points.</p>
 <blockquote>
 <div><p>A 1-D array of real values.</p>
 </div></blockquote>
-<p><strong>y</strong> : (...,N,...) array_like</p>
+<p><strong>y</strong> : (…,N,…) array_like</p>
 <blockquote>
 <div><p>A N-D array of real values. The length of <cite>y</cite> along the interpolation
 axis must be equal to the length of <cite>x</cite>.</p>
@@ -2101,11 +2161,11 @@ axis must be equal to the length of <cite>x</cite>.</p>
 <p><strong>kind</strong> : str or int, optional</p>
 <blockquote>
 <div><p>Specifies the kind of interpolation as a string
-(&#8216;linear&#8217;, &#8216;nearest&#8217;, &#8216;zero&#8217;, &#8216;slinear&#8217;, &#8216;quadratic, &#8216;cubic&#8217;
-where &#8216;slinear&#8217;, &#8216;quadratic&#8217; and &#8216;cubic&#8217; refer to a spline
-interpolation of first, second or third order) or as an integer
-specifying the order of the spline interpolator to use.
-Default is &#8216;linear&#8217;.</p>
+(‘linear’, ‘nearest’, ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’
+where ‘zero’, ‘slinear’, ‘quadratic’ and ‘cubic’ refer to a spline
+interpolation of zeroth, first, second or third order) or as an
+integer specifying the order of the spline interpolator to use.
+Default is ‘linear’.</p>
 </div></blockquote>
 <p><strong>axis</strong> : int, optional</p>
 <blockquote>
@@ -2122,9 +2182,9 @@ If False, references to <cite>x</cite> and <cite>y</cite> are used. The default 
 <div><p>If True, a ValueError is raised any time interpolation is attempted on
 a value outside of the range of x (where extrapolation is
 necessary). If False, out of bounds values are assigned <cite>fill_value</cite>.
-By default, an error is raised unless <cite>fill_value=&#8221;extrapolate&#8221;</cite>.</p>
+By default, an error is raised unless <cite>fill_value=”extrapolate”</cite>.</p>
 </div></blockquote>
-<p><strong>fill_value</strong> : array-like or (array-like, array_like) or &#8220;extrapolate&#8221;, optional</p>
+<p><strong>fill_value</strong> : array-like or (array-like, array_like) or “extrapolate”, optional</p>
 <blockquote>
 <div><ul>
 <li><p class="first">if a ndarray (or float), this value will be used to fill in for
@@ -2133,17 +2193,17 @@ the default is NaN. The array-like must broadcast properly to the
 dimensions of the non-interpolation axes.</p>
 </li>
 <li><p class="first">If a two-element tuple, then the first element is used as a
-fill value for <code class="docutils literal"><span class="pre">x_new</span> <span class="pre">&lt;</span> <span class="pre">x[0]</span></code> and the second element is used for
-<code class="docutils literal"><span class="pre">x_new</span> <span class="pre">&gt;</span> <span class="pre">x[-1]</span></code>. Anything that is not a 2-element tuple (e.g.,
+fill value for <code class="docutils literal notranslate"><span class="pre">x_new</span> <span class="pre">&lt;</span> <span class="pre">x[0]</span></code> and the second element is used for
+<code class="docutils literal notranslate"><span class="pre">x_new</span> <span class="pre">&gt;</span> <span class="pre">x[-1]</span></code>. Anything that is not a 2-element tuple (e.g.,
 list or ndarray, regardless of shape) is taken to be a single
 array-like argument meant to be used for both bounds as
-<code class="docutils literal"><span class="pre">below,</span> <span class="pre">above</span> <span class="pre">=</span> <span class="pre">fill_value,</span> <span class="pre">fill_value</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">below,</span> <span class="pre">above</span> <span class="pre">=</span> <span class="pre">fill_value,</span> <span class="pre">fill_value</span></code>.</p>
 <div class="versionadded">
 <p><span class="versionmodified">New in version 0.17.0.</span></p>
 </div>
 </li>
-<li><p class="first">If &#8220;extrapolate&#8221;, then points outside the data range will be
-extrapolated. (&#8220;nearest&#8221; and &#8220;linear&#8221; kinds only.)</p>
+<li><p class="first">If “extrapolate”, then points outside the data range will be
+extrapolated.</p>
 <div class="versionadded">
 <p><span class="versionmodified">New in version 0.17.0.</span></p>
 </div>
@@ -2161,23 +2221,23 @@ If True, <cite>x</cite> has to be an array of monotonically increasing values.</
 </table>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal"><span class="pre">splrep</span></code>, <code class="xref py py-obj docutils literal"><span class="pre">splev</span></code></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">splrep</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">splev</span></code></p>
 <dl class="last docutils">
-<dt><code class="xref py py-obj docutils literal"><span class="pre">UnivariateSpline</span></code></dt>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnivariateSpline</span></code></dt>
 <dd>An object-oriented wrapper of the FITPACK routines.</dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">interp2d</span></code></dt>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">interp2d</span></code></dt>
 <dd>2-D interpolation</dd>
 </dl>
 </div>
 <p class="rubric">Examples</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="o">/</span><span class="mf">3.0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xnew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xnew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ynew</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xnew</span><span class="p">)</span>   <span class="c1"># use interpolation function returned by `interp1d`</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">xnew</span><span class="p">,</span> <span class="n">ynew</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -2190,7 +2250,7 @@ If True, <cite>x</cite> has to be an array of monotonically increasing values.</
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">__call__</span></code>(x)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__call__</span></code>(x)</td>
 <td>Evaluate the interpolant</td>
 </tr>
 </tbody>
@@ -2449,18 +2509,32 @@ Y: vector for wavefunction</p>
 <code class="descclassname">Inelastica.</code><code class="descname">xmladd</code><span class="sig-paren">(</span><em>doc</em>, <em>parent</em>, <em>name</em>, <em>values</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/pyTBT.html#xmladd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.xmladd" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</div>
+</div>
 <div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Inelastica.fortran.html">Inelastica.fortran package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Inelastica.io.html">Inelastica.io package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Inelastica.io.html#module-Inelastica.io">Input/Output (<code class="docutils literal notranslate"><span class="pre">Inelastica.io</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.io.html#io-classes">IO classes</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.io.html#submodules">Submodules</a><ul class="simple">
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Inelastica.physics.html">Inelastica.physics package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Inelastica.physics.html#module-Inelastica.physics">Physical objects (<code class="docutils literal notranslate"><span class="pre">Inelastica.physics</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.physics.html#available-classes">Available classes</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.physics.html#submodules">Submodules</a><ul class="simple">
 </ul>
 </li>
@@ -2518,7 +2592,7 @@ Y: vector for wavefunction</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.3.0-10',
+            VERSION:'1.3.0-12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -2528,7 +2602,7 @@ Y: vector for wavefunction</p>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

@@ -4,11 +4,14 @@ import numpy as N
 
 # This function is used in the class below for each of the
 # three spatial directions (in momentum space)
+
+
 def generatelinmesh(Nk):
     "Generate Nk points sampling linearly the interval [-0.5;0.5]"
     kpts = [(ii*1.0+0.5)/Nk-0.5 for ii in range(Nk)]
     wgts = [1.0/Nk for ii in range(Nk)]
     return N.array(kpts), N.array(wgts)
+
 
 class kmesh:
     """
@@ -28,11 +31,12 @@ class kmesh:
     Nk   : Array with sampling for each axis
     type : List of sampling type for each axis
     """
-    def __init__(self,Nk1,Nk2,Nk3,meshtype=['LIN','LIN','LIN'],invsymmetry=True):
+
+    def __init__(self, Nk1, Nk2, Nk3, meshtype=['LIN', 'LIN', 'LIN'], invsymmetry=True):
         """
         Returns an instance of a k-mesh with each of the k-vector axes
         sampled either linearly (LIN) or using a Gauss-Kronrod (GK) scheme.
-        
+
         An axis i sampled by (Nki,LIN) generates Nk points, while 
         (Nki,GK) returns 2*Nk+1 points.
 
@@ -40,9 +44,9 @@ class kmesh:
         can be reduced by a factor two (except when the Gamma point is included
         which have no partner).
         """
-        self.Nk = N.array([Nk1,Nk2,Nk3])
+        self.Nk = N.array([Nk1, Nk2, Nk3])
         self.type = meshtype
-        self.genkmesh() 
+        self.genkmesh()
         self.invsymmetry = invsymmetry
         if invsymmetry:
             self.SymmetryReduce()
@@ -77,19 +81,19 @@ class kmesh:
         print ' ... type = ', self.type
         print ' ... Nk = ', self.Nk
         # repete out in 3D
-        kpts = N.zeros((self.NNk,3)) # Array of k-points
-        wgts = N.ones((4,self.NNk)) # (wgts, errorw1, errorw2, errorw3)
+        kpts = N.zeros((self.NNk, 3)) # Array of k-points
+        wgts = N.ones((4, self.NNk)) # (wgts, errorw1, errorw2, errorw3)
         nn = 0
         for i in range(self.Nk[0]):
             for j in range(self.Nk[1]):
                 for k in range(self.Nk[2]):
-                    kpts[nn,:] = [self.k[0][i],self.k[1][j],self.k[2][k]]
-                    wgts[0,nn] = self.w[0][i]*self.w[1][j]*self.w[2][k]
-                    wgts[1,nn] = errorw[0][i]*self.w[1][j]*self.w[2][k]
-                    wgts[2,nn] = self.w[0][i]*errorw[1][j]*self.w[2][k]
-                    wgts[3,nn] = self.w[0][i]*self.w[1][j]*errorw[2][k]
+                    kpts[nn, :] = [self.k[0][i], self.k[1][j], self.k[2][k]]
+                    wgts[0, nn] = self.w[0][i]*self.w[1][j]*self.w[2][k]
+                    wgts[1, nn] = errorw[0][i]*self.w[1][j]*self.w[2][k]
+                    wgts[2, nn] = self.w[0][i]*errorw[1][j]*self.w[2][k]
+                    wgts[3, nn] = self.w[0][i]*self.w[1][j]*errorw[2][k]
                     nn += 1
-        print ' ... NNk = %i, sum(wgts) = %.8f'%(self.NNk,N.sum(wgts[0]))
+        print ' ... NNk = %i, sum(wgts) = %.8f'%(self.NNk, N.sum(wgts[0]))
         print ' ... sum(errorw) = (%.8f,%.8f,%.8f)'%tuple(N.sum(wgts[i+1]) for i in range(3))
         self.k = kpts
         self.w = wgts
@@ -110,33 +114,34 @@ class kmesh:
         """
         print ' ... Applying inversion symmetry (the simple way)'
         # No brute force (and therefore terribly slow) pairing here
-        indx = [[ii,2] for ii in range(self.NNk/2,self.NNk)] # Keep the last half of the k-points with double weight
+        indx = [[ii, 2] for ii in range(self.NNk/2, self.NNk)] # Keep the last half of the k-points with double weight
         k0 = self.k[self.NNk/2]
-        if N.dot(k0,k0)==0: # gamma in the kptsist
-            indx[0] = [self.NNk/2,1] # lower weight to one
+        if N.dot(k0, k0)==0: # gamma in the kptsist
+            indx[0] = [self.NNk/2, 1] # lower weight to one
         indx, weight = N.array([ii[0] for ii in indx]), N.array([ii[1] for ii in indx])
-        kpts, wgts = self.k[indx], self.w[:,indx]*weight
+        kpts, wgts = self.k[indx], self.w[:, indx]*weight
         self.k = kpts
         self.NNk = len(kpts)
         self.w = wgts
-        print ' ... NNk = %i, sum(wgts) = %.8f'%(self.NNk,N.sum(wgts[0]))
+        print ' ... NNk = %i, sum(wgts) = %.8f'%(self.NNk, N.sum(wgts[0]))
         print ' ... sum(errorw) = (%.8f,%.8f,%.8f)'%tuple(N.sum(wgts[i+1]) for i in range(3))
 
-    def mesh2file(self,fn):
+    def mesh2file(self, fn):
         "Writes the k-mesh to file"
-        f = open(fn,'w')
+        f = open(fn, 'w')
         f.write('# k1 k2 k3 w0 w1 w2 w3\n')
         for i in range(self.NNk):
             s = ''
             for j in range(3):
-                s += '%.8f '%self.k[i,j]
+                s += '%.8f '%self.k[i, j]
             for j in range(4):
-                s += '%.8e '%self.w[j,i]
+                s += '%.8e '%self.w[j, i]
             f.write(s+'\n')
         f.close()
 
+
 def test():
-    mesh = kmesh(4,3,1,meshtype=['LIN','GK','LIN'])
+    mesh = kmesh(4, 3, 1, meshtype=['LIN', 'GK', 'LIN'])
     keys = mesh.__dict__.keys()
     print keys
     print mesh.Nk
@@ -145,7 +150,7 @@ def test():
     print mesh.invsymmetry
     print 'ki wi'
     for i in range(len(mesh.k)):
-        print mesh.k[i], mesh.w[0,i]
+        print mesh.k[i], mesh.w[0, i]
     mesh.mesh2file('mesh-test.dat')
 
 if __name__ == '__main__':

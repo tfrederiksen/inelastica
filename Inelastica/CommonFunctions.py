@@ -1,14 +1,19 @@
 from __future__ import print_function, absolute_import
 
-import sys, time
+import sys
+import time
 
 # Save the stdout pipes
 _default_stdout = sys.stdout
 _default_stderr = sys.stderr
 
+
 def CreatePipeOutput(f):
     global _default_stdout, _default_stderr
-    import subprocess, os, os.path as osp, errno
+    import subprocess
+    import os
+    import os.path as osp
+    import errno
 
     # First ensure that the path to the file exists
     # In case one wishes to create a log folder this should
@@ -23,10 +28,10 @@ def CreatePipeOutput(f):
         else: raise # forward error...
 
     class TeeLog(object):
-        def __init__(self,f,term):
+        def __init__(self, f, term):
             self.term = term
-            self.log = open(f,'w') # Consider doing this optionally appending?
-        def write(self,message):
+            self.log = open(f, 'w') # Consider doing this optionally appending?
+        def write(self, message):
             self.term.write(message)
             self.log.write(message)
         def flush(self):
@@ -34,48 +39,51 @@ def CreatePipeOutput(f):
             self.log.flush()
 
     # Overwrite the std-out and std-err
-    sys.stdout = TeeLog(f,_default_stdout)
-    sys.stderr = TeeLog(f,_default_stderr)
+    sys.stdout = TeeLog(f, _default_stdout)
+    sys.stderr = TeeLog(f, _default_stderr)
 
-def PrintMainHeader(name,options):
+
+def PrintMainHeader(name, options):
     import Inelastica.info as info
     print('=======================================================================')
-    print('INELASTICA VERSION %s [ GIT %s ]'%(info.version,info.git_revision_short))
-    print('RUNNING %s : %s'%(name.upper(),time.ctime()))
+    print('INELASTICA VERSION %s [ GIT %s ]'%(info.version, info.git_revision_short))
+    print('RUNNING %s : %s'%(name.upper(), time.ctime()))
     print()
     print('\nOPTIONS:')
     opts_dict = vars(options)
     keys = sorted(opts_dict)
     for i in keys:
-        print('    ',i,'-->',opts_dict[i])
+        print('    ', i, '-->', opts_dict[i])
     print()
     print('=======================================================================')
 
+
 def PrintMainFooter(name):
     print('=======================================================================')
-    print('FINISHED %s : %s'%(name.upper(),time.ctime()))
+    print('FINISHED %s : %s'%(name.upper(), time.ctime()))
     print('=======================================================================')
 
 
-def PrintScriptSummary(argv,dT):
+def PrintScriptSummary(argv, dT):
     print('SCRIPT SUMMARY:')
 
     # Write function call
-    print('Call:',' '.join(argv))
+    print('Call:', ' '.join(argv))
 
     # Timing
     hours = dT.days/24.+(dT.seconds+dT.microseconds*1.e-6)/60.**2
     minutes = hours*60.
     seconds = minutes*60.
     print('Program finished:  %s '%time.ctime())
-    print('Walltime: %.2f hrs = %.2f min = %.2f sec'%(hours,minutes,seconds))
+    print('Walltime: %.2f hrs = %.2f min = %.2f sec'%(hours, minutes, seconds))
     print('=======================================================================')
 
 ######################################################################
 #
 # Multiprocessing
 
-def runParallel(function,argList,nCPU=None):
+
+def runParallel(function, argList, nCPU=None):
     # Run in parallel the function with arguments given in the list
     # return list of results. You have to wrap the normal function with:
     # def myFuncPar(resQue, ii, *args):
@@ -83,7 +91,7 @@ def runParallel(function,argList,nCPU=None):
     # Which returns the results of the arguments
 
     import multiprocessing as MP
-    import os 
+    import os
 
     try: # Remove interfering OMP threading
         OMP = os.environ['OMP_NUM_THREADS']
@@ -101,12 +109,12 @@ def runParallel(function,argList,nCPU=None):
     print("Running on %i CPUS"%(nCPU))
 
     resQue = MP.Queue() # return que
-    chunks = [argList[ii*nCPU:(ii+1)*nCPU] for ii,jj in enumerate(argList[::nCPU])]
+    chunks = [argList[ii*nCPU:(ii+1)*nCPU] for ii, jj in enumerate(argList[::nCPU])]
     res = [None]*len(argList)
-    for ii,chunk in enumerate(chunks):
+    for ii, chunk in enumerate(chunks):
         threads=[]
-        for jj,args in enumerate(chunk):
-            t= MP.Process(target=function, args =(resQue,ii*nCPU+jj,)+args)
+        for jj, args in enumerate(chunk):
+            t= MP.Process(target=function, args =(resQue, ii*nCPU+jj,)+args)
             t.start()
             threads += [t]
         for jj in range(len(threads)):

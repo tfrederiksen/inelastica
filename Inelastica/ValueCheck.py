@@ -26,9 +26,10 @@ else:
 # Place holder for checks
 _check = {}
 
-def _s(name,value): _check[name] = value
 
-# The lower magnitude of the Hamiltonian/overlap elements between 
+def _s(name, value): _check[name] = value
+
+# The lower magnitude of the Hamiltonian/overlap elements between
 # the device region and electrode
 _s("Device-Elec-overlap", 1e-7)
 
@@ -36,23 +37,25 @@ _s("Device-Elec-overlap", 1e-7)
 _s("displacement-tolerance", 0.05)
 
 # The tolerance for which the k-points are the same
-_s("same-kpoint",1e-9)
+_s("same-kpoint", 1e-9)
 
 # The tolerance when ensuring that the imaginary part is zero
-_s("zero-imaginary-part",1e-8)
-_s("trans-imaginary-part",1e-10)
+_s("zero-imaginary-part", 1e-8)
+_s("trans-imaginary-part", 1e-10)
 
 # Convergence criteria for Lopez-Sancho algorithm
-_s("Lopez-Sancho",1e-5)
-_s("Lopez-Sancho-warning",1e-8)
+_s("Lopez-Sancho", 1e-5)
+_s("Lopez-Sancho-warning", 1e-8)
 
 del _s
+
 
 def GetCheck(name):
     global _check
     return _check[name]
 
-def EditCheck(name,value):
+
+def EditCheck(name, value):
     """
     Sets the check of "name" to the value "value".
     It will notify the user so that any log files will retain
@@ -66,8 +69,9 @@ def EditCheck(name,value):
     print("WARNING: Overriding variable '{0}'".format(name))
     print("         Old value: {0}".format(ov))
     print("         New value: {0}".format(value))
-    
-def Check(name,val,*msgs):
+
+
+def Check(name, val, *msgs):
     """
     Checks the value and exits if the value "val" is
     above the one specified
@@ -76,11 +80,11 @@ def Check(name,val,*msgs):
     if not name in _check:
         # the name hasn't been set
         # hence, it will always go through
-        # This allows the coder to insets fully user tests 
-        # Say if the code should generally never stop, we can make 
+        # This allows the coder to insets fully user tests
+        # Say if the code should generally never stop, we can make
         # some checks where users might have certain criterias.
         return
-    
+
     if _np.any(_np.array(val) > _check[name]):
         print("ERROR:")
         for msg in msgs:
@@ -90,14 +94,16 @@ def Check(name,val,*msgs):
         print("       Error value  : {0}".format(_check[name]))
         raise ArithmeticError("Criteria not met. Please check output...")
 
-def OptionsCheck(opts,exe):
+
+def OptionsCheck(opts, exe):
     """
     Generic routine for adjusting most used options for routines.
     I.e. Inelastica/EigenChannels/pyTBT.
     """
     import Inelastica.io.siesta as SIO
-    import os, os.path as osp
-        
+    import os
+    import os.path as osp
+
     # Destination directory
     if not osp.isdir(opts.DestDir):
         print('\n'+exe+': Creating folder {0}'.format(opts.DestDir))
@@ -107,66 +113,66 @@ def OptionsCheck(opts,exe):
         raise IOError("FDF-file not found: "+opts.fn)
 
     # Read SIESTA files
-    opts.head,tail = osp.split(opts.fn)
+    opts.head, tail = osp.split(opts.fn)
     if opts.head == '': # set filepath if missing
         opts.head = '.'
     print(exe+": Reading keywords from {0} \n".format(opts.fn))
 
-    opts.systemlabel = SIO.GetFDFlineWithDefault(opts.fn,'SystemLabel', str, 'siesta', exe) 
-    opts.TSHS = '%s/%s.TSHS'%(opts.head,opts.systemlabel)
+    opts.systemlabel = SIO.GetFDFlineWithDefault(opts.fn, 'SystemLabel', str, 'siesta', exe)
+    opts.TSHS = '%s/%s.TSHS'%(opts.head, opts.systemlabel)
 
     # These first keys can be used, but they are superseeded by keys in the TS.Elec.<> block
     # Hence if they are read in first it will do it in correct order.
-    
+
     if opts.UseBulk < 0:
         # Note NRP:
         #  in principle this is now a per-electrode setting which
         #  may be useful for certain systems...
-        opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn,'TS.UseBulkInElectrodes', bool, True, exe)
-        opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn,'TS.Elecs.Bulk', bool, opts.UseBulk, exe)
-            
+        opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn, 'TS.UseBulkInElectrodes', bool, True, exe)
+        opts.UseBulk = SIO.GetFDFlineWithDefault(opts.fn, 'TS.Elecs.Bulk', bool, opts.UseBulk, exe)
+
     def get_elec_vars(lr):
-        
+
         # Look up old format first
-        TSHS = SIO.GetFDFlineWithDefault(opts.fn,'TS.HSFile'+lr, str, '', exe)
-        NA1 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA1'+lr, int, 1, exe)
-        NA2 = SIO.GetFDFlineWithDefault(opts.fn,'TS.ReplicateA2'+lr, int, 1, exe)
+        TSHS = SIO.GetFDFlineWithDefault(opts.fn, 'TS.HSFile'+lr, str, '', exe)
+        NA1 = SIO.GetFDFlineWithDefault(opts.fn, 'TS.ReplicateA1'+lr, int, 1, exe)
+        NA2 = SIO.GetFDFlineWithDefault(opts.fn, 'TS.ReplicateA2'+lr, int, 1, exe)
 
         # default semi-inf direction
         semiinf = 2
-        
+
         # Proceed looking up new format, which precedes
         belec = 'TS.Elec.' + lr
         print('Looking for new electrode format in: %%block {}'.format(belec))
-        
+
         # Default replication stuff
-        TSHS = SIO.GetFDFlineWithDefault(opts.fn,belec+'.TSHS', str, TSHS, exe)
-        NA1 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Bloch.A1', int, NA1, exe)
-        NA2 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Bloch.A2', int, NA2, exe)
-        NA3 = SIO.GetFDFlineWithDefault(opts.fn,belec+'.Bloch.A3', int, 1, exe)
-        
+        TSHS = SIO.GetFDFlineWithDefault(opts.fn, belec+'.TSHS', str, TSHS, exe)
+        NA1 = SIO.GetFDFlineWithDefault(opts.fn, belec+'.Bloch.A1', int, NA1, exe)
+        NA2 = SIO.GetFDFlineWithDefault(opts.fn, belec+'.Bloch.A2', int, NA2, exe)
+        NA3 = SIO.GetFDFlineWithDefault(opts.fn, belec+'.Bloch.A3', int, 1, exe)
+
         # Overwrite block
         block = SIO.GetFDFblock(opts.fn, KeyWord = belec)
-        
+
         for line in block:
             print(line)
             # Lower-case, FDF is case-insensitive
             key = line[0].lower()
-            if key in ['tshs','tshs-file','hs','hs-file']:
+            if key in ['tshs', 'tshs-file', 'hs', 'hs-file']:
                 TSHS = line[1]
-            elif key in ['replicate-a','rep-a','replicate-a1','rep-a1','bloch-a1']:
+            elif key in ['replicate-a', 'rep-a', 'replicate-a1', 'rep-a1', 'bloch-a1']:
                 NA1 = int(line[1])
-            elif key in ['replicate-b','rep-b','replicate-a2','rep-a2','bloch-a2']:
+            elif key in ['replicate-b', 'rep-b', 'replicate-a2', 'rep-a2', 'bloch-a2']:
                 NA2 = int(line[1])
-            elif key in ['replicate-c','rep-c','replicate-a3','rep-a3','bloch-a3']:
+            elif key in ['replicate-c', 'rep-c', 'replicate-a3', 'rep-a3', 'bloch-a3']:
                 NA3 = int(line[1])
-            elif key in ['replicate','rep','bloch']:
+            elif key in ['replicate', 'rep', 'bloch']:
                 # We have *at least* 2 integers
                 NA1 = int(line[1])
                 NA2 = int(line[2])
                 NA3 = int(line[3])
 
-            elif key in ['semi-inf-direction','semi-inf-dir','semi-inf']:
+            elif key in ['semi-inf-direction', 'semi-inf-dir', 'semi-inf']:
                 # This is lower-case checked
                 axis = line[1][1:].lower()
                 if 'a' == axis or 'a1' == axis:
@@ -183,7 +189,7 @@ def OptionsCheck(opts,exe):
         if TSHS[0] != '/':
             # path is relative
             TSHS = opts.head+'/'+TSHS
-        return TSHS,NA1,NA2,semiinf
+        return TSHS, NA1, NA2, semiinf
 
     # Look up electrode block
     block = SIO.GetFDFblock(opts.fn, KeyWord = 'TS.Elecs')
@@ -198,9 +204,9 @@ def OptionsCheck(opts,exe):
     else:
         print(block)
         raise IOError('Currently only two electrodes are supported')
-        
+
     # Read in number of buffer atoms
-    opts.buffer, L, R = SIO.GetBufferAtomsList(opts.TSHS,opts.fn)
+    opts.buffer, L, R = SIO.GetBufferAtomsList(opts.TSHS, opts.fn)
     opts.bufferL = L
     opts.bufferR = R
 
@@ -211,20 +217,20 @@ def OptionsCheck(opts,exe):
 
     # Device region
     if opts.DeviceFirst<=0:
-        opts.DeviceFirst = SIO.GetFDFlineWithDefault(opts.fn,'TS.TBT.PDOSFrom',int,1,exe)
+        opts.DeviceFirst = SIO.GetFDFlineWithDefault(opts.fn, 'TS.TBT.PDOSFrom', int, 1, exe)
     opts.DeviceFirst -= L
     if opts.DeviceLast<=0:
-        opts.DeviceLast = SIO.GetFDFlineWithDefault(opts.fn,'TS.TBT.PDOSTo',int,1e10,exe)
+        opts.DeviceLast = SIO.GetFDFlineWithDefault(opts.fn, 'TS.TBT.PDOSTo', int, 1e10, exe)
     opts.DeviceLast -= L
-    opts.NumberOfAtoms = SIO.GetFDFlineWithDefault(opts.fn,'NumberOfAtoms',int,1e10,exe)
+    opts.NumberOfAtoms = SIO.GetFDFlineWithDefault(opts.fn, 'NumberOfAtoms', int, 1e10, exe)
     opts.NumberOfAtoms -= L + R
     if opts.DeviceLast<opts.DeviceFirst:
         print(exe+' error: DeviceLast<DeviceFirst not allowed. Setting DeviceLast=DeviceFirst')
         opts.DeviceLast = opts.DeviceFirst
-    opts.DeviceAtoms = [max(opts.DeviceFirst,1),min(opts.DeviceLast,opts.NumberOfAtoms)]
+    opts.DeviceAtoms = [max(opts.DeviceFirst, 1), min(opts.DeviceLast, opts.NumberOfAtoms)]
 
     # Voltage
-    opts.voltage = SIO.GetFDFlineWithDefault(opts.fn,'TS.Voltage', float, 0.0, exe)
+    opts.voltage = SIO.GetFDFlineWithDefault(opts.fn, 'TS.Voltage', float, 0.0, exe)
 
     #############
     # Here comes some specifics related to different executables:
@@ -250,18 +256,18 @@ def OptionsCheck(opts,exe):
         if opts.biasPoints < 6:
             raise AssertionError("BiasPoints must be larger than 5")
     if "iSpin" in opts.__dict__:
-        if not opts.iSpin in [0,1]:
+        if not opts.iSpin in [0, 1]:
             raise AssertionError("Spin must be either 0 or 1")
 
     if "Emin" in opts.__dict__:
         if opts.Emin == 1e10:
-            opts.Emin = SIO.GetFDFlineWithDefault(opts.fn,'TS.TBT.Emin', float, 0.0, 'pyTBT')
+            opts.Emin = SIO.GetFDFlineWithDefault(opts.fn, 'TS.TBT.Emin', float, 0.0, 'pyTBT')
     if "Emax" in opts.__dict__:
         if opts.Emax == 1e10:
-            opts.Emax = SIO.GetFDFlineWithDefault(opts.fn,'TS.TBT.Emax', float, 1.0, 'pyTBT')
+            opts.Emax = SIO.GetFDFlineWithDefault(opts.fn, 'TS.TBT.Emax', float, 1.0, 'pyTBT')
     if "NPoints" in opts.__dict__:
         if opts.NPoints <= 0:
-            opts.NPoints = SIO.GetFDFlineWithDefault(opts.fn,'TS.TBT.NPoints', int, 1, 'pyTBT')
+            opts.NPoints = SIO.GetFDFlineWithDefault(opts.fn, 'TS.TBT.NPoints', int, 1, 'pyTBT')
 
         # Create list of energies
         try:
@@ -269,12 +275,13 @@ def OptionsCheck(opts,exe):
             # Do not overwrite if some Elist is already specified
         except:
             if opts.NPoints == 1:
-                opts.Elist = _np.array((opts.Emin,),_np.float)
+                opts.Elist = _np.array((opts.Emin,), _np.float)
             else:
                 # Linspace is just what we need
-                opts.Elist = _np.linspace(opts.Emin,opts.Emax,opts.NPoints)
+                opts.Elist = _np.linspace(opts.Emin, opts.Emax, opts.NPoints)
 
-def GetPositional(args,msg="You have not specified any positional argument"):
+
+def GetPositional(args, msg="You have not specified any positional argument"):
     if len(args) < 1:
         raise ValueError(msg)
     pos = args.pop(0)

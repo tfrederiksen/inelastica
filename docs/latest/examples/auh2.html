@@ -1,0 +1,371 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>AuH2 &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../index.html"/>
+        <link rel="up" title="Examples" href="../examples.html"/>
+        <link rel="next" title="Na BCC" href="na_bcc.html"/>
+        <link rel="prev" title="Au FCC" href="au_fcc.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-12
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="au_fcc.html">Au FCC</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">AuH2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geom2geom">geom2geom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cgrun">CGrun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fcrun-osrun">FCrun/OSrun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tsrun">TSrun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phrun">PHrun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eigenchannels">EigenChannels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#iets-calculations">IETS calculations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="na_bcc.html">Na BCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nacl.html">NaCl</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../examples.html">Examples</a> &raquo;</li>
+        
+      <li>AuH2</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/examples/auh2.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="auh2">
+<span id="id1"></span><h1>AuH2<a class="headerlink" href="#auh2" title="Permalink to this headline">¶</a></h1>
+<p>In the folder <cite>Inelastica/Examples/AuH2</cite> you will find a folder <cite>L9.68</cite> and a Python script <code class="docutils literal notranslate"><span class="pre">AuH2-setup.py</span></code>. The folder contains two subfolders</p>
+<ul class="simple">
+<li><em>CGrun</em> is a standard SIESTA geometry optimization run for a H2 molecule in a bridge configuration connected to 1D Au wires.</li>
+<li><em>TSrun</em> is a standard <a class="reference external" href="https://launchpad.net/siesta">TranSIESTA</a> setup with the H2 molecule between two semi-infinite Au leads.</li>
+</ul>
+<p>In both cases the folder name <cite>L9.68</cite> refers to an electrode separation (between fixed Au atoms) of 9.68 Ang.</p>
+<p>To demonstrate the methods of Inelastica you can try to run the following jobs in the listed order.</p>
+<div class="section" id="geom2geom">
+<h2>geom2geom<a class="headerlink" href="#geom2geom" title="Permalink to this headline">¶</a></h2>
+<p>Go into the <cite>L9.68/CGrun</cite> folder and try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>geom2geom RUN.fdf struct3.xyz -x <span class="m">3</span> -y <span class="m">2</span> -z <span class="m">1</span>
+</pre></div>
+</div>
+<p>This will convert the geometry from the <em>fdf</em> format to an <em>xyz</em> file repeated 3x2x1 times. <code class="docutils literal notranslate"><span class="pre">geom2geom</span></code> can handle <em>xyz</em>, <em>fdf</em>, <em>ANI</em>, <em>XV</em> etc files.</p>
+<p>The command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>geom2geom --help
+</pre></div>
+</div>
+<p>tells you how to use the script.</p>
+</div>
+<div class="section" id="cgrun">
+<h2>CGrun<a class="headerlink" href="#cgrun" title="Permalink to this headline">¶</a></h2>
+<p>The first task is to stretch the geometry from <cite>L9.68</cite> to a new electrode separation of 10.0 Ang (e.g., with a folder name <cite>L10.00</cite>).</p>
+<p>To do this make sure that</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CG</span> <span class="o">=</span> True
+<span class="nv">FC</span> <span class="o">=</span> False
+<span class="nv">OS</span> <span class="o">=</span> False
+<span class="nv">TS</span> <span class="o">=</span> False
+</pre></div>
+</div>
+<p>in <code class="docutils literal notranslate"><span class="pre">AuH2-setup.py</span></code>. Now simply type</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python AuH2-setup.py
+</pre></div>
+</div>
+<p>and the script will</p>
+<ul class="simple">
+<li>make a new <cite>L10.00/CGrun</cite> folder</li>
+<li>read the <em>L9.68/CGrun/Chain.XV</em> geometry and stretch to 10.0 Ang</li>
+<li>write <code class="docutils literal notranslate"><span class="pre">RUN.pbs</span></code> script and submit to queue</li>
+</ul>
+</div>
+<div class="section" id="fcrun-osrun">
+<h2>FCrun/OSrun<a class="headerlink" href="#fcrun-osrun" title="Permalink to this headline">¶</a></h2>
+<p>The next task is to perform finite displacements of a selected group of atoms to determine vibrational frequencies, modes, and e-ph couplings.</p>
+<p>To do this make sure that</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CG</span> <span class="o">=</span> False
+<span class="nv">FC</span> <span class="o">=</span> True
+<span class="nv">OS</span> <span class="o">=</span> True
+<span class="nv">TS</span> <span class="o">=</span> False
+</pre></div>
+</div>
+<p>in <code class="docutils literal notranslate"><span class="pre">AuH2-setup.py</span></code>. Now simply type</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python AuH2-setup.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="tsrun">
+<h2>TSrun<a class="headerlink" href="#tsrun" title="Permalink to this headline">¶</a></h2>
+<p>To run <a class="reference external" href="https://launchpad.net/siesta">TranSIESTA</a> for the stretched wire geometry (<cite>L10.00</cite>) use</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CG</span> <span class="o">=</span> False
+<span class="nv">FC</span> <span class="o">=</span> False
+<span class="nv">OS</span> <span class="o">=</span> False
+<span class="nv">TS</span> <span class="o">=</span> True
+</pre></div>
+</div>
+<p>The content of the unformatted <em>.TSHS</em> file generated by subroutine <code class="docutils literal notranslate"><span class="pre">m_ts_io.F90</span></code> in <a class="reference external" href="https://launchpad.net/siesta">TranSIESTA</a> run can be found <a class="reference internal" href="../tshs.html#tshs"><span class="std std-ref">here</span></a>.</p>
+</div>
+<div class="section" id="phrun">
+<h2>PHrun<a class="headerlink" href="#phrun" title="Permalink to this headline">¶</a></h2>
+<p>To use the data from the <cite>FCrun/OSrun</cite> folders to determine the vibrational frequencies, modes, and e-ph couplings, you can execute on the command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Phonons -c -F <span class="m">9</span> -L <span class="m">14</span> --FCfirst<span class="o">=</span><span class="m">11</span> --FClast<span class="o">=</span><span class="m">12</span> PHrun
+</pre></div>
+</div>
+<p>To learn about the different flags, try</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Phonons -h
+</pre></div>
+</div>
+</div>
+<div class="section" id="eigenchannels">
+<h2>EigenChannels<a class="headerlink" href="#eigenchannels" title="Permalink to this headline">¶</a></h2>
+<p>Go into the <cite>TSrun</cite> folder:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>EigenChannels EC
+</pre></div>
+</div>
+<p>will create a new subdirectory <cite>EC</cite> and calculate the eigenchannel scattering states. They are saved in the macu file format which can be read by molekel (old version?). Other file formats may be specified with the <cite>–cube=…</cite> option, see <code class="docutils literal notranslate"><span class="pre">EigenChannels</span> <span class="pre">--help</span></code>. Support for more file formats can be found by downloading the <a class="reference external" href="http://github.com/tfrederiksen/inelastica/releases">last release</a>. In addition, you will get <em>.xmgr</em> files that can be plotted in xmgrace. Also try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>EigenChannels --help
+</pre></div>
+</div>
+<p>to find more options.</p>
+</div>
+<div class="section" id="iets-calculations">
+<h2>IETS calculations<a class="headerlink" href="#iets-calculations" title="Permalink to this headline">¶</a></h2>
+<p>Go into the <cite>TSrun</cite> folder:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Inelastica -F <span class="m">10</span> -L <span class="m">15</span> -p ../PHrun/Output.nc --LOEscale<span class="o">=</span><span class="m">0</span>.0 INrun
+</pre></div>
+</div>
+<p>will create a new subdirectory <cite>INrun</cite> and calculate the IETS spectra. The results are saved in a netCDF file which can be examined by the <code class="docutils literal notranslate"><span class="pre">ncdump</span></code> command or plotted in xmgrace (compiled with netCDF support).</p>
+<p>To learn about the different flags, try</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Inelastica -h
+</pre></div>
+</div>
+<p>You can compare your results to <a class="reference download internal" href="../_downloads/AuH2_L10.00_Chain.EC.Tot.IN.nc" download=""><code class="xref download docutils literal notranslate"><span class="pre">this</span> <span class="pre">netCDF</span> <span class="pre">output</span> <span class="pre">file</span></code></a>.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="na_bcc.html" class="btn btn-neutral float-right" title="Na BCC" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="au_fcc.html" class="btn btn-neutral" title="Au FCC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.3.0-12',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

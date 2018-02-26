@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-10
+                1.3.0-12
               </div>
             
           
@@ -198,9 +198,10 @@
 <span class="c1"># Place holder for checks</span>
 <span class="n">_check</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="k">def</span> <span class="nf">_s</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">value</span><span class="p">):</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-<span class="c1"># The lower magnitude of the Hamiltonian/overlap elements between </span>
+<span class="k">def</span> <span class="nf">_s</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+<span class="c1"># The lower magnitude of the Hamiltonian/overlap elements between</span>
 <span class="c1"># the device region and electrode</span>
 <span class="n">_s</span><span class="p">(</span><span class="s2">&quot;Device-Elec-overlap&quot;</span><span class="p">,</span> <span class="mf">1e-7</span><span class="p">)</span>
 
@@ -208,23 +209,25 @@
 <span class="n">_s</span><span class="p">(</span><span class="s2">&quot;displacement-tolerance&quot;</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
 
 <span class="c1"># The tolerance for which the k-points are the same</span>
-<span class="n">_s</span><span class="p">(</span><span class="s2">&quot;same-kpoint&quot;</span><span class="p">,</span><span class="mf">1e-9</span><span class="p">)</span>
+<span class="n">_s</span><span class="p">(</span><span class="s2">&quot;same-kpoint&quot;</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">)</span>
 
 <span class="c1"># The tolerance when ensuring that the imaginary part is zero</span>
-<span class="n">_s</span><span class="p">(</span><span class="s2">&quot;zero-imaginary-part&quot;</span><span class="p">,</span><span class="mf">1e-8</span><span class="p">)</span>
-<span class="n">_s</span><span class="p">(</span><span class="s2">&quot;trans-imaginary-part&quot;</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">_s</span><span class="p">(</span><span class="s2">&quot;zero-imaginary-part&quot;</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>
+<span class="n">_s</span><span class="p">(</span><span class="s2">&quot;trans-imaginary-part&quot;</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">)</span>
 
 <span class="c1"># Convergence criteria for Lopez-Sancho algorithm</span>
-<span class="n">_s</span><span class="p">(</span><span class="s2">&quot;Lopez-Sancho&quot;</span><span class="p">,</span><span class="mf">1e-5</span><span class="p">)</span>
-<span class="n">_s</span><span class="p">(</span><span class="s2">&quot;Lopez-Sancho-warning&quot;</span><span class="p">,</span><span class="mf">1e-8</span><span class="p">)</span>
+<span class="n">_s</span><span class="p">(</span><span class="s2">&quot;Lopez-Sancho&quot;</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">)</span>
+<span class="n">_s</span><span class="p">(</span><span class="s2">&quot;Lopez-Sancho-warning&quot;</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>
 
 <span class="k">del</span> <span class="n">_s</span>
 
-<div class="viewcode-block" id="GetCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.GetCheck">[docs]</a><span class="k">def</span> <span class="nf">GetCheck</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="k">global</span> <span class="n">_check</span>
-    <span class="k">return</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="EditCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.EditCheck">[docs]</a><span class="k">def</span> <span class="nf">EditCheck</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="GetCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.GetCheck">[docs]</a><span class="k">def</span> <span class="nf">GetCheck</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">_check</span></div>
+    <span class="k">return</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="EditCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.EditCheck">[docs]</a><span class="k">def</span> <span class="nf">EditCheck</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets the check of &quot;name&quot; to the value &quot;value&quot;.</span>
 <span class="sd">    It will notify the user so that any log files will retain</span>
@@ -236,10 +239,11 @@
         <span class="n">ov</span> <span class="o">=</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
     <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Overriding variable &#39;{0}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         Old value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ov</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         New value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
-    
-<div class="viewcode-block" id="Check"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.Check">[docs]</a><span class="k">def</span> <span class="nf">Check</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">val</span><span class="p">,</span><span class="o">*</span><span class="n">msgs</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         Old value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ov</span><span class="p">))</span></div>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         New value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="Check"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.Check">[docs]</a><span class="k">def</span> <span class="nf">Check</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">msgs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks the value and exits if the value &quot;val&quot; is</span>
 <span class="sd">    above the one specified</span>
@@ -248,28 +252,30 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_check</span><span class="p">:</span>
         <span class="c1"># the name hasn&#39;t been set</span>
         <span class="c1"># hence, it will always go through</span>
-        <span class="c1"># This allows the coder to insets fully user tests </span>
-        <span class="c1"># Say if the code should generally never stop, we can make </span>
+        <span class="c1"># This allows the coder to insets fully user tests</span>
+        <span class="c1"># Say if the code should generally never stop, we can make</span>
         <span class="c1"># some checks where users might have certain criterias.</span>
         <span class="k">return</span>
-    
+
     <span class="k">if</span> <span class="n">_np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]):</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;ERROR:&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">msgs</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;       Check against &#39;{0}&#39; failed...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;       Maximum value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">val</span><span class="p">)))</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;       Error value  : {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span>
-        <span class="k">raise</span> <span class="ne">ArithmeticError</span><span class="p">(</span><span class="s2">&quot;Criteria not met. Please check output...&quot;</span><span class="p">)</span></div>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;       Error value  : {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span></div>
+        <span class="k">raise</span> <span class="ne">ArithmeticError</span><span class="p">(</span><span class="s2">&quot;Criteria not met. Please check output...&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="OptionsCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.OptionsCheck">[docs]</a><span class="k">def</span> <span class="nf">OptionsCheck</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span><span class="n">exe</span><span class="p">):</span>
+
+<div class="viewcode-block" id="OptionsCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.OptionsCheck">[docs]</a><span class="k">def</span> <span class="nf">OptionsCheck</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">exe</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic routine for adjusting most used options for routines.</span>
 <span class="sd">    I.e. Inelastica/EigenChannels/pyTBT.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
-    <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">osp</span>
-        
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">osp</span>
+
     <span class="c1"># Destination directory</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">osp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DestDir</span><span class="p">):</span>
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">exe</span><span class="o">+</span><span class="s1">&#39;: Creating folder {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DestDir</span><span class="p">))</span>
@@ -279,66 +285,66 @@
         <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;FDF-file not found: &quot;</span><span class="o">+</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
 
     <span class="c1"># Read SIESTA files</span>
-    <span class="n">opts</span><span class="o">.</span><span class="n">head</span><span class="p">,</span><span class="n">tail</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">opts</span><span class="o">.</span><span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">head</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="c1"># set filepath if missing</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
     <span class="k">print</span><span class="p">(</span><span class="n">exe</span><span class="o">+</span><span class="s2">&quot;: Reading keywords from {0} </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">))</span>
 
-    <span class="n">opts</span><span class="o">.</span><span class="n">systemlabel</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;SystemLabel&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;siesta&#39;</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span> 
-    <span class="n">opts</span><span class="o">.</span><span class="n">TSHS</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">.TSHS&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">head</span><span class="p">,</span><span class="n">opts</span><span class="o">.</span><span class="n">systemlabel</span><span class="p">)</span>
+    <span class="n">opts</span><span class="o">.</span><span class="n">systemlabel</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;SystemLabel&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;siesta&#39;</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+    <span class="n">opts</span><span class="o">.</span><span class="n">TSHS</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">.TSHS&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">head</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">systemlabel</span><span class="p">)</span>
 
     <span class="c1"># These first keys can be used, but they are superseeded by keys in the TS.Elec.&lt;&gt; block</span>
     <span class="c1"># Hence if they are read in first it will do it in correct order.</span>
-    
+
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">UseBulk</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># Note NRP:</span>
         <span class="c1">#  in principle this is now a per-electrode setting which</span>
         <span class="c1">#  may be useful for certain systems...</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">UseBulk</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;TS.UseBulkInElectrodes&#39;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">UseBulk</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;TS.Elecs.Bulk&#39;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">UseBulk</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
-            
+        <span class="n">opts</span><span class="o">.</span><span class="n">UseBulk</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.UseBulkInElectrodes&#39;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+        <span class="n">opts</span><span class="o">.</span><span class="n">UseBulk</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.Elecs.Bulk&#39;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">UseBulk</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">get_elec_vars</span><span class="p">(</span><span class="n">lr</span><span class="p">):</span>
-        
+
         <span class="c1"># Look up old format first</span>
-        <span class="n">TSHS</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;TS.HSFile&#39;</span><span class="o">+</span><span class="n">lr</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
-        <span class="n">NA1</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;TS.ReplicateA1&#39;</span><span class="o">+</span><span class="n">lr</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
-        <span class="n">NA2</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;TS.ReplicateA2&#39;</span><span class="o">+</span><span class="n">lr</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+        <span class="n">TSHS</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.HSFile&#39;</span><span class="o">+</span><span class="n">lr</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+        <span class="n">NA1</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.ReplicateA1&#39;</span><span class="o">+</span><span class="n">lr</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+        <span class="n">NA2</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.ReplicateA2&#39;</span><span class="o">+</span><span class="n">lr</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
 
         <span class="c1"># default semi-inf direction</span>
         <span class="n">semiinf</span> <span class="o">=</span> <span class="mi">2</span>
-        
+
         <span class="c1"># Proceed looking up new format, which precedes</span>
         <span class="n">belec</span> <span class="o">=</span> <span class="s1">&#39;TS.Elec.&#39;</span> <span class="o">+</span> <span class="n">lr</span>
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Looking for new electrode format in: </span><span class="si">%%</span><span class="s1">block {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">belec</span><span class="p">))</span>
-        
+
         <span class="c1"># Default replication stuff</span>
-        <span class="n">TSHS</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="n">belec</span><span class="o">+</span><span class="s1">&#39;.TSHS&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">TSHS</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
-        <span class="n">NA1</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="n">belec</span><span class="o">+</span><span class="s1">&#39;.Bloch.A1&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NA1</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
-        <span class="n">NA2</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="n">belec</span><span class="o">+</span><span class="s1">&#39;.Bloch.A2&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NA2</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
-        <span class="n">NA3</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="n">belec</span><span class="o">+</span><span class="s1">&#39;.Bloch.A3&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
-        
+        <span class="n">TSHS</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">belec</span><span class="o">+</span><span class="s1">&#39;.TSHS&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">TSHS</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+        <span class="n">NA1</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">belec</span><span class="o">+</span><span class="s1">&#39;.Bloch.A1&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NA1</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+        <span class="n">NA2</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">belec</span><span class="o">+</span><span class="s1">&#39;.Bloch.A2&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NA2</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+        <span class="n">NA3</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">belec</span><span class="o">+</span><span class="s1">&#39;.Bloch.A3&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+
         <span class="c1"># Overwrite block</span>
         <span class="n">block</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFblock</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">KeyWord</span> <span class="o">=</span> <span class="n">belec</span><span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="c1"># Lower-case, FDF is case-insensitive</span>
             <span class="n">key</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;tshs&#39;</span><span class="p">,</span><span class="s1">&#39;tshs-file&#39;</span><span class="p">,</span><span class="s1">&#39;hs&#39;</span><span class="p">,</span><span class="s1">&#39;hs-file&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;tshs&#39;</span><span class="p">,</span> <span class="s1">&#39;tshs-file&#39;</span><span class="p">,</span> <span class="s1">&#39;hs&#39;</span><span class="p">,</span> <span class="s1">&#39;hs-file&#39;</span><span class="p">]:</span>
                 <span class="n">TSHS</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;replicate-a&#39;</span><span class="p">,</span><span class="s1">&#39;rep-a&#39;</span><span class="p">,</span><span class="s1">&#39;replicate-a1&#39;</span><span class="p">,</span><span class="s1">&#39;rep-a1&#39;</span><span class="p">,</span><span class="s1">&#39;bloch-a1&#39;</span><span class="p">]:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;replicate-a&#39;</span><span class="p">,</span> <span class="s1">&#39;rep-a&#39;</span><span class="p">,</span> <span class="s1">&#39;replicate-a1&#39;</span><span class="p">,</span> <span class="s1">&#39;rep-a1&#39;</span><span class="p">,</span> <span class="s1">&#39;bloch-a1&#39;</span><span class="p">]:</span>
                 <span class="n">NA1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;replicate-b&#39;</span><span class="p">,</span><span class="s1">&#39;rep-b&#39;</span><span class="p">,</span><span class="s1">&#39;replicate-a2&#39;</span><span class="p">,</span><span class="s1">&#39;rep-a2&#39;</span><span class="p">,</span><span class="s1">&#39;bloch-a2&#39;</span><span class="p">]:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;replicate-b&#39;</span><span class="p">,</span> <span class="s1">&#39;rep-b&#39;</span><span class="p">,</span> <span class="s1">&#39;replicate-a2&#39;</span><span class="p">,</span> <span class="s1">&#39;rep-a2&#39;</span><span class="p">,</span> <span class="s1">&#39;bloch-a2&#39;</span><span class="p">]:</span>
                 <span class="n">NA2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;replicate-c&#39;</span><span class="p">,</span><span class="s1">&#39;rep-c&#39;</span><span class="p">,</span><span class="s1">&#39;replicate-a3&#39;</span><span class="p">,</span><span class="s1">&#39;rep-a3&#39;</span><span class="p">,</span><span class="s1">&#39;bloch-a3&#39;</span><span class="p">]:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;replicate-c&#39;</span><span class="p">,</span> <span class="s1">&#39;rep-c&#39;</span><span class="p">,</span> <span class="s1">&#39;replicate-a3&#39;</span><span class="p">,</span> <span class="s1">&#39;rep-a3&#39;</span><span class="p">,</span> <span class="s1">&#39;bloch-a3&#39;</span><span class="p">]:</span>
                 <span class="n">NA3</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;replicate&#39;</span><span class="p">,</span><span class="s1">&#39;rep&#39;</span><span class="p">,</span><span class="s1">&#39;bloch&#39;</span><span class="p">]:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;replicate&#39;</span><span class="p">,</span> <span class="s1">&#39;rep&#39;</span><span class="p">,</span> <span class="s1">&#39;bloch&#39;</span><span class="p">]:</span>
                 <span class="c1"># We have *at least* 2 integers</span>
                 <span class="n">NA1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="n">NA2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
                 <span class="n">NA3</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
 
-            <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;semi-inf-direction&#39;</span><span class="p">,</span><span class="s1">&#39;semi-inf-dir&#39;</span><span class="p">,</span><span class="s1">&#39;semi-inf&#39;</span><span class="p">]:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;semi-inf-direction&#39;</span><span class="p">,</span> <span class="s1">&#39;semi-inf-dir&#39;</span><span class="p">,</span> <span class="s1">&#39;semi-inf&#39;</span><span class="p">]:</span>
                 <span class="c1"># This is lower-case checked</span>
                 <span class="n">axis</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
                 <span class="k">if</span> <span class="s1">&#39;a&#39;</span> <span class="o">==</span> <span class="n">axis</span> <span class="ow">or</span> <span class="s1">&#39;a1&#39;</span> <span class="o">==</span> <span class="n">axis</span><span class="p">:</span>
@@ -355,7 +361,7 @@
         <span class="k">if</span> <span class="n">TSHS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
             <span class="c1"># path is relative</span>
             <span class="n">TSHS</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">head</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">TSHS</span>
-        <span class="k">return</span> <span class="n">TSHS</span><span class="p">,</span><span class="n">NA1</span><span class="p">,</span><span class="n">NA2</span><span class="p">,</span><span class="n">semiinf</span>
+        <span class="k">return</span> <span class="n">TSHS</span><span class="p">,</span> <span class="n">NA1</span><span class="p">,</span> <span class="n">NA2</span><span class="p">,</span> <span class="n">semiinf</span>
 
     <span class="c1"># Look up electrode block</span>
     <span class="n">block</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFblock</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">KeyWord</span> <span class="o">=</span> <span class="s1">&#39;TS.Elecs&#39;</span><span class="p">)</span>
@@ -370,9 +376,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Currently only two electrodes are supported&#39;</span><span class="p">)</span>
-        
+
     <span class="c1"># Read in number of buffer atoms</span>
-    <span class="n">opts</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetBufferAtomsList</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">TSHS</span><span class="p">,</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">opts</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetBufferAtomsList</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">TSHS</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">bufferL</span> <span class="o">=</span> <span class="n">L</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">bufferR</span> <span class="o">=</span> <span class="n">R</span>
 
@@ -383,20 +389,20 @@
 
     <span class="c1"># Device region</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;TS.TBT.PDOSFrom&#39;</span><span class="p">,</span><span class="nb">int</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">exe</span><span class="p">)</span>
+        <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.TBT.PDOSFrom&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span> <span class="o">-=</span> <span class="n">L</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;TS.TBT.PDOSTo&#39;</span><span class="p">,</span><span class="nb">int</span><span class="p">,</span><span class="mf">1e10</span><span class="p">,</span><span class="n">exe</span><span class="p">)</span>
+        <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.TBT.PDOSTo&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mf">1e10</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">-=</span> <span class="n">L</span>
-    <span class="n">opts</span><span class="o">.</span><span class="n">NumberOfAtoms</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;NumberOfAtoms&#39;</span><span class="p">,</span><span class="nb">int</span><span class="p">,</span><span class="mf">1e10</span><span class="p">,</span><span class="n">exe</span><span class="p">)</span>
+    <span class="n">opts</span><span class="o">.</span><span class="n">NumberOfAtoms</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;NumberOfAtoms&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mf">1e10</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">NumberOfAtoms</span> <span class="o">-=</span> <span class="n">L</span> <span class="o">+</span> <span class="n">R</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span><span class="o">&lt;</span><span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="n">exe</span><span class="o">+</span><span class="s1">&#39; error: DeviceLast&lt;DeviceFirst not allowed. Setting DeviceLast=DeviceFirst&#39;</span><span class="p">)</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span>
-    <span class="n">opts</span><span class="o">.</span><span class="n">DeviceAtoms</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span><span class="p">,</span><span class="n">opts</span><span class="o">.</span><span class="n">NumberOfAtoms</span><span class="p">)]</span>
+    <span class="n">opts</span><span class="o">.</span><span class="n">DeviceAtoms</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NumberOfAtoms</span><span class="p">)]</span>
 
     <span class="c1"># Voltage</span>
-    <span class="n">opts</span><span class="o">.</span><span class="n">voltage</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;TS.Voltage&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+    <span class="n">opts</span><span class="o">.</span><span class="n">voltage</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.Voltage&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
 
     <span class="c1">#############</span>
     <span class="c1"># Here comes some specifics related to different executables:</span>
@@ -422,18 +428,18 @@
         <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">biasPoints</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;BiasPoints must be larger than 5&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="s2">&quot;iSpin&quot;</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">iSpin</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">iSpin</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Spin must be either 0 or 1&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="s2">&quot;Emin&quot;</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">Emin</span> <span class="o">==</span> <span class="mf">1e10</span><span class="p">:</span>
-            <span class="n">opts</span><span class="o">.</span><span class="n">Emin</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;TS.TBT.Emin&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;pyTBT&#39;</span><span class="p">)</span>
+            <span class="n">opts</span><span class="o">.</span><span class="n">Emin</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.TBT.Emin&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;pyTBT&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="s2">&quot;Emax&quot;</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">Emax</span> <span class="o">==</span> <span class="mf">1e10</span><span class="p">:</span>
-            <span class="n">opts</span><span class="o">.</span><span class="n">Emax</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;TS.TBT.Emax&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;pyTBT&#39;</span><span class="p">)</span>
+            <span class="n">opts</span><span class="o">.</span><span class="n">Emax</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.TBT.Emax&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;pyTBT&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="s2">&quot;NPoints&quot;</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span><span class="s1">&#39;TS.TBT.NPoints&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;pyTBT&#39;</span><span class="p">)</span>
+            <span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.TBT.NPoints&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;pyTBT&#39;</span><span class="p">)</span>
 
         <span class="c1"># Create list of energies</span>
         <span class="k">try</span><span class="p">:</span>
@@ -441,16 +447,17 @@
             <span class="c1"># Do not overwrite if some Elist is already specified</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">opts</span><span class="o">.</span><span class="n">Elist</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">opts</span><span class="o">.</span><span class="n">Emin</span><span class="p">,),</span><span class="n">_np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+                <span class="n">opts</span><span class="o">.</span><span class="n">Elist</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">opts</span><span class="o">.</span><span class="n">Emin</span><span class="p">,),</span> <span class="n">_np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Linspace is just what we need</span>
-                <span class="n">opts</span><span class="o">.</span><span class="n">Elist</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">Emin</span><span class="p">,</span><span class="n">opts</span><span class="o">.</span><span class="n">Emax</span><span class="p">,</span><span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span><span class="p">)</span></div>
+                <span class="c1"># Linspace is just what we need</span></div>
+                <span class="n">opts</span><span class="o">.</span><span class="n">Elist</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">Emin</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">Emax</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span><span class="p">)</span>
 
-<div class="viewcode-block" id="GetPositional"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.GetPositional">[docs]</a><span class="k">def</span> <span class="nf">GetPositional</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;You have not specified any positional argument&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GetPositional"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.GetPositional">[docs]</a><span class="k">def</span> <span class="nf">GetPositional</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;You have not specified any positional argument&quot;</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    <span class="n">pos</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">pos</span></div>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">pos</span>
 </pre></div>
 
            </div>
@@ -487,7 +494,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-10',
+            VERSION:'1.3.0-12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -497,7 +504,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

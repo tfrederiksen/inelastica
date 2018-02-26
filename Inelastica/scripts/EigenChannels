@@ -13,4 +13,4 @@ Module.main(options)
 
 dT = datetime.now()-start
 
-CF.PrintScriptSummary(sys.argv,dT)
+CF.PrintScriptSummary(sys.argv, dT)

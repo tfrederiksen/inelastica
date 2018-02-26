@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 
-import sys,os
+import sys
+import os
 from Inelastica import ValueCheck as VC
 import Inelastica.iets as I
 from Inelastica import EigenChannels as E
 from Inelastica import pyTBT as T
 
 # Change the tolerance level of the imaginary part
-VC.EditCheck("zero-imaginary-part",1e-7)
+VC.EditCheck("zero-imaginary-part", 1e-7)
 
 ############################
 #       Inelastica         #
 ############################
-tmp_argv = ['-p','./PHrun/Dev_09-14.nc','-f','./TSrun/RUN.fdf']
+tmp_argv = ['-p', './PHrun/Dev_09-14.nc', '-f', './TSrun/RUN.fdf']
 # Copy sys argv to override
 if len(sys.argv) > 1:
     tmp_argv.extend([a for a in sys.argv[1:]])
@@ -26,7 +27,7 @@ I.main(opts)
 ############################
 #      EigenChannels       #
 ############################
-tmp_argv = ['-w','cube','-f','./TSrun/RUN.fdf','-e','0.']
+tmp_argv = ['-w', 'cube', '-f', './TSrun/RUN.fdf', '-e', '0.']
 # Copy sys argv to override
 if len(sys.argv) > 1:
     tmp_argv.extend([a for a in sys.argv[1:]])
@@ -34,7 +35,7 @@ if len(sys.argv) > 1:
 # Get option parser
 opts = E.GetOptions(tmp_argv)
 
-for e in [-.1,0.,.1]:
+for e in [-.1, 0., .1]:
     # Change energy...
     opts.energy = e
     opts.DestDir = 'Eig_'+str(e)
@@ -46,13 +47,12 @@ for e in [-.1,0.,.1]:
 ############################
 #          pyTBT           #
 ############################
-tmp_argv = ['-f','./TSrun/RUN.fdf']
+tmp_argv = ['-f', './TSrun/RUN.fdf']
 # Copy sys argv to override
 if len(sys.argv) > 1:
     tmp_argv.extend([a for a in sys.argv[1:]])
 
 # Get option parser
-opts = T.GetOptions(tmp_argv,log='MyLog.log')
+opts = T.GetOptions(tmp_argv, log='MyLog.log')
 
 T.main(opts)
-

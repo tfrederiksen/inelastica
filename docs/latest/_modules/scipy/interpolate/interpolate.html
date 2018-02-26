@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-10
+                1.3.0-12
               </div>
             
           
@@ -176,22 +176,22 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;interp1d&#39;</span><span class="p">,</span> <span class="s1">&#39;interp2d&#39;</span><span class="p">,</span> <span class="s1">&#39;spline&#39;</span><span class="p">,</span> <span class="s1">&#39;spleval&#39;</span><span class="p">,</span> <span class="s1">&#39;splmake&#39;</span><span class="p">,</span> <span class="s1">&#39;spltopp&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;ppform&#39;</span><span class="p">,</span> <span class="s1">&#39;lagrange&#39;</span><span class="p">,</span> <span class="s1">&#39;PPoly&#39;</span><span class="p">,</span> <span class="s1">&#39;BPoly&#39;</span><span class="p">,</span> <span class="s1">&#39;NdPPoly&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;lagrange&#39;</span><span class="p">,</span> <span class="s1">&#39;PPoly&#39;</span><span class="p">,</span> <span class="s1">&#39;BPoly&#39;</span><span class="p">,</span> <span class="s1">&#39;NdPPoly&#39;</span><span class="p">,</span>
            <span class="s1">&#39;RegularGridInterpolator&#39;</span><span class="p">,</span> <span class="s1">&#39;interpn&#39;</span><span class="p">]</span>
 
-<span class="kn">import</span> <span class="nn">itertools</span>
 
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">sometrue</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">transpose</span><span class="p">,</span> <span class="n">searchsorted</span><span class="p">,</span>
-                   <span class="n">ones</span><span class="p">,</span> <span class="n">logical_or</span><span class="p">,</span> <span class="n">atleast_1d</span><span class="p">,</span> <span class="n">atleast_2d</span><span class="p">,</span> <span class="n">ravel</span><span class="p">,</span>
-                   <span class="n">dot</span><span class="p">,</span> <span class="n">poly1d</span><span class="p">,</span> <span class="n">asarray</span><span class="p">,</span> <span class="n">intp</span><span class="p">)</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy.linalg</span>
-<span class="kn">import</span> <span class="nn">scipy.special</span> <span class="kn">as</span> <span class="nn">spec</span>
-<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">comb</span>
-<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">operator</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">transpose</span><span class="p">,</span> <span class="n">searchsorted</span><span class="p">,</span> <span class="n">atleast_1d</span><span class="p">,</span> <span class="n">atleast_2d</span><span class="p">,</span>
+                   <span class="n">dot</span><span class="p">,</span> <span class="n">ravel</span><span class="p">,</span> <span class="n">poly1d</span><span class="p">,</span> <span class="n">asarray</span><span class="p">,</span> <span class="n">intp</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">scipy.linalg</span>
+<span class="kn">import</span> <span class="nn">scipy.special</span> <span class="kn">as</span> <span class="nn">spec</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">comb</span>
 
 <span class="kn">from</span> <span class="nn">scipy._lib.six</span> <span class="kn">import</span> <span class="nb">xrange</span><span class="p">,</span> <span class="n">integer_types</span><span class="p">,</span> <span class="n">string_types</span>
 
@@ -202,13 +202,7 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_ppoly</span>
 <span class="kn">from</span> <span class="nn">.fitpack2</span> <span class="kn">import</span> <span class="n">RectBivariateSpline</span>
 <span class="kn">from</span> <span class="nn">.interpnd</span> <span class="kn">import</span> <span class="n">_ndim_coords_from_arrays</span>
-
-
-<span class="k">def</span> <span class="nf">reduce_sometrue</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-    <span class="nb">all</span> <span class="o">=</span> <span class="n">a</span>
-    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">(</span><span class="nb">all</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="nb">all</span> <span class="o">=</span> <span class="n">sometrue</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">all</span>
+<span class="kn">from</span> <span class="nn">._bsplines</span> <span class="kn">import</span> <span class="n">make_interp_spline</span><span class="p">,</span> <span class="n">BSpline</span>
 
 
 <span class="k">def</span> <span class="nf">prod</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -219,7 +213,7 @@
 
 
 <span class="k">def</span> <span class="nf">lagrange</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a Lagrange interpolating polynomial.</span>
 
 <span class="sd">    Given two 1-D arrays `x` and `w,` returns the Lagrange interpolating</span>
@@ -237,10 +231,34 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    lagrange : numpy.poly1d instance</span>
+<span class="sd">    lagrange : `numpy.poly1d` instance</span>
 <span class="sd">        The Lagrange interpolating polynomial.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Interpolate :math:`f(x) = x^3` by 3 points.</span>
+
+<span class="sd">    &gt;&gt;&gt; from scipy.interpolate import lagrange</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; y = x**3</span>
+<span class="sd">    &gt;&gt;&gt; poly = lagrange(x, y)</span>
+
+<span class="sd">    Since there are only 3 points, Lagrange polynomial has degree 2. Explicitly,</span>
+<span class="sd">    it is given by</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \begin{aligned}</span>
+<span class="sd">            L(x) &amp;= 1\times \frac{x (x - 2)}{-1} + 8\times \frac{x (x-1)}{2} \\</span>
+<span class="sd">                 &amp;= x (-2 + 3x)</span>
+<span class="sd">        \end{aligned}</span>
+
+<span class="sd">    &gt;&gt;&gt; from numpy.polynomial.polynomial import Polynomial</span>
+<span class="sd">    &gt;&gt;&gt; Polynomial(poly).coef</span>
+<span class="sd">    array([ 3., -2.,  0.])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">M</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">poly1d</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
@@ -257,6 +275,7 @@
 <span class="c1"># !! Need to find argument for keeping initialize.  If it isn&#39;t</span>
 <span class="c1"># !! found, get rid of it!</span>
 
+
 <span class="k">class</span> <span class="nc">interp2d</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    interp2d(x, y, z, kind=&#39;linear&#39;, copy=True, bounds_error=False,</span>
@@ -270,6 +289,9 @@
 
 <span class="sd">    If `x` and `y` represent a regular grid, consider using</span>
 <span class="sd">    RectBivariateSpline.</span>
+
+<span class="sd">    Note that calling `interp2d` with NaNs present in input values results in</span>
+<span class="sd">    undefined behaviour.</span>
 
 <span class="sd">    Methods</span>
 <span class="sd">    -------</span>
@@ -350,7 +372,6 @@
 <span class="sd">    &gt;&gt;&gt; znew = f(xnew, ynew)</span>
 <span class="sd">    &gt;&gt;&gt; plt.plot(x, z[0, :], &#39;ro-&#39;, xnew, znew[0, :], &#39;b-&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; plt.show()</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
@@ -431,7 +452,6 @@
 <span class="sd">        -------</span>
 <span class="sd">        z : 2D array with shape (len(y), len(x))</span>
 <span class="sd">            The interpolated values.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">x</span> <span class="o">=</span> <span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -502,6 +522,9 @@
 <span class="sd">    ``y = f(x)``.  This class returns a function whose call method uses</span>
 <span class="sd">    interpolation to find the value of new points.</span>
 
+<span class="sd">    Note that calling `interp1d` with NaNs present in input values results in</span>
+<span class="sd">    undefined behaviour.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : (N,) array_like</span>
@@ -511,10 +534,10 @@
 <span class="sd">        axis must be equal to the length of `x`.</span>
 <span class="sd">    kind : str or int, optional</span>
 <span class="sd">        Specifies the kind of interpolation as a string</span>
-<span class="sd">        (&#39;linear&#39;, &#39;nearest&#39;, &#39;zero&#39;, &#39;slinear&#39;, &#39;quadratic, &#39;cubic&#39;</span>
-<span class="sd">        where &#39;slinear&#39;, &#39;quadratic&#39; and &#39;cubic&#39; refer to a spline</span>
-<span class="sd">        interpolation of first, second or third order) or as an integer</span>
-<span class="sd">        specifying the order of the spline interpolator to use.</span>
+<span class="sd">        (&#39;linear&#39;, &#39;nearest&#39;, &#39;zero&#39;, &#39;slinear&#39;, &#39;quadratic&#39;, &#39;cubic&#39;</span>
+<span class="sd">        where &#39;zero&#39;, &#39;slinear&#39;, &#39;quadratic&#39; and &#39;cubic&#39; refer to a spline</span>
+<span class="sd">        interpolation of zeroth, first, second or third order) or as an</span>
+<span class="sd">        integer specifying the order of the spline interpolator to use.</span>
 <span class="sd">        Default is &#39;linear&#39;.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Specifies the axis of `y` along which to interpolate.</span>
@@ -541,7 +564,7 @@
 
 <span class="sd">          .. versionadded:: 0.17.0</span>
 <span class="sd">        - If &quot;extrapolate&quot;, then points outside the data range will be</span>
-<span class="sd">          extrapolated. (&quot;nearest&quot; and &quot;linear&quot; kinds only.)</span>
+<span class="sd">          extrapolated.</span>
 
 <span class="sd">          .. versionadded:: 0.17.0</span>
 <span class="sd">    assume_sorted : bool, optional</span>
@@ -571,7 +594,6 @@
 <span class="sd">    &gt;&gt;&gt; ynew = f(xnew)   # use interpolation function returned by `interp1d`</span>
 <span class="sd">    &gt;&gt;&gt; plt.plot(x, y, &#39;o&#39;, xnew, ynew, &#39;-&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; plt.show()</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
@@ -584,7 +606,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">copy</span> <span class="o">=</span> <span class="n">copy</span>
 
         <span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;zero&#39;</span><span class="p">,</span> <span class="s1">&#39;slinear&#39;</span><span class="p">,</span> <span class="s1">&#39;quadratic&#39;</span><span class="p">,</span> <span class="s1">&#39;cubic&#39;</span><span class="p">]:</span>
-            <span class="n">order</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;nearest&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;zero&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;slinear&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;zero&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;slinear&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                      <span class="s1">&#39;quadratic&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;cubic&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}[</span><span class="n">kind</span><span class="p">]</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;spline&#39;</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -630,7 +652,8 @@
             <span class="c1"># axis.</span>
             <span class="n">minval</span> <span class="o">=</span> <span class="mi">2</span>
             <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;nearest&#39;</span><span class="p">:</span>
-                <span class="c1"># Do division before addition to prevent possible integer overflow</span>
+                <span class="c1"># Do division before addition to prevent possible integer</span>
+                <span class="c1"># overflow</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">x_bds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">/</span> <span class="mf">2.0</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">x_bds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_bds</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_bds</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
@@ -647,8 +670,30 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_call_linear</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">minval</span> <span class="o">=</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_spline</span> <span class="o">=</span> <span class="n">splmake</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_call_spline</span>
+
+            <span class="n">rewrite_nan</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Quadratic or cubic spline. If input contains even a single</span>
+                <span class="c1"># nan, then the output is all nans. We cannot just feed data</span>
+                <span class="c1"># with nans to make_interp_spline because it calls LAPACK.</span>
+                <span class="c1"># So, we make up a bogus x and y with no nans and use it</span>
+                <span class="c1"># to get the correct shape of the output, which we then fill</span>
+                <span class="c1"># with nans.</span>
+                <span class="c1"># For slinear or zero order spline, we just pass nans through.</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
+                    <span class="n">rewrite_nan</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">)</span>
+                    <span class="n">rewrite_nan</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spline</span> <span class="o">=</span> <span class="n">make_interp_spline</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                                              <span class="n">check_finite</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rewrite_nan</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_call_nan_spline</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_call_spline</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">minval</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x and y arrays must have at &quot;</span>
@@ -663,10 +708,6 @@
     <span class="k">def</span> <span class="nf">fill_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">):</span>
         <span class="c1"># extrapolation only works for nearest neighbor and linear methods</span>
         <span class="k">if</span> <span class="n">_do_extrapolate</span><span class="p">(</span><span class="n">fill_value</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="s1">&#39;linear&#39;</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Extrapolation does not work with &quot;</span>
-                                 <span class="s2">&quot;kind=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="p">)</span>
-
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds_error</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot extrapolate and raise &quot;</span>
                                  <span class="s2">&quot;at the same time.&quot;</span><span class="p">)</span>
@@ -748,7 +789,12 @@
         <span class="k">return</span> <span class="n">y_new</span>
 
     <span class="k">def</span> <span class="nf">_call_spline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_new</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">spleval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spline</span><span class="p">,</span> <span class="n">x_new</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spline</span><span class="p">(</span><span class="n">x_new</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_call_nan_spline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_new</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spline</span><span class="p">(</span><span class="n">x_new</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">return</span> <span class="n">out</span>
 
     <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_new</span><span class="p">):</span>
         <span class="c1"># 1. Handle values in x_new that are outside of x.  Throw error,</span>
@@ -787,14 +833,14 @@
         <span class="c1"># !! Could provide more information about which values are out of bounds</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds_error</span> <span class="ow">and</span> <span class="n">below_bounds</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A value in x_new is below the interpolation &quot;</span>
-                <span class="s2">&quot;range.&quot;</span><span class="p">)</span>
+                             <span class="s2">&quot;range.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds_error</span> <span class="ow">and</span> <span class="n">above_bounds</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A value in x_new is above the interpolation &quot;</span>
-                <span class="s2">&quot;range.&quot;</span><span class="p">)</span>
+                             <span class="s2">&quot;range.&quot;</span><span class="p">)</span>
 
         <span class="c1"># !! Should we emit a warning if some values are out of bounds?</span>
-        <span class="c1"># !! matlab does not.</span>
-        <span class="k">return</span> <span class="n">below_bounds</span><span class="p">,</span> <span class="n">above_bounds</span></div>
+        <span class="c1"># !! matlab does not.</span></div>
+        <span class="k">return</span> <span class="n">below_bounds</span><span class="p">,</span> <span class="n">above_bounds</span>
 
 
 <span class="k">class</span> <span class="nc">_PPolyBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -811,8 +857,13 @@
             <span class="n">extrapolate</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">extrapolate</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">extrapolate</span> <span class="o">=</span> <span class="n">extrapolate</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Coefficients array must be at least &quot;</span>
+                             <span class="s2">&quot;2-dimensional.&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> must be between 0 and </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;axis=</span><span class="si">%s</span><span class="s2"> must be between 0 and </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                             <span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span>
         <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -835,8 +886,9 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;polynomial must be at least of order 0&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;number of coefficients != len(x)-1&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x-coordinates are not in increasing order&quot;</span><span class="p">)</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dx</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dx</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`x` must be strictly increasing or decreasing.&quot;</span><span class="p">)</span>
 
         <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dtype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
@@ -877,23 +929,28 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add additional breakpoints and coefficients to the polynomial.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        c : ndarray, size (k, m, ...)</span>
-<span class="sd">            Additional coefficients for polynomials in intervals</span>
-<span class="sd">            ``self.x[-1] &lt;= x &lt; x_right[0]``, ``x_right[0] &lt;= x &lt; x_right[1]``,</span>
-<span class="sd">            ..., ``x_right[m-2] &lt;= x &lt; x_right[m-1]``</span>
+<span class="sd">            Additional coefficients for polynomials in intervals. Note that</span>
+<span class="sd">            the first additional interval will be formed using one of the</span>
+<span class="sd">            `self.x` end points.</span>
 <span class="sd">        x : ndarray, size (m,)</span>
-<span class="sd">            Additional breakpoints. Must be sorted and either to</span>
-<span class="sd">            the right or to the left of the current breakpoints.</span>
-<span class="sd">        right : bool, optional</span>
-<span class="sd">            Whether the new intervals are to the right or to the left</span>
-<span class="sd">            of the current intervals.</span>
+<span class="sd">            Additional breakpoints. Must be sorted in the same order as</span>
+<span class="sd">            `self.x` and either to the right or to the left of the current</span>
+<span class="sd">            breakpoints.</span>
+<span class="sd">        right</span>
+<span class="sd">            Deprecated argument. Has no effect.</span>
+
+<span class="sd">            .. deprecated:: 0.19</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">right</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`right` is deprecated and will be removed.&quot;</span><span class="p">)</span>
+
         <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
@@ -905,15 +962,38 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x and c have incompatible sizes&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="ow">or</span> <span class="n">c</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;c and self.c have incompatible shapes&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">right</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;new x are not to the right of current ones&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;new x are not to the left of current ones&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
+
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dx</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dx</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`x` is not sorted.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`x` is in the different order &quot;</span>
+                                 <span class="s2">&quot;than `self.x`.&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;append&#39;</span>
+            <span class="k">elif</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;prepend&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`x` is neither on the left or on the right &quot;</span>
+                                 <span class="s2">&quot;from `self.x`.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`x` is in the different order &quot;</span>
+                                 <span class="s2">&quot;than `self.x`.&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;append&#39;</span>
+            <span class="k">elif</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;prepend&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`x` is neither on the left or on the right &quot;</span>
+                                 <span class="s2">&quot;from `self.x`.&quot;</span><span class="p">)</span>
 
         <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dtype</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 
@@ -921,11 +1001,11 @@
         <span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">k2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span>
                       <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">right</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;append&#39;</span><span class="p">:</span>
             <span class="n">c2</span><span class="p">[</span><span class="n">k2</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span>
             <span class="n">c2</span><span class="p">[</span><span class="n">k2</span><span class="o">-</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:]</span> <span class="o">=</span> <span class="n">c</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;prepend&#39;</span><span class="p">:</span>
             <span class="n">c2</span><span class="p">[</span><span class="n">k2</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:,</span> <span class="p">:</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">c</span>
             <span class="n">c2</span><span class="p">[</span><span class="n">k2</span><span class="o">-</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:,</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">]</span>
@@ -990,20 +1070,20 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Piecewise polynomial in terms of coefficients and breakpoints</span>
 
-<span class="sd">    The polynomial in the ith interval is ``x[i] &lt;= xp &lt; x[i+1]``::</span>
+<span class="sd">    The polynomial between ``x[i]`` and ``x[i + 1]`` is written in the</span>
+<span class="sd">    local power basis::</span>
 
 <span class="sd">        S = sum(c[m, i] * (xp - x[i])**(k-m) for m in range(k+1))</span>
 
-<span class="sd">    where ``k`` is the degree of the polynomial. This representation</span>
-<span class="sd">    is the local power basis.</span>
+<span class="sd">    where ``k`` is the degree of the polynomial.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    c : ndarray, shape (k, m, ...)</span>
 <span class="sd">        Polynomial coefficients, order `k` and `m` intervals</span>
 <span class="sd">    x : ndarray, shape (m+1,)</span>
-<span class="sd">        Polynomial breakpoints. These must be sorted in</span>
-<span class="sd">        increasing order.</span>
+<span class="sd">        Polynomial breakpoints. Must be sorted in either increasing or</span>
+<span class="sd">        decreasing order.</span>
 <span class="sd">    extrapolate : bool or &#39;periodic&#39;, optional</span>
 <span class="sd">        If bool, determines whether to extrapolate to out-of-bounds points</span>
 <span class="sd">        based on first and last intervals, or to return NaNs. If &#39;periodic&#39;,</span>
@@ -1045,7 +1125,6 @@
 <span class="sd">    unstable.  Precision problems can start to appear for orders</span>
 <span class="sd">    larger than 20-30.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">extrapolate</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
         <span class="n">_ppoly</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">extrapolate</span><span class="p">),</span> <span class="n">out</span><span class="p">)</span>
@@ -1081,7 +1160,7 @@
         <span class="k">if</span> <span class="n">nu</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">c2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">c2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">[:</span><span class="o">-</span><span class="n">nu</span><span class="p">,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">c2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">[:</span><span class="o">-</span><span class="n">nu</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">c2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># derivative of order 0 is zero</span>
@@ -1098,7 +1177,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a new piecewise polynomial representing the antiderivative.</span>
 
-<span class="sd">        Antiderivativative is also the indefinite integral of the function,</span>
+<span class="sd">        Antiderivative is also the indefinite integral of the function,</span>
 <span class="sd">        and derivative is its inverse operation.</span>
 
 <span class="sd">        Parameters</span>
@@ -1339,13 +1418,18 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        tck</span>
-<span class="sd">            A spline, as returned by `splrep`</span>
+<span class="sd">            A spline, as returned by `splrep` or a BSpline object.</span>
 <span class="sd">        extrapolate : bool or &#39;periodic&#39;, optional</span>
 <span class="sd">            If bool, determines whether to extrapolate to out-of-bounds points</span>
 <span class="sd">            based on first and last intervals, or to return NaNs.</span>
 <span class="sd">            If &#39;periodic&#39;, periodic extrapolation is used. Default is True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">t</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">tck</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tck</span><span class="p">,</span> <span class="n">BSpline</span><span class="p">):</span>
+            <span class="n">t</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">tck</span><span class="o">.</span><span class="n">tck</span>
+            <span class="k">if</span> <span class="n">extrapolate</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">extrapolate</span> <span class="o">=</span> <span class="n">tck</span><span class="o">.</span><span class="n">extrapolate</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">tck</span>
 
         <span class="n">cvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
@@ -1376,7 +1460,7 @@
 
         <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">c</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">factor</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">comb</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">bp</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="n">a</span> <span class="o">*</span> <span class="n">comb</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">bp</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="n">comb</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="o">-</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="n">s</span>
                 <span class="n">c</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="n">s</span><span class="p">]</span> <span class="o">+=</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">val</span> <span class="o">/</span> <span class="n">dx</span><span class="p">[(</span><span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">),)</span><span class="o">+</span><span class="n">rest</span><span class="p">]</span><span class="o">**</span><span class="n">s</span>
@@ -1390,16 +1474,16 @@
 <span class="k">class</span> <span class="nc">BPoly</span><span class="p">(</span><span class="n">_PPolyBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Piecewise polynomial in terms of coefficients and breakpoints.</span>
 
-<span class="sd">    The polynomial in the ``i``-th interval ``x[i] &lt;= xp &lt; x[i+1]`` is written</span>
-<span class="sd">    in the Bernstein polynomial basis::</span>
+<span class="sd">    The polynomial between ``x[i]`` and ``x[i + 1]`` is written in the</span>
+<span class="sd">    Bernstein polynomial basis::</span>
 
 <span class="sd">        S = sum(c[a, i] * b(a, k; x) for a in range(k+1)),</span>
 
 <span class="sd">    where ``k`` is the degree of the polynomial, and::</span>
 
-<span class="sd">        b(a, k; x) = binom(k, a) * t**k * (1 - t)**(k - a),</span>
+<span class="sd">        b(a, k; x) = binom(k, a) * t**a * (1 - t)**(k - a),</span>
 
-<span class="sd">    with ``t = (x - x[i]) / (x[i+1] - x[i])`` and ``binom`` is a binomial</span>
+<span class="sd">    with ``t = (x - x[i]) / (x[i+1] - x[i])`` and ``binom`` is the binomial</span>
 <span class="sd">    coefficient.</span>
 
 <span class="sd">    Parameters</span>
@@ -1407,8 +1491,8 @@
 <span class="sd">    c : ndarray, shape (k, m, ...)</span>
 <span class="sd">        Polynomial coefficients, order `k` and `m` intervals</span>
 <span class="sd">    x : ndarray, shape (m+1,)</span>
-<span class="sd">        Polynomial breakpoints. These must be sorted in</span>
-<span class="sd">        increasing order.</span>
+<span class="sd">        Polynomial breakpoints. Must be sorted in either increasing or</span>
+<span class="sd">        decreasing order.</span>
 <span class="sd">    extrapolate : bool, optional</span>
 <span class="sd">        If bool, determines whether to extrapolate to out-of-bounds points</span>
 <span class="sd">        based on first and last intervals, or to return NaNs. If &#39;periodic&#39;,</span>
@@ -1453,7 +1537,7 @@
 <span class="sd">      http://www.idav.ucdavis.edu/education/CAGDNotes/Bernstein-Polynomials.pdf</span>
 
 <span class="sd">    .. [3] E. H. Doha, A. H. Bhrawy, and M. A. Saker, Boundary Value Problems,</span>
-<span class="sd">         vol 2011, article ID 829546, doi:10.1155/2011/829543</span>
+<span class="sd">         vol 2011, article ID 829546, :doi:`10.1155/2011/829543`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1574,9 +1658,9 @@
         <span class="c1"># constant to be zero; on an interval [x_j, x_{j+1}) with j&gt;0,</span>
         <span class="c1"># the integration constant is then equal to the jump of the `bp` at x_j.</span>
         <span class="c1"># The latter is given by the coefficient of B_{n+1, n+1}</span>
-        <span class="c1"># *on the previous interval* (other B. polynomials are zero at the breakpoint)</span>
-        <span class="c1"># Finally, use the fact that BPs form a partition of unity.</span>
-        <span class="n">c2</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">c2</span><span class="p">[</span><span class="n">k</span><span class="p">,:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># *on the previous interval* (other B. polynomials are zero at the</span>
+        <span class="c1"># breakpoint). Finally, use the fact that BPs form a partition of unity.</span>
+        <span class="n">c2</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">c2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extrapolate</span> <span class="o">==</span> <span class="s1">&#39;periodic&#39;</span><span class="p">:</span>
             <span class="n">extrapolate</span> <span class="o">=</span> <span class="bp">False</span>
@@ -1649,7 +1733,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ib</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">ib</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="n">k</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raise_degree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="n">k</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raise_degree</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">k</span> <span class="o">-</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -1787,14 +1871,17 @@
                 <span class="n">n2</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">n1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y2</span><span class="p">))</span>
                 <span class="n">n1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">n2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y2</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">n1</span><span class="o">+</span><span class="n">n2</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Point </span><span class="si">%g</span><span class="s2"> has </span><span class="si">%d</span><span class="s2"> derivatives, point </span><span class="si">%g</span><span class="s2">&quot;</span>
-                            <span class="s2">&quot; has </span><span class="si">%d</span><span class="s2"> derivatives, but order </span><span class="si">%d</span><span class="s2"> requested&quot;</span> <span class="o">%</span>
-                            <span class="p">(</span><span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">y1</span><span class="p">),</span> <span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">y2</span><span class="p">),</span> <span class="n">orders</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                    <span class="n">mesg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Point </span><span class="si">%g</span><span class="s2"> has </span><span class="si">%d</span><span class="s2"> derivatives, point </span><span class="si">%g</span><span class="s2">&quot;</span>
+                            <span class="s2">&quot; has </span><span class="si">%d</span><span class="s2"> derivatives, but order </span><span class="si">%d</span><span class="s2"> requested&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                               <span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">y1</span><span class="p">),</span> <span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">y2</span><span class="p">),</span> <span class="n">orders</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">mesg</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">n1</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">n2</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y2</span><span class="p">)):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`order` input incompatible with&quot;</span>
-                            <span class="s2">&quot; length y1 or y2.&quot;</span><span class="p">)</span>
+                                     <span class="s2">&quot; length y1 or y2.&quot;</span><span class="p">)</span>
 
-            <span class="n">b</span> <span class="o">=</span> <span class="n">BPoly</span><span class="o">.</span><span class="n">_construct_from_derivatives</span><span class="p">(</span><span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">y1</span><span class="p">[:</span><span class="n">n1</span><span class="p">],</span> <span class="n">y2</span><span class="p">[:</span><span class="n">n2</span><span class="p">])</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">BPoly</span><span class="o">.</span><span class="n">_construct_from_derivatives</span><span class="p">(</span><span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span>
+                                                  <span class="n">y1</span><span class="p">[:</span><span class="n">n1</span><span class="p">],</span> <span class="n">y2</span><span class="p">[:</span><span class="n">n2</span><span class="p">])</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
                 <span class="n">b</span> <span class="o">=</span> <span class="n">BPoly</span><span class="o">.</span><span class="n">_raise_degree</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">k</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
             <span class="n">c</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
@@ -1804,7 +1891,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_construct_from_derivatives</span><span class="p">(</span><span class="n">xa</span><span class="p">,</span> <span class="n">xb</span><span class="p">,</span> <span class="n">ya</span><span class="p">,</span> <span class="n">yb</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute the coefficients of a polynomial in the Bernstein basis</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the coefficients of a polynomial in the Bernstein basis</span>
 <span class="sd">        given the values and derivatives at the edges.</span>
 
 <span class="sd">        Return the coefficients of a polynomial in the Bernstein basis</span>
@@ -1890,7 +1977,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_raise_degree</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Raise a degree of a polynomial in the Bernstein basis.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Raise a degree of a polynomial in the Bernstein basis.</span>
 
 <span class="sd">        Given the coefficients of a polynomial degree `k`, return (the</span>
 <span class="sd">        coefficients of) the equivalent polynomial of degree `k+d`.</span>
@@ -1913,7 +2000,7 @@
 <span class="sd">        a higher degree `k+d`:</span>
 
 <span class="sd">            .. math:: b_{a, k} = comb(k, a) \sum_{j=0}^{d} b_{a+j, k+d} \</span>
-<span class="sd">                                comb(d, j) / comb(k+d, a+j)</span>
+<span class="sd">                                 comb(d, j) / comb(k+d, a+j)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -2218,7 +2305,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a new piecewise polynomial representing the antiderivative.</span>
 
-<span class="sd">        Antiderivativative is also the indefinite integral of the function,</span>
+<span class="sd">        Antiderivative is also the indefinite integral of the function,</span>
 <span class="sd">        and derivative is its inverse operation.</span>
 
 <span class="sd">        Parameters</span>
@@ -2283,11 +2370,11 @@
             <span class="n">extrapolate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extrapolate</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">extrapolate</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">extrapolate</span><span class="p">)</span>
-        
+
         <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
         <span class="n">axis</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">%</span> <span class="n">ndim</span>
 
-        <span class="c1"># Reuse 1D integration routines</span>
+        <span class="c1"># reuse 1D integration routines</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span>
         <span class="n">swap</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
         <span class="n">swap</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">swap</span><span class="p">[</span><span class="n">axis</span><span class="p">])</span>
@@ -2336,7 +2423,7 @@
             <span class="n">extrapolate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extrapolate</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">extrapolate</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">extrapolate</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ranges</span><span class="p">,</span> <span class="s1">&#39;__len__&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span> <span class="o">!=</span> <span class="n">ndim</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Range not a sequence of correct length&quot;</span><span class="p">)</span>
 
@@ -2400,6 +2487,10 @@
 <span class="sd">    avoids expensive triangulation of the input data by taking advantage of the</span>
 <span class="sd">    regular grid structure.</span>
 
+<span class="sd">    If any of `points` have a dimension of size 1, linear interpolation will</span>
+<span class="sd">    return an array of `nan` values. Nearest-neighbor interpolation will work</span>
+<span class="sd">    as usual in this case.</span>
+
 <span class="sd">    .. versionadded:: 0.14</span>
 
 <span class="sd">    Examples</span>
@@ -2407,7 +2498,7 @@
 <span class="sd">    Evaluate a simple example function on the points of a 3D grid:</span>
 
 <span class="sd">    &gt;&gt;&gt; from scipy.interpolate import RegularGridInterpolator</span>
-<span class="sd">    &gt;&gt;&gt; def f(x,y,z):</span>
+<span class="sd">    &gt;&gt;&gt; def f(x, y, z):</span>
 <span class="sd">    ...     return 2 * x**3 + 3 * y**2 - z</span>
 <span class="sd">    &gt;&gt;&gt; x = np.linspace(1, 4, 11)</span>
 <span class="sd">    &gt;&gt;&gt; y = np.linspace(4, 7, 22)</span>
@@ -2477,7 +2568,7 @@
             <span class="n">fill_value_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span>
             <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s1">&#39;dtype&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span>
                     <span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">fill_value_dtype</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                                        <span class="n">casting</span><span class="o">=</span><span class="s1">&#39;same_kind&#39;</span><span class="p">)):</span>
+                                <span class="n">casting</span><span class="o">=</span><span class="s1">&#39;same_kind&#39;</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;fill_value must be either &#39;None&#39; or &quot;</span>
                                  <span class="s2">&quot;of a type compatible with values&quot;</span><span class="p">)</span>
 
@@ -2531,9 +2622,13 @@
 
         <span class="n">indices</span><span class="p">,</span> <span class="n">norm_distances</span><span class="p">,</span> <span class="n">out_of_bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_indices</span><span class="p">(</span><span class="n">xi</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_linear</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">norm_distances</span><span class="p">,</span> <span class="n">out_of_bounds</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_linear</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span>
+                                           <span class="n">norm_distances</span><span class="p">,</span>
+                                           <span class="n">out_of_bounds</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;nearest&quot;</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_nearest</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">norm_distances</span><span class="p">,</span> <span class="n">out_of_bounds</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_nearest</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span>
+                                            <span class="n">norm_distances</span><span class="p">,</span>
+                                            <span class="n">out_of_bounds</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds_error</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">result</span><span class="p">[</span><span class="n">out_of_bounds</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_value</span>
 
@@ -2717,7 +2812,7 @@
 
 
 <span class="c1"># backward compatibility wrapper</span>
-<span class="k">class</span> <span class="nc">ppform</span><span class="p">(</span><span class="n">PPoly</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">_ppform</span><span class="p">(</span><span class="n">PPoly</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deprecated piecewise polynomial class.</span>
 
@@ -2726,7 +2821,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">breaks</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;ppform is deprecated -- use PPoly instead&quot;</span><span class="p">,</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;_ppform is deprecated -- use PPoly instead&quot;</span><span class="p">,</span>
                       <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">sort</span><span class="p">:</span>
@@ -2762,6 +2857,9 @@
             <span class="n">res</span> <span class="o">/=</span> <span class="n">fact</span>
             <span class="n">sivals</span><span class="p">[</span><span class="n">order</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">res</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">sivals</span><span class="p">,</span> <span class="n">xk</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">fill</span><span class="p">)</span>
+
+
+<span class="c1"># The 3 private functions below can be called by splmake().</span>
 
 
 <span class="k">def</span> <span class="nf">_dot0</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
@@ -2802,185 +2900,6 @@
     <span class="k">return</span> <span class="n">_dot0</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">yk</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_setdiag</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input array should be 2-D.&quot;</span><span class="p">)</span>
-    <span class="n">M</span><span class="p">,</span><span class="n">N</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="n">k</span>
-        <span class="n">num</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="n">k</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">num</span> <span class="o">=</span> <span class="n">M</span> <span class="o">+</span> <span class="n">k</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">*</span><span class="n">N</span>
-    <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">num</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">:(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span>
-
-<span class="c1"># Return the spline that minimizes the dis-continuity of the</span>
-<span class="c1"># &quot;order-th&quot; derivative; for order &gt;= 2.</span>
-
-
-<span class="k">def</span> <span class="nf">_find_smoothest2</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">):</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xk</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">Np1</span> <span class="o">=</span> <span class="n">N</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="c1"># find pseudo-inverse of B directly.</span>
-    <span class="n">Bd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">Np1</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">k</span><span class="p">,</span> <span class="n">Np1</span><span class="p">)</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">l</span><span class="o">+</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">((</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">):</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="o">-</span><span class="n">v</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="n">l</span>
-            <span class="k">if</span> <span class="p">((</span><span class="n">k</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)):</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="o">-</span><span class="n">v</span>
-        <span class="n">_setdiag</span><span class="p">(</span><span class="n">Bd</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-    <span class="n">Bd</span> <span class="o">/=</span> <span class="p">(</span><span class="n">Np1</span><span class="p">)</span>
-    <span class="n">V2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">Np1</span><span class="p">,))</span>
-    <span class="n">V2</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="n">V2</span> <span class="o">/=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Np1</span><span class="p">)</span>
-    <span class="n">dk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">xk</span><span class="p">)</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">yk</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="n">dk</span>
-    <span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
-    <span class="n">idk</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">dk</span>
-    <span class="n">_setdiag</span><span class="p">(</span><span class="n">J</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">idk</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">_setdiag</span><span class="p">(</span><span class="n">J</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="n">idk</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">idk</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">_setdiag</span><span class="p">(</span><span class="n">J</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">idk</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
-    <span class="n">A</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">J</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">J</span><span class="p">)</span>
-    <span class="n">val</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">V2</span><span class="p">,</span><span class="n">dot</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">V2</span><span class="p">))</span>
-    <span class="n">res1</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">V2</span><span class="p">,</span><span class="n">V2</span><span class="p">)</span><span class="o">/</span><span class="n">val</span><span class="p">,</span><span class="n">A</span><span class="p">)</span>
-    <span class="n">mk</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">Np1</span><span class="p">)</span><span class="o">-</span><span class="n">res1</span><span class="p">,</span> <span class="n">_dot0</span><span class="p">(</span><span class="n">Bd</span><span class="p">,</span><span class="n">b</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">mk</span>
-
-
-<span class="k">def</span> <span class="nf">_get_spline2_Bb</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">conds</span><span class="p">):</span>
-    <span class="n">Np1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xk</span><span class="p">)</span>
-    <span class="n">dk</span> <span class="o">=</span> <span class="n">xk</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">xk</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;not-a-knot&#39;</span><span class="p">:</span>
-        <span class="c1"># use banded-solver</span>
-        <span class="n">nlu</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">B</span> <span class="o">=</span> <span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="n">Np1</span><span class="p">))</span>
-        <span class="n">alpha</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">yk</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">yk</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="n">dk</span>
-        <span class="n">zrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,)</span><span class="o">+</span><span class="n">yk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
-        <span class="n">row</span> <span class="o">=</span> <span class="p">(</span><span class="n">Np1</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">alpha</span><span class="p">[:</span><span class="n">row</span><span class="p">],</span><span class="n">zrs</span><span class="p">,</span><span class="n">alpha</span><span class="p">[</span><span class="n">row</span><span class="p">:]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">row</span><span class="o">+</span><span class="mi">2</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">B</span><span class="p">[</span><span class="mi">2</span><span class="p">,:(</span><span class="n">row</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">dk</span><span class="p">[</span><span class="n">row</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">row</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">dk</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">-</span><span class="n">dk</span><span class="p">[</span><span class="n">row</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">B</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">row</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">dk</span><span class="p">[</span><span class="n">row</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">B</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">nlu</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;quadratic </span><span class="si">%s</span><span class="s2"> is not available&quot;</span> <span class="o">%</span> <span class="n">kind</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_get_spline3_Bb</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">conds</span><span class="p">):</span>
-    <span class="c1"># internal function to compute different tri-diagonal system</span>
-    <span class="c1"># depending on the kind of spline requested.</span>
-    <span class="c1"># conds is only used for &#39;second&#39; and &#39;first&#39;</span>
-    <span class="n">Np1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xk</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;natural&#39;</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;natural&#39;</span><span class="p">:</span>
-            <span class="n">m0</span><span class="p">,</span> <span class="n">mN</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">m0</span><span class="p">,</span> <span class="n">mN</span> <span class="o">=</span> <span class="n">conds</span>
-
-        <span class="c1"># the matrix to invert is (N-1,N-1)</span>
-        <span class="c1"># use banded solver</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">xk</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">-</span><span class="n">xk</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
-        <span class="n">alpha</span> <span class="o">=</span> <span class="n">xk</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">xk</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">nlu</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="n">Np1</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span>
-        <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
-        <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">beta</span>
-        <span class="n">B</span><span class="p">[</span><span class="mi">2</span><span class="p">,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">dyk</span> <span class="o">=</span> <span class="n">yk</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">yk</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">dyk</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">/</span><span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">dyk</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">alpha</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">b</span> <span class="o">*=</span> <span class="mi">6</span>
-        <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">m0</span>
-        <span class="n">b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="n">mN</span>
-
-        <span class="k">def</span> <span class="nf">append_func</span><span class="p">(</span><span class="n">mk</span><span class="p">):</span>
-            <span class="c1"># put m0 and mN into the correct shape for</span>
-            <span class="c1">#  concatenation</span>
-            <span class="n">ma</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">m0</span><span class="p">,</span><span class="n">copy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">ndmin</span><span class="o">=</span><span class="n">yk</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
-            <span class="n">mb</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">mN</span><span class="p">,</span><span class="n">copy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">ndmin</span><span class="o">=</span><span class="n">yk</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ma</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">!=</span> <span class="n">yk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-                <span class="n">ma</span> <span class="o">=</span> <span class="n">ma</span><span class="o">*</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">yk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span><span class="o">...</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">mb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">!=</span> <span class="n">yk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-                <span class="n">mb</span> <span class="o">=</span> <span class="n">mb</span><span class="o">*</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">yk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span><span class="o">...</span><span class="p">])</span>
-            <span class="n">mk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">ma</span><span class="p">,</span><span class="n">mk</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">mk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">mk</span><span class="p">,</span><span class="n">mb</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">mk</span>
-
-        <span class="k">return</span> <span class="n">B</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">append_func</span><span class="p">,</span> <span class="n">nlu</span>
-
-    <span class="k">elif</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;clamped&#39;</span><span class="p">,</span> <span class="s1">&#39;endslope&#39;</span><span class="p">,</span> <span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="s1">&#39;not-a-knot&#39;</span><span class="p">,</span> <span class="s1">&#39;runout&#39;</span><span class="p">,</span>
-                  <span class="s1">&#39;parabolic&#39;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;endslope&#39;</span><span class="p">:</span>
-            <span class="c1"># match slope of lagrange interpolating polynomial of</span>
-            <span class="c1"># order 3 at end-points.</span>
-            <span class="n">x0</span><span class="p">,</span><span class="n">x1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">x3</span> <span class="o">=</span> <span class="n">xk</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
-            <span class="n">sl_0</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">+</span><span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x2</span><span class="p">)</span><span class="o">+</span><span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x3</span><span class="p">))</span><span class="o">*</span><span class="n">yk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">sl_0</span> <span class="o">+=</span> <span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x3</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">x1</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">x2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">x3</span><span class="p">))</span><span class="o">*</span><span class="n">yk</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">sl_0</span> <span class="o">+=</span> <span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x3</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">x2</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x3</span><span class="o">-</span><span class="n">x2</span><span class="p">))</span><span class="o">*</span><span class="n">yk</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-            <span class="n">sl_0</span> <span class="o">+=</span> <span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x2</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">x3</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x3</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x3</span><span class="o">-</span><span class="n">x2</span><span class="p">))</span><span class="o">*</span><span class="n">yk</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-
-            <span class="n">xN3</span><span class="p">,</span><span class="n">xN2</span><span class="p">,</span><span class="n">xN1</span><span class="p">,</span><span class="n">xN0</span> <span class="o">=</span> <span class="n">xk</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span>
-            <span class="n">sl_N</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">xN0</span><span class="o">-</span><span class="n">xN1</span><span class="p">)</span><span class="o">+</span><span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">xN0</span><span class="o">-</span><span class="n">xN2</span><span class="p">)</span><span class="o">+</span><span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">xN0</span><span class="o">-</span><span class="n">xN3</span><span class="p">))</span><span class="o">*</span><span class="n">yk</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">sl_N</span> <span class="o">+=</span> <span class="p">(</span><span class="n">xN0</span><span class="o">-</span><span class="n">xN2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xN0</span><span class="o">-</span><span class="n">xN3</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">xN1</span><span class="o">-</span><span class="n">xN0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xN1</span><span class="o">-</span><span class="n">xN2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xN1</span><span class="o">-</span><span class="n">xN3</span><span class="p">))</span><span class="o">*</span><span class="n">yk</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-            <span class="n">sl_N</span> <span class="o">+=</span> <span class="p">(</span><span class="n">xN0</span><span class="o">-</span><span class="n">xN1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xN0</span><span class="o">-</span><span class="n">xN3</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">xN2</span><span class="o">-</span><span class="n">xN0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xN2</span><span class="o">-</span><span class="n">xN1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xN3</span><span class="o">-</span><span class="n">xN2</span><span class="p">))</span><span class="o">*</span><span class="n">yk</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
-            <span class="n">sl_N</span> <span class="o">+=</span> <span class="p">(</span><span class="n">xN0</span><span class="o">-</span><span class="n">xN1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xN0</span><span class="o">-</span><span class="n">xN2</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">xN3</span><span class="o">-</span><span class="n">xN0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xN3</span><span class="o">-</span><span class="n">xN1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xN3</span><span class="o">-</span><span class="n">xN2</span><span class="p">))</span><span class="o">*</span><span class="n">yk</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;clamped&#39;</span><span class="p">:</span>
-            <span class="n">sl_0</span><span class="p">,</span> <span class="n">sl_N</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;first&#39;</span><span class="p">:</span>
-            <span class="n">sl_0</span><span class="p">,</span> <span class="n">sl_N</span> <span class="o">=</span> <span class="n">conds</span>
-
-        <span class="c1"># Now set up the (N+1)x(N+1) system of equations</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">xk</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">-</span><span class="n">xk</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]),</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">alpha</span> <span class="o">=</span> <span class="n">xk</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">xk</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
-        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span><span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">d1</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">dN</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;not-a-knot&#39;</span><span class="p">:</span>
-            <span class="n">d2</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">dN1</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-            <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">d2</span><span class="p">,</span><span class="o">-</span><span class="n">d1</span><span class="o">-</span><span class="n">d2</span><span class="p">,</span><span class="n">d1</span><span class="p">]</span>
-            <span class="n">B</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">dN</span><span class="p">,</span><span class="o">-</span><span class="n">dN1</span><span class="o">-</span><span class="n">dN</span><span class="p">,</span><span class="n">dN1</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;runout&#39;</span><span class="p">:</span>
-            <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">B</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;parabolic&#39;</span><span class="p">:</span>
-            <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">B</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;periodic&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">d1</span><span class="p">,</span><span class="n">d1</span><span class="p">]</span>
-            <span class="n">B</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">dN</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">dN</span><span class="p">]</span>
-
-        <span class="c1"># Set up RHS (b)</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">Np1</span><span class="p">,)</span><span class="o">+</span><span class="n">yk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
-        <span class="n">dyk</span> <span class="o">=</span> <span class="p">(</span><span class="n">yk</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">yk</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="mf">1.0</span>
-        <span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;not-a-knot&#39;</span><span class="p">,</span> <span class="s1">&#39;runout&#39;</span><span class="p">,</span> <span class="s1">&#39;parabolic&#39;</span><span class="p">]:</span>
-            <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;periodic&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dyk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">d1</span> <span class="o">-</span> <span class="n">sl_0</span><span class="p">)</span>
-            <span class="n">b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">dyk</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">dN</span> <span class="o">-</span> <span class="n">sl_N</span><span class="p">)</span>
-        <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dyk</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">/</span><span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">dyk</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">alpha</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">b</span> <span class="o">*=</span> <span class="mf">6.0</span>
-        <span class="k">return</span> <span class="n">B</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> not supported&quot;</span> <span class="o">%</span> <span class="n">kind</span><span class="p">)</span>
-
 <span class="c1"># conds is a tuple of an array and a vector</span>
 <span class="c1">#  giving the left-hand and the right-hand side</span>
 <span class="c1">#  of the additional equations to add to B</span>
@@ -2999,58 +2918,10 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
 
-<span class="c1"># If conds is None, then use the not_a_knot condition</span>
-<span class="c1">#  at K-1 farthest separated points in the interval</span>
 
-
-<span class="k">def</span> <span class="nf">_find_not_a_knot</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-    <span class="k">return</span> <span class="n">_find_user</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
-
-<span class="c1"># If conds is None, then ensure zero-valued second</span>
-<span class="c1">#  derivative at K-1 farthest separated points</span>
-
-
-<span class="k">def</span> <span class="nf">_find_natural</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-    <span class="k">return</span> <span class="n">_find_user</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
-
-<span class="c1"># If conds is None, then ensure zero-valued first</span>
-<span class="c1">#  derivative at K-1 farthest separated points</span>
-
-
-<span class="k">def</span> <span class="nf">_find_clamped</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-    <span class="k">return</span> <span class="n">_find_user</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_find_fixed</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-    <span class="k">return</span> <span class="n">_find_user</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
-
-<span class="c1"># If conds is None, then use coefficient periodicity</span>
-<span class="c1"># If conds is &#39;function&#39; then use function periodicity</span>
-
-
-<span class="k">def</span> <span class="nf">_find_periodic</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-    <span class="k">return</span> <span class="n">_find_user</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
-
-<span class="c1"># Doesn&#39;t use conds</span>
-
-
-<span class="k">def</span> <span class="nf">_find_symmetric</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-    <span class="k">return</span> <span class="n">_find_user</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
-
-<span class="c1"># conds is a dictionary with multiple values</span>
-
-
-<span class="k">def</span> <span class="nf">_find_mixed</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-    <span class="k">return</span> <span class="n">_find_user</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
-
-
+<span class="c1"># Remove the 3 private functions above as well when removing splmake</span>
+<span class="nd">@np.deprecate</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;splmake is deprecated in scipy 0.19.0, &quot;</span>
+                      <span class="s2">&quot;use make_interp_spline instead.&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">splmake</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;smoothest&#39;</span><span class="p">,</span> <span class="n">conds</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a representation of a spline given data-points at internal knots</span>
@@ -3100,6 +2971,8 @@
     <span class="k">return</span> <span class="n">xk</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">order</span>
 
 
+<span class="nd">@np.deprecate</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;spleval is deprecated in scipy 0.19.0, &quot;</span>
+        <span class="s2">&quot;use BSpline instead.&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">spleval</span><span class="p">(</span><span class="n">xck</span><span class="p">,</span> <span class="n">xnew</span><span class="p">,</span> <span class="n">deriv</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate a fixed spline represented by the given tuple at the new x-values</span>
@@ -3136,28 +3009,32 @@
 <span class="sd">    the spline.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="p">(</span><span class="n">xj</span><span class="p">,</span><span class="n">cvals</span><span class="p">,</span><span class="n">k</span><span class="p">)</span> <span class="o">=</span> <span class="n">xck</span>
+    <span class="p">(</span><span class="n">xj</span><span class="p">,</span> <span class="n">cvals</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">=</span> <span class="n">xck</span>
     <span class="n">oldshape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">xnew</span><span class="p">)</span>
     <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">xnew</span><span class="p">)</span>
     <span class="n">sh</span> <span class="o">=</span> <span class="n">cvals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">cvals</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndindex</span><span class="p">(</span><span class="o">*</span><span class="n">sh</span><span class="p">):</span>
-        <span class="n">sl</span> <span class="o">=</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">),)</span><span class="o">+</span><span class="n">index</span>
+        <span class="n">sl</span> <span class="o">=</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">),)</span> <span class="o">+</span> <span class="n">index</span>
         <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">cvals</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
-            <span class="n">res</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span><span class="o">.</span><span class="n">real</span> <span class="o">=</span> <span class="n">_fitpack</span><span class="o">.</span><span class="n">_bspleval</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">xj</span><span class="p">,</span><span class="n">cvals</span><span class="o">.</span><span class="n">real</span><span class="p">[</span><span class="n">sl</span><span class="p">],</span><span class="n">k</span><span class="p">,</span><span class="n">deriv</span><span class="p">)</span>
-            <span class="n">res</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span> <span class="o">=</span> <span class="n">_fitpack</span><span class="o">.</span><span class="n">_bspleval</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">xj</span><span class="p">,</span><span class="n">cvals</span><span class="o">.</span><span class="n">imag</span><span class="p">[</span><span class="n">sl</span><span class="p">],</span><span class="n">k</span><span class="p">,</span><span class="n">deriv</span><span class="p">)</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span><span class="o">.</span><span class="n">real</span> <span class="o">=</span> <span class="n">_fitpack</span><span class="o">.</span><span class="n">_bspleval</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">xj</span><span class="p">,</span> <span class="n">cvals</span><span class="o">.</span><span class="n">real</span><span class="p">[</span><span class="n">sl</span><span class="p">],</span> <span class="n">k</span><span class="p">,</span> <span class="n">deriv</span><span class="p">)</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span> <span class="o">=</span> <span class="n">_fitpack</span><span class="o">.</span><span class="n">_bspleval</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">xj</span><span class="p">,</span> <span class="n">cvals</span><span class="o">.</span><span class="n">imag</span><span class="p">[</span><span class="n">sl</span><span class="p">],</span> <span class="n">k</span><span class="p">,</span> <span class="n">deriv</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">res</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span> <span class="o">=</span> <span class="n">_fitpack</span><span class="o">.</span><span class="n">_bspleval</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">xj</span><span class="p">,</span><span class="n">cvals</span><span class="p">[</span><span class="n">sl</span><span class="p">],</span><span class="n">k</span><span class="p">,</span><span class="n">deriv</span><span class="p">)</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span> <span class="o">=</span> <span class="n">_fitpack</span><span class="o">.</span><span class="n">_bspleval</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">xj</span><span class="p">,</span> <span class="n">cvals</span><span class="p">[</span><span class="n">sl</span><span class="p">],</span> <span class="n">k</span><span class="p">,</span> <span class="n">deriv</span><span class="p">)</span>
     <span class="n">res</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">oldshape</span> <span class="o">+</span> <span class="n">sh</span>
     <span class="k">return</span> <span class="n">res</span>
 
 
+<span class="c1"># When `spltopp` gets removed, also remove the _ppform class.</span>
+<span class="nd">@np.deprecate</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;spltopp is deprecated in scipy 0.19.0, &quot;</span>
+                      <span class="s2">&quot;use PPoly.from_spline instead.&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">spltopp</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">cvals</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return a piece-wise polynomial object from a fixed-spline tuple.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">ppform</span><span class="o">.</span><span class="n">fromspline</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">cvals</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Return a piece-wise polynomial object from a fixed-spline tuple.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_ppform</span><span class="o">.</span><span class="n">fromspline</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">cvals</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
 
 
+<span class="nd">@np.deprecate</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;spline is deprecated in scipy 0.19.0, &quot;</span>
+                      <span class="s2">&quot;use Bspline class instead.&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">spline</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">xnew</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;smoothest&#39;</span><span class="p">,</span> <span class="n">conds</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolate a curve at new points using a spline fit</span>
@@ -3181,7 +3058,7 @@
 <span class="sd">        An array of y values; the spline evaluated at the positions `xnew`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">spleval</span><span class="p">(</span><span class="n">splmake</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span><span class="n">yk</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span><span class="n">conds</span><span class="o">=</span><span class="n">conds</span><span class="p">),</span><span class="n">xnew</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">spleval</span><span class="p">(</span><span class="n">splmake</span><span class="p">(</span><span class="n">xk</span><span class="p">,</span> <span class="n">yk</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">conds</span><span class="o">=</span><span class="n">conds</span><span class="p">),</span> <span class="n">xnew</span><span class="p">)</span>
 </pre></div>
 
            </div>
@@ -3218,7 +3095,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.3.0-10',
+            VERSION:'1.3.0-12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -3228,7 +3105,7 @@
       <script type="text/javascript" src="../../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
