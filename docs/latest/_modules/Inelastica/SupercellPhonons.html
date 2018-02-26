@@ -1,0 +1,933 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Inelastica.SupercellPhonons &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>Inelastica.SupercellPhonons</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Inelastica.SupercellPhonons</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A simple interface to evaluate electron and phonon bands on </span>
+<span class="sd">a set of points in reciprocal space.</span>
+
+<span class="sd">The input file format with N points is simply:</span>
+
+<span class="sd">  kx(1) ky(1) kz(1) [label]</span>
+<span class="sd">  kx(2) ky(2) kz(2) [label]</span>
+<span class="sd">...</span>
+<span class="sd">  kx(N) ky(N) kz(N) [label]</span>
+
+<span class="sd">Units: 1/Ang.</span>
+
+<span class="sd">Phase factors defined as: exp(i k.r)</span>
+
+<span class="sd">Thomas Frederiksen, March 2015</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
+<span class="kn">import</span> <span class="nn">Inelastica.Symmetry</span> <span class="kn">as</span> <span class="nn">Symmetry</span>
+<span class="kn">import</span> <span class="nn">Inelastica.CommonFunctions</span> <span class="kn">as</span> <span class="nn">CF</span>
+<span class="kn">import</span> <span class="nn">Inelastica.Phonons</span> <span class="kn">as</span> <span class="nn">PH</span>
+<span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
+<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
+<span class="kn">import</span> <span class="nn">Inelastica.ValueCheck</span> <span class="kn">as</span> <span class="nn">VC</span>
+<span class="kn">import</span> <span class="nn">Inelastica.io.xmgrace</span> <span class="kn">as</span> <span class="nn">XMGR</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
+<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span><span class="nn">sys</span><span class="o">,</span><span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">scipy.linalg</span> <span class="kn">as</span> <span class="nn">SLA</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span> <span class="kn">as</span> <span class="nn">NC4</span>
+
+<div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># if text string is specified, convert to list</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span><span class="n">VC</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="kn">import</span> <span class="nn">argparse</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Methods to calculate electron and phonon band structures from finite-difference calculations&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;DestDir&#39;</span><span class="p">,</span><span class="n">help</span><span class="o">=</span><span class="s1">&#39;Destination directory&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--FCwildcard&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;FCwildcard&#39;</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;./FC*&#39;</span><span class="p">,</span>
+                 <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Wildcard for FC directories [default=</span><span class="si">%(default)s</span><span class="s1">]&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--OSdir&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;onlySdir&#39;</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;./OSrun&#39;</span><span class="p">,</span>
+                 <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Location of OnlyS directory [default=</span><span class="si">%(default)s</span><span class="s1">]&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-r&#39;</span><span class="p">,</span><span class="s1">&#39;--radius&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                 <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Force cutoff radius in Angstroms [default=</span><span class="si">%(default)s</span><span class="s1">]&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--AtomicMass&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;AtomicMass&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;[]&#39;</span><span class="p">,</span>
+                 <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Option to add to (or override!) existing dictionary of atomic masses. Format is a list [[anr1,mass1(,label)],...] [default=</span><span class="si">%(default)s</span><span class="s1">]&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-k&#39;</span><span class="p">,</span><span class="s1">&#39;--kpointfile&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;kfile&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Input file with electronic k-points to be evaluated [default=</span><span class="si">%(default)s</span><span class="s1">]&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-q&#39;</span><span class="p">,</span><span class="s1">&#39;--qpointfile&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;qfile&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Input file with phonon q-points to be evaluated [default=</span><span class="si">%(default)s</span><span class="s1">]&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-s&#39;</span><span class="p">,</span><span class="s1">&#39;--steps&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                 <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Number of points on path between high-symmetry k-points [default=</span><span class="si">%(default)s</span><span class="s1">]&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--mesh&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;mesh&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;[0,0,0]&#39;</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                 <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Mesh sampling over one BZ (powers of 2) [default=</span><span class="si">%(default)s</span><span class="s1">]&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--sort&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;sorting&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Sort eigenvalues along k-mesh for nice plots? [default=</span><span class="si">%(default)s</span><span class="s1">]&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--TSdir&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;onlyTSdir&#39;</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Location of TranSIESTA calculation directory (will ignore FC and OnlyS directories) [default=</span><span class="si">%(default)s</span><span class="s1">]&#39;</span><span class="p">)</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+
+    <span class="c1"># With this one can overwrite the logging information</span>
+    <span class="k">if</span> <span class="s2">&quot;log&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">Logfile</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;log&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">Logfile</span> <span class="o">=</span> <span class="s1">&#39;Bandstructures.log&#39;</span>
+
+    <span class="c1"># Check if AtomicMasses are specified</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">AtomicMass</span><span class="o">!=</span><span class="s1">&#39;[]&#39;</span><span class="p">:</span>
+        <span class="n">masslist</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">AtomicMass</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">elm</span> <span class="ow">in</span> <span class="n">masslist</span><span class="p">:</span>
+            <span class="n">anr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">elm</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">mass</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">elm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">PC</span><span class="o">.</span><span class="n">AtomicMass</span><span class="p">[</span><span class="n">anr</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elm</span><span class="p">)</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">elm</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">PC</span><span class="o">.</span><span class="n">PeriodicTable</span><span class="p">[</span><span class="n">anr</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+                <span class="n">PC</span><span class="o">.</span><span class="n">PeriodicTable</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">anr</span>
+        <span class="k">print</span> <span class="s1">&#39;AtomicMass =&#39;</span><span class="p">,</span><span class="n">PC</span><span class="o">.</span><span class="n">AtomicMass</span>
+        <span class="k">print</span> <span class="s1">&#39;PeriodicTable =&#39;</span><span class="p">,</span><span class="n">PC</span><span class="o">.</span><span class="n">PeriodicTable</span>
+
+    <span class="k">return</span> <span class="n">options</span></div>
+  
+
+<div class="viewcode-block" id="Supercell_DynamicalMatrix"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix">[docs]</a><span class="k">class</span> <span class="nc">Supercell_DynamicalMatrix</span><span class="p">(</span><span class="n">PH</span><span class="o">.</span><span class="n">DynamicalMatrix</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fdf</span><span class="p">,</span><span class="n">TSrun</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">PH</span><span class="o">.</span><span class="n">DynamicalMatrix</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fdf</span><span class="p">,</span><span class="n">DynamicAtoms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">TSrun</span><span class="o">=</span><span class="n">TSrun</span><span class="p">)</span>
+        <span class="c1"># Find basis and symmetry operations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CheckSymmetries</span><span class="p">(</span><span class="n">TSrun</span><span class="o">=</span><span class="n">TSrun</span><span class="p">)</span>
+
+    <span class="c1"># PHONONIC PART</span>
+
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.CheckSymmetries"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.CheckSymmetries">[docs]</a>    <span class="k">def</span> <span class="nf">CheckSymmetries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">TSrun</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Performing symmetry analysis&#39;</span>
+        <span class="c1"># Check if a smaller basis is present:</span>
+        <span class="n">Sym</span> <span class="o">=</span> <span class="n">Symmetry</span><span class="o">.</span><span class="n">Symmetry</span><span class="p">()</span>
+        <span class="c1"># Find lattice symmetries</span>
+        <span class="n">Sym</span><span class="o">.</span><span class="n">setupGeom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">snr</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span><span class="n">onlyLatticeSym</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">TSrun</span><span class="p">:</span>
+            <span class="n">Sym</span><span class="o">.</span><span class="n">pointGroup</span><span class="p">()</span> <span class="c1"># Actually this call is only needed if phonons are computed</span>
+            <span class="c1">#Sym.findIrreducible()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SetDynamicAtoms</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">Sym</span><span class="o">.</span><span class="n">what</span><span class="p">()</span>
+        <span class="c1"># Calculate lattice vectors for phase factors</span>
+        <span class="c1"># The closest cell might be different depending on which atom is moved</span>
+        <span class="n">sxyz</span> <span class="o">=</span> <span class="n">Sym</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">latticevectors</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Sym</span><span class="o">.</span><span class="n">NN</span><span class="p">,</span><span class="n">Sym</span><span class="o">.</span><span class="n">NN</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Sym</span><span class="o">.</span><span class="n">NN</span><span class="p">):</span>
+            <span class="n">micxyz</span> <span class="o">=</span> <span class="n">Symmetry</span><span class="o">.</span><span class="n">moveIntoClosest</span><span class="p">(</span><span class="n">sxyz</span><span class="o">-</span><span class="n">sxyz</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span><span class="n">Sym</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">Sym</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">Sym</span><span class="o">.</span><span class="n">pbc</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Sym</span><span class="o">.</span><span class="n">NN</span><span class="p">):</span>
+                <span class="n">latticevectors</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">micxyz</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span><span class="o">+</span><span class="n">sxyz</span><span class="p">[</span><span class="n">Sym</span><span class="o">.</span><span class="n">basisatom</span><span class="p">[</span><span class="n">ii</span><span class="p">]]</span><span class="o">-</span><span class="n">sxyz</span><span class="p">[</span><span class="n">Sym</span><span class="o">.</span><span class="n">basisatom</span><span class="p">[</span><span class="n">jj</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latticevectors</span> <span class="o">=</span> <span class="n">latticevectors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">supercell</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Sym</span> <span class="o">=</span> <span class="n">Sym</span></div>
+
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.SymmetrizeFC"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.SymmetrizeFC">[docs]</a>    <span class="k">def</span> <span class="nf">SymmetrizeFC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">radius</span><span class="p">):</span> 
+        <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Computing symmetrized force constants&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">symmetrizeFC</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="p">,</span><span class="n">radi</span><span class="o">=</span><span class="n">radius</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ApplySumRule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_sym</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.ComputePhononModes_q"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.ComputePhononModes_q">[docs]</a>    <span class="k">def</span> <span class="nf">ComputePhononModes_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">qpoint</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="c1"># Compute phonon vectors</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">SupercellPhonons.ComputePhononModes_q: Computing force constants at q = &#39;</span><span class="p">,</span><span class="n">qpoint</span><span class="p">,</span><span class="s1">&#39;(1/Ang)&#39;</span>
+        <span class="n">NN</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">NN</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">NN</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>
+        <span class="c1"># Loop over basis atoms</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NN</span><span class="p">):</span>
+            <span class="c1"># Loop over all atoms in the supercell</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latticevectors</span><span class="p">[</span><span class="n">n</span><span class="p">])):</span>
+                <span class="c1">#print &#39;CV=&#39;,self.latticevectors[n,m]</span>
+                <span class="c1"># exp( - i q R0m )</span>
+                <span class="n">R0m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latticevectors</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">phase</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0j</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">qpoint</span><span class="p">,</span><span class="n">R0m</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="n">n</span><span class="p">,:,</span><span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basisatom</span><span class="p">[</span><span class="n">m</span><span class="p">],:]</span> <span class="o">+=</span> <span class="n">phase</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_sym</span><span class="p">[</span><span class="n">n</span><span class="p">,:,</span><span class="n">m</span><span class="p">,:]</span>
+        <span class="c1"># Now compute modes using standard module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ComputePhononModes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="c1"># Expand U and Udispl to the whole supercell</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latticevectors</span><span class="p">)):</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basisatom</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">R0n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latticevectors</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">phase</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0j</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">qpoint</span><span class="p">,</span><span class="n">R0n</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">UU</span><span class="p">[:,</span><span class="n">n</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">[:,</span><span class="mi">3</span><span class="o">*</span><span class="n">j</span><span class="p">:</span><span class="mi">3</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">UUdisp</span><span class="p">[:,</span><span class="n">n</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Udisp</span><span class="p">[:,</span><span class="mi">3</span><span class="o">*</span><span class="n">j</span><span class="p">:</span><span class="mi">3</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hw</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span></div>
+
+    <span class="c1"># ELECTRONIC PART</span>
+
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.Fold2PrimitiveCell"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.Fold2PrimitiveCell">[docs]</a>    <span class="k">def</span> <span class="nf">Fold2PrimitiveCell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">kpoint</span><span class="p">):</span>
+        <span class="c1"># Folding down H (or S) to specified kpoint</span>
+        <span class="c1"># in the primitive cell</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rednao</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">rednao</span>
+        <span class="n">H_k</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sh</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>
+        <span class="c1"># Loop over basis atoms</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="p">):</span>
+            <span class="c1"># Loop over all atoms in the supercell</span>
+            <span class="n">fn</span><span class="p">,</span><span class="n">ln</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">fnb</span><span class="p">,</span><span class="n">lnb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basisatom</span><span class="p">[</span><span class="n">n</span><span class="p">]]</span> 
+            <span class="c1">#print &#39;n=%i, fn=%i, ln=%i, fnb=%i, lnb=%i&#39;%(n,fn,ln,fnb,lnb)</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latticevectors</span><span class="p">[</span><span class="n">n</span><span class="p">])):</span>
+                <span class="n">fm</span><span class="p">,</span><span class="n">lm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">fmb</span><span class="p">,</span><span class="n">lmb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basisatom</span><span class="p">[</span><span class="n">m</span><span class="p">]]</span>
+                <span class="c1">#print &#39;m=%i, fm=%i, lm=%i, fmb=%i, lmb=%i&#39;%(m,fm,lm,fmb,lmb)</span>
+                <span class="c1"># exp( i k R0m )</span>
+                <span class="n">R0m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latticevectors</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">phase</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">1.0j</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">kpoint</span><span class="p">,</span><span class="n">R0m</span><span class="p">))</span>
+		<span class="c1">#H_k[...,fnb:lnb+1,fmb:lmb+1] += phase*H[...,fn:ln+1,fm:lm+1]</span>
+                <span class="n">H_k</span><span class="p">[</span><span class="o">...</span><span class="p">,</span><span class="n">fmb</span><span class="p">:</span><span class="n">lmb</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">fnb</span><span class="p">:</span><span class="n">lnb</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">phase</span><span class="o">*</span><span class="n">H</span><span class="p">[</span><span class="o">...</span><span class="p">,</span><span class="n">fm</span><span class="p">:</span><span class="n">lm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">fn</span><span class="p">:</span><span class="n">ln</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">H_k</span></div>
+
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.ComputeElectronStates"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.ComputeElectronStates">[docs]</a>    <span class="k">def</span> <span class="nf">ComputeElectronStates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">kpoint</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">TSrun</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">TSrun</span><span class="p">:</span>
+            <span class="c1"># kpoint has unit of &#39;2*pi/a&#39;</span>
+            <span class="n">kpt</span> <span class="o">=</span> <span class="n">kpoint</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+            <span class="n">kpt2</span> <span class="o">=</span> <span class="n">MM</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">a1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">a2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">a3</span><span class="p">]),</span> <span class="n">kpt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">TSHS0</span><span class="o">.</span><span class="n">setkpoint</span><span class="p">(</span><span class="n">kpt2</span><span class="p">,</span><span class="n">atype</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">h0_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TSHS0</span><span class="o">.</span><span class="n">H</span><span class="p">[:,:,:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s0_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TSHS0</span><span class="o">.</span><span class="n">S</span><span class="p">[:,:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s1">&#39;SupercellPhonons.ComputeElectronStates: k = &#39;</span><span class="p">,</span><span class="n">kpoint</span><span class="p">,</span><span class="s1">&#39;(1/Ang)&#39;</span>
+            <span class="c1"># Fold onto primitive cell</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">h0_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fold2PrimitiveCell</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h0</span><span class="p">,</span><span class="n">kpoint</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s0_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fold2PrimitiveCell</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s0</span><span class="p">,</span><span class="n">kpoint</span><span class="p">)</span>
+        <span class="n">ev</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nspin</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">rednao</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">evec</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nspin</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">rednao</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">rednao</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ispin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nspin</span><span class="p">):</span>
+            <span class="n">ev</span><span class="p">[</span><span class="n">ispin</span><span class="p">],</span> <span class="n">evec</span><span class="p">[</span><span class="n">ispin</span><span class="p">]</span> <span class="o">=</span> <span class="n">SLA</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h0_k</span><span class="p">[</span><span class="n">ispin</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">s0_k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ev</span><span class="p">,</span><span class="n">evec</span></div>
+
+            
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.ReadGradients"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.ReadGradients">[docs]</a>    <span class="k">def</span> <span class="nf">ReadGradients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">AbsEref</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="c1"># Read in gradients once into memory (in the full supercell basis)</span>
+        <span class="c1"># No folding yet onto k and q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dH</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Loop over dynamic atoms</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DynamicAtoms</span><span class="p">):</span>
+            <span class="c1"># Loop over axes</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="c1"># Compute gradient</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dH</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetGradient</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">j</span><span class="p">)</span></div>
+
+    <span class="c1"># ELECTRON-PHONON COUPLING PART</span>
+
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.FoldMatrix_DoubleSum"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.FoldMatrix_DoubleSum">[docs]</a>    <span class="k">def</span> <span class="nf">FoldMatrix_DoubleSum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">kpoint</span><span class="p">,</span><span class="n">qpoint</span><span class="p">):</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rednao</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">rednao</span>
+        <span class="n">H_kq</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sh</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>
+        <span class="c1"># Loop over atoms</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latticevectors</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">fn</span><span class="p">,</span><span class="n">ln</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">fnb</span><span class="p">,</span><span class="n">lnb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basisatom</span><span class="p">[</span><span class="n">n</span><span class="p">]]</span> 
+            <span class="c1"># Loop over atoms</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latticevectors</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="n">fm</span><span class="p">,</span><span class="n">lm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">fmb</span><span class="p">,</span><span class="n">lmb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basisatom</span><span class="p">[</span><span class="n">m</span><span class="p">]]</span>
+                <span class="c1"># exp( i q R0m )</span>
+                <span class="n">R0m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latticevectors</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basisatom</span><span class="p">[</span><span class="n">n</span><span class="p">],</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">phase1</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">1.0j</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">qpoint</span><span class="p">,</span><span class="n">R0m</span><span class="p">))</span>
+                <span class="c1"># exp( i k Rnm )</span>
+                <span class="n">Rnm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latticevectors</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">m</span><span class="p">]</span>
+                <span class="c1">#print &#39;allclose&#39;,N.allclose(Rnm,-1.* self.latticevectors[m,n]) # this is always true</span>
+                <span class="n">phase2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">1.0j</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">kpoint</span><span class="p">,</span><span class="n">Rnm</span><span class="p">))</span>
+                <span class="c1">#H_kq[...,fnb:lnb+1,fmb:lmb+1] += phase1*phase2*H[...,fn:ln+1,fm:lm+1]</span>
+                <span class="n">H_kq</span><span class="p">[</span><span class="o">...</span><span class="p">,</span><span class="n">fmb</span><span class="p">:</span><span class="n">lmb</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">fnb</span><span class="p">:</span><span class="n">lnb</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">phase1</span><span class="o">*</span><span class="n">phase2</span><span class="o">*</span><span class="n">H</span><span class="p">[</span><span class="o">...</span><span class="p">,</span><span class="n">fm</span><span class="p">:</span><span class="n">lm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">fn</span><span class="p">:</span><span class="n">ln</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1">#return H_kq/self.geom.natoms*self.Sym.basis.NN</span>
+        <span class="k">return</span> <span class="n">H_kq</span></div>
+
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.ComputeEPHcouplings_kq"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.ComputeEPHcouplings_kq">[docs]</a>    <span class="k">def</span> <span class="nf">ComputeEPHcouplings_kq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">kpoint</span><span class="p">,</span><span class="n">qpoint</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s1">&#39;SupercellPhonons.ComputeEPHcouplings_kq: k = &#39;</span><span class="p">,</span><span class="n">kpoint</span><span class="p">,</span><span class="s1">&#39; q = &#39;</span><span class="p">,</span><span class="n">qpoint</span><span class="p">,</span><span class="s1">&#39;(1/Ang)&#39;</span>
+        <span class="c1"># This assumes that phonon modes UU has been computed at that q</span>
+        <span class="n">const</span> <span class="o">=</span> <span class="n">PC</span><span class="o">.</span><span class="n">hbar2SI</span><span class="o">*</span><span class="p">(</span><span class="mf">1e20</span><span class="o">/</span><span class="p">(</span><span class="n">PC</span><span class="o">.</span><span class="n">eV2Joule</span><span class="o">*</span><span class="n">PC</span><span class="o">.</span><span class="n">amu2kg</span><span class="p">))</span><span class="o">**</span><span class="mf">0.5</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hw</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">nspin</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nao</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nao</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hw</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">nspin</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nao</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nao</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>
+        <span class="c1"># Loop over dynamic atoms</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DynamicAtoms</span><span class="p">):</span>
+            <span class="c1"># Loop over axes</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="c1"># Loop over modes</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hw</span><span class="p">)):</span>
+                    <span class="n">M</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dH</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">UU</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="n">v</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hw</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span> <span class="c1"># Only proceed with a postive frequency</span>
+                        <span class="n">G</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">+=</span> <span class="n">const</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dH</span><span class="p">[</span><span class="n">v</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">UU</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="n">v</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Masses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">hw</span><span class="p">[</span><span class="n">m</span><span class="p">])</span><span class="o">**.</span><span class="mi">5</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FoldMatrix_DoubleSum</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="n">kpoint</span><span class="p">,</span><span class="n">qpoint</span><span class="p">)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FoldMatrix_DoubleSum</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">kpoint</span><span class="p">,</span><span class="n">qpoint</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">m</span><span class="p">,</span><span class="n">g</span></div></div>
+
+<span class="c1"># AUXILIARY FUNCTIONS</span>
+
+<div class="viewcode-block" id="ReadKpoints"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.ReadKpoints">[docs]</a><span class="k">def</span> <span class="nf">ReadKpoints</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s1">&#39;SupercellPhonons.ReadKpoints: Reading from&#39;</span><span class="p">,</span><span class="n">filename</span>
+    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.nc&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ReadKpoints_netcdf</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ReadKpoints_ascii</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReadKpoints_netcdf"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.ReadKpoints_netcdf">[docs]</a><span class="k">def</span> <span class="nf">ReadKpoints_netcdf</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">ncf</span> <span class="o">=</span> <span class="n">NC4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">kpts</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;grid&#39;</span><span class="p">][:]</span>
+    <span class="n">ncf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">dk</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">kpts</span><span class="p">))</span>
+    <span class="n">dk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">kpts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">kpts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">dk</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span><span class="n">tmp</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">**.</span><span class="mi">5</span>
+    <span class="n">dk</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dk</span><span class="p">)</span>
+    <span class="n">labels</span><span class="p">,</span><span class="n">ticks</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span><span class="bp">None</span>
+    <span class="k">return</span> <span class="n">kpts</span><span class="p">,</span><span class="n">dk</span><span class="p">,</span><span class="n">labels</span><span class="p">,</span><span class="n">ticks</span></div>
+    
+<div class="viewcode-block" id="ReadKpoints_ascii"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.ReadKpoints_ascii">[docs]</a><span class="k">def</span> <span class="nf">ReadKpoints_ascii</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">klist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dklist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ticks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="c1"># Initialize variables with the first read k-point</span>
+    <span class="n">ln</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">ln</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="mi">3</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+        <span class="n">klist</span> <span class="o">+=</span> <span class="p">[</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">])])]</span>
+        <span class="n">dk</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">dklist</span> <span class="o">+=</span> <span class="p">[</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dk</span><span class="p">,</span><span class="n">dk</span><span class="p">)</span><span class="o">**.</span><span class="mi">5</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">+=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span>
+            <span class="n">ticks</span> <span class="o">+=</span> <span class="p">[[</span><span class="n">dklist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+    <span class="c1"># Continue reading the rest of the file</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ln</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">klist</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">ln</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="mi">3</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+            <span class="n">klist</span> <span class="o">+=</span> <span class="p">[</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">])])]</span>
+            <span class="n">dk</span> <span class="o">=</span> <span class="n">klist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">klist</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">dklist</span> <span class="o">+=</span> <span class="p">[</span><span class="n">dklist</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dk</span><span class="p">,</span><span class="n">dk</span><span class="p">)</span><span class="o">**.</span><span class="mi">5</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+                <span class="n">labels</span> <span class="o">+=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span>
+                <span class="n">ticks</span> <span class="o">+=</span> <span class="p">[[</span><span class="n">dklist</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">labels</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">klist</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dklist</span><span class="p">),</span><span class="n">labels</span><span class="p">,</span><span class="n">ticks</span></div>
+
+<div class="viewcode-block" id="WriteKpoints"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.WriteKpoints">[docs]</a><span class="k">def</span> <span class="nf">WriteKpoints</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">klist</span><span class="p">,</span><span class="n">labels</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">klist</span><span class="p">)):</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">klist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.8e</span><span class="s1"> &#39;</span><span class="o">%</span><span class="n">k</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s1">&#39;SupercellPhonons.WriteKpoints: Wrote </span><span class="si">%i</span><span class="s1"> points to </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">klist</span><span class="p">),</span><span class="n">filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WritePath"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.WritePath">[docs]</a><span class="k">def</span> <span class="nf">WritePath</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">path</span><span class="p">,</span><span class="n">steps</span><span class="p">):</span>
+    <span class="c1"># Write path between high-symmetry points</span>
+    <span class="n">kpts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">k1</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">k2</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+                <span class="n">kj</span> <span class="o">=</span> <span class="n">k1</span> <span class="o">+</span> <span class="p">(</span><span class="n">k2</span><span class="o">-</span><span class="n">k1</span><span class="p">)</span><span class="o">*</span><span class="n">j</span><span class="o">/</span><span class="n">steps</span>
+                <span class="n">kpts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kj</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">j</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># last k-point in path</span>
+            <span class="n">k1</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">kpts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k1</span><span class="p">)</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">print</span> <span class="s1">&#39;High-symmetry path:&#39;</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">WriteKpoints</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">kpts</span><span class="p">,</span><span class="n">labels</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SortBands"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SortBands">[docs]</a><span class="k">def</span> <span class="nf">SortBands</span><span class="p">(</span><span class="n">ev</span><span class="p">):</span>
+    <span class="c1"># Sort bands by curvature minimization</span>
+    <span class="k">print</span> <span class="s1">&#39;SupercellPhonons.SortBands: Minimizing curvature in band structure&#39;</span>
+    <span class="n">kpts</span><span class="p">,</span><span class="n">bands</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">shape</span>
+    <span class="c1"># loop over k-points, starting from the third</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">kpts</span><span class="p">):</span>
+        <span class="c1"># loop over band index</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bands</span><span class="p">):</span>
+            <span class="c1"># loop over higher-lying bands</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">bands</span><span class="p">):</span>
+                <span class="n">d2ev</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">])</span><span class="o">+</span><span class="nb">abs</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">]</span><span class="o">+</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">k</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">k</span><span class="p">])</span>
+                <span class="n">d2evfl</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">]</span><span class="o">+</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">])</span><span class="o">+</span><span class="nb">abs</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">k</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">k</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">d2ev</span><span class="o">&gt;</span><span class="n">d2evfl</span><span class="p">:</span>
+                    <span class="c1"># flip bands</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">:,</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">:,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">:,</span><span class="n">k</span><span class="p">]</span>
+                    <span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">:,</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+                    <span class="k">print</span> <span class="s2">&quot;   ...@ k(</span><span class="si">%i</span><span class="s2">): flip indices </span><span class="si">%i</span><span class="s2">-</span><span class="si">%i</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ev</span>   </div>
+    
+<div class="viewcode-block" id="PlotElectronBands"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.PlotElectronBands">[docs]</a><span class="k">def</span> <span class="nf">PlotElectronBands</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">dk</span><span class="p">,</span><span class="n">elist</span><span class="p">,</span><span class="n">ticks</span><span class="p">):</span>
+    <span class="c1"># Make xmgrace plots</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dk</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dk</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">]])</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">elist</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>    
+    <span class="n">es</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Array2XYsets</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">Lwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">Lcolor</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ge</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">es</span><span class="p">)</span>
+    <span class="n">ge</span><span class="o">.</span><span class="n">SetXaxisSpecialTicks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
+    <span class="n">ge</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="n">dk</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">majorGridlines</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">ge</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">20</span><span class="p">,</span><span class="nb">max</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;E-E\sF\N (eV)&#39;</span><span class="p">,</span><span class="n">majorUnit</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">pe</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">ge</span><span class="p">)</span>
+    <span class="n">pe</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PlotPhononBands"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.PlotPhononBands">[docs]</a><span class="k">def</span> <span class="nf">PlotPhononBands</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">dq</span><span class="p">,</span><span class="n">phlist</span><span class="p">,</span><span class="n">ticks</span><span class="p">):</span>
+    <span class="c1"># Make xmgrace plots</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dq</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dq</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">]])</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="mi">1000</span><span class="o">*</span><span class="n">phlist</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Array2XYsets</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">Lwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">Lcolor</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">SetXaxisSpecialTicks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="n">dq</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">majorGridlines</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">maxy</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">phlist</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">20</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span><span class="mi">20</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">30</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span><span class="mi">30</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">40</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span><span class="mi">40</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">50</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span><span class="mi">50</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">75</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span><span class="mi">75</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span><span class="mi">100</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">125</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span><span class="mi">125</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">150</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span><span class="mi">150</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">175</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span><span class="mi">175</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">200</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span><span class="mi">200</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">220</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span><span class="mi">220</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">250</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span><span class="mi">250</span>
+    <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">500</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span><span class="n">mx</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span><span class="mi">500</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">f{Symbol}w</span><span class="se">\\</span><span class="s1">f{} (meV)&#39;</span><span class="p">,</span><span class="n">majorUnit</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span><span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="nb">max</span><span class="o">=</span><span class="n">mx</span><span class="p">)</span>
+    <span class="n">pp</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">gp</span><span class="p">)</span>
+    <span class="n">pp</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span></div>
+    
+<div class="viewcode-block" id="ComputeDOS"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.ComputeDOS">[docs]</a><span class="k">def</span> <span class="nf">ComputeDOS</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span><span class="n">outfile</span><span class="p">,</span><span class="n">emin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">emax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">pts</span><span class="o">=</span><span class="mi">1001</span><span class="p">,</span><span class="n">smear</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+    <span class="n">ncf</span> <span class="o">=</span> <span class="n">NC4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">ev</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;eigenvalues&#39;</span><span class="p">][:]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span> <span class="c1"># Phonons.nc (gridpts, bands)</span>
+        <span class="n">WriteDOS</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="n">ev</span><span class="p">,</span><span class="n">emin</span><span class="p">,</span><span class="n">emax</span><span class="p">,</span><span class="n">pts</span><span class="p">,</span><span class="n">smear</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span> <span class="c1"># Electrons.nc (gridpts, nspin, bands)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span> <span class="c1"># nspin==1</span>
+            <span class="n">WriteDOS</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="n">ev</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">emin</span><span class="p">,</span><span class="n">emax</span><span class="p">,</span><span class="n">pts</span><span class="p">,</span><span class="n">smear</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span> <span class="c1"># nspin==2</span>
+            <span class="n">WriteDOS</span><span class="p">(</span><span class="n">outfile</span><span class="o">+</span><span class="s1">&#39;.UP&#39;</span><span class="p">,</span><span class="n">ev</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">emin</span><span class="p">,</span><span class="n">emax</span><span class="p">,</span><span class="n">pts</span><span class="p">,</span><span class="n">smear</span><span class="p">)</span>
+            <span class="n">WriteDOS</span><span class="p">(</span><span class="n">outfile</span><span class="o">+</span><span class="s1">&#39;.DOWN&#39;</span><span class="p">,</span><span class="n">ev</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="n">emin</span><span class="p">,</span><span class="n">emax</span><span class="p">,</span><span class="n">pts</span><span class="p">,</span><span class="n">smear</span><span class="p">)</span>            
+    <span class="n">ncf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WriteDOS"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.WriteDOS">[docs]</a><span class="k">def</span> <span class="nf">WriteDOS</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="n">bands</span><span class="p">,</span><span class="n">emin</span><span class="p">,</span><span class="n">emax</span><span class="p">,</span><span class="n">pts</span><span class="p">,</span><span class="n">smear</span><span class="p">):</span>
+    <span class="n">egrid</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">emin</span><span class="p">,</span><span class="n">emax</span><span class="p">,</span><span class="n">pts</span><span class="p">)</span>
+    <span class="n">id1</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">bands</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">id2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">egrid</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">dE</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span><span class="n">id1</span><span class="p">)</span><span class="o">-</span><span class="n">N</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">id2</span><span class="p">,</span><span class="n">bands</span><span class="p">)</span> <span class="c1"># [e,kn]</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dE</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">smear</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">smear</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">**.</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># [e,b]</span>
+    <span class="n">dos</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">)</span> <span class="c1"># sum over bands</span>
+    <span class="c1"># Write plot</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">XYset</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span><span class="n">dos</span><span class="p">,</span><span class="n">Lwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">Lcolor</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;E (eV)&#39;</span><span class="p">,</span><span class="nb">min</span><span class="o">=</span><span class="n">emin</span><span class="p">,</span><span class="nb">max</span><span class="o">=</span><span class="n">emax</span><span class="p">,</span><span class="n">majorUnit</span><span class="o">=</span><span class="n">emax</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">ymax</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dos</span><span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;DOS (states/eV)&#39;</span><span class="p">,</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="nb">max</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span><span class="n">majorUnit</span><span class="o">=</span><span class="n">ymax</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
+    <span class="c1">#gp.SetSubtitle(ncfile)</span>
+    <span class="n">pp</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="n">gp</span><span class="p">)</span>
+    <span class="n">pp</span><span class="o">.</span><span class="n">PutText</span><span class="p">(</span><span class="s1">&#39;smear = </span><span class="si">%.3f</span><span class="s1"> meV&#39;</span><span class="o">%</span><span class="p">(</span><span class="mf">1e3</span><span class="o">*</span><span class="n">smear</span><span class="p">),</span><span class="mf">0.20</span><span class="p">,</span><span class="mf">0.75</span><span class="p">)</span>
+    <span class="n">pp</span><span class="o">.</span><span class="n">PutText</span><span class="p">(</span><span class="s1">&#39;kpts = </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">),</span><span class="mf">0.20</span><span class="p">,</span><span class="mf">0.70</span><span class="p">)</span>
+    <span class="n">pp</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+    <span class="n">CF</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
+    <span class="c1">#VC.OptionsCheck(options,&#39;Phonons&#39;)</span>
+
+    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;Bandstructures&#39;</span><span class="p">,</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">fdf</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">onlyTSdir</span><span class="o">+</span><span class="s1">&#39;/RUN.fdf&#39;</span><span class="p">)</span>
+        <span class="n">TSrun</span><span class="o">=</span><span class="bp">True</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">fdf</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FCwildcard</span><span class="o">+</span><span class="s1">&#39;/RUN.fdf&#39;</span><span class="p">)</span> <span class="c1"># This should be made an input flag</span>
+        <span class="n">TSrun</span><span class="o">=</span><span class="bp">False</span>
+    <span class="n">SCDM</span> <span class="o">=</span> <span class="n">Supercell_DynamicalMatrix</span><span class="p">(</span><span class="n">fdf</span><span class="p">,</span><span class="n">TSrun</span><span class="p">)</span>
+
+    <span class="c1"># Write high-symmetry path</span>
+    <span class="n">WritePath</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/symmetry-path&#39;</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">path</span><span class="p">,</span><span class="n">options</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span>
+
+    <span class="c1"># Write mesh</span>
+    <span class="n">k1</span><span class="p">,</span><span class="n">k2</span><span class="p">,</span><span class="n">k3</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
+    <span class="n">rvec</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">b1</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">b2</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">b3</span><span class="p">])</span>
+    <span class="kn">import</span> <span class="nn">Inelastica.physics.mesh</span> <span class="kn">as</span> <span class="nn">Kmesh</span>
+    <span class="c1"># Full mesh</span>
+    <span class="n">kmesh</span> <span class="o">=</span> <span class="n">Kmesh</span><span class="o">.</span><span class="n">kmesh</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">k1</span><span class="p">,</span><span class="mi">2</span><span class="o">**</span><span class="n">k2</span><span class="p">,</span><span class="mi">2</span><span class="o">**</span><span class="n">k3</span><span class="p">,</span><span class="n">meshtype</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;LIN&#39;</span><span class="p">,</span><span class="s1">&#39;LIN&#39;</span><span class="p">,</span><span class="s1">&#39;LIN&#39;</span><span class="p">],</span><span class="n">invsymmetry</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">WriteKpoints</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/mesh_</span><span class="si">%i</span><span class="s1">x</span><span class="si">%i</span><span class="s1">x</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">tuple</span><span class="p">(</span><span class="n">kmesh</span><span class="o">.</span><span class="n">Nk</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">kmesh</span><span class="o">.</span><span class="n">k</span><span class="p">,</span><span class="n">rvec</span><span class="p">))</span>
+    <span class="c1"># Mesh reduced by inversion symmetry </span>
+    <span class="n">kmesh</span> <span class="o">=</span> <span class="n">Kmesh</span><span class="o">.</span><span class="n">kmesh</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">k1</span><span class="p">,</span><span class="mi">2</span><span class="o">**</span><span class="n">k2</span><span class="p">,</span><span class="mi">2</span><span class="o">**</span><span class="n">k3</span><span class="p">,</span><span class="n">meshtype</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;LIN&#39;</span><span class="p">,</span><span class="s1">&#39;LIN&#39;</span><span class="p">,</span><span class="s1">&#39;LIN&#39;</span><span class="p">],</span><span class="n">invsymmetry</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">WriteKpoints</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/mesh_</span><span class="si">%i</span><span class="s1">x</span><span class="si">%i</span><span class="s1">x</span><span class="si">%i</span><span class="s1">_invsym&#39;</span><span class="o">%</span><span class="nb">tuple</span><span class="p">(</span><span class="n">kmesh</span><span class="o">.</span><span class="n">Nk</span><span class="p">),</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">kmesh</span><span class="o">.</span><span class="n">k</span><span class="p">,</span><span class="n">rvec</span><span class="p">))</span>
+    
+    <span class="c1"># Evaluate electron k-points</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">kfile</span><span class="p">:</span>
+        <span class="c1"># Prepare Hamiltonian etc in Gamma for whole supercell</span>
+        <span class="n">natoms</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">fdf</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;NumberOfAtoms&#39;</span><span class="p">,</span><span class="nb">int</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;Error&#39;</span><span class="p">)</span>
+        <span class="n">SCDM</span><span class="o">.</span><span class="n">PrepareGradients</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">onlySdir</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">]),</span><span class="mi">1</span><span class="p">,</span><span class="n">natoms</span><span class="p">,</span><span class="n">AbsEref</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">atype</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">,</span><span class="n">TSrun</span><span class="o">=</span><span class="n">TSrun</span><span class="p">)</span>
+        <span class="n">SCDM</span><span class="o">.</span><span class="n">nao</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">h0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">SCDM</span><span class="o">.</span><span class="n">FirstOrb</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># First atom = 1</span>
+        <span class="n">SCDM</span><span class="o">.</span><span class="n">LastOrb</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># Last atom = Sym.NN</span>
+        <span class="n">SCDM</span><span class="o">.</span><span class="n">rednao</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">LastOrb</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">SCDM</span><span class="o">.</span><span class="n">FirstOrb</span>
+        <span class="c1"># Read kpoints</span>
+        <span class="n">kpts</span><span class="p">,</span><span class="n">dk</span><span class="p">,</span><span class="n">klabels</span><span class="p">,</span><span class="n">kticks</span> <span class="o">=</span> <span class="n">ReadKpoints</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">kfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">klabels</span><span class="p">:</span>
+            <span class="c1"># Only write ascii if labels exist</span>
+            <span class="n">WriteKpoints</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/kpoints&#39;</span><span class="p">,</span><span class="n">kpts</span><span class="p">,</span><span class="n">klabels</span><span class="p">)</span>
+        <span class="c1"># Prepare netcdf</span>
+        <span class="n">ncfn</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Electrons.nc&#39;</span>
+        <span class="n">ncf</span> <span class="o">=</span> <span class="n">NC4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">ncfn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="c1"># Grid</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;gridpts&#39;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">kpts</span><span class="p">))</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;vector&#39;</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;grid&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;gridpts&#39;</span><span class="p">,</span><span class="s1">&#39;vector&#39;</span><span class="p">))</span>
+        <span class="n">grid</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">kpts</span>
+        <span class="n">grid</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;1/Angstrom&#39;</span>
+        <span class="c1"># Geometry</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;atoms&#39;</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="p">)</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;xyz&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;atoms&#39;</span><span class="p">,</span><span class="s1">&#39;vector&#39;</span><span class="p">))</span>
+        <span class="n">xyz</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">xyz</span>
+        <span class="n">xyz</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Angstrom&#39;</span>
+        <span class="n">pbc</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;pbc&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;vector&#39;</span><span class="p">,</span><span class="s1">&#39;vector&#39;</span><span class="p">))</span>
+        <span class="n">pbc</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Angstrom&#39;</span>
+        <span class="n">pbc</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">a1</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">a2</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">a3</span><span class="p">]</span>
+        <span class="n">rvec1</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;rvec&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;vector&#39;</span><span class="p">,</span><span class="s1">&#39;vector&#39;</span><span class="p">))</span>
+        <span class="n">rvec1</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;1/Angstrom (incl. factor 2pi)&#39;</span>
+        <span class="n">rvec1</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">rvec</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+        <span class="c1"># Loop over kpoints</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kpts</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">:</span> <span class="c1"># Print only for the first 100 points</span>
+                <span class="n">ev</span><span class="p">,</span><span class="n">evec</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">ComputeElectronStates</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">TSrun</span><span class="o">=</span><span class="n">TSrun</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ev</span><span class="p">,</span><span class="n">evec</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">ComputeElectronStates</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">TSrun</span><span class="o">=</span><span class="n">TSrun</span><span class="p">)</span>
+                <span class="c1"># otherwise something simple </span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="mi">100</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="k">print</span> <span class="s1">&#39;</span><span class="si">%i</span><span class="s1"> out of </span><span class="si">%i</span><span class="s1"> k-points computed&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">kpts</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;nspin&#39;</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">nspin</span><span class="p">)</span>
+                <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;orbs&#39;</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">rednao</span><span class="p">)</span>
+                <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;bands&#39;</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">rednao</span><span class="p">)</span>
+                <span class="n">evals</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;eigenvalues&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;gridpts&#39;</span><span class="p">,</span><span class="s1">&#39;nspin&#39;</span><span class="p">,</span><span class="s1">&#39;bands&#39;</span><span class="p">))</span>
+                <span class="n">evals</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;eV&#39;</span>
+                <span class="n">evecsRe</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;eigenvectors.re&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;gridpts&#39;</span><span class="p">,</span><span class="s1">&#39;nspin&#39;</span><span class="p">,</span><span class="s1">&#39;orbs&#39;</span><span class="p">,</span><span class="s1">&#39;bands&#39;</span><span class="p">))</span>
+                <span class="n">evecsIm</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;eigenvectors.im&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;gridpts&#39;</span><span class="p">,</span><span class="s1">&#39;nspin&#39;</span><span class="p">,</span><span class="s1">&#39;orbs&#39;</span><span class="p">,</span><span class="s1">&#39;bands&#39;</span><span class="p">))</span>
+                <span class="c1"># Check eigenvectors</span>
+                <span class="k">print</span> <span class="s1">&#39;SupercellPhonons: Checking eigenvectors at&#39;</span><span class="p">,</span><span class="n">k</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">SCDM</span><span class="o">.</span><span class="n">nspin</span><span class="p">):</span>
+                    <span class="n">ev2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">dagger</span><span class="p">(</span><span class="n">evec</span><span class="p">[</span><span class="n">j</span><span class="p">]),</span><span class="n">SCDM</span><span class="o">.</span><span class="n">h0_k</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="n">evec</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+                    <span class="k">print</span> <span class="s1">&#39; ... spin </span><span class="si">%i</span><span class="s1">: Allclose=&#39;</span><span class="o">%</span><span class="n">j</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="n">ev2</span><span class="p">,</span><span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span><span class="n">rtol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+                <span class="n">ncf</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+            <span class="c1"># Write to NetCDF</span>
+            <span class="n">evals</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">ev</span>
+            <span class="n">evecsRe</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">evec</span><span class="o">.</span><span class="n">real</span>
+            <span class="n">evecsIm</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">evec</span><span class="o">.</span><span class="n">imag</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+        <span class="c1"># Include basis orbitals in netcdf file</span>
+        <span class="k">if</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">SCDM</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">):</span>
+            <span class="n">lasto</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+            <span class="n">lasto</span><span class="p">[:</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="p">]</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[:</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">lasto</span><span class="p">[</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="p">]</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lasto</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[:</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">orbbasis</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">BuildBasis</span><span class="p">(</span><span class="n">fdf</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">1</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="p">,</span><span class="n">lasto</span><span class="p">)</span>
+        <span class="c1"># Note that the above basis is for the geometry with an atom FC-moved in z.</span>
+        <span class="c1">#print dir(orbbasis)</span>
+        <span class="c1">#print orbbasis.xyz # Hence, this is not the correct geometry of the basis atoms!</span>
+        <span class="n">center</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;orbcenter&#39;</span><span class="p">,</span><span class="s1">&#39;i&#39;</span><span class="p">,(</span><span class="s1">&#39;orbs&#39;</span><span class="p">,))</span> 
+        <span class="n">center</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orbbasis</span><span class="o">.</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+        <span class="n">center</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;Atom index (counting from 0) of the orbital center&#39;</span>
+        <span class="n">nn</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">,</span><span class="s1">&#39;i&#39;</span><span class="p">,(</span><span class="s1">&#39;orbs&#39;</span><span class="p">,))</span> 
+        <span class="n">nn</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orbbasis</span><span class="o">.</span><span class="n">N</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+        <span class="n">ll</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="s1">&#39;i&#39;</span><span class="p">,(</span><span class="s1">&#39;orbs&#39;</span><span class="p">,))</span>
+        <span class="n">ll</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orbbasis</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+        <span class="n">mm</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">,</span><span class="s1">&#39;i&#39;</span><span class="p">,(</span><span class="s1">&#39;orbs&#39;</span><span class="p">,))</span> 
+        <span class="n">mm</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orbbasis</span><span class="o">.</span><span class="n">M</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+        <span class="c1"># Cutoff radius and delta</span>
+        <span class="n">Rc</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;Rc&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;orbs&#39;</span><span class="p">,))</span>
+        <span class="n">Rc</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">orbbasis</span><span class="o">.</span><span class="n">coff</span>
+        <span class="n">Rc</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Angstrom&#39;</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;delta&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;orbs&#39;</span><span class="p">,))</span>
+        <span class="n">delta</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">orbbasis</span><span class="o">.</span><span class="n">delta</span>
+        <span class="n">delta</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Angstrom&#39;</span>
+        <span class="c1"># Radial components of the orbitals</span>
+        <span class="n">ntb</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">orbbasis</span><span class="o">.</span><span class="n">orb</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;ntb&#39;</span><span class="p">,</span><span class="n">ntb</span><span class="p">)</span>
+        <span class="n">rii</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;rii&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;orbs&#39;</span><span class="p">,</span><span class="s1">&#39;ntb&#39;</span><span class="p">))</span>
+        <span class="n">rii</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">orbbasis</span><span class="o">.</span><span class="n">delta</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ntb</span><span class="p">))</span>
+        <span class="n">rii</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Angstrom&#39;</span>
+        <span class="n">radialfct</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;radialfct&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;orbs&#39;</span><span class="p">,</span><span class="s1">&#39;ntb&#39;</span><span class="p">))</span>
+        <span class="n">radialfct</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">orbbasis</span><span class="o">.</span><span class="n">orb</span>
+        <span class="c1"># Sort eigenvalues to connect crossing bands?</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">sorting</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">SCDM</span><span class="o">.</span><span class="n">nspin</span><span class="p">):</span>
+                <span class="n">evals</span><span class="p">[:,</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">SortBands</span><span class="p">(</span><span class="n">evals</span><span class="p">[:,</span><span class="n">i</span><span class="p">,:])</span>
+        <span class="c1"># Produce nice plots if labels exist</span>
+        <span class="k">if</span> <span class="n">klabels</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">nspin</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">PlotElectronBands</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Electrons.agr&#39;</span><span class="p">,</span><span class="n">dk</span><span class="p">,</span><span class="n">evals</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:],</span><span class="n">kticks</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">nspin</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+                <span class="n">PlotElectronBands</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Electrons.UP.agr&#39;</span><span class="p">,</span><span class="n">dk</span><span class="p">,</span><span class="n">evals</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:],</span><span class="n">kticks</span><span class="p">)</span>
+                <span class="n">PlotElectronBands</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Electrons.DOWN.agr&#39;</span><span class="p">,</span><span class="n">dk</span><span class="p">,</span><span class="n">evals</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,:],</span><span class="n">kticks</span><span class="p">)</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">TSrun</span><span class="p">:</span> <span class="c1"># only electronic calculation</span>
+        <span class="k">return</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">path</span>
+
+    <span class="c1"># Compute phonon eigenvalues</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">qfile</span><span class="p">:</span>
+        <span class="n">SCDM</span><span class="o">.</span><span class="n">SymmetrizeFC</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">radius</span><span class="p">)</span>
+        <span class="n">SCDM</span><span class="o">.</span><span class="n">SetMasses</span><span class="p">()</span>
+        <span class="n">qpts</span><span class="p">,</span><span class="n">dq</span><span class="p">,</span><span class="n">qlabels</span><span class="p">,</span><span class="n">qticks</span> <span class="o">=</span> <span class="n">ReadKpoints</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">qfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">qlabels</span><span class="p">:</span>
+            <span class="c1"># Only write ascii if labels exist</span>
+            <span class="n">WriteKpoints</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/qpoints&#39;</span><span class="p">,</span><span class="n">qpts</span><span class="p">,</span><span class="n">qlabels</span><span class="p">)</span>
+        <span class="c1"># Prepare netcdf</span>
+        <span class="n">ncfn</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Phonons.nc&#39;</span>
+        <span class="n">ncf</span> <span class="o">=</span> <span class="n">NC4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">ncfn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="c1"># Grid</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;gridpts&#39;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">qpts</span><span class="p">))</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;vector&#39;</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;grid&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;gridpts&#39;</span><span class="p">,</span><span class="s1">&#39;vector&#39;</span><span class="p">))</span>
+        <span class="n">grid</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">qpts</span>
+        <span class="n">grid</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;1/Angstrom&#39;</span>
+        <span class="c1"># Geometry</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;atoms&#39;</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="p">)</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;xyz&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;atoms&#39;</span><span class="p">,</span><span class="s1">&#39;vector&#39;</span><span class="p">))</span>
+        <span class="n">xyz</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">xyz</span>
+        <span class="n">xyz</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Angstrom&#39;</span>
+        <span class="n">pbc</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;pbc&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;vector&#39;</span><span class="p">,</span><span class="s1">&#39;vector&#39;</span><span class="p">))</span>
+        <span class="n">pbc</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Angstrom&#39;</span>
+        <span class="n">pbc</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">a1</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">a2</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">a3</span><span class="p">]</span>
+        <span class="n">rvec1</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;rvec&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;vector&#39;</span><span class="p">,</span><span class="s1">&#39;vector&#39;</span><span class="p">))</span>
+        <span class="n">rvec1</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;1/Angstrom (incl. factor 2pi)&#39;</span>
+        <span class="n">rvec1</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">rvec</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+        <span class="c1"># Loop over q</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">q</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">qpts</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">:</span> <span class="c1"># Print only for the first 100 points</span>
+                <span class="n">hw</span><span class="p">,</span><span class="n">U</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">ComputePhononModes_q</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hw</span><span class="p">,</span><span class="n">U</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">ComputePhononModes_q</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                <span class="c1"># otherwise something simple</span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="mi">100</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="k">print</span> <span class="s1">&#39;</span><span class="si">%i</span><span class="s1"> out of </span><span class="si">%i</span><span class="s1"> q-points computed&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">qpts</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;bands&#39;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hw</span><span class="p">))</span>
+                <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;displ&#39;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hw</span><span class="p">))</span>
+                <span class="n">evals</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;eigenvalues&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;gridpts&#39;</span><span class="p">,</span><span class="s1">&#39;bands&#39;</span><span class="p">))</span>
+                <span class="n">evals</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;eV&#39;</span>
+                <span class="n">evecsRe</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;eigenvectors.re&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;gridpts&#39;</span><span class="p">,</span><span class="s1">&#39;bands&#39;</span><span class="p">,</span><span class="s1">&#39;displ&#39;</span><span class="p">))</span>
+                <span class="n">evecsIm</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;eigenvectors.im&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;gridpts&#39;</span><span class="p">,</span><span class="s1">&#39;bands&#39;</span><span class="p">,</span><span class="s1">&#39;displ&#39;</span><span class="p">))</span>
+                <span class="c1"># Check eigenvectors</span>
+                <span class="k">print</span> <span class="s1">&#39;SupercellPhonons.Checking eigenvectors at&#39;</span><span class="p">,</span><span class="n">q</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">MM</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">U</span><span class="p">),</span><span class="n">SCDM</span><span class="o">.</span><span class="n">FCtilde</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">U</span><span class="p">))</span>
+                <span class="n">const</span> <span class="o">=</span> <span class="n">PC</span><span class="o">.</span><span class="n">hbar2SI</span><span class="o">*</span><span class="p">(</span><span class="mf">1e20</span><span class="o">/</span><span class="p">(</span><span class="n">PC</span><span class="o">.</span><span class="n">eV2Joule</span><span class="o">*</span><span class="n">PC</span><span class="o">.</span><span class="n">amu2kg</span><span class="p">))</span><span class="o">**</span><span class="mf">0.5</span>
+                <span class="n">hw2</span> <span class="o">=</span> <span class="n">const</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span> <span class="c1"># Units in eV</span>
+                <span class="k">print</span> <span class="s1">&#39; ... Allclose=&#39;</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">hw</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">hw2</span><span class="p">),</span><span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span><span class="n">rtol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+                <span class="n">ncf</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+            <span class="n">evals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hw</span>
+            <span class="n">evecsRe</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">real</span>
+            <span class="n">evecsIm</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">imag</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+        <span class="c1"># Sort eigenvalues to connect crossing bands?</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">sorting</span><span class="p">:</span>
+            <span class="n">evals</span> <span class="o">=</span> <span class="n">SortBands</span><span class="p">(</span><span class="n">evals</span><span class="p">)</span>
+        <span class="c1"># Produce nice plots if labels exist</span>
+        <span class="k">if</span> <span class="n">qlabels</span><span class="p">:</span>
+            <span class="n">PlotPhononBands</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Phonons.agr&#39;</span><span class="p">,</span><span class="n">dq</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">evals</span><span class="p">[:]),</span><span class="n">qticks</span><span class="p">)</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>        
+
+    <span class="c1"># Compute e-ph couplings</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">kfile</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">qfile</span><span class="p">:</span>
+        <span class="n">SCDM</span><span class="o">.</span><span class="n">ReadGradients</span><span class="p">(</span><span class="n">AbsEref</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">ncf</span> <span class="o">=</span> <span class="n">NC4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/EPH.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;kpts&#39;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">kpts</span><span class="p">))</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;qpts&#39;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">qpts</span><span class="p">))</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;modes&#39;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">hw</span><span class="p">))</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;nspin&#39;</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">nspin</span><span class="p">)</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;bands&#39;</span><span class="p">,</span><span class="n">SCDM</span><span class="o">.</span><span class="n">rednao</span><span class="p">)</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;vector&#39;</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">kgrid</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;kpts&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;kpts&#39;</span><span class="p">,</span><span class="s1">&#39;vector&#39;</span><span class="p">))</span>
+        <span class="n">kgrid</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">kpts</span>
+        <span class="n">qgrid</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;qpts&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;qpts&#39;</span><span class="p">,</span><span class="s1">&#39;vector&#39;</span><span class="p">))</span>
+        <span class="n">qgrid</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">qpts</span>
+        <span class="n">evalfkq</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;evalfkq&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;kpts&#39;</span><span class="p">,</span><span class="s1">&#39;qpts&#39;</span><span class="p">,</span><span class="s1">&#39;nspin&#39;</span><span class="p">,</span><span class="s1">&#39;bands&#39;</span><span class="p">))</span>
+        <span class="c1"># First (second) band index n (n&#39;) is the initial (final) state, i.e.,</span>
+        <span class="c1"># Mkq(k,q,mode,spin,n,n&#39;) := &lt; n&#39;,k+q | dV_q(mode) | n,k &gt;</span>
+        <span class="n">MkqAbs</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;Mkqabs&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;kpts&#39;</span><span class="p">,</span><span class="s1">&#39;qpts&#39;</span><span class="p">,</span><span class="s1">&#39;modes&#39;</span><span class="p">,</span><span class="s1">&#39;nspin&#39;</span><span class="p">,</span><span class="s1">&#39;bands&#39;</span><span class="p">,</span><span class="s1">&#39;bands&#39;</span><span class="p">))</span>
+        <span class="n">GkqAbs</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;Gkqabs&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,(</span><span class="s1">&#39;kpts&#39;</span><span class="p">,</span><span class="s1">&#39;qpts&#39;</span><span class="p">,</span><span class="s1">&#39;modes&#39;</span><span class="p">,</span><span class="s1">&#39;nspin&#39;</span><span class="p">,</span><span class="s1">&#39;bands&#39;</span><span class="p">,</span><span class="s1">&#39;bands&#39;</span><span class="p">))</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+        <span class="c1"># Loop over k-points</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kpts</span><span class="p">):</span>
+            <span class="n">kpts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="c1"># Compute initial electronic states</span>
+            <span class="n">evi</span><span class="p">,</span><span class="n">eveci</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">ComputeElectronStates</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="c1"># Loop over q-points</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">q</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">qpts</span><span class="p">):</span>
+                <span class="c1"># Compute phonon modes</span>
+                <span class="n">hw</span><span class="p">,</span><span class="n">U</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">ComputePhononModes_q</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="c1"># Compute final electronic states</span>
+                <span class="n">evf</span><span class="p">,</span><span class="n">evecf</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">ComputeElectronStates</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="n">q</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">evalfkq</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">evf</span>
+                <span class="c1"># Compute electron-phonon couplings</span>
+                <span class="n">m</span><span class="p">,</span><span class="n">g</span> <span class="o">=</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">ComputeEPHcouplings_kq</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">q</span><span class="p">)</span> <span class="c1"># (modes,nspin,bands,bands)</span>
+                <span class="c1"># Data to file</span>
+                <span class="c1"># M (modes,spin,i,l) = m(modes,k,j) init(i,j) final(k,l)</span>
+                <span class="c1">#                            0 1 2       0,1        0 1</span>
+                <span class="c1">#                                ^-------^</span>
+                <span class="c1">#                              ^----------------------^</span>
+                <span class="k">for</span> <span class="n">ispin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">SCDM</span><span class="o">.</span><span class="n">nspin</span><span class="p">):</span>
+                    <span class="n">evecfd</span> <span class="o">=</span> <span class="n">MM</span><span class="o">.</span><span class="n">dagger</span><span class="p">(</span><span class="n">evecf</span><span class="p">[</span><span class="n">ispin</span><span class="p">])</span> <span class="c1"># (bands,bands)</span>
+                    <span class="n">M</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">m</span><span class="p">[:,</span><span class="n">ispin</span><span class="p">],</span><span class="n">eveci</span><span class="p">[</span><span class="n">ispin</span><span class="p">],</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span><span class="n">evecfd</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">G</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">g</span><span class="p">[:,</span><span class="n">ispin</span><span class="p">],</span><span class="n">eveci</span><span class="p">[</span><span class="n">ispin</span><span class="p">],</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span><span class="n">evecfd</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">MkqAbs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,:,</span><span class="n">ispin</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+                    <span class="n">GkqAbs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,:,</span><span class="n">ispin</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+                <span class="n">ncf</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">path</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.3.0-6',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

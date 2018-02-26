@@ -1,0 +1,307 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Examples &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="index.html"/>
+        <link rel="next" title="FAQ" href="faq.html"/>
+        <link rel="prev" title="Installation" href="install.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#au-fcc">Au FCC</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#electrons">Electrons</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phonons">Phonons</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference-results">Reference results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#auh2">AuH2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#na-bcc">Na BCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nacl">NaCl</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="examples">
+<span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="au-fcc">
+<h2>Au FCC<a class="headerlink" href="#au-fcc" title="Permalink to this headline">¶</a></h2>
+<p>Phonon band structure for Au (see &#8216;Examples/Phonon_bands/Au_FCC&#8217;).</p>
+<p>Lattice parameter a = 4.08 Å and a 6x6x6 repetition of the primitive cell. Main computational settings:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>PAO.EnergyShift <span class="m">0</span>.01 Ry
+PAO.BasisSize   DZP
+XC.functional   GGA
+XC.authors      PBE
+MeshCutoff      <span class="m">500</span>. Ry
+MD.FCDispl      <span class="m">0</span>.02 Ang
+</pre></div>
+</div>
+<div class="section" id="electrons">
+<h3>Electrons<a class="headerlink" href="#electrons" title="Permalink to this headline">¶</a></h3>
+<p><strong>Band structure</strong></p>
+<a class="reference internal image-reference" href="_images/Au_FCC_Electrons.png"><img alt="electronic band structure" class="align-center" src="_images/Au_FCC_Electrons.png" style="width: 604.8px; height: 406.8px;" /></a>
+<p><strong>Desity of states</strong></p>
+<p>Density of states (DOS) sampled on a grid of 64x64x64 k-points:</p>
+<a class="reference internal image-reference" href="_images/ElectronDOS-AuFCC.png"><img alt="electronic density of states" class="align-center" src="_images/ElectronDOS-AuFCC.png" style="width: 601.2px; height: 425.7px;" /></a>
+</div>
+<div class="section" id="phonons">
+<h3>Phonons<a class="headerlink" href="#phonons" title="Permalink to this headline">¶</a></h3>
+<p><strong>Band structure</strong></p>
+<p>Phonon band structure computed with different force cutoff radii r = 5.0, 7.0, 9.0 Å:</p>
+<a class="reference internal image-reference" href="_images/AuFCC_r5.0_Phonons.png"><img alt="phonon band structure with force cutoff radii of 5.0 angstroms" class="align-center" src="_images/AuFCC_r5.0_Phonons.png" style="width: 529.6px; height: 361.6px;" /></a>
+<a class="reference internal image-reference" href="_images/AuFCC_r7.0_Phonons.png"><img alt="phonon band structure with force cutoff radii of 7.0 angstroms" class="align-center" src="_images/AuFCC_r7.0_Phonons.png" style="width: 529.6px; height: 361.6px;" /></a>
+<a class="reference internal image-reference" href="_images/AuFCC_r9.0_Phonons.png"><img alt="phonon band structure with force cutoff radii of 9.0 angstroms" class="align-center" src="_images/AuFCC_r9.0_Phonons.png" style="width: 529.6px; height: 361.6px;" /></a>
+<p><strong>Desity of states</strong></p>
+<p>Density of states (DOS) sampled on a grid of 64x64x64 k-points:</p>
+<a class="reference internal image-reference" href="_images/PhononDOS-AuFCC.png"><img alt="phonon density of states" class="align-center" src="_images/PhononDOS-AuFCC.png" style="width: 614.7px; height: 421.2px;" /></a>
+</div>
+<div class="section" id="reference-results">
+<h3>Reference results<a class="headerlink" href="#reference-results" title="Permalink to this headline">¶</a></h3>
+<p>Lynn, J. W.; Smith, H. G. &amp; Nicklow, R. M. <em>Lattice-dynamics of gold</em>, Phys. Rev B <strong>8</strong>, <a class="reference external" href="https://journals.aps.org/prb/abstract/10.1103/PhysRevB.8.3493">3493-3499 (1973)</a>.</p>
+<a class="reference internal image-reference" href="_images/Lynn_1973.png"><img alt="reference phonon density of statesband structure" class="align-center" src="_images/Lynn_1973.png" style="width: 1231.2px; height: 531.0px;" /></a>
+</div>
+</div>
+<div class="section" id="auh2">
+<h2>AuH2<a class="headerlink" href="#auh2" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="na-bcc">
+<h2>Na BCC<a class="headerlink" href="#na-bcc" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="nacl">
+<h2>NaCl<a class="headerlink" href="#nacl" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="faq.html" class="btn btn-neutral float-right" title="FAQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.3.0-6',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

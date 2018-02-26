@@ -1,0 +1,380 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>&lt;no title&gt; &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../index.html"/>
+        <link rel="up" title="Inelastica package" href="Inelastica.html"/>
+        <link rel="next" title="&lt;no title&gt;" href="Inelastica.STM.html"/>
+        <link rel="prev" title="&lt;no title&gt;" href="Inelastica.NEGF.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="Inelastica.html">Inelastica package</a> &raquo;</li>
+        
+      <li>&lt;no title&gt;</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-gen/Inelastica.Phonons.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-Inelastica.Phonons"></span><p>A completely rewritten Phonons.py script with various improvements
+and additional flexibility:</p>
+<ul class="simple">
+<li>The dynamic atoms no longer need to be a complete range(FCfirst,FClast+1).
+Any arbitrary list of atoms (options.DynamicAtoms) can now be specified.</li>
+<li>The displacement amplitude in the various FCrun and OSrun directories
+may correspond to different values.</li>
+<li>The code accepts that some atoms may have been displaced in several FCrun directories.
+Only the first instance (first FCrun directory) encountered is read/used.</li>
+<li>The auxiliary NetCDF file has been eliminated by simply interchanging 
+the loops over gradients and phonon modes. Thus, only one gradient
+need to be present in the memory at one time.</li>
+</ul>
+<p>Thomas Frederiksen, August 2014</p>
+<p>Additional improvements to facilitate large-scale calcuations:</p>
+<ul class="simple">
+<li>The code allows to specify the range of dynamic atoms for which the 
+electron-phonon coupling elements are evaluated (flags:&#8211;EPHfirst,&#8211;EPHlast)</li>
+<li>It is possible to restart the code (flag:&#8211;Restart) by using the NetCDF output obtained 
+from a previous calculation as checkpoint file (flag:&#8211;CheckPointNetCDF)</li>
+<li>The matrix of electron-phonon coupling elements can be evaluated in 
+single precision to reduce disk space usage (flag:&#8211;SinglePrec).</li>
+</ul>
+<p>Daniele Stradi, April 2015</p>
+<dl class="class">
+<dt id="Inelastica.Phonons.DynamicalMatrix">
+<em class="property">class </em><code class="descclassname">Inelastica.Phonons.</code><code class="descname">DynamicalMatrix</code><span class="sig-paren">(</span><em>fdfs</em>, <em>DynamicAtoms=None</em>, <em>TSrun=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#DynamicalMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.DynamicalMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Inelastica.Phonons.DynamicalMatrix.ApplySumRule">
+<code class="descname">ApplySumRule</code><span class="sig-paren">(</span><em>FC</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#DynamicalMatrix.ApplySumRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.DynamicalMatrix.ApplySumRule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.Phonons.DynamicalMatrix.ComputeEPHcouplings">
+<code class="descname">ComputeEPHcouplings</code><span class="sig-paren">(</span><em>PBCFirst</em>, <em>PBCLast</em>, <em>EPHAtoms</em>, <em>Restart</em>, <em>CheckPointNetCDF</em>, <em>WriteGradients=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#DynamicalMatrix.ComputeEPHcouplings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.DynamicalMatrix.ComputeEPHcouplings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.Phonons.DynamicalMatrix.ComputePhononModes">
+<code class="descname">ComputePhononModes</code><span class="sig-paren">(</span><em>FC</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#DynamicalMatrix.ComputePhononModes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.DynamicalMatrix.ComputePhononModes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.Phonons.DynamicalMatrix.GetGradient">
+<code class="descname">GetGradient</code><span class="sig-paren">(</span><em>Atom</em>, <em>Axis</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#DynamicalMatrix.GetGradient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.DynamicalMatrix.GetGradient" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.Phonons.DynamicalMatrix.PrepareGradients">
+<code class="descname">PrepareGradients</code><span class="sig-paren">(</span><em>onlySdir</em>, <em>kpoint</em>, <em>DeviceFirst</em>, <em>DeviceLast</em>, <em>AbsEref</em>, <em>atype</em>, <em>TSrun=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#DynamicalMatrix.PrepareGradients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.DynamicalMatrix.PrepareGradients" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.Phonons.DynamicalMatrix.SetDynamicAtoms">
+<code class="descname">SetDynamicAtoms</code><span class="sig-paren">(</span><em>DynamicAtoms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#DynamicalMatrix.SetDynamicAtoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.DynamicalMatrix.SetDynamicAtoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.Phonons.DynamicalMatrix.SetMasses">
+<code class="descname">SetMasses</code><span class="sig-paren">(</span><em>Isotopes=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#DynamicalMatrix.SetMasses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.DynamicalMatrix.SetMasses" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.Phonons.DynamicalMatrix.WriteOutput">
+<code class="descname">WriteOutput</code><span class="sig-paren">(</span><em>label</em>, <em>SinglePrec</em>, <em>GammaPoint</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#DynamicalMatrix.WriteOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.DynamicalMatrix.WriteOutput" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.Phonons.FCrun">
+<em class="property">class </em><code class="descclassname">Inelastica.Phonons.</code><code class="descname">FCrun</code><span class="sig-paren">(</span><em>runfdf</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#FCrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.FCrun" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Inelastica.Phonons.FCrun.GetOrbitalIndices">
+<code class="descname">GetOrbitalIndices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#FCrun.GetOrbitalIndices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.FCrun.GetOrbitalIndices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.Phonons.GetOptions">
+<code class="descclassname">Inelastica.Phonons.</code><code class="descname">GetOptions</code><span class="sig-paren">(</span><em>argv</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#GetOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.GetOptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.Phonons.OSrun">
+<em class="property">class </em><code class="descclassname">Inelastica.Phonons.</code><code class="descname">OSrun</code><span class="sig-paren">(</span><em>onlySdir</em>, <em>kpoint</em>, <em>atype=&lt;type 'complex'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#OSrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.OSrun" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.Phonons.OTSrun">
+<em class="property">class </em><code class="descclassname">Inelastica.Phonons.</code><code class="descname">OTSrun</code><span class="sig-paren">(</span><em>runfdf</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#OTSrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.OTSrun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Inelastica.Phonons.FCrun" title="Inelastica.Phonons.FCrun"><code class="xref py py-class docutils literal"><span class="pre">Inelastica.Phonons.FCrun</span></code></a></p>
+<dl class="method">
+<dt id="Inelastica.Phonons.OTSrun.GetOrbitalIndices">
+<code class="descname">GetOrbitalIndices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.Phonons.OTSrun.GetOrbitalIndices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.Phonons.WriteAXSFFiles">
+<code class="descclassname">Inelastica.Phonons.</code><code class="descname">WriteAXSFFiles</code><span class="sig-paren">(</span><em>filename</em>, <em>xyz</em>, <em>anr</em>, <em>hw</em>, <em>U</em>, <em>FCfirst</em>, <em>FClast</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#WriteAXSFFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.WriteAXSFFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the vibrational normal coordinates in xcrysden axsf-format (isolated molecule)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.Phonons.WriteAXSFFilesPer">
+<code class="descclassname">Inelastica.Phonons.</code><code class="descname">WriteAXSFFilesPer</code><span class="sig-paren">(</span><em>filename</em>, <em>vectors</em>, <em>xyz</em>, <em>anr</em>, <em>hw</em>, <em>U</em>, <em>FCfirst</em>, <em>FClast</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#WriteAXSFFilesPer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.WriteAXSFFilesPer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the vibrational normal coordinates in xcrysden axsf-format (periodic structure)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.Phonons.WriteFreqFile">
+<code class="descclassname">Inelastica.Phonons.</code><code class="descname">WriteFreqFile</code><span class="sig-paren">(</span><em>filename</em>, <em>hw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#WriteFreqFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.WriteFreqFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.Phonons.WriteVibDOSFile">
+<code class="descclassname">Inelastica.Phonons.</code><code class="descname">WriteVibDOSFile</code><span class="sig-paren">(</span><em>filename</em>, <em>hw</em>, <em>type='Gaussian'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#WriteVibDOSFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.WriteVibDOSFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vibrational DOS with Gaussian or Lorentzian broadening</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.Phonons.main">
+<code class="descclassname">Inelastica.Phonons.</code><code class="descname">main</code><span class="sig-paren">(</span><em>options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/Phonons.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.Phonons.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Inelastica.STM.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Inelastica.NEGF.html" class="btn btn-neutral" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.3.0-6',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

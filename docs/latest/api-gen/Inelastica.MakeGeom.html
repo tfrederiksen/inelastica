@@ -1,0 +1,517 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>&lt;no title&gt; &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../index.html"/>
+        <link rel="up" title="Inelastica package" href="Inelastica.html"/>
+        <link rel="next" title="&lt;no title&gt;" href="Inelastica.MiscMath.html"/>
+        <link rel="prev" title="&lt;no title&gt;" href="Inelastica.EigenChannels.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="Inelastica.html">Inelastica package</a> &raquo;</li>
+        
+      <li>&lt;no title&gt;</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-gen/Inelastica.MakeGeom.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-Inelastica.MakeGeom"></span><p>Routines to read, write and manipulate geometries.</p>
+<dl class="function">
+<dt id="Inelastica.MakeGeom.CrossProd">
+<code class="descclassname">Inelastica.MakeGeom.</code><code class="descname">CrossProd</code><span class="sig-paren">(</span><em>A</em>, <em>B</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#CrossProd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.CrossProd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the cross product of two geometric vectors</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.MakeGeom.Geom">
+<em class="property">class </em><code class="descclassname">Inelastica.MakeGeom.</code><code class="descname">Geom</code><span class="sig-paren">(</span><em>fn=''</em>, <em>BufferAtoms=array([]</em>, <em>dtype=float64)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Geom class:</dt>
+<dd>pbc : repetition vectors
+xyz : list of positions
+snr : list of Siesta number for each atom
+anr : list of atomic numbers
+natoms : number of atoms</dd>
+</dl>
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.AlignPlane">
+<code class="descname">AlignPlane</code><span class="sig-paren">(</span><em>v1, v2, normal=[0, 0, 1]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.AlignPlane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.AlignPlane" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.BuildOnlyS">
+<code class="descname">BuildOnlyS</code><span class="sig-paren">(</span><em>displacement=0.02</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.BuildOnlyS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.BuildOnlyS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new geometry object with 7 times as many atoms</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.CalcZmatrix">
+<code class="descname">CalcZmatrix</code><span class="sig-paren">(</span><em>first</em>, <em>last</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.CalcZmatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.CalcZmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Zmatrix for a molecule (SIESTA numbering)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.GetGeometricCenter">
+<code class="descname">GetGeometricCenter</code><span class="sig-paren">(</span><em>Subset=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.GetGeometricCenter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.GetGeometricCenter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.MoveInsideUnitCell">
+<code class="descname">MoveInsideUnitCell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.MoveInsideUnitCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.MoveInsideUnitCell" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.PasteElectrodeLayers">
+<code class="descname">PasteElectrodeLayers</code><span class="sig-paren">(</span><em>BlockSize</em>, <em>AtomsPerLayer</em>, <em>LayersLeft</em>, <em>LayersRight</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.PasteElectrodeLayers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.PasteElectrodeLayers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy atoms from range(BlockSize) as many times as specified by
+BlocksLeft/BlocksRight, and including enlargement of the unit cell.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.PasteLists">
+<code class="descname">PasteLists</code><span class="sig-paren">(</span><em>AddLeftList=[]</em>, <em>AddRightList=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.PasteLists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.PasteLists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.PlaceInXYplane">
+<code class="descname">PlaceInXYplane</code><span class="sig-paren">(</span><em>atomindices</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.PlaceInXYplane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.PlaceInXYplane" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.ShiftPeriodicCellAlongZ">
+<code class="descname">ShiftPeriodicCellAlongZ</code><span class="sig-paren">(</span><em>IndexShift</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.ShiftPeriodicCellAlongZ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.ShiftPeriodicCellAlongZ" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.StretchAlongEigenvector">
+<code class="descname">StretchAlongEigenvector</code><span class="sig-paren">(</span><em>ncfile</em>, <em>modeindex</em>, <em>displacement=0.02116708</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.StretchAlongEigenvector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.StretchAlongEigenvector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displace a geometry along a calculated eigenmode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.addAtom">
+<code class="descname">addAtom</code><span class="sig-paren">(</span><em>xyz, snr, anr, constrained=[0, 0, 0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.addAtom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.addAtom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add atom</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.addGeom">
+<code class="descname">addGeom</code><span class="sig-paren">(</span><em>Other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.addGeom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.addGeom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.findContactsAndDevice">
+<code class="descname">findContactsAndDevice</code><span class="sig-paren">(</span><em>AtomsPerLayer</em>, <em>tol=0.0001</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.findContactsAndDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.findContactsAndDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>If there exists AtomsPerLayer of atoms with the same z-coordinate
+these are assumed to be belonging to the contacts.
+The remaining atoms are taken to be the device.
+The left contact atoms are assumed to appear before the device,
+and the right contact atoms after the device.</p>
+<p>The function identifies and sets the following variables:
+- leftContactList
+- rightContactList
+- deviceList
+- zLeftContact
+- ContactSeparation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.move">
+<code class="descname">move</code><span class="sig-paren">(</span><em>dr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move atoms by dr</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.move2origo">
+<code class="descname">move2origo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.move2origo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.move2origo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.prependAtom">
+<code class="descname">prependAtom</code><span class="sig-paren">(</span><em>xyz</em>, <em>snr</em>, <em>anr</em>, <em>index=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.prependAtom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.prependAtom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add atom</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.prependGeom">
+<code class="descname">prependGeom</code><span class="sig-paren">(</span><em>Other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.prependGeom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.prependGeom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.readCONTCAR">
+<code class="descname">readCONTCAR</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.readCONTCAR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.readCONTCAR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read geometry from VASP CONTCAR file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.readFDF">
+<code class="descname">readFDF</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.readFDF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.readFDF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.readMKL">
+<code class="descname">readMKL</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.readMKL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.readMKL" title="Permalink to this definition">¶</a></dt>
+<dd><p>not implemented yet</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.readSTRUCT_OUT">
+<code class="descname">readSTRUCT_OUT</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.readSTRUCT_OUT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.readSTRUCT_OUT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.readXV">
+<code class="descname">readXV</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.readXV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.readXV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read XV file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.readXYZ">
+<code class="descname">readXYZ</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.readXYZ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.readXYZ" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.repeteGeom">
+<code class="descname">repeteGeom</code><span class="sig-paren">(</span><em>vec</em>, <em>rep=3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.repeteGeom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.repeteGeom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.reverse">
+<code class="descname">reverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.reverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.reverse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.rmAtom">
+<code class="descname">rmAtom</code><span class="sig-paren">(</span><em>rmnr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.rmAtom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.rmAtom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the offending atom</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.rotate">
+<code class="descname">rotate</code><span class="sig-paren">(</span><em>axisvector</em>, <em>angle</em>, <em>RotationCenter=None</em>, <em>RotateSubset=None</em>, <em>Degrees=True</em>, <em>RotateLatticeVectors=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.rotate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.roundDigits">
+<code class="descname">roundDigits</code><span class="sig-paren">(</span><em>digits=9</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.roundDigits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.roundDigits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.sort">
+<code class="descname">sort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.sort" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.stretch2NewContactSeparation">
+<code class="descname">stretch2NewContactSeparation</code><span class="sig-paren">(</span><em>NewContactSeparation</em>, <em>AtomsPerLayer</em>, <em>ListL=None</em>, <em>ListR=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.stretch2NewContactSeparation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.stretch2NewContactSeparation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stretch system to NewContactSeparation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.writeFDF">
+<code class="descname">writeFDF</code><span class="sig-paren">(</span><em>fn, rep=[1, 1, 1]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.writeFDF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.writeFDF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write STRUCT.fdf file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.writeFDFZmat">
+<code class="descname">writeFDFZmat</code><span class="sig-paren">(</span><em>fn, first=0, last=0, rep=[1, 1, 1]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.writeFDFZmat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.writeFDFZmat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write STRUCT.fdf file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.writeMKL">
+<code class="descname">writeMKL</code><span class="sig-paren">(</span><em>fn, rep=[1, 1, 1]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.writeMKL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.writeMKL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write .mkl file with unitcell repeated rep times</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.writePOSCAR">
+<code class="descname">writePOSCAR</code><span class="sig-paren">(</span><em>fn</em>, <em>constrained=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.writePOSCAR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.writePOSCAR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write POSCAR coordinate file for VASP</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.writeXV">
+<code class="descname">writeXV</code><span class="sig-paren">(</span><em>fn, rep=[1, 1, 1]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.writeXV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.writeXV" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Inelastica.MakeGeom.Geom.writeXYZ">
+<code class="descname">writeXYZ</code><span class="sig-paren">(</span><em>fn, rep=[1, 1, 1], write_ghosts=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#Geom.writeXYZ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.Geom.writeXYZ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write .mkl file with unitcell repeated rep times</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.MakeGeom.GetAngle">
+<code class="descclassname">Inelastica.MakeGeom.</code><code class="descname">GetAngle</code><span class="sig-paren">(</span><em>r1</em>, <em>r2</em>, <em>r3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#GetAngle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.GetAngle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.MakeGeom.GetDihedral">
+<code class="descclassname">Inelastica.MakeGeom.</code><code class="descname">GetDihedral</code><span class="sig-paren">(</span><em>r1</em>, <em>r2</em>, <em>r3</em>, <em>r4</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#GetDihedral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.GetDihedral" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.MakeGeom.GetDist">
+<code class="descclassname">Inelastica.MakeGeom.</code><code class="descname">GetDist</code><span class="sig-paren">(</span><em>r1</em>, <em>r2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#GetDist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.GetDist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.MakeGeom.convert">
+<code class="descclassname">Inelastica.MakeGeom.</code><code class="descname">convert</code><span class="sig-paren">(</span><em>infile, outfile, rep=[1, 1, 1], MoveInsideUnitCell=False, RoundOff=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads and writes according to the file extensions specified.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.MakeGeom.interpolateGeom">
+<code class="descclassname">Inelastica.MakeGeom.</code><code class="descname">interpolateGeom</code><span class="sig-paren">(</span><em>g0</em>, <em>g1</em>, <em>newlength</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#interpolateGeom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.interpolateGeom" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Interpolate (extra-) to give new length</dt>
+<dd>g0 has to have findContacts data</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.MakeGeom.repeteANI">
+<code class="descclassname">Inelastica.MakeGeom.</code><code class="descname">repeteANI</code><span class="sig-paren">(</span><em>ANIinfile, XVinfile, outfile, rep=[1, 1, 1]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/MakeGeom.html#repeteANI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.MakeGeom.repeteANI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a new ANI-file with cell repetitions</p>
+</dd></dl>
+
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Inelastica.MiscMath.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Inelastica.EigenChannels.html" class="btn btn-neutral" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.3.0-6',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
