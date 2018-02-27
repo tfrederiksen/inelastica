@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-12
+                1.3.0-49
               </div>
             
           
@@ -170,19 +170,27 @@
            <div itemprop="articleBody">
             
   <h1>Source code for Inelastica.ValueCheck</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Simple case for allowing the newer print function (Python3 compliant)</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ValueCheck (:mod:`Inelastica.ValueCheck`)</span>
+<span class="sd">=========================================</span>
+
 <span class="sd">Contains general quantities that are used to do checks in the </span>
-<span class="sd">Inelastica package.</span>
+<span class="sd">`Inelastica`_ package.</span>
 
 <span class="sd">It allows users to edit the criterias of crashes without editing</span>
 <span class="sd">the code.</span>
 
-<span class="sd">Currently if this is to be used with Inelastica or pyTBT, it should</span>
+<span class="sd">Currently if this is to be used with `Inelastica`_ or `pyTBT`, it should</span>
 <span class="sd">be in a wrapper call which emulates the options.</span>
+
+<span class="sd">.. currentmodule:: Inelastica.ValueCheck</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Simple case for allowing the newer print function (Python3 compliant)</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 
 <span class="kn">import</span> <span class="nn">sys</span> <span class="kn">as</span> <span class="nn">s</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">_np</span>
@@ -222,12 +230,12 @@
 <span class="k">del</span> <span class="n">_s</span>
 
 
-<div class="viewcode-block" id="GetCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.GetCheck">[docs]</a><span class="k">def</span> <span class="nf">GetCheck</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="GetCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.GetCheck">[docs]</a><span class="k">def</span> <span class="nf">GetCheck</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">_check</span></div>
     <span class="k">return</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="EditCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.EditCheck">[docs]</a><span class="k">def</span> <span class="nf">EditCheck</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="EditCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.EditCheck">[docs]</a><span class="k">def</span> <span class="nf">EditCheck</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets the check of &quot;name&quot; to the value &quot;value&quot;.</span>
 <span class="sd">    It will notify the user so that any log files will retain</span>
@@ -243,7 +251,7 @@
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         New value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="Check"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.Check">[docs]</a><span class="k">def</span> <span class="nf">Check</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">msgs</span><span class="p">):</span>
+<div class="viewcode-block" id="Check"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.Check">[docs]</a><span class="k">def</span> <span class="nf">Check</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">msgs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks the value and exits if the value &quot;val&quot; is</span>
 <span class="sd">    above the one specified</span>
@@ -267,7 +275,7 @@
         <span class="k">raise</span> <span class="ne">ArithmeticError</span><span class="p">(</span><span class="s2">&quot;Criteria not met. Please check output...&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="OptionsCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.OptionsCheck">[docs]</a><span class="k">def</span> <span class="nf">OptionsCheck</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">exe</span><span class="p">):</span>
+<div class="viewcode-block" id="OptionsCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.OptionsCheck">[docs]</a><span class="k">def</span> <span class="nf">OptionsCheck</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">exe</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic routine for adjusting most used options for routines.</span>
 <span class="sd">    I.e. Inelastica/EigenChannels/pyTBT.</span>
@@ -453,7 +461,7 @@
                 <span class="n">opts</span><span class="o">.</span><span class="n">Elist</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">Emin</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">Emax</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="GetPositional"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.GetPositional">[docs]</a><span class="k">def</span> <span class="nf">GetPositional</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;You have not specified any positional argument&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="GetPositional"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.GetPositional">[docs]</a><span class="k">def</span> <span class="nf">GetPositional</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;You have not specified any positional argument&quot;</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="n">pos</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
@@ -472,7 +480,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
 
     </p>
   </div>
@@ -494,7 +502,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-12',
+            VERSION:'1.3.0-49',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

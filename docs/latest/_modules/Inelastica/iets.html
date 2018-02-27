@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-12
+                1.3.0-49
               </div>
             
           
@@ -170,7 +170,18 @@
            <div itemprop="articleBody">
             
   <h1>Source code for Inelastica.iets</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">Inelastica.NEGF</span> <span class="kn">as</span> <span class="nn">NEGF</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">IETS (:mod:`Inelastica.iets`)</span>
+<span class="sd">=============================</span>
+
+<span class="sd">Inelastic transport module</span>
+
+<span class="sd">.. currentmodule:: Inelastica.iets</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">Inelastica.NEGF</span> <span class="kn">as</span> <span class="nn">NEGF</span>
 <span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
 <span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
 <span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
@@ -187,7 +198,7 @@
 <span class="c1"># DIRECTLY in python</span>
 
 
-<div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># if text string is specified, convert to list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">VC</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
         <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -273,7 +284,7 @@
 <span class="c1">########################################################</span>
 <span class="c1">##################### Main routine #####################</span>
 <span class="c1">########################################################</span>
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
     <span class="n">VC</span><span class="o">.</span><span class="n">OptionsCheck</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="s1">&#39;Inelastica&#39;</span><span class="p">)</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;Inelastica&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
@@ -378,7 +389,7 @@
 <span class="c1">########################################################</span>
 
 
-<div class="viewcode-block" id="IntegrityCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.IntegrityCheck">[docs]</a><span class="k">def</span> <span class="nf">IntegrityCheck</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">GF</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">NCfile</span><span class="p">):</span>
+<div class="viewcode-block" id="IntegrityCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.IntegrityCheck">[docs]</a><span class="k">def</span> <span class="nf">IntegrityCheck</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">GF</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">NCfile</span><span class="p">):</span>
     <span class="c1"># Perform consistency checks for device region in</span>
     <span class="c1"># PH and TS calculations by comparing coordinates</span>
     <span class="c1"># and atom numbers</span>
@@ -459,7 +470,7 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Inelastica: Error - inconsistency detected for device region.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="calcTraces"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.calcTraces">[docs]</a><span class="k">def</span> <span class="nf">calcTraces</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">GF1</span><span class="p">,</span> <span class="n">GF2</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">NCfile</span><span class="p">,</span> <span class="n">ihw</span><span class="p">):</span>
+<div class="viewcode-block" id="calcTraces"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.calcTraces">[docs]</a><span class="k">def</span> <span class="nf">calcTraces</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">GF1</span><span class="p">,</span> <span class="n">GF2</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">NCfile</span><span class="p">,</span> <span class="n">ihw</span><span class="p">):</span>
     <span class="c1"># Calculate various traces over the electronic structure</span>
     <span class="c1"># Electron-phonon couplings</span>
     <span class="n">ihw</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ihw</span><span class="p">)</span>
@@ -534,7 +545,7 @@
         <span class="n">GF1</span><span class="o">.</span><span class="n">dSinel</span><span class="p">[</span><span class="n">ihw</span><span class="p">]</span> <span class="o">=</span> <span class="n">NEGF</span><span class="o">.</span><span class="n">AssertReal</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">Qlambda</span><span class="o">+</span><span class="n">MM</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">OneMinusTwoT</span><span class="p">,</span> <span class="n">Tlambda1</span><span class="p">)),</span> <span class="s1">&#39;dSinel[</span><span class="si">%i</span><span class="s1">]&#39;</span><span class="o">%</span><span class="n">ihw</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="calcIETS"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.calcIETS">[docs]</a><span class="k">def</span> <span class="nf">calcIETS</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">GFp</span><span class="p">,</span> <span class="n">GFm</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">hw</span><span class="p">):</span>
+<div class="viewcode-block" id="calcIETS"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.calcIETS">[docs]</a><span class="k">def</span> <span class="nf">calcIETS</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">GFp</span><span class="p">,</span> <span class="n">GFm</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">hw</span><span class="p">):</span>
     <span class="c1"># Calculate product of electronic traces and voltage functions</span>
     <span class="k">print</span> <span class="s1">&#39;Inelastica.calcIETS: nHTp =&#39;</span><span class="p">,</span> <span class="n">GFp</span><span class="o">.</span><span class="n">nHT</span><span class="o">*</span><span class="n">PC</span><span class="o">.</span><span class="n">unitConv</span> <span class="c1"># OK</span>
     <span class="k">print</span> <span class="s1">&#39;Inelastica.calcIETS: nHTm =&#39;</span><span class="p">,</span> <span class="n">GFm</span><span class="o">.</span><span class="n">nHT</span><span class="o">*</span><span class="n">PC</span><span class="o">.</span><span class="n">unitConv</span> <span class="c1"># OK</span>
@@ -775,7 +786,7 @@
 
 
 <span class="c1">########################################################</span>
-<div class="viewcode-block" id="writeFGRrates"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.writeFGRrates">[docs]</a><span class="k">def</span> <span class="nf">writeFGRrates</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">GF</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">NCfile</span><span class="p">):</span>
+<div class="viewcode-block" id="writeFGRrates"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.writeFGRrates">[docs]</a><span class="k">def</span> <span class="nf">writeFGRrates</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">GF</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">NCfile</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;Inelastica.writeFGRrates: Computing FGR rates&#39;</span>
     <span class="c1"># Eigenchannels</span>
     <span class="n">GF</span><span class="o">.</span><span class="n">calcEigChan</span><span class="p">(</span><span class="n">channels</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">numchan</span><span class="p">)</span>
@@ -832,7 +843,7 @@
 <span class="c1"># Broadening due to Vrms</span>
 <span class="c1">################################################################</span>
 
-<div class="viewcode-block" id="Broaden"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.Broaden">[docs]</a><span class="k">def</span> <span class="nf">Broaden</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">VV</span><span class="p">,</span> <span class="n">II</span><span class="p">):</span>
+<div class="viewcode-block" id="Broaden"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.Broaden">[docs]</a><span class="k">def</span> <span class="nf">Broaden</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">VV</span><span class="p">,</span> <span class="n">II</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Broadening corresponding to Lock in measurements for the</span>
 <span class="sd">    conductance and IETS spectra. Also resample II, Pow, and nPh</span>
@@ -894,7 +905,7 @@
 <span class="c1">################################################################</span>
 
 
-<div class="viewcode-block" id="initNCfile"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.initNCfile">[docs]</a><span class="k">def</span> <span class="nf">initNCfile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
+<div class="viewcode-block" id="initNCfile"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.initNCfile">[docs]</a><span class="k">def</span> <span class="nf">initNCfile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
     <span class="s1">&#39;Initiate netCDF file&#39;</span>
     <span class="k">print</span> <span class="s1">&#39;Inelastica: Initializing nc-file&#39;</span>
     <span class="n">ncfile</span> <span class="o">=</span> <span class="n">NC4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">filename</span><span class="o">+</span><span class="s1">&#39;.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
@@ -913,7 +924,7 @@
     <span class="k">return</span> <span class="n">ncfile</span>
 
 
-<div class="viewcode-block" id="write2NCfile"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.write2NCfile">[docs]</a><span class="k">def</span> <span class="nf">write2NCfile</span><span class="p">(</span><span class="n">NCfile</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+<div class="viewcode-block" id="write2NCfile"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.write2NCfile">[docs]</a><span class="k">def</span> <span class="nf">write2NCfile</span><span class="p">(</span><span class="n">NCfile</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
     <span class="n">var</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
     <span class="n">dim1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">NCfile</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;hw&#39;</span><span class="p">][:])</span>
     <span class="n">dim2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">NCfile</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;V&#39;</span><span class="p">][:])</span>
@@ -928,7 +939,7 @@
     <span class="n">tmp</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">unit</span>
 
 
-<div class="viewcode-block" id="writeLOEData2Datafile"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.writeLOEData2Datafile">[docs]</a><span class="k">def</span> <span class="nf">writeLOEData2Datafile</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">nHT</span><span class="p">,</span> <span class="n">HT</span><span class="p">):</span>
+<div class="viewcode-block" id="writeLOEData2Datafile"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.writeLOEData2Datafile">[docs]</a><span class="k">def</span> <span class="nf">writeLOEData2Datafile</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">nHT</span><span class="p">,</span> <span class="n">HT</span><span class="p">):</span>
     <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;## Almost First Order Born Approximation (kbT=0)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;## hw(eV)      Trans        non-H-term (e/pi/hbar)   H-term</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -950,7 +961,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
 
     </p>
   </div>
@@ -972,7 +983,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-12',
+            VERSION:'1.3.0-49',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

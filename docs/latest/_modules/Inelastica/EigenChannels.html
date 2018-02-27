@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-12
+                1.3.0-49
               </div>
             
           
@@ -171,9 +171,15 @@
             
   <h1>Source code for Inelastica.EigenChannels</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Eigenchannels:</span>
-<span class="sd">1: Eigenchannels, method from Paulsson and Brandbyge PRB 2007</span>
-<span class="sd">2: Calculate &quot;bond&quot; currents</span>
+
+<span class="sd">Eigenchannels (:mod:`Inelastica.EigenChannels`)</span>
+<span class="sd">===============================================</span>
+
+<span class="sd">1. Eigenchannels, method from Paulsson and Brandbyge PRB 2007</span>
+<span class="sd">2. Calculate &quot;bond&quot; currents</span>
+
+<span class="sd">.. currentmodule:: Inelastica.EigenChannels</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">Inelastica.NEGF</span> <span class="kn">as</span> <span class="nn">NEGF</span>
@@ -197,7 +203,7 @@
 <span class="c1"># DIRECTLY in python</span>
 
 
-<div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># if text string is specified, convert to list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">VC</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
         <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -272,7 +278,7 @@
 <span class="c1">########################################################</span>
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
     <span class="n">VC</span><span class="o">.</span><span class="n">OptionsCheck</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="s1">&#39;EigenChannels&#39;</span><span class="p">)</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;EigenChannels&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
@@ -376,7 +382,7 @@
 <span class="c1">########################################################</span>
 
 
-<div class="viewcode-block" id="calcWF"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.calcWF">[docs]</a><span class="k">def</span> <span class="nf">calcWF</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">geom</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+<div class="viewcode-block" id="calcWF"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.calcWF">[docs]</a><span class="k">def</span> <span class="nf">calcWF</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">geom</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate wavefunction, returns:</span>
 <span class="sd">    YY : complex wavefunction on regular grid</span>
@@ -449,7 +455,7 @@
 <span class="c1">###################### Current densities #########################</span>
 
 
-<div class="viewcode-block" id="calcCurrent"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.calcCurrent">[docs]</a><span class="k">def</span> <span class="nf">calcCurrent</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+<div class="viewcode-block" id="calcCurrent"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.calcCurrent">[docs]</a><span class="k">def</span> <span class="nf">calcCurrent</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate current density in atomic bonds</span>
 <span class="sd">    Y : complex scattering state or</span>
@@ -484,7 +490,7 @@
 <span class="c1">########################################################</span>
 
 
-<div class="viewcode-block" id="writeCurrent"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.writeCurrent">[docs]</a><span class="k">def</span> <span class="nf">writeCurrent</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">geom</span><span class="p">,</span> <span class="n">Curr</span><span class="p">):</span>
+<div class="viewcode-block" id="writeCurrent"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.writeCurrent">[docs]</a><span class="k">def</span> <span class="nf">writeCurrent</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">geom</span><span class="p">,</span> <span class="n">Curr</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write bond currents to file</span>
 <span class="sd">    fn : Filename</span>
@@ -523,7 +529,7 @@
 <span class="c1">########################################################</span>
 
 
-<div class="viewcode-block" id="writenetcdf"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.writenetcdf">[docs]</a><span class="k">def</span> <span class="nf">writenetcdf</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">dstep</span><span class="p">):</span>
+<div class="viewcode-block" id="writenetcdf"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.writenetcdf">[docs]</a><span class="k">def</span> <span class="nf">writenetcdf</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">dstep</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    THF: Write eigenchannels to netcdf format</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -583,7 +589,7 @@
 <span class="c1">################# Write cube file ######################</span>
 
 
-<div class="viewcode-block" id="writecube"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.writecube">[docs]</a><span class="k">def</span> <span class="nf">writecube</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">dstep</span><span class="p">):</span>
+<div class="viewcode-block" id="writecube"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.writecube">[docs]</a><span class="k">def</span> <span class="nf">writecube</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">dstep</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write wavefunction to cube file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -612,7 +618,7 @@
 <span class="c1">################# Write wave function in macu format ######################</span>
 
 
-<div class="viewcode-block" id="writemacubin"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.writemacubin">[docs]</a><span class="k">def</span> <span class="nf">writemacubin</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">dstep</span><span class="p">):</span>
+<div class="viewcode-block" id="writemacubin"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.writemacubin">[docs]</a><span class="k">def</span> <span class="nf">writemacubin</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">dstep</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write molekel binary format</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -638,7 +644,7 @@
 <span class="c1">################ Write wave function in XSF format ##################################</span>
 
 
-<div class="viewcode-block" id="writeXSF"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.writeXSF">[docs]</a><span class="k">def</span> <span class="nf">writeXSF</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">dstep</span><span class="p">):</span>
+<div class="viewcode-block" id="writeXSF"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.writeXSF">[docs]</a><span class="k">def</span> <span class="nf">writeXSF</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">dstep</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write XSF datagrid for XCrysden</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -727,7 +733,7 @@
 
 
 <span class="c1">########################################################</span>
-<div class="viewcode-block" id="writeWavefunction"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.writeWavefunction">[docs]</a><span class="k">def</span> <span class="nf">writeWavefunction</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">geom</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="writeWavefunction"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.writeWavefunction">[docs]</a><span class="k">def</span> <span class="nf">writeWavefunction</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">geom</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Writes wave function to the specified output type</span>
 <span class="sd">    Y: vector for wavefunction</span>
@@ -773,7 +779,7 @@
 
 
 <span class="c1">################# File names ##################################</span>
-<div class="viewcode-block" id="fileName"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.fileName">[docs]</a><span class="k">def</span> <span class="nf">fileName</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="fileName"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.fileName">[docs]</a><span class="k">def</span> <span class="nf">fileName</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
     <span class="n">systemlabel</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">systemlabel</span>
     <span class="c1"># Generate filename &#39;.EC.{1,Tot}{L,R,,In,Out}[UP][Ef=1.0].&#39;</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">iChan</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
@@ -801,7 +807,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
 
     </p>
   </div>
@@ -823,7 +829,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-12',
+            VERSION:'1.3.0-49',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

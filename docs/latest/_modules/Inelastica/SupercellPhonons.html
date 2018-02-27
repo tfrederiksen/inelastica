@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-12
+                1.3.0-49
               </div>
             
           
@@ -171,21 +171,38 @@
             
   <h1>Source code for Inelastica.SupercellPhonons</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">SupercellPhonons (:mod:`Inelastica.SupercellPhonons`)</span>
+<span class="sd">=====================================================</span>
+
 <span class="sd">A simple interface to evaluate electron and phonon bands on </span>
 <span class="sd">a set of points in reciprocal space.</span>
 
-<span class="sd">The input file format with N points is simply:</span>
+<span class="sd">The input file format with `N` points is simply:</span>
 
-<span class="sd">  kx(1) ky(1) kz(1) [label]</span>
-<span class="sd">  kx(2) ky(2) kz(2) [label]</span>
-<span class="sd">...</span>
-<span class="sd">  kx(N) ky(N) kz(N) [label]</span>
+<span class="sd">.. code-block:: bash</span>
 
-<span class="sd">Units: 1/Ang.</span>
+<span class="sd">    kx(1) ky(1) kz(1) [label]</span>
+<span class="sd">    kx(2) ky(2) kz(2) [label]</span>
+<span class="sd">    ...</span>
+<span class="sd">    kx(N) ky(N) kz(N) [label]</span>
 
-<span class="sd">Phase factors defined as: exp(i k.r)</span>
+<span class="sd">**Units:** 1/Ang.</span>
 
-<span class="sd">Thomas Frederiksen, March 2015</span>
+<span class="sd">Phase factors defined as: `exp(i k.r)`</span>
+
+<span class="sd">Thomas Frederiksen, March 2015.</span>
+
+<span class="sd">.. currentmodule:: Inelastica.SupercellPhonons</span>
+
+<span class="sd">classes</span>
+<span class="sd">-------</span>
+
+<span class="sd">.. autosummary::</span>
+<span class="sd">   :toctree:</span>
+
+<span class="sd">   Supercell_DynamicalMatrix</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
@@ -206,8 +223,10 @@
 <span class="kn">import</span> <span class="nn">scipy.linalg</span> <span class="kn">as</span> <span class="nn">SLA</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span> <span class="kn">as</span> <span class="nn">NC4</span>
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Supercell_DynamicalMatrix&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># if text string is specified, convert to list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">VC</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
         <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -258,11 +277,11 @@
                 <span class="n">PC</span><span class="o">.</span><span class="n">PeriodicTable</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">anr</span>
         <span class="k">print</span> <span class="s1">&#39;AtomicMass =&#39;</span><span class="p">,</span> <span class="n">PC</span><span class="o">.</span><span class="n">AtomicMass</span>
         <span class="k">print</span> <span class="s1">&#39;PeriodicTable =&#39;</span><span class="p">,</span> <span class="n">PC</span><span class="o">.</span><span class="n">PeriodicTable</span>
-</div>
+
     <span class="k">return</span> <span class="n">options</span>
 
 
-<div class="viewcode-block" id="Supercell_DynamicalMatrix"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix">[docs]</a><span class="k">class</span> <span class="nc">Supercell_DynamicalMatrix</span><span class="p">(</span><span class="n">PH</span><span class="o">.</span><span class="n">DynamicalMatrix</span><span class="p">):</span>
+<div class="viewcode-block" id="Supercell_DynamicalMatrix"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix">[docs]</a><span class="k">class</span> <span class="nc">Supercell_DynamicalMatrix</span><span class="p">(</span><span class="n">PH</span><span class="o">.</span><span class="n">DynamicalMatrix</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fdf</span><span class="p">,</span> <span class="n">TSrun</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="n">PH</span><span class="o">.</span><span class="n">DynamicalMatrix</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fdf</span><span class="p">,</span> <span class="n">DynamicAtoms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">TSrun</span><span class="o">=</span><span class="n">TSrun</span><span class="p">)</span>
@@ -271,7 +290,7 @@
 
     <span class="c1"># PHONONIC PART</span>
 
-<div class="viewcode-block" id="Supercell_DynamicalMatrix.CheckSymmetries"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.CheckSymmetries">[docs]</a>    <span class="k">def</span> <span class="nf">CheckSymmetries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TSrun</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.CheckSymmetries"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.CheckSymmetries">[docs]</a>    <span class="k">def</span> <span class="nf">CheckSymmetries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TSrun</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Performing symmetry analysis&#39;</span>
         <span class="c1"># Check if a smaller basis is present:</span>
         <span class="n">Sym</span> <span class="o">=</span> <span class="n">Symmetry</span><span class="o">.</span><span class="n">Symmetry</span><span class="p">()</span>
@@ -294,12 +313,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">supercell</span> <span class="o">=</span> <span class="bp">True</span></div>
         <span class="bp">self</span><span class="o">.</span><span class="n">Sym</span> <span class="o">=</span> <span class="n">Sym</span>
 
-<div class="viewcode-block" id="Supercell_DynamicalMatrix.SymmetrizeFC"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.SymmetrizeFC">[docs]</a>    <span class="k">def</span> <span class="nf">SymmetrizeFC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.SymmetrizeFC"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.SymmetrizeFC">[docs]</a>    <span class="k">def</span> <span class="nf">SymmetrizeFC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
         <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Computing symmetrized force constants&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">symmetrizeFC</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="p">,</span> <span class="n">radi</span><span class="o">=</span><span class="n">radius</span><span class="p">)</span></div>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ApplySumRule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_sym</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Supercell_DynamicalMatrix.ComputePhononModes_q"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.ComputePhononModes_q">[docs]</a>    <span class="k">def</span> <span class="nf">ComputePhononModes_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qpoint</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.ComputePhononModes_q"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputePhononModes_q">[docs]</a>    <span class="k">def</span> <span class="nf">ComputePhononModes_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qpoint</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="c1"># Compute phonon vectors</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">SupercellPhonons.ComputePhononModes_q: Computing force constants at q = &#39;</span><span class="p">,</span> <span class="n">qpoint</span><span class="p">,</span> <span class="s1">&#39;(1/Ang)&#39;</span>
@@ -327,7 +346,7 @@
 
     <span class="c1"># ELECTRONIC PART</span>
 
-<div class="viewcode-block" id="Supercell_DynamicalMatrix.Fold2PrimitiveCell"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.Fold2PrimitiveCell">[docs]</a>    <span class="k">def</span> <span class="nf">Fold2PrimitiveCell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">):</span>
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.Fold2PrimitiveCell"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.Fold2PrimitiveCell">[docs]</a>    <span class="k">def</span> <span class="nf">Fold2PrimitiveCell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">):</span>
         <span class="c1"># Folding down H (or S) to specified kpoint</span>
         <span class="c1"># in the primitive cell</span>
         <span class="n">sh</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -350,7 +369,7 @@
                 <span class="n">H_k</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">fmb</span><span class="p">:</span><span class="n">lmb</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">fnb</span><span class="p">:</span><span class="n">lnb</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">phase</span><span class="o">*</span><span class="n">H</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">fm</span><span class="p">:</span><span class="n">lm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">fn</span><span class="p">:</span><span class="n">ln</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span></div>
         <span class="k">return</span> <span class="n">H_k</span>
 
-<div class="viewcode-block" id="Supercell_DynamicalMatrix.ComputeElectronStates"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.ComputeElectronStates">[docs]</a>    <span class="k">def</span> <span class="nf">ComputeElectronStates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">TSrun</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.ComputeElectronStates"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputeElectronStates">[docs]</a>    <span class="k">def</span> <span class="nf">ComputeElectronStates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">TSrun</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">TSrun</span><span class="p">:</span>
             <span class="c1"># kpoint has unit of &#39;2*pi/a&#39;</span>
             <span class="n">kpt</span> <span class="o">=</span> <span class="n">kpoint</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
@@ -370,7 +389,7 @@
             <span class="n">ev</span><span class="p">[</span><span class="n">ispin</span><span class="p">],</span> <span class="n">evec</span><span class="p">[</span><span class="n">ispin</span><span class="p">]</span> <span class="o">=</span> <span class="n">SLA</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h0_k</span><span class="p">[</span><span class="n">ispin</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">s0_k</span><span class="p">)</span></div>
         <span class="k">return</span> <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span>
 
-<div class="viewcode-block" id="Supercell_DynamicalMatrix.ReadGradients"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.ReadGradients">[docs]</a>    <span class="k">def</span> <span class="nf">ReadGradients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">AbsEref</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.ReadGradients"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ReadGradients">[docs]</a>    <span class="k">def</span> <span class="nf">ReadGradients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">AbsEref</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="c1"># Read in gradients once into memory (in the full supercell basis)</span>
         <span class="c1"># No folding yet onto k and q</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dH</span> <span class="o">=</span> <span class="p">{}</span>
@@ -383,7 +402,7 @@
 
     <span class="c1"># ELECTRON-PHONON COUPLING PART</span>
 
-<div class="viewcode-block" id="Supercell_DynamicalMatrix.FoldMatrix_DoubleSum"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.FoldMatrix_DoubleSum">[docs]</a>    <span class="k">def</span> <span class="nf">FoldMatrix_DoubleSum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">qpoint</span><span class="p">):</span>
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.FoldMatrix_DoubleSum"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.FoldMatrix_DoubleSum">[docs]</a>    <span class="k">def</span> <span class="nf">FoldMatrix_DoubleSum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">qpoint</span><span class="p">):</span>
         <span class="n">sh</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rednao</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rednao</span>
         <span class="n">H_kq</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sh</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>
@@ -407,7 +426,7 @@
         <span class="c1">#return H_kq/self.geom.natoms*self.Sym.basis.NN</span></div>
         <span class="k">return</span> <span class="n">H_kq</span>
 
-<div class="viewcode-block" id="Supercell_DynamicalMatrix.ComputeEPHcouplings_kq"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.Supercell_DynamicalMatrix.ComputeEPHcouplings_kq">[docs]</a>    <span class="k">def</span> <span class="nf">ComputeEPHcouplings_kq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">qpoint</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.ComputeEPHcouplings_kq"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ComputeEPHcouplings_kq">[docs]</a>    <span class="k">def</span> <span class="nf">ComputeEPHcouplings_kq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">qpoint</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="k">print</span> <span class="s1">&#39;SupercellPhonons.ComputeEPHcouplings_kq: k = &#39;</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="s1">&#39; q = &#39;</span><span class="p">,</span> <span class="n">qpoint</span><span class="p">,</span> <span class="s1">&#39;(1/Ang)&#39;</span>
         <span class="c1"># This assumes that phonon modes UU has been computed at that q</span>
@@ -430,15 +449,15 @@
 <span class="c1"># AUXILIARY FUNCTIONS</span>
 
 
-<div class="viewcode-block" id="ReadKpoints"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.ReadKpoints">[docs]</a><span class="k">def</span> <span class="nf">ReadKpoints</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">ReadKpoints</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;SupercellPhonons.ReadKpoints: Reading from&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.nc&#39;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ReadKpoints_netcdf</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span></div>
+    <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ReadKpoints_ascii</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ReadKpoints_netcdf"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.ReadKpoints_netcdf">[docs]</a><span class="k">def</span> <span class="nf">ReadKpoints_netcdf</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">ReadKpoints_netcdf</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="n">ncf</span> <span class="o">=</span> <span class="n">NC4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="n">kpts</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;grid&#39;</span><span class="p">][:]</span>
     <span class="n">ncf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -447,11 +466,11 @@
     <span class="n">tmp</span> <span class="o">=</span> <span class="n">kpts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">kpts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">dk</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">tmp</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">**.</span><span class="mi">5</span>
     <span class="n">dk</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dk</span><span class="p">)</span>
-    <span class="n">labels</span><span class="p">,</span> <span class="n">ticks</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span></div>
+    <span class="n">labels</span><span class="p">,</span> <span class="n">ticks</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
     <span class="k">return</span> <span class="n">kpts</span><span class="p">,</span> <span class="n">dk</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">ticks</span>
 
 
-<div class="viewcode-block" id="ReadKpoints_ascii"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.ReadKpoints_ascii">[docs]</a><span class="k">def</span> <span class="nf">ReadKpoints_ascii</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">ReadKpoints_ascii</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="n">klist</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">dklist</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
@@ -483,11 +502,11 @@
                 <span class="n">ticks</span> <span class="o">+=</span> <span class="p">[[</span><span class="n">dklist</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]]]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">labels</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">klist</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dklist</span><span class="p">),</span> <span class="n">labels</span><span class="p">,</span> <span class="n">ticks</span>
 
 
-<div class="viewcode-block" id="WriteKpoints"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.WriteKpoints">[docs]</a><span class="k">def</span> <span class="nf">WriteKpoints</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">klist</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">WriteKpoints</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">klist</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">klist</span><span class="p">)):</span>
         <span class="n">k</span> <span class="o">=</span> <span class="n">klist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
@@ -496,11 +515,11 @@
         <span class="k">if</span> <span class="n">labels</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">print</span> <span class="s1">&#39;SupercellPhonons.WriteKpoints: Wrote </span><span class="si">%i</span><span class="s1"> points to </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">klist</span><span class="p">),</span> <span class="n">filename</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="WritePath"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.WritePath">[docs]</a><span class="k">def</span> <span class="nf">WritePath</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">WritePath</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
     <span class="c1"># Write path between high-symmetry points</span>
     <span class="n">kpts</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
@@ -522,11 +541,11 @@
             <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
     <span class="k">print</span> <span class="s1">&#39;High-symmetry path:&#39;</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
-        <span class="k">print</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="k">print</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">WriteKpoints</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">kpts</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SortBands"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SortBands">[docs]</a><span class="k">def</span> <span class="nf">SortBands</span><span class="p">(</span><span class="n">ev</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">SortBands</span><span class="p">(</span><span class="n">ev</span><span class="p">):</span>
     <span class="c1"># Sort bands by curvature minimization</span>
     <span class="k">print</span> <span class="s1">&#39;SupercellPhonons.SortBands: Minimizing curvature in band structure&#39;</span>
     <span class="n">kpts</span><span class="p">,</span> <span class="n">bands</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">shape</span>
@@ -543,11 +562,11 @@
                     <span class="n">tmp</span> <span class="o">=</span> <span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">:,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
                     <span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">:,</span> <span class="n">k</span><span class="p">]</span>
                     <span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
-                    <span class="k">print</span> <span class="s2">&quot;   ...@ k(</span><span class="si">%i</span><span class="s2">): flip indices </span><span class="si">%i</span><span class="s2">-</span><span class="si">%i</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
+                    <span class="k">print</span> <span class="s2">&quot;   ...@ k(</span><span class="si">%i</span><span class="s2">): flip indices </span><span class="si">%i</span><span class="s2">-</span><span class="si">%i</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ev</span>
 
 
-<div class="viewcode-block" id="PlotElectronBands"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.PlotElectronBands">[docs]</a><span class="k">def</span> <span class="nf">PlotElectronBands</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dk</span><span class="p">,</span> <span class="n">elist</span><span class="p">,</span> <span class="n">ticks</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">PlotElectronBands</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dk</span><span class="p">,</span> <span class="n">elist</span><span class="p">,</span> <span class="n">ticks</span><span class="p">):</span>
     <span class="c1"># Make xmgrace plots</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dk</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dk</span><span class="p">])</span>
@@ -559,11 +578,11 @@
     <span class="n">ge</span><span class="o">.</span><span class="n">SetXaxisSpecialTicks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
     <span class="n">ge</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="n">dk</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">majorGridlines</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">ge</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="nb">min</span><span class="o">=-</span><span class="mi">20</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;E-E\sF\N (eV)&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
-    <span class="n">pe</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ge</span><span class="p">)</span></div>
+    <span class="n">pe</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ge</span><span class="p">)</span>
     <span class="n">pe</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="PlotPhononBands"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.PlotPhononBands">[docs]</a><span class="k">def</span> <span class="nf">PlotPhononBands</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dq</span><span class="p">,</span> <span class="n">phlist</span><span class="p">,</span> <span class="n">ticks</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">PlotPhononBands</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dq</span><span class="p">,</span> <span class="n">phlist</span><span class="p">,</span> <span class="n">ticks</span><span class="p">):</span>
     <span class="c1"># Make xmgrace plots</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dq</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dq</span><span class="p">])</span>
@@ -589,11 +608,11 @@
     <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">250</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mx</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">250</span>
     <span class="k">elif</span> <span class="n">maxy</span><span class="o">&lt;</span><span class="mi">500</span><span class="p">:</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mx</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">500</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">f{Symbol}w</span><span class="se">\\</span><span class="s1">f{} (meV)&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">mx</span><span class="p">)</span>
-    <span class="n">pp</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">gp</span><span class="p">)</span></div>
+    <span class="n">pp</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">gp</span><span class="p">)</span>
     <span class="n">pp</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="ComputeDOS"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.ComputeDOS">[docs]</a><span class="k">def</span> <span class="nf">ComputeDOS</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">emin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">pts</span><span class="o">=</span><span class="mi">1001</span><span class="p">,</span> <span class="n">smear</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">ComputeDOS</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">emin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">pts</span><span class="o">=</span><span class="mi">1001</span><span class="p">,</span> <span class="n">smear</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
     <span class="n">ncf</span> <span class="o">=</span> <span class="n">NC4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="n">ev</span> <span class="o">=</span> <span class="n">ncf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;eigenvalues&#39;</span><span class="p">][:]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span> <span class="c1"># Phonons.nc (gridpts, bands)</span>
@@ -603,11 +622,11 @@
             <span class="n">WriteDOS</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">ev</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">,</span> <span class="n">pts</span><span class="p">,</span> <span class="n">smear</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span> <span class="c1"># nspin==2</span>
             <span class="n">WriteDOS</span><span class="p">(</span><span class="n">outfile</span><span class="o">+</span><span class="s1">&#39;.UP&#39;</span><span class="p">,</span> <span class="n">ev</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">,</span> <span class="n">pts</span><span class="p">,</span> <span class="n">smear</span><span class="p">)</span>
-            <span class="n">WriteDOS</span><span class="p">(</span><span class="n">outfile</span><span class="o">+</span><span class="s1">&#39;.DOWN&#39;</span><span class="p">,</span> <span class="n">ev</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">,</span> <span class="n">pts</span><span class="p">,</span> <span class="n">smear</span><span class="p">)</span></div>
+            <span class="n">WriteDOS</span><span class="p">(</span><span class="n">outfile</span><span class="o">+</span><span class="s1">&#39;.DOWN&#39;</span><span class="p">,</span> <span class="n">ev</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">,</span> <span class="n">pts</span><span class="p">,</span> <span class="n">smear</span><span class="p">)</span>
     <span class="n">ncf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="WriteDOS"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.WriteDOS">[docs]</a><span class="k">def</span> <span class="nf">WriteDOS</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">,</span> <span class="n">pts</span><span class="p">,</span> <span class="n">smear</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">WriteDOS</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">,</span> <span class="n">pts</span><span class="p">,</span> <span class="n">smear</span><span class="p">):</span>
     <span class="n">egrid</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">,</span> <span class="n">pts</span><span class="p">)</span>
     <span class="n">id1</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">bands</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
     <span class="n">id2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">egrid</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
@@ -623,11 +642,11 @@
     <span class="c1">#gp.SetSubtitle(ncfile)</span>
     <span class="n">pp</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">gp</span><span class="p">)</span>
     <span class="n">pp</span><span class="o">.</span><span class="n">PutText</span><span class="p">(</span><span class="s1">&#39;smear = </span><span class="si">%.3f</span><span class="s1"> meV&#39;</span><span class="o">%</span><span class="p">(</span><span class="mf">1e3</span><span class="o">*</span><span class="n">smear</span><span class="p">),</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">)</span>
-    <span class="n">pp</span><span class="o">.</span><span class="n">PutText</span><span class="p">(</span><span class="s1">&#39;kpts = </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">),</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.70</span><span class="p">)</span></div>
+    <span class="n">pp</span><span class="o">.</span><span class="n">PutText</span><span class="p">(</span><span class="s1">&#39;kpts = </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">),</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.70</span><span class="p">)</span>
     <span class="n">pp</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
     <span class="c1">#VC.OptionsCheck(options,&#39;Phonons&#39;)</span>
 
@@ -877,7 +896,7 @@
                     <span class="n">MkqAbs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="n">ispin</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
                     <span class="n">GkqAbs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="n">ispin</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
                 <span class="n">ncf</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
-        <span class="n">ncf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        <span class="n">ncf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">SCDM</span><span class="o">.</span><span class="n">Sym</span><span class="o">.</span><span class="n">path</span>
 </pre></div>
 
@@ -893,7 +912,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
 
     </p>
   </div>
@@ -915,7 +934,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-12',
+            VERSION:'1.3.0-49',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

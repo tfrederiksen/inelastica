@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-12
+                1.3.0-49
               </div>
             
           
@@ -170,7 +170,39 @@
            <div itemprop="articleBody">
             
   <h1>Source code for Inelastica.STM</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">STM (:mod:`Inelastica.STM`)</span>
+<span class="sd">===========================</span>
+
+<span class="sd">Script that calculates STM images using the Bardeen approximation </span>
+<span class="sd">outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The </span>
+<span class="sd">script is divided into 3 parts:</span>
+
+<span class="sd">1. Calculation of the scattering states at the Fermi-energy on the </span>
+<span class="sd">same real space grid as `TranSIESTA`_ (real-space cutoff). These are </span>
+<span class="sd">saved in `DestDir/SystemLabel.A[LR][0-99].nc` files and are reused if </span>
+<span class="sd">found. **NEEDS:** `TranSIESTA`_ calculation.</span>
+
+<span class="sd">2. Propagation of the scattering states from a surface (defined by a </span>
+<span class="sd">constant charge density) out into the vacuum region. After the x-y plane, </span>
+<span class="sd">where the average potential of the slice is maximum (the separation </span>
+<span class="sd">plane), is found, the potential is ascribed a constant value at this </span>
+<span class="sd">average. Saves the propagated wavefunctions at the separation plane in </span>
+<span class="sd">`DestDir/[kpoint]/FD[kpoint].nc`. **NEEDS:** *TotalPotential.grid.nc* and </span>
+<span class="sd">*Rho.grid.nc*.</span>
+<span class="sd"> </span>
+<span class="sd">3. Conductance calculation where the tip/substrate wavefunctions are </span>
+<span class="sd">displaced to simulate the conductance at different tip-positions. The k </span>
+<span class="sd">averaged STM image and the STM images of individual k points are saved in </span>
+<span class="sd">`DestDir/STMimage.nc`.</span>
+
+<span class="sd">.. currentmodule:: Inelastica.STM</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
 
 <span class="kn">import</span> <span class="nn">Inelastica.NEGF</span> <span class="kn">as</span> <span class="nn">NEGF</span>
 <span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
@@ -206,7 +238,7 @@
 <span class="n">DEBUGPDE</span> <span class="o">=</span> <span class="bp">False</span>
 
 
-<div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.STM.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># if text string is specified, convert to list</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span><span class="o">==</span><span class="nb">type</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">):</span> <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
 
@@ -290,7 +322,7 @@
     <span class="k">return</span> <span class="n">options</span>
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.STM.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
     <span class="n">dd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;TotalPotential.grid.nc&#39;</span><span class="p">))</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;Rho.grid.nc&#39;</span><span class="p">))</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;TotalPotential.nc and Rho.grid.nc not found! Add &quot;SaveTotalPotential true&quot; and &quot;SaveRho true&quot; to RUN.fdf&#39;</span><span class="p">)</span>
@@ -410,7 +442,7 @@
 <span class="c1">########################################################</span>
 
 
-<div class="viewcode-block" id="calcTSWF"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.calcTSWF">[docs]</a><span class="k">def</span> <span class="nf">calcTSWF</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">ikpoint</span><span class="p">):</span>
+<div class="viewcode-block" id="calcTSWF"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.STM.calcTSWF">[docs]</a><span class="k">def</span> <span class="nf">calcTSWF</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">ikpoint</span><span class="p">):</span>
     <span class="n">kpoint</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">ikpoint</span><span class="p">]</span>
     <span class="k">def</span> <span class="nf">calcandwrite</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">ikpoint</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">MM</span><span class="o">.</span><span class="n">SpectralMatrix</span><span class="p">):</span>
@@ -506,12 +538,12 @@
     <span class="n">calcandwrite</span><span class="p">(</span><span class="n">DevGF</span><span class="o">.</span><span class="n">AR</span><span class="p">,</span> <span class="s1">&#39;AR&#39;</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">ikpoint</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="calcTSWFPar"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.calcTSWFPar">[docs]</a><span class="k">def</span> <span class="nf">calcTSWFPar</span><span class="p">(</span><span class="n">resQue</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">ik</span><span class="p">):</span>
+<div class="viewcode-block" id="calcTSWFPar"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.STM.calcTSWFPar">[docs]</a><span class="k">def</span> <span class="nf">calcTSWFPar</span><span class="p">(</span><span class="n">resQue</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">ik</span><span class="p">):</span>
     <span class="n">calcTSWF</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">ik</span><span class="p">)</span></div>
     <span class="n">resQue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">ii</span><span class="p">,</span> <span class="bp">True</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="calcWF2"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.calcWF2">[docs]</a><span class="k">def</span> <span class="nf">calcWF2</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">geom</span><span class="p">,</span> <span class="n">DeviceAtoms</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">NN</span><span class="p">,</span> <span class="n">Fold</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="calcWF2"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.STM.calcWF2">[docs]</a><span class="k">def</span> <span class="nf">calcWF2</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">geom</span><span class="p">,</span> <span class="n">DeviceAtoms</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">NN</span><span class="p">,</span> <span class="n">Fold</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate wavefunction on real space mesh with optional folding</span>
 <span class="sd">    of the periodic boundary conditions. If Fold==True the vectors &#39;a&#39;</span>
@@ -644,7 +676,7 @@
 <span class="c1">########################################################</span>
 
 
-<div class="viewcode-block" id="writenetcdf2"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.writenetcdf2">[docs]</a><span class="k">def</span> <span class="nf">writenetcdf2</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">minnz</span><span class="p">,</span> <span class="n">maxnz</span><span class="p">,</span> <span class="n">pbc</span><span class="p">,</span> <span class="n">DeviceAtoms</span><span class="p">):</span>
+<div class="viewcode-block" id="writenetcdf2"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.STM.writenetcdf2">[docs]</a><span class="k">def</span> <span class="nf">writenetcdf2</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">minnz</span><span class="p">,</span> <span class="n">maxnz</span><span class="p">,</span> <span class="n">pbc</span><span class="p">,</span> <span class="n">DeviceAtoms</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MP: Write STM files to netcdf</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -706,7 +738,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
 
     </p>
   </div>
@@ -728,7 +760,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-12',
+            VERSION:'1.3.0-49',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

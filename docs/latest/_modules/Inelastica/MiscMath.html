@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-12
+                1.3.0-49
               </div>
             
           
@@ -170,14 +170,33 @@
            <div itemprop="articleBody">
             
   <h1>Source code for Inelastica.MiscMath</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Math Miscellaneous (:mod:`Inelastica.MiscMath`)</span>
+<span class="sd">===============================================</span>
+
+<span class="sd">Miscellaneous functions for mathematical operrations.</span>
+
+<span class="sd">.. currentmodule:: Inelastica.MiscMath</span>
+
+<span class="sd">classes</span>
+<span class="sd">-------</span>
+
+<span class="sd">.. autosummary::</span>
+<span class="sd">   :toctree:</span>
+
+<span class="sd">   SpectralMatrix</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
 <span class="kn">import</span> <span class="nn">numpy.fft</span> <span class="kn">as</span> <span class="nn">FFT</span>
 
 <span class="c1">##############################################################</span>
 
 
-<div class="viewcode-block" id="mm"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.mm">[docs]</a><span class="k">def</span> <span class="nf">mm</span><span class="p">(</span><span class="o">*</span> <span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="mm"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.mm">[docs]</a><span class="k">def</span> <span class="nf">mm</span><span class="p">(</span><span class="o">*</span> <span class="n">args</span><span class="p">):</span>
     <span class="c1"># Matrix multiplication with arbitrary number of arguments</span>
     <span class="c1"># and the SpectralMatrix type</span>
     <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -257,7 +276,7 @@
 
 <span class="c1">##############################################################</span>
 
-<div class="viewcode-block" id="outerAdd"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.outerAdd">[docs]</a><span class="k">def</span> <span class="nf">outerAdd</span><span class="p">(</span><span class="o">*</span> <span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="outerAdd"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.outerAdd">[docs]</a><span class="k">def</span> <span class="nf">outerAdd</span><span class="p">(</span><span class="o">*</span> <span class="n">args</span><span class="p">):</span>
     <span class="c1"># A_ijk=B_i+C_j+D_k</span>
     <span class="n">tmp</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
@@ -265,11 +284,11 @@
     <span class="k">return</span> <span class="n">tmp</span>
 
 
-<div class="viewcode-block" id="dist"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.dist">[docs]</a><span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="n">x</span><span class="p">):</span></div>
+<div class="viewcode-block" id="dist"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.dist">[docs]</a><span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="n">x</span><span class="p">):</span></div>
     <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="mysqrt"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.mysqrt">[docs]</a><span class="k">def</span> <span class="nf">mysqrt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="mysqrt"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.mysqrt">[docs]</a><span class="k">def</span> <span class="nf">mysqrt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="c1"># Square root of matrix</span>
     <span class="n">ev</span><span class="p">,</span> <span class="n">U</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">U</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">U</span><span class="p">)</span>
@@ -283,18 +302,18 @@
 <span class="c1">##############################################################</span>
 
 
-<div class="viewcode-block" id="fermi"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.fermi">[docs]</a><span class="k">def</span> <span class="nf">fermi</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">kT</span><span class="p">):</span></div>
+<div class="viewcode-block" id="fermi"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.fermi">[docs]</a><span class="k">def</span> <span class="nf">fermi</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">kT</span><span class="p">):</span></div>
     <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">E</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">/</span><span class="n">kT</span><span class="p">,</span> <span class="o">-</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="box"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.box">[docs]</a><span class="k">def</span> <span class="nf">box</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span> <span class="n">mu2</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">kT</span><span class="p">):</span>
+<div class="viewcode-block" id="box"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.box">[docs]</a><span class="k">def</span> <span class="nf">box</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span> <span class="n">mu2</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">kT</span><span class="p">):</span>
     <span class="c1"># f2-f1 (Box!)</span></div>
     <span class="k">return</span> <span class="n">fermi</span><span class="p">(</span><span class="n">mu2</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">kT</span><span class="p">)</span><span class="o">-</span><span class="n">fermi</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">kT</span><span class="p">)</span>
 
 <span class="c1">##############################################################</span>
 
 
-<div class="viewcode-block" id="trapez"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.trapez">[docs]</a><span class="k">def</span> <span class="nf">trapez</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">equidistant</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="trapez"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.trapez">[docs]</a><span class="k">def</span> <span class="nf">trapez</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">equidistant</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Integration of vector f on grid x using the 3rd degree polynomial.</span>
 <span class="sd">    The grid x does not have to be equidistant.</span>
@@ -330,7 +349,7 @@
 <span class="c1">##############################################################</span>
 
 
-<div class="viewcode-block" id="interpolate"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.interpolate">[docs]</a><span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="interpolate"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.interpolate">[docs]</a><span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolate f(x)=y to find f(nx)</span>
 <span class="sd">    Makes no checks for nx inside x region!!!</span>
@@ -350,7 +369,7 @@
 <span class="c1"># H[f](y) = 1/\pi p.v.\int^{\infty}_{\infty} dx { f(x)/(x-y) }</span>
 
 
-<div class="viewcode-block" id="Hilbert"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.Hilbert">[docs]</a><span class="k">def</span> <span class="nf">Hilbert</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ker</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Hilbert"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.Hilbert">[docs]</a><span class="k">def</span> <span class="nf">Hilbert</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ker</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="s1">&#39;Hilbert transform&#39;</span>
 
     <span class="k">def</span> <span class="nf">kernel</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
@@ -385,7 +404,7 @@
 <span class="c1">##############################################################</span>
 
 
-<div class="viewcode-block" id="sphericalHarmonics"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.sphericalHarmonics">[docs]</a><span class="k">def</span> <span class="nf">sphericalHarmonics</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">costh</span><span class="p">,</span> <span class="n">sinfi</span><span class="p">,</span> <span class="n">cosfi</span><span class="p">):</span>
+<div class="viewcode-block" id="sphericalHarmonics"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.sphericalHarmonics">[docs]</a><span class="k">def</span> <span class="nf">sphericalHarmonics</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">costh</span><span class="p">,</span> <span class="n">sinfi</span><span class="p">,</span> <span class="n">cosfi</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">scipy.special</span> <span class="kn">as</span> <span class="nn">SS</span>
     <span class="c1"># New faster Spherical Harmonics. Checked up to d-orbitals with the Siesta overlap matrix.</span>
     <span class="n">norm</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">l</span><span class="o">-</span><span class="n">m</span><span class="p">))</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">l</span><span class="o">+</span><span class="n">m</span><span class="p">)))</span>
@@ -402,7 +421,7 @@
     <span class="k">return</span> <span class="n">SS</span><span class="o">.</span><span class="n">lpmv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">costh</span><span class="p">)</span><span class="o">*</span><span class="n">ffi</span>
 
 
-<div class="viewcode-block" id="OLD_sphericalHarmonics"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.OLD_sphericalHarmonics">[docs]</a><span class="k">def</span> <span class="nf">OLD_sphericalHarmonics</span><span class="p">(</span><span class="n">sinth</span><span class="p">,</span> <span class="n">costh</span><span class="p">,</span> <span class="n">sinfi</span><span class="p">,</span> <span class="n">cosfi</span><span class="p">):</span>
+<div class="viewcode-block" id="OLD_sphericalHarmonics"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.OLD_sphericalHarmonics">[docs]</a><span class="k">def</span> <span class="nf">OLD_sphericalHarmonics</span><span class="p">(</span><span class="n">sinth</span><span class="p">,</span> <span class="n">costh</span><span class="p">,</span> <span class="n">sinfi</span><span class="p">,</span> <span class="n">cosfi</span><span class="p">):</span>
     <span class="n">pi</span><span class="o">=</span><span class="mf">3.141592654</span>
 
     <span class="c1"># l=0 m=0</span>
@@ -458,7 +477,7 @@
 <span class="c1"># GaussKronrod</span>
 
 
-<div class="viewcode-block" id="abwe1"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.abwe1">[docs]</a><span class="k">def</span> <span class="nf">abwe1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="abwe1"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.abwe1">[docs]</a><span class="k">def</span> <span class="nf">abwe1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="c1">#*****************************************************************************80</span>
 <span class="c1">## ABWE1 calculates a Kronrod abscissa and weight.</span>
 <span class="c1">#  Licensing:</span>
@@ -541,7 +560,7 @@
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span>
 
 
-<div class="viewcode-block" id="abwe2"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.abwe2">[docs]</a><span class="k">def</span> <span class="nf">abwe2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="abwe2"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.abwe2">[docs]</a><span class="k">def</span> <span class="nf">abwe2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="c1">#*****************************************************************************80</span>
 <span class="c1">## ABWE2 calculates a Gaussian abscissa and two weights.</span>
 <span class="c1">#  Licensing:</span>
@@ -611,7 +630,7 @@
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span>
 
 
-<div class="viewcode-block" id="kronrod"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.kronrod">[docs]</a><span class="k">def</span> <span class="nf">kronrod</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
+<div class="viewcode-block" id="kronrod"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.kronrod">[docs]</a><span class="k">def</span> <span class="nf">kronrod</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
 <span class="c1">#*****************************************************************************80</span>
 <span class="c1">#</span>
 <span class="c1">## KRONROD adds N+1 points to an N-point Gaussian rule.</span>
@@ -765,7 +784,7 @@
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span>
 
 
-<div class="viewcode-block" id="GaussKronrod"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.GaussKronrod">[docs]</a><span class="k">def</span> <span class="nf">GaussKronrod</span><span class="p">(</span><span class="n">NN</span><span class="p">):</span>
+<div class="viewcode-block" id="GaussKronrod"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.GaussKronrod">[docs]</a><span class="k">def</span> <span class="nf">GaussKronrod</span><span class="p">(</span><span class="n">NN</span><span class="p">):</span>
         <span class="c1"># Rescale to [-0.5,0.5] and expand to get all points.</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span> <span class="o">=</span> <span class="n">kronrod</span><span class="p">(</span><span class="n">NN</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">)</span>
     <span class="n">indx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -790,7 +809,7 @@
 <span class="c1"># TODO: adding two gives full matrix! Should be easy to fix.</span>
 
 
-<div class="viewcode-block" id="SpectralMatrix"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.SpectralMatrix">[docs]</a><span class="k">class</span> <span class="nc">SpectralMatrix</span><span class="p">:</span>
+<div class="viewcode-block" id="SpectralMatrix"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.SpectralMatrix">[docs]</a><span class="k">class</span> <span class="nc">SpectralMatrix</span><span class="p">:</span>
     <span class="c1"># self.L/R : Left / right matrices</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
@@ -805,7 +824,7 @@
             <span class="k">if</span> <span class="bp">False</span><span class="p">:</span>
                 <span class="k">print</span> <span class="n">N</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">))</span>
 
-<div class="viewcode-block" id="SpectralMatrix.full"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.SpectralMatrix.full">[docs]</a>    <span class="k">def</span> <span class="nf">full</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="SpectralMatrix.full"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.SpectralMatrix.full">[docs]</a>    <span class="k">def</span> <span class="nf">full</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
         <span class="k">return</span> <span class="n">mm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">subtract</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
@@ -863,14 +882,14 @@
         <span class="k">return</span> <span class="n">tmp</span>
 
 
-<div class="viewcode-block" id="trace"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.trace">[docs]</a><span class="k">def</span> <span class="nf">trace</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<div class="viewcode-block" id="trace"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.trace">[docs]</a><span class="k">def</span> <span class="nf">trace</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">SpectralMatrix</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">L</span><span class="p">))</span> <span class="c1"># Switch sum around to make faster!</span>
     <span class="k">else</span><span class="p">:</span></div>
         <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="dagger"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.dagger">[docs]</a><span class="k">def</span> <span class="nf">dagger</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="dagger"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.dagger">[docs]</a><span class="k">def</span> <span class="nf">dagger</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="c1"># Hermitian conjugation</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SpectralMatrix</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">__dagger__</span><span class="p">()</span>
@@ -890,7 +909,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
 
     </p>
   </div>
@@ -912,7 +931,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-12',
+            VERSION:'1.3.0-49',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

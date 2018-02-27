@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-12
+                1.3.0-49
               </div>
             
           
@@ -171,12 +171,28 @@
             
   <h1>Source code for Inelastica.io.siesta</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">siesta (:mod:`Inelastica.io.siesta`)</span>
+<span class="sd">====================================</span>
+
 <span class="sd">Routines for IO in different formats:</span>
-<span class="sd">1: Geometries in xyz, XV, ANI, fdf, mkl etc formats</span>
-<span class="sd">2: Read Hamiltonian and Overlap from .TSHS file.</span>
-<span class="sd">3: fdf manipulations</span>
-<span class="sd">4: Real space Gaussian cube files</span>
-<span class="sd">5: Obtain information of basis orbitals for calculation (.ion.nc)</span>
+
+<span class="sd">1. Geometries in xyz, XV, ANI, fdf, mkl etc formats</span>
+<span class="sd">2. Read Hamiltonian and Overlap from *.TSHS* file</span>
+<span class="sd">3. fdf manipulations</span>
+<span class="sd">4. Real space Gaussian cube files</span>
+<span class="sd">5. Obtain information of basis orbitals for calculation (*.ion.nc*)</span>
+
+<span class="sd">.. currentmodule:: Inelastica.io.siesta</span>
+
+<span class="sd">classes</span>
+<span class="sd">-------</span>
+
+<span class="sd">.. autosummary::</span>
+<span class="sd">   :toctree:</span>
+
+<span class="sd">   HS</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
@@ -215,7 +231,7 @@
     <span class="n">fortranLong</span><span class="o">=</span><span class="s1">&#39;i&#39;</span>
 
 
-<div class="viewcode-block" id="SIO_open"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.SIO_open">[docs]</a><span class="k">def</span> <span class="nf">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="SIO_open"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.SIO_open">[docs]</a><span class="k">def</span> <span class="nf">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">):</span>
     <span class="s2">&quot;A io.siesta redefinition of the function open() to handle gzip format&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">filename</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span><span class="o">==</span><span class="s1">&#39;.gz&#39;</span><span class="p">:</span>
@@ -233,7 +249,7 @@
 <span class="c1"># XV-format</span>
 
 
-<div class="viewcode-block" id="ReadXVFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadXVFile">[docs]</a><span class="k">def</span> <span class="nf">ReadXVFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">InUnits</span><span class="o">=</span><span class="s1">&#39;Bohr&#39;</span><span class="p">,</span> <span class="n">OutUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">,</span> <span class="n">ReadVelocity</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadXVFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadXVFile">[docs]</a><span class="k">def</span> <span class="nf">ReadXVFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">InUnits</span><span class="o">=</span><span class="s1">&#39;Bohr&#39;</span><span class="p">,</span> <span class="n">OutUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">,</span> <span class="n">ReadVelocity</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="s2">&quot;Returns tuple (vectors,speciesnumber,atomnumber,xyz,[v,]) from an XV-file&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadXVFile: Reading&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">InUnits</span><span class="o">==</span><span class="s1">&#39;Bohr&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">OutUnits</span><span class="o">==</span><span class="s1">&#39;Ang&#39;</span><span class="p">):</span> <span class="n">convFactor</span> <span class="o">=</span> <span class="n">PC</span><span class="o">.</span><span class="n">Bohr2Ang</span>
@@ -267,7 +283,7 @@
         <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vectors</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">speciesnumber</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">atomnumber</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="WriteXVFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.WriteXVFile">[docs]</a><span class="k">def</span> <span class="nf">WriteXVFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">speciesnumber</span><span class="p">,</span> <span class="n">atomnumber</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span>\
+<div class="viewcode-block" id="WriteXVFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteXVFile">[docs]</a><span class="k">def</span> <span class="nf">WriteXVFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">speciesnumber</span><span class="p">,</span> <span class="n">atomnumber</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span>\
                 <span class="n">InUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">,</span> <span class="n">OutUnits</span><span class="o">=</span><span class="s1">&#39;Bohr&#39;</span><span class="p">,</span> <span class="n">Velocity</span><span class="o">=</span><span class="p">[]):</span>
     <span class="s2">&quot;Writes (vectors,speciesnumber,atomnumber,xyz,[V],) to the XV-file format&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.WriteXVFile: Writing&#39;</span><span class="p">,</span> <span class="n">filename</span>
@@ -302,7 +318,7 @@
     <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="ReadAXVFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadAXVFile">[docs]</a><span class="k">def</span> <span class="nf">ReadAXVFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">MDstep</span><span class="p">,</span> <span class="n">tmpXVfile</span><span class="o">=</span><span class="s2">&quot;tmp.XV&quot;</span><span class="p">,</span> <span class="n">ReadVelocity</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadAXVFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadAXVFile">[docs]</a><span class="k">def</span> <span class="nf">ReadAXVFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">MDstep</span><span class="p">,</span> <span class="n">tmpXVfile</span><span class="o">=</span><span class="s2">&quot;tmp.XV&quot;</span><span class="p">,</span> <span class="n">ReadVelocity</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="s2">&quot;Read concatenated XV files from an MD simulation&quot;</span>
     <span class="c1"># Determine the number of atoms in the supercell</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
@@ -326,7 +342,7 @@
 
 <span class="c1">#--------------------------------------------------------------------------------</span>
 <span class="c1"># AXSF-format</span>
-<div class="viewcode-block" id="WriteAXSFFiles"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.WriteAXSFFiles">[docs]</a><span class="k">def</span> <span class="nf">WriteAXSFFiles</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">geoms</span><span class="p">,</span> <span class="n">forces</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="WriteAXSFFiles"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteAXSFFiles">[docs]</a><span class="k">def</span> <span class="nf">WriteAXSFFiles</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">geoms</span><span class="p">,</span> <span class="n">forces</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="s1">&#39;Writes [geom1, geom2 ...] to AXSF format&#39;</span>
     <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;ANIMSTEPS </span><span class="si">%i</span><span class="se">\n</span><span class="s1">CRYSTAL</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="n">geoms</span><span class="p">))</span>
@@ -352,7 +368,7 @@
 
 <span class="c1"># ANI-format</span>
 
-<div class="viewcode-block" id="WriteANIFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.WriteANIFile">[docs]</a><span class="k">def</span> <span class="nf">WriteANIFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">Geom</span><span class="p">,</span> <span class="n">Energy</span><span class="p">,</span> <span class="n">InUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">,</span> <span class="n">OutUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="WriteANIFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteANIFile">[docs]</a><span class="k">def</span> <span class="nf">WriteANIFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">Geom</span><span class="p">,</span> <span class="n">Energy</span><span class="p">,</span> <span class="n">InUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">,</span> <span class="n">OutUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">):</span>
     <span class="s2">&quot; Write .ANI file from list of geometries with Energy=[E1,E2..]&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.WriteANIFile: Writing&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">InUnits</span><span class="o">==</span><span class="s1">&#39;Bohr&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">OutUnits</span><span class="o">==</span><span class="s1">&#39;Ang&#39;</span><span class="p">):</span> <span class="n">convFactor</span> <span class="o">=</span> <span class="n">PC</span><span class="o">.</span><span class="n">Bohr2Ang</span>
@@ -373,7 +389,7 @@
     <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="ReadANIFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadANIFile">[docs]</a><span class="k">def</span> <span class="nf">ReadANIFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">InUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">,</span> <span class="n">OutUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadANIFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadANIFile">[docs]</a><span class="k">def</span> <span class="nf">ReadANIFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">InUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">,</span> <span class="n">OutUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">):</span>
     <span class="s2">&quot;Returns tuple (Geometry,Energy[Ry?],) from an ANI-file&quot;</span>
     <span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadANIFile: Reading&#39;</span><span class="p">,</span> <span class="n">filename</span>
@@ -408,7 +424,7 @@
 <span class="c1"># Reading SIESTA FC ascii files</span>
 
 
-<div class="viewcode-block" id="ReadFCFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadFCFile">[docs]</a><span class="k">def</span> <span class="nf">ReadFCFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadFCFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadFCFile">[docs]</a><span class="k">def</span> <span class="nf">ReadFCFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="s2">&quot;Returns FC from an FC-file&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadFCFile: Reading&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="nb">file</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
@@ -428,7 +444,7 @@
 <span class="c1"># Reading SIESTA Fortan binary files</span>
 
 
-<div class="viewcode-block" id="ReadFortranBin"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadFortranBin">[docs]</a><span class="k">def</span> <span class="nf">ReadFortranBin</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">printLength</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadFortranBin"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadFortranBin">[docs]</a><span class="k">def</span> <span class="nf">ReadFortranBin</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">printLength</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="s2">&quot;Reads Fortran binary data structures&quot;</span>
     <span class="kn">import</span> <span class="nn">struct</span>
     <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -446,7 +462,7 @@
         <span class="k">return</span> <span class="nb">bin</span>
 
 
-<div class="viewcode-block" id="ReadWFSFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadWFSFile">[docs]</a><span class="k">def</span> <span class="nf">ReadWFSFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadWFSFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadWFSFile">[docs]</a><span class="k">def</span> <span class="nf">ReadWFSFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    TF/071008</span>
 <span class="sd">    Returns the WF coefficients etc. from SIESTA systemlabe.WFS files</span>
@@ -487,7 +503,7 @@
     <span class="k">return</span> <span class="n">nk</span><span class="p">,</span> <span class="n">nspin</span><span class="p">,</span> <span class="n">nuotot</span><span class="p">,</span> <span class="n">nwflist</span><span class="p">,</span> <span class="n">PSIvectors</span>
 
 
-<div class="viewcode-block" id="printDone"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.printDone">[docs]</a><span class="k">def</span> <span class="nf">printDone</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">mess</span><span class="p">):</span>
+<div class="viewcode-block" id="printDone"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.printDone">[docs]</a><span class="k">def</span> <span class="nf">printDone</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">mess</span><span class="p">):</span>
     <span class="c1"># Print progress report</span>
     <span class="k">if</span> <span class="n">n</span><span class="o">&gt;</span><span class="mi">10</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
@@ -500,7 +516,7 @@
 <span class="c1"># MKL-format IO</span>
 
 
-<div class="viewcode-block" id="WriteMKLFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.WriteMKLFile">[docs]</a><span class="k">def</span> <span class="nf">WriteMKLFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">atomnumber</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">vec</span><span class="p">,</span> <span class="n">FCfirst</span><span class="p">,</span> <span class="n">FClast</span><span class="p">):</span>
+<div class="viewcode-block" id="WriteMKLFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteMKLFile">[docs]</a><span class="k">def</span> <span class="nf">WriteMKLFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">atomnumber</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">vec</span><span class="p">,</span> <span class="n">FCfirst</span><span class="p">,</span> <span class="n">FClast</span><span class="p">):</span>
     <span class="s2">&quot;Writes a MKL-file&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.WriteMKLFile: Writing&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
@@ -544,7 +560,7 @@
 <span class="c1"># XYZ-format IO</span>
 
 
-<div class="viewcode-block" id="ReadXYZFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadXYZFile">[docs]</a><span class="k">def</span> <span class="nf">ReadXYZFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadXYZFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadXYZFile">[docs]</a><span class="k">def</span> <span class="nf">ReadXYZFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="nb">file</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="c1"># Read number of atoms (line 4)</span>
     <span class="n">numberOfAtoms</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">atoi</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">())[</span><span class="mi">0</span><span class="p">])</span>
@@ -562,7 +578,7 @@
     <span class="k">return</span> <span class="n">label</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">atomnumber</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="WriteXYZFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.WriteXYZFile">[docs]</a><span class="k">def</span> <span class="nf">WriteXYZFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">atomnumber</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">write_ghosts</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="WriteXYZFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteXYZFile">[docs]</a><span class="k">def</span> <span class="nf">WriteXYZFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">atomnumber</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">write_ghosts</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="s2">&quot;Writes atomic geometry in xyz-file format&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.WriteXYZFile: Writing&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="c1"># Number of ghost atoms</span>
@@ -593,7 +609,7 @@
 <span class="c1"># FDF format IO</span>
 
 
-<div class="viewcode-block" id="ReadFDFFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadFDFFile">[docs]</a><span class="k">def</span> <span class="nf">ReadFDFFile</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadFDFFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadFDFFile">[docs]</a><span class="k">def</span> <span class="nf">ReadFDFFile</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Reads an FDF file and gives the output values: pbc, xyz, snr, anr, natoms</span>
 <span class="sd">        infile = FDF inputfile&quot;&quot;&quot;</span>
     <span class="n">pbc</span> <span class="o">=</span> <span class="n">Getpbc</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
@@ -606,7 +622,7 @@
     <span class="k">return</span> <span class="n">pbc</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">snr</span><span class="p">,</span> <span class="n">anr</span><span class="p">,</span> <span class="n">natoms</span>
 
 
-<div class="viewcode-block" id="WriteFDFFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.WriteFDFFile">[docs]</a><span class="k">def</span> <span class="nf">WriteFDFFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">speciesnumber</span><span class="p">,</span> <span class="n">atomnumber</span><span class="p">,</span> <span class="n">xyz</span><span class="p">):</span>
+<div class="viewcode-block" id="WriteFDFFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteFDFFile">[docs]</a><span class="k">def</span> <span class="nf">WriteFDFFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">speciesnumber</span><span class="p">,</span> <span class="n">atomnumber</span><span class="p">,</span> <span class="n">xyz</span><span class="p">):</span>
     <span class="s2">&quot;Write STRUCT.fdf file&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.WriteFDFFile: Writing&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
@@ -628,7 +644,7 @@
     <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%e</span><span class="s1">ndblock AtomicCoordinatesAndAtomicSpecies</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="WriteFDFFileZmat"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.WriteFDFFileZmat">[docs]</a><span class="k">def</span> <span class="nf">WriteFDFFileZmat</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">speciesnumber</span><span class="p">,</span> <span class="n">atomnumber</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">zmat</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="WriteFDFFileZmat"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteFDFFileZmat">[docs]</a><span class="k">def</span> <span class="nf">WriteFDFFileZmat</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">speciesnumber</span><span class="p">,</span> <span class="n">atomnumber</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">zmat</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write STRUCT.fdf file using the z-matrix format</span>
 <span class="sd">       xyz        : all cartesian coordinates</span>
 <span class="sd">       first/last : first,last atoms in molecule block</span>
@@ -684,7 +700,7 @@
 <span class="c1"># Read systemlabel.STRUCT_OUT files</span>
 
 
-<div class="viewcode-block" id="ReadSTRUCT_OUTFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadSTRUCT_OUTFile">[docs]</a><span class="k">def</span> <span class="nf">ReadSTRUCT_OUTFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadSTRUCT_OUTFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadSTRUCT_OUTFile">[docs]</a><span class="k">def</span> <span class="nf">ReadSTRUCT_OUTFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="nb">file</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="c1"># Read cell vectors (lines 1-3)</span>
     <span class="n">vectors</span> <span class="o">=</span> <span class="p">[]</span>
@@ -714,7 +730,7 @@
 <span class="c1"># Writing SIESTA Fortran binary files</span>
 
 
-<div class="viewcode-block" id="WriteFortranBin"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.WriteFortranBin">[docs]</a><span class="k">def</span> <span class="nf">WriteFortranBin</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="WriteFortranBin"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteFortranBin">[docs]</a><span class="k">def</span> <span class="nf">WriteFortranBin</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
     <span class="s2">&quot;Writes Fortran binary data structures&quot;</span>
     <span class="kn">import</span> <span class="nn">struct</span>
     <span class="k">try</span><span class="p">:</span>
@@ -736,7 +752,7 @@
 <span class="c1">#--------------------------------------------------------------------------------</span>
 <span class="c1"># &quot;Low-level&quot; FDF format functionality</span>
 
-<div class="viewcode-block" id="ReadFDFLines"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadFDFLines">[docs]</a><span class="k">def</span> <span class="nf">ReadFDFLines</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">printAlot</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadFDFLines"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadFDFLines">[docs]</a><span class="k">def</span> <span class="nf">ReadFDFLines</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">printAlot</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Returns an FDF file and all the %include files as split strings</span>
 <span class="sd">        infile = input file&quot;&quot;&quot;</span>
     <span class="n">infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
@@ -769,7 +785,7 @@
     <span class="k">return</span> <span class="n">lines</span>
 
 
-<div class="viewcode-block" id="Getnatoms"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.Getnatoms">[docs]</a><span class="k">def</span> <span class="nf">Getnatoms</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="Getnatoms"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.Getnatoms">[docs]</a><span class="k">def</span> <span class="nf">Getnatoms</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Gives the number of atoms included in an FDF file</span>
 <span class="sd">        infile = FDF input file&quot;&quot;&quot;</span>
     <span class="n">natoms</span> <span class="o">=</span> <span class="n">GetFDFline</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;NumberOfAtoms&#39;</span><span class="p">)</span>
@@ -778,7 +794,7 @@
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">natoms</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="Getxyz"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.Getxyz">[docs]</a><span class="k">def</span> <span class="nf">Getxyz</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">pbc</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="Getxyz"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.Getxyz">[docs]</a><span class="k">def</span> <span class="nf">Getxyz</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">pbc</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot; Gives a list of the xyz posistions in a FDF file</span>
 <span class="sd">        infile = FDF input file&quot;&quot;&quot;</span>
     <span class="n">latt_const</span> <span class="o">=</span> <span class="n">GetFDFline</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;LatticeConstant&#39;</span><span class="p">)</span>
@@ -807,7 +823,7 @@
     <span class="k">return</span> <span class="n">xyz</span>
 
 
-<div class="viewcode-block" id="Getpbc"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.Getpbc">[docs]</a><span class="k">def</span> <span class="nf">Getpbc</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="Getpbc"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.Getpbc">[docs]</a><span class="k">def</span> <span class="nf">Getpbc</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Gives a list of the lattice vectores in a FDF file</span>
 <span class="sd">        infile = FDF input file&quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">GetFDFblock</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;LatticeVectors&#39;</span><span class="p">)</span>
@@ -822,7 +838,7 @@
     <span class="k">return</span> <span class="n">pbc</span>
 
 
-<div class="viewcode-block" id="Getsnr"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.Getsnr">[docs]</a><span class="k">def</span> <span class="nf">Getsnr</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="Getsnr"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.Getsnr">[docs]</a><span class="k">def</span> <span class="nf">Getsnr</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Gives a list of the species numbers in a FDF file</span>
 <span class="sd">        infile = FDF input file&quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">GetFDFblock</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;AtomicCoordinatesAndAtomicSpecies&#39;</span><span class="p">)</span>
@@ -832,7 +848,7 @@
     <span class="k">return</span> <span class="n">snr</span>
 
 
-<div class="viewcode-block" id="Getanr"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.Getanr">[docs]</a><span class="k">def</span> <span class="nf">Getanr</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="Getanr"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.Getanr">[docs]</a><span class="k">def</span> <span class="nf">Getanr</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Gives a list of the atomic numbers in a FDF file</span>
 <span class="sd">        infile = FDF input file&quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">GetFDFblock</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;ChemicalSpeciesLabel&#39;</span><span class="p">)</span>
@@ -848,7 +864,7 @@
     <span class="k">return</span> <span class="n">anr</span>
 
 
-<div class="viewcode-block" id="GetFDFline"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetFDFline">[docs]</a><span class="k">def</span> <span class="nf">GetFDFline</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">KeyWord</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">printAlot</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="GetFDFline"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetFDFline">[docs]</a><span class="k">def</span> <span class="nf">GetFDFline</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">KeyWord</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">printAlot</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Finds a line and gives the value as a string</span>
 <span class="sd">        infile = FDF input file</span>
 <span class="sd">        KeyWord = line to find&quot;&quot;&quot;</span>
@@ -864,7 +880,7 @@
             <span class="k">return</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
 
 
-<div class="viewcode-block" id="GetFDFlineWithDefault"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetFDFlineWithDefault">[docs]</a><span class="k">def</span> <span class="nf">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+<div class="viewcode-block" id="GetFDFlineWithDefault"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetFDFlineWithDefault">[docs]</a><span class="k">def</span> <span class="nf">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Finds a line and gives the value of type type.</span>
 <span class="sd">        If not found, default returned.</span>
 <span class="sd">        If default=None, print error and exit.</span>
@@ -891,7 +907,7 @@
                                 <span class="s1">&#39;&quot;{}&quot; to boolean from key &quot;{}&quot; in file {}.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">infile</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="GetFDFblock"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetFDFblock">[docs]</a><span class="k">def</span> <span class="nf">GetFDFblock</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">KeyWord</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="GetFDFblock"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetFDFblock">[docs]</a><span class="k">def</span> <span class="nf">GetFDFblock</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">KeyWord</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Finds the values in a block as strings</span>
 <span class="sd">       infile = FDF input file</span>
 <span class="sd">       KeyWord = block to find&quot;&quot;&quot;</span>
@@ -918,7 +934,7 @@
 <span class="c1">#--------------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="GetTotalEnergy"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetTotalEnergy">[docs]</a><span class="k">def</span> <span class="nf">GetTotalEnergy</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="GetTotalEnergy"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetTotalEnergy">[docs]</a><span class="k">def</span> <span class="nf">GetTotalEnergy</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="c1"># Find total energy from SIESTA stdout file</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
@@ -932,7 +948,7 @@
     <span class="k">return</span> <span class="n">E</span>
 
 
-<div class="viewcode-block" id="GetFermiEnergy"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetFermiEnergy">[docs]</a><span class="k">def</span> <span class="nf">GetFermiEnergy</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="GetFermiEnergy"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetFermiEnergy">[docs]</a><span class="k">def</span> <span class="nf">GetFermiEnergy</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="c1"># Read Fermi energy from SIESTA stdout file</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.GetFermiEnergy: Reading&#39;</span><span class="p">,</span> <span class="n">infile</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
@@ -950,7 +966,7 @@
     <span class="k">return</span> <span class="n">E</span>
 
 
-<div class="viewcode-block" id="ReadEIGfile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadEIGfile">[docs]</a><span class="k">def</span> <span class="nf">ReadEIGfile</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">printing</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">FermiRef</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadEIGfile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadEIGfile">[docs]</a><span class="k">def</span> <span class="nf">ReadEIGfile</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">printing</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">FermiRef</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="c1"># Read *EIG file and print eigenvalues with respect to eF.</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
     <span class="n">eF</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())[</span><span class="mi">0</span><span class="p">])</span>
@@ -972,7 +988,7 @@
     <span class="k">return</span> <span class="n">eF</span>
 
 
-<div class="viewcode-block" id="ReadMullikenPop"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadMullikenPop">[docs]</a><span class="k">def</span> <span class="nf">ReadMullikenPop</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">writeallblocks</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadMullikenPop"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadMullikenPop">[docs]</a><span class="k">def</span> <span class="nf">ReadMullikenPop</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">writeallblocks</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="c1"># Read Mulliken populations from the *.out file</span>
     <span class="n">mline</span> <span class="o">=</span> <span class="bp">False</span>
     <span class="n">mpop</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1026,7 +1042,7 @@
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="ReadForces"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadForces">[docs]</a><span class="k">def</span> <span class="nf">ReadForces</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadForces"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadForces">[docs]</a><span class="k">def</span> <span class="nf">ReadForces</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="c1"># Read forces from the *.out file</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">fline</span> <span class="o">=</span> <span class="bp">False</span>
@@ -1047,7 +1063,7 @@
     <span class="k">return</span> <span class="n">data</span>
 
 
-<div class="viewcode-block" id="ReadFAFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadFAFile">[docs]</a><span class="k">def</span> <span class="nf">ReadFAFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadFAFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadFAFile">[docs]</a><span class="k">def</span> <span class="nf">ReadFAFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="s2">&quot;Returns forces from a FA-file&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadFAFile: Reading&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="nb">file</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
@@ -1063,7 +1079,7 @@
     <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">FA</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ReadTRANSAVfile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadTRANSAVfile">[docs]</a><span class="k">def</span> <span class="nf">ReadTRANSAVfile</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadTRANSAVfile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadTRANSAVfile">[docs]</a><span class="k">def</span> <span class="nf">ReadTRANSAVfile</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="c1"># Read (averaged *.TRANS.AV) transmission function</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">e</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1e10</span>
@@ -1082,14 +1098,14 @@
 <span class="c1"># Related to band structure calculations and density of states</span>
 
 
-<div class="viewcode-block" id="CrossProd"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.CrossProd">[docs]</a><span class="k">def</span> <span class="nf">CrossProd</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossProd"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.CrossProd">[docs]</a><span class="k">def</span> <span class="nf">CrossProd</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
     <span class="s2">&quot;Returns the cross product of two geometric vectors&quot;</span>
     <span class="p">[</span><span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span>
     <span class="p">[</span><span class="n">bx</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">bz</span><span class="p">]</span> <span class="o">=</span> <span class="n">B</span></div>
     <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ay</span><span class="o">*</span><span class="n">bz</span><span class="o">-</span><span class="n">az</span><span class="o">*</span><span class="n">by</span><span class="p">,</span> <span class="n">az</span><span class="o">*</span><span class="n">bx</span><span class="o">-</span><span class="n">ax</span><span class="o">*</span><span class="n">bz</span><span class="p">,</span> <span class="n">ax</span><span class="o">*</span><span class="n">by</span><span class="o">-</span><span class="n">ay</span><span class="o">*</span><span class="n">bx</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="GetReciprocalLatticeVectors"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetReciprocalLatticeVectors">[docs]</a><span class="k">def</span> <span class="nf">GetReciprocalLatticeVectors</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="GetReciprocalLatticeVectors"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetReciprocalLatticeVectors">[docs]</a><span class="k">def</span> <span class="nf">GetReciprocalLatticeVectors</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="c1"># Calculate reciprocal lattice vectors</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.GetReciprocalLatticeVectors: Reading&#39;</span><span class="p">,</span> <span class="n">infile</span>
     <span class="k">if</span> <span class="n">infile</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.fdf&#39;</span><span class="p">):</span>
@@ -1105,7 +1121,7 @@
     <span class="k">return</span> <span class="n">b0</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">b2</span>
 
 
-<div class="viewcode-block" id="WriteBandLinesFDF"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.WriteBandLinesFDF">[docs]</a><span class="k">def</span> <span class="nf">WriteBandLinesFDF</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+<div class="viewcode-block" id="WriteBandLinesFDF"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteBandLinesFDF">[docs]</a><span class="k">def</span> <span class="nf">WriteBandLinesFDF</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
     <span class="c1"># Sets up an fdf-file which can be included in RUN.fdf for</span>
     <span class="c1"># calculating band structure and total density of states</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.WriteBandLinesFDF: Writing fdf-input file&#39;</span><span class="p">,</span> <span class="n">outfile</span>
@@ -1129,7 +1145,7 @@
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="ReadBlock"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadBlock">[docs]</a><span class="k">def</span> <span class="nf">ReadBlock</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadBlock"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadBlock">[docs]</a><span class="k">def</span> <span class="nf">ReadBlock</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">):</span>
     <span class="c1"># Designed for reading, e.g., *.bands files from SIESTA</span>
     <span class="n">data</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
@@ -1145,7 +1161,7 @@
     <span class="k">return</span> <span class="n">data</span>
 
 
-<div class="viewcode-block" id="ReadBandsFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadBandsFile">[docs]</a><span class="k">def</span> <span class="nf">ReadBandsFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">origformat</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadBandsFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadBandsFile">[docs]</a><span class="k">def</span> <span class="nf">ReadBandsFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">origformat</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadBandsFile: Reading&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="c1"># Reads SIESTA *.bands files</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
@@ -1176,7 +1192,7 @@
     <span class="k">return</span> <span class="n">eF</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">EvsK</span><span class="p">),</span> <span class="n">labels</span><span class="p">,</span> <span class="n">spins</span>
 
 
-<div class="viewcode-block" id="WriteBandsFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.WriteBandsFile">[docs]</a><span class="k">def</span> <span class="nf">WriteBandsFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">eF</span><span class="p">,</span> <span class="n">EvsK</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">spins</span><span class="p">):</span>
+<div class="viewcode-block" id="WriteBandsFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteBandsFile">[docs]</a><span class="k">def</span> <span class="nf">WriteBandsFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">eF</span><span class="p">,</span> <span class="n">EvsK</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">spins</span><span class="p">):</span>
     <span class="s2">&quot;Writes SIESTA *.bands files&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.WriteBandsFile: Writing&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">EvsK</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">EvsK</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="nb">min</span><span class="p">(</span><span class="n">EvsK</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">EvsK</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:])</span>
@@ -1199,7 +1215,7 @@
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; </span><span class="si">%.6f</span><span class="s1">  </span><span class="si">%s</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
 
-<div class="viewcode-block" id="ConvertBandsFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ConvertBandsFile">[docs]</a><span class="k">def</span> <span class="nf">ConvertBandsFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="ConvertBandsFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ConvertBandsFile">[docs]</a><span class="k">def</span> <span class="nf">ConvertBandsFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="n">eF</span><span class="p">,</span> <span class="n">EvsK</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">spins</span> <span class="o">=</span> <span class="n">ReadBandsFile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.ConvertBandsFile: Writing&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">+</span><span class="s1">&#39;.dat&#39;</span>
     <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="o">+</span><span class="s1">&#39;.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
@@ -1210,7 +1226,7 @@
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="ReadDOSFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadDOSFile">[docs]</a><span class="k">def</span> <span class="nf">ReadDOSFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadDOSFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadDOSFile">[docs]</a><span class="k">def</span> <span class="nf">ReadDOSFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="c1"># Reads SIESTA *.DOS files</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadDOSFile: Reading&#39;</span><span class="p">,</span> <span class="n">filename</span>
@@ -1230,7 +1246,7 @@
 <span class="kn">import</span> <span class="nn">xml.dom.minidom</span> <span class="kn">as</span> <span class="nn">xml</span>
 
 
-<div class="viewcode-block" id="GetXMLFermiEnergy"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetXMLFermiEnergy">[docs]</a><span class="k">def</span> <span class="nf">GetXMLFermiEnergy</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
+<div class="viewcode-block" id="GetXMLFermiEnergy"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetXMLFermiEnergy">[docs]</a><span class="k">def</span> <span class="nf">GetXMLFermiEnergy</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
     <span class="s2">&quot;Looks for the Fermi energy in xml file&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">node</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;E_Fermi&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># First (and only) entry</span>
@@ -1241,19 +1257,19 @@
     <span class="k">return</span> <span class="n">eF</span>
 
 
-<div class="viewcode-block" id="GetPDOSnspin"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetPDOSnspin">[docs]</a><span class="k">def</span> <span class="nf">GetPDOSnspin</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
+<div class="viewcode-block" id="GetPDOSnspin"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetPDOSnspin">[docs]</a><span class="k">def</span> <span class="nf">GetPDOSnspin</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
     <span class="s2">&quot;Returns an integer for the number of spins (variable nspin)&quot;</span>
     <span class="n">node</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;nspin&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># First (and only) entry</span></div>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="GetPDOSnorbitals"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetPDOSnorbitals">[docs]</a><span class="k">def</span> <span class="nf">GetPDOSnorbitals</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
+<div class="viewcode-block" id="GetPDOSnorbitals"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetPDOSnorbitals">[docs]</a><span class="k">def</span> <span class="nf">GetPDOSnorbitals</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
     <span class="c1"># Read norbitals</span>
     <span class="n">node</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;norbitals&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># First (and only) entry</span></div>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="GetPDOSenergyValues"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetPDOSenergyValues">[docs]</a><span class="k">def</span> <span class="nf">GetPDOSenergyValues</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
+<div class="viewcode-block" id="GetPDOSenergyValues"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetPDOSenergyValues">[docs]</a><span class="k">def</span> <span class="nf">GetPDOSenergyValues</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
     <span class="c1"># Read energy values</span>
     <span class="n">node</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;energy_values&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># First (and only) entry</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -1262,7 +1278,7 @@
     <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="GetPDOSfromOrbitals"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetPDOSfromOrbitals">[docs]</a><span class="k">def</span> <span class="nf">GetPDOSfromOrbitals</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[],</span> <span class="n">mlist</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="GetPDOSfromOrbitals"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetPDOSfromOrbitals">[docs]</a><span class="k">def</span> <span class="nf">GetPDOSfromOrbitals</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[],</span> <span class="n">mlist</span><span class="o">=</span><span class="p">[]):</span>
     <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">GetPDOSenergyValues</span><span class="p">(</span><span class="n">dom</span><span class="p">))</span><span class="o">*</span><span class="n">GetPDOSnspin</span><span class="p">(</span><span class="n">dom</span><span class="p">)</span>
     <span class="n">pdos</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
     <span class="n">nodes</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;orbital&#39;</span><span class="p">)</span>
@@ -1308,7 +1324,7 @@
     <span class="k">return</span> <span class="n">pdos</span><span class="p">,</span> <span class="n">usedOrbitals</span><span class="p">,</span> <span class="n">usedAtoms</span>
 
 
-<div class="viewcode-block" id="ReadPDOSFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadPDOSFile">[docs]</a><span class="k">def</span> <span class="nf">ReadPDOSFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[],</span> <span class="n">mlist</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="ReadPDOSFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadPDOSFile">[docs]</a><span class="k">def</span> <span class="nf">ReadPDOSFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[],</span> <span class="n">mlist</span><span class="o">=</span><span class="p">[]):</span>
     <span class="c1"># Reads SIESTA *.PDOS files summing up contributions from orbitals</span>
     <span class="c1"># belonging to a subset specified by the keywords</span>
     <span class="nb">file</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
@@ -1322,7 +1338,7 @@
     <span class="k">return</span> <span class="n">nspin</span><span class="p">,</span> <span class="n">norb</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">pdos</span><span class="p">,</span> <span class="n">usedOrbitals</span><span class="p">,</span> <span class="n">usedAtoms</span><span class="p">,</span> <span class="n">eF</span>
 
 
-<div class="viewcode-block" id="ExtractPDOS"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ExtractPDOS">[docs]</a><span class="k">def</span> <span class="nf">ExtractPDOS</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[],</span> <span class="n">mlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">FermiRef</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">Normalize</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtractPDOS"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ExtractPDOS">[docs]</a><span class="k">def</span> <span class="nf">ExtractPDOS</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[],</span> <span class="n">mlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">FermiRef</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">Normalize</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.ExtractPDOS: Reading&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="n">nspin</span><span class="p">,</span> <span class="n">norb</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">pdos</span><span class="p">,</span> <span class="n">usedOrbitals</span><span class="p">,</span> <span class="n">usedAtoms</span><span class="p">,</span> <span class="n">eF</span> <span class="o">=</span> <span class="n">ReadPDOSFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">atom_index</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="n">nlist</span><span class="p">,</span> <span class="n">llist</span><span class="p">,</span> <span class="n">mlist</span><span class="p">)</span>
@@ -1363,13 +1379,13 @@
 <span class="c1"># (k-resolved PDOS is available from a modified SIESTA by D. Sanchez-Portal)</span>
 
 
-<div class="viewcode-block" id="GetPROJBANDSnbands"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetPROJBANDSnbands">[docs]</a><span class="k">def</span> <span class="nf">GetPROJBANDSnbands</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
+<div class="viewcode-block" id="GetPROJBANDSnbands"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetPROJBANDSnbands">[docs]</a><span class="k">def</span> <span class="nf">GetPROJBANDSnbands</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Returns the (integer) number of bands &quot;&quot;&quot;</span>
     <span class="n">node</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;nbands&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># First (and only) entry</span></div>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="GetPROJBANDSkpoint"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetPROJBANDSkpoint">[docs]</a><span class="k">def</span> <span class="nf">GetPROJBANDSkpoint</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
+<div class="viewcode-block" id="GetPROJBANDSkpoint"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetPROJBANDSkpoint">[docs]</a><span class="k">def</span> <span class="nf">GetPROJBANDSkpoint</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
     <span class="s2">&quot;Returns an array with the (3D) k-points&quot;</span>
     <span class="n">nodes</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;kpoint&#39;</span><span class="p">)</span>
     <span class="n">kpts</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1381,7 +1397,7 @@
     <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kpts</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="GetPROJBANDSenergies"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetPROJBANDSenergies">[docs]</a><span class="k">def</span> <span class="nf">GetPROJBANDSenergies</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
+<div class="viewcode-block" id="GetPROJBANDSenergies"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetPROJBANDSenergies">[docs]</a><span class="k">def</span> <span class="nf">GetPROJBANDSenergies</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an array with the band energies (in units of eV):</span>
 <span class="sd">        energies = energies[ k-index, band-index, n-spin ]</span>
@@ -1401,7 +1417,7 @@
     <span class="k">return</span> <span class="n">PC</span><span class="o">.</span><span class="n">Rydberg2eV</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="GetPROJBANDSfromOrbitals"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetPROJBANDSfromOrbitals">[docs]</a><span class="k">def</span> <span class="nf">GetPROJBANDSfromOrbitals</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="GetPROJBANDSfromOrbitals"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetPROJBANDSfromOrbitals">[docs]</a><span class="k">def</span> <span class="nf">GetPROJBANDSfromOrbitals</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an array of the DOS projected onto bands, summing up contributions from</span>
 <span class="sd">    orbitals as specified in the function call. The indexing is the following:</span>
@@ -1442,7 +1458,7 @@
     <span class="k">return</span> <span class="n">pdos</span>
 
 
-<div class="viewcode-block" id="ReadPROJBANDSfile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadPROJBANDSfile">[docs]</a><span class="k">def</span> <span class="nf">ReadPROJBANDSfile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="ReadPROJBANDSfile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadPROJBANDSfile">[docs]</a><span class="k">def</span> <span class="nf">ReadPROJBANDSfile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[]):</span>
     <span class="n">dom</span> <span class="o">=</span> <span class="n">xml</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="n">nspin</span> <span class="o">=</span> <span class="n">GetPDOSnspin</span><span class="p">(</span><span class="n">dom</span><span class="p">)</span>
     <span class="n">nbands</span> <span class="o">=</span> <span class="n">GetPROJBANDSnbands</span><span class="p">(</span><span class="n">dom</span><span class="p">)</span>
@@ -1452,7 +1468,7 @@
     <span class="k">return</span> <span class="n">nspin</span><span class="p">,</span> <span class="n">nbands</span><span class="p">,</span> <span class="n">norb</span><span class="p">,</span> <span class="n">energies</span><span class="p">,</span> <span class="n">kresPDOS</span>
 
 
-<div class="viewcode-block" id="ExtractPROJBANDS"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ExtractPROJBANDS">[docs]</a><span class="k">def</span> <span class="nf">ExtractPROJBANDS</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[],</span> <span class="n">emin</span><span class="o">=-</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="mf">5.0</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtractPROJBANDS"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ExtractPROJBANDS">[docs]</a><span class="k">def</span> <span class="nf">ExtractPROJBANDS</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[],</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[],</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">nlist</span><span class="o">=</span><span class="p">[],</span> <span class="n">llist</span><span class="o">=</span><span class="p">[],</span> <span class="n">emin</span><span class="o">=-</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="mf">5.0</span><span class="p">):</span>
     <span class="n">eF</span> <span class="o">=</span> <span class="n">GetFermiEnergy</span><span class="p">(</span><span class="s1">&#39;RUN.out&#39;</span><span class="p">)</span>
     <span class="n">dom</span> <span class="o">=</span> <span class="n">xml</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="n">nspin</span> <span class="o">=</span> <span class="n">GetPDOSnspin</span><span class="p">(</span><span class="n">dom</span><span class="p">)</span>
@@ -1484,7 +1500,7 @@
 <span class="c1">#--------------------------------------------------------------------------------</span>
 <span class="c1"># label.ion.nc - files</span>
 
-<div class="viewcode-block" id="ReadIonNCFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadIonNCFile">[docs]</a><span class="k">def</span> <span class="nf">ReadIonNCFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">printnorm</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadIonNCFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadIonNCFile">[docs]</a><span class="k">def</span> <span class="nf">ReadIonNCFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">printnorm</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads a NetCDF file that describes the basis orbitals of a given species</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1523,7 +1539,7 @@
     <span class="k">return</span> <span class="n">ion</span>
 
 
-<div class="viewcode-block" id="BuildBasis"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.BuildBasis">[docs]</a><span class="k">def</span> <span class="nf">BuildBasis</span><span class="p">(</span><span class="n">FDFfile</span><span class="p">,</span> <span class="n">FirstAtom</span><span class="p">,</span> <span class="n">LastAtom</span><span class="p">,</span> <span class="n">lasto</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildBasis"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.BuildBasis">[docs]</a><span class="k">def</span> <span class="nf">BuildBasis</span><span class="p">(</span><span class="n">FDFfile</span><span class="p">,</span> <span class="n">FirstAtom</span><span class="p">,</span> <span class="n">LastAtom</span><span class="p">,</span> <span class="n">lasto</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Builds the information for each basis orbital in the Hamiltonian</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1596,7 +1612,7 @@
 <span class="c1"># Gaussian Cube files</span>
 
 
-<div class="viewcode-block" id="ReadCubeFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadCubeFile">[docs]</a><span class="k">def</span> <span class="nf">ReadCubeFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadCubeFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadCubeFile">[docs]</a><span class="k">def</span> <span class="nf">ReadCubeFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadCubeFile: Reading geometry from&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="nb">file</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="c1"># Read comments (lines 1-2)</span>
@@ -1633,7 +1649,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 
-<div class="viewcode-block" id="GetSiestaStarttime"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetSiestaStarttime">[docs]</a><span class="k">def</span> <span class="nf">GetSiestaStarttime</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="GetSiestaStarttime"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetSiestaStarttime">[docs]</a><span class="k">def</span> <span class="nf">GetSiestaStarttime</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen3</span><span class="p">(</span><span class="s1">&#39;head &#39;</span><span class="o">+</span><span class="n">infile</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">stdout</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;&gt;&gt;&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
@@ -1641,7 +1657,7 @@
     <span class="k">return</span> <span class="n">starttime</span>
 
 
-<div class="viewcode-block" id="GetSiestaEndtime"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetSiestaEndtime">[docs]</a><span class="k">def</span> <span class="nf">GetSiestaEndtime</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="GetSiestaEndtime"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetSiestaEndtime">[docs]</a><span class="k">def</span> <span class="nf">GetSiestaEndtime</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen3</span><span class="p">(</span><span class="s1">&#39;tail &#39;</span><span class="o">+</span><span class="n">infile</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">stdout</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;&gt;&gt;&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
@@ -1649,7 +1665,7 @@
     <span class="k">return</span> <span class="n">endtime</span>
 
 
-<div class="viewcode-block" id="GetSiestaWalltime"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetSiestaWalltime">[docs]</a><span class="k">def</span> <span class="nf">GetSiestaWalltime</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="GetSiestaWalltime"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetSiestaWalltime">[docs]</a><span class="k">def</span> <span class="nf">GetSiestaWalltime</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="s2">&quot;Returns the walltime (in hours)&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">seconds</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">GetSiestaEndtime</span><span class="p">(</span><span class="n">infile</span><span class="p">))</span><span class="o">-</span><span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">GetSiestaStarttime</span><span class="p">(</span><span class="n">infile</span><span class="p">))</span>
@@ -1660,7 +1676,7 @@
     <span class="k">return</span> <span class="n">hours</span>
 
 
-<div class="viewcode-block" id="CheckTermination"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.CheckTermination">[docs]</a><span class="k">def</span> <span class="nf">CheckTermination</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
+<div class="viewcode-block" id="CheckTermination"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.CheckTermination">[docs]</a><span class="k">def</span> <span class="nf">CheckTermination</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">GetSiestaEndtime</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">True</span>
@@ -1679,45 +1695,51 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="HS"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.HS">[docs]</a><span class="k">class</span> <span class="nc">HS</span><span class="p">:</span>
+<div class="viewcode-block" id="HS"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.HS">[docs]</a><span class="k">class</span> <span class="nc">HS</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create full HS from TSHS file. Read fn and assemble for specified k-point</span>
+<span class="sd">    Create full *HS* from *TSHS* file. Read fn and assemble for specified k-point</span>
 
 <span class="sd">    External variables:</span>
-<span class="sd">    N            : Size of matrices</span>
-<span class="sd">    H[ispin,i,j] : Hamiltonian</span>
-<span class="sd">    S[i,j]       : Overlap</span>
 
-<span class="sd">    Internal variables from TS (index described as fortran def):</span>
-<span class="sd">    (NOTE all python lists start with index 0!)</span>
-<span class="sd">    nua          : Number of atoms in unitcell</span>
-<span class="sd">    nuo          : Number of orbitals in unitcell</span>
-<span class="sd">    nspin        : Number of spin</span>
-<span class="sd">    no           : Number of orbitals in supercell</span>
-<span class="sd">    maxnh        : Size of sparse matrices</span>
-<span class="sd">    isa(1:nua)   : Atomic number (not in netcdf)</span>
-<span class="sd">    lasto(0:nua) : Last orbital of atom in unitcell</span>
-<span class="sd">    xa(1:nua,1:3): Position of atoms (NOTE transpose of TS standard)</span>
-<span class="sd">    indxuo(1:no) : Index of equivalent orbital in unitcell</span>
-<span class="sd">    numh(1:nuo)  : Number of non-zero elements in row of H</span>
-<span class="sd">    listh(1:nuo) : Column index of H element </span>
-<span class="sd">    Hsparse(1:nspin,1:maxnh) : Sparse H</span>
-<span class="sd">    Ssparse(1:nspin,1:maxnh) : Sparse S</span>
-<span class="sd">    qtot         : ??</span>
-<span class="sd">    temp         : ??</span>
-<span class="sd">    ef           : Fermi energy (why spin dependent?)</span>
-<span class="sd">    cell(1:3,1:3): Unitcell (ixyz,ivec)</span>
-<span class="sd">    gamma        : Logical Gamma-point</span>
-<span class="sd">    xij(1:maxnh,1:3) : Vector between orbital centers (NOTE transpose of TS)</span>
-<span class="sd">                       NOTE: xij=Rj-Ri where i,j correspond to Hij</span>
+<span class="sd">    - *N*                        : Size of matrices</span>
+<span class="sd">    - *H[ispin,i,j]*             : Hamiltonian</span>
+<span class="sd">    - *S[i,j]*                   : Overlap</span>
+
+<span class="sd">    Internal variables from TS (**NOTE**: index described as fortran</span>
+<span class="sd">    definition -- all python lists start with index 0!):</span>
+
+<span class="sd">    - *nua*                      : Number of atoms in unitcell</span>
+<span class="sd">    - *nuo*                      : Number of orbitals in unitcell</span>
+<span class="sd">    - *nspin*                    : Number of spin</span>
+<span class="sd">    - *no*                       : Number of orbitals in supercell</span>
+<span class="sd">    - *maxnh*                    : Size of sparse matrices</span>
+<span class="sd">    - *isa(1:nua)*               : Atomic number (not in netcdf)</span>
+<span class="sd">    - *lasto(0:nua)*             : Last orbital of atom in unitcell</span>
+<span class="sd">    - *xa(1:nua,1:3)*            : Position of atoms (NOTE transpose of TS standard)</span>
+<span class="sd">    - *indxuo(1:no)*             : Index of equivalent orbital in unitcell</span>
+<span class="sd">    - *numh(1:nuo)*              : Number of non-zero elements in row of H</span>
+<span class="sd">    - *listh(1:nuo)*             : Column index of H element </span>
+<span class="sd">    - *Hsparse(1:nspin,1:maxnh)* : Sparse H</span>
+<span class="sd">    - *Ssparse(1:nspin,1:maxnh)* : Sparse S</span>
+<span class="sd">    - *qtot*                     : ??</span>
+<span class="sd">    - *temp*                     : ??</span>
+<span class="sd">    - *ef*                       : Fermi energy (why spin dependent?)</span>
+<span class="sd">    - *cell(1:3,1:3)*            : Unitcell (ixyz,ivec)</span>
+<span class="sd">    - *gamma*                    : Logical Gamma-point</span>
+<span class="sd">    - *xij(1:maxnh,1:3)*         : Vector between orbital centers</span>
+<span class="sd">       * (**NOTE1:** transpose of TS)</span>
+<span class="sd">       * (**NOTE2:** xij=Rj-Ri where i,j correspond to Hij)</span>
 
 <span class="sd">    Derived internal variables:</span>
-<span class="sd">    listhptr(1:nuo) : Start of row-1 in sparse matrix </span>
-<span class="sd">    atomindx(1:nuo) : Atom index corresponding to orbital in unitcell</span>
-<span class="sd">    rcell(1:3,1:3) : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)</span>
+
+<span class="sd">    - *listhptr(1:nuo)*          : Start of row-1 in sparse matrix </span>
+<span class="sd">    - *atomindx(1:nuo)*          : Atom index corresponding to orbital in unitcell</span>
+<span class="sd">    - *rcell(1:3,1:3)*           : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)</span>
 
 <span class="sd">    For onlyS: Hsparse is not avalable and gamma point is assumed</span>
-<span class="sd">        gamma: xij is set to 0 and indxuo set manually to 1:nou and -1 for nou+1:no to catch errors!</span>
+
+<span class="sd">    For gamma: xij is set to 0 and indxuo set manually to 1:nou and -1 for nou+1:no to catch errors!</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">BufferAtoms</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,)),</span> <span class="n">UseF90helpers</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
@@ -1780,7 +1802,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">removeUnitCellXij</span><span class="p">(</span><span class="n">UseF90helpers</span><span class="p">)</span> <span class="c1"># Remove phase change in unitcell</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resetkpoint</span><span class="p">()</span> <span class="c1"># save time by not repeating</span>
 
-<div class="viewcode-block" id="HS.resetkpoint"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.HS.resetkpoint">[docs]</a>    <span class="k">def</span> <span class="nf">resetkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HS.resetkpoint"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.HS.resetkpoint">[docs]</a>    <span class="k">def</span> <span class="nf">resetkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resets the kpoint and H,S.</span>
 <span class="sd">        The garbage collector cannot tell if H or S will be used subsequently</span>
@@ -1872,7 +1894,7 @@
             <span class="n">matrices</span> <span class="o">=</span> <span class="p">[</span><span class="n">xa</span><span class="p">,</span> <span class="n">ucell</span><span class="p">,</span> <span class="n">xij</span><span class="p">,</span> <span class="n">Ssparse</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">general</span><span class="p">,</span> <span class="n">sparse</span><span class="p">,</span> <span class="n">matrices</span>
 
-<div class="viewcode-block" id="HS.makeDerivedQuant"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.HS.makeDerivedQuant">[docs]</a>    <span class="k">def</span> <span class="nf">makeDerivedQuant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HS.makeDerivedQuant"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.HS.makeDerivedQuant">[docs]</a>    <span class="k">def</span> <span class="nf">makeDerivedQuant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create derived internal variables:</span>
 <span class="sd">        listhptr(1:nuo) : Start of row-1 in sparse matrix </span>
@@ -1896,7 +1918,7 @@
         <span class="c1"># Reciprocal cell</span></div>
         <span class="bp">self</span><span class="o">.</span><span class="n">rcell</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span>
 
-<div class="viewcode-block" id="HS.removeUnitCellXij"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.HS.removeUnitCellXij">[docs]</a>    <span class="k">def</span> <span class="nf">removeUnitCellXij</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">UseF90helpers</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="HS.removeUnitCellXij"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.HS.removeUnitCellXij">[docs]</a>    <span class="k">def</span> <span class="nf">removeUnitCellXij</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">UseF90helpers</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove displacements within unitcell from xij</span>
 <span class="sd">        NOTE: We remove the in cell difference so xij corresponds to </span>
@@ -1930,7 +1952,7 @@
                     <span class="c1">#if juo!=jo and N.max(abs(self.xij[self.listhptr[iuo]+jnz,:]))&lt;0.1:</span>
                     <span class="c1">#    print self.xij[self.listhptr[iuo]+jnz,:]</span>
 
-<div class="viewcode-block" id="HS.setkpoint"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.HS.setkpoint">[docs]</a>    <span class="k">def</span> <span class="nf">setkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">UseF90helpers</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">atype</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="HS.setkpoint"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.HS.setkpoint">[docs]</a>    <span class="k">def</span> <span class="nf">setkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">UseF90helpers</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">atype</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="s2">&quot;Make full matrices from sparse for specific k-point&quot;</span>
         <span class="n">kpoint</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kpoint</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">:</span>
@@ -1946,7 +1968,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">[</span><span class="n">ispin</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setkpointhelper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Hsparse</span><span class="p">[:,</span> <span class="n">ispin</span><span class="p">],</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">UseF90helpers</span><span class="p">,</span> <span class="n">atype</span><span class="o">=</span><span class="n">atype</span><span class="p">)</span> \</div>
                         <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ef</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span>
 
-<div class="viewcode-block" id="HS.setkpointhelper"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.HS.setkpointhelper">[docs]</a>    <span class="k">def</span> <span class="nf">setkpointhelper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Sparse</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">UseF90helpers</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">atype</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">):</span>
+<div class="viewcode-block" id="HS.setkpointhelper"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.HS.setkpointhelper">[docs]</a>    <span class="k">def</span> <span class="nf">setkpointhelper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Sparse</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">UseF90helpers</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">atype</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make full matrices from sparse for specific k-point</span>
 <span class="sd">        NOTE: Assumption for Fourier transform                     </span>
@@ -1993,7 +2015,7 @@
 <span class="c1"># Easy method to read in number of atoms in a TSHS file</span>
 
 
-<div class="viewcode-block" id="ReadTSHS"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.ReadTSHS">[docs]</a><span class="k">def</span> <span class="nf">ReadTSHS</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadTSHS"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadTSHS">[docs]</a><span class="k">def</span> <span class="nf">ReadTSHS</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadTSHS: Reading TSHS header from&#39;</span><span class="p">,</span> <span class="n">fn</span>
     <span class="c1"># return dictionary</span>
     <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2007,7 +2029,7 @@
     <span class="k">return</span> <span class="n">d</span>
 
 
-<div class="viewcode-block" id="GetBufferAtomsList"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.GetBufferAtomsList">[docs]</a><span class="k">def</span> <span class="nf">GetBufferAtomsList</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">fdf</span><span class="p">):</span>
+<div class="viewcode-block" id="GetBufferAtomsList"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.GetBufferAtomsList">[docs]</a><span class="k">def</span> <span class="nf">GetBufferAtomsList</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">fdf</span><span class="p">):</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">ReadTSHS</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">nua</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">nua</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;nua&#39;</span><span class="p">)</span>
     <span class="k">del</span> <span class="n">d</span>
@@ -2086,7 +2108,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
 
     </p>
   </div>
@@ -2108,7 +2130,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.3.0-12',
+            VERSION:'1.3.0-49',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

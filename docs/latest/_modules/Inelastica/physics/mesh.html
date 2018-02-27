@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-12
+                1.3.0-49
               </div>
             
           
@@ -170,7 +170,25 @@
            <div itemprop="articleBody">
             
   <h1>Source code for Inelastica.physics.mesh</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Kmesh module by T. Frederiksen</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Mesh (:mod:`Inelastica.physics.mesh`)</span>
+<span class="sd">=====================================</span>
+
+<span class="sd">Written by Thomas Frederikse.</span>
+
+<span class="sd">.. currentmodule:: Inelastica.physics.mesh</span>
+
+<span class="sd">classes</span>
+<span class="sd">-------</span>
+
+<span class="sd">.. autosummary::</span>
+<span class="sd">   :toctree:</span>
+
+<span class="sd">   kmesh</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 
@@ -178,14 +196,14 @@
 <span class="c1"># three spatial directions (in momentum space)</span>
 
 
-<div class="viewcode-block" id="generatelinmesh"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.generatelinmesh">[docs]</a><span class="k">def</span> <span class="nf">generatelinmesh</span><span class="p">(</span><span class="n">Nk</span><span class="p">):</span>
+<div class="viewcode-block" id="generatelinmesh"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.mesh.generatelinmesh">[docs]</a><span class="k">def</span> <span class="nf">generatelinmesh</span><span class="p">(</span><span class="n">Nk</span><span class="p">):</span>
     <span class="s2">&quot;Generate Nk points sampling linearly the interval [-0.5;0.5]&quot;</span>
     <span class="n">kpts</span> <span class="o">=</span> <span class="p">[(</span><span class="n">ii</span><span class="o">*</span><span class="mf">1.0</span><span class="o">+</span><span class="mf">0.5</span><span class="p">)</span><span class="o">/</span><span class="n">Nk</span><span class="o">-</span><span class="mf">0.5</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nk</span><span class="p">)]</span>
     <span class="n">wgts</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="o">/</span><span class="n">Nk</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nk</span><span class="p">)]</span></div>
     <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kpts</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wgts</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="kmesh"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.kmesh">[docs]</a><span class="k">class</span> <span class="nc">kmesh</span><span class="p">:</span>
+<div class="viewcode-block" id="kmesh"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.mesh.kmesh">[docs]</a><span class="k">class</span> <span class="nc">kmesh</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a k-mesh samling where each of the three components</span>
 <span class="sd">    sample the range [-0.5,0.5]). They are not in reciprocal space.</span>
@@ -223,7 +241,7 @@
         <span class="k">if</span> <span class="n">invsymmetry</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">SymmetryReduce</span><span class="p">()</span>
 
-<div class="viewcode-block" id="kmesh.genkmesh"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.kmesh.genkmesh">[docs]</a>    <span class="k">def</span> <span class="nf">genkmesh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="kmesh.genkmesh"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.mesh.kmesh.genkmesh">[docs]</a>    <span class="k">def</span> <span class="nf">genkmesh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Generate mesh for a given sampling of the axes&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="p">[]</span>
@@ -270,7 +288,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">kpts</span></div>
         <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">wgts</span>
 
-<div class="viewcode-block" id="kmesh.SymmetryReduce"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.kmesh.SymmetryReduce">[docs]</a>    <span class="k">def</span> <span class="nf">SymmetryReduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="kmesh.SymmetryReduce"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.mesh.kmesh.SymmetryReduce">[docs]</a>    <span class="k">def</span> <span class="nf">SymmetryReduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove duplicates for symmetry</span>
 <span class="sd">        INVERSION SYMMETRY:</span>
@@ -298,7 +316,7 @@
         <span class="k">print</span> <span class="s1">&#39; ... NNk = </span><span class="si">%i</span><span class="s1">, sum(wgts) = </span><span class="si">%.8f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NNk</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">wgts</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span></div>
         <span class="k">print</span> <span class="s1">&#39; ... sum(errorw) = (</span><span class="si">%.8f</span><span class="s1">,</span><span class="si">%.8f</span><span class="s1">,</span><span class="si">%.8f</span><span class="s1">)&#39;</span><span class="o">%</span><span class="nb">tuple</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">wgts</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
 
-<div class="viewcode-block" id="kmesh.mesh2file"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.kmesh.mesh2file">[docs]</a>    <span class="k">def</span> <span class="nf">mesh2file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+<div class="viewcode-block" id="kmesh.mesh2file"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.mesh.kmesh.mesh2file">[docs]</a>    <span class="k">def</span> <span class="nf">mesh2file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
         <span class="s2">&quot;Writes the k-mesh to file&quot;</span>
         <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# k1 k2 k3 w0 w1 w2 w3</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -312,7 +330,7 @@
         <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="test"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+<div class="viewcode-block" id="test"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.mesh.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
     <span class="n">mesh</span> <span class="o">=</span> <span class="n">kmesh</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">meshtype</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;LIN&#39;</span><span class="p">,</span> <span class="s1">&#39;GK&#39;</span><span class="p">,</span> <span class="s1">&#39;LIN&#39;</span><span class="p">])</span>
     <span class="n">keys</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="k">print</span> <span class="n">keys</span>
@@ -341,7 +359,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
 
     </p>
   </div>
@@ -363,7 +381,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.3.0-12',
+            VERSION:'1.3.0-49',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

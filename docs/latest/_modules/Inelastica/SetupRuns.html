@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-12
+                1.3.0-49
               </div>
             
           
@@ -171,17 +171,27 @@
             
   <h1>Source code for Inelastica.SetupRuns</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">SetupRuns (:mod:`Inelastica.SetupRuns`)</span>
+<span class="sd">=======================================</span>
+
 <span class="sd">Functions to setup (Tran)SIESTA calculation and submit pbs jobs.</span>
-<span class="sd">CG: Optimization including scaling of electrode distances</span>
-<span class="sd">FC: For phonon and e-ph calculations</span>
-<span class="sd">OS: only overlap (S) calculation used to obtain e-ph coupling</span>
-<span class="sd">PH: Phonon frequencies and e-ph coupling</span>
-<span class="sd">TS: Transiesta adding electrode layers to CG geometry</span>
-<span class="sd">IN: (not working at the moment)</span>
+
+<span class="sd">* CG: Optimization including scaling of electrode distances</span>
+<span class="sd">* FC: For phonon and e-ph calculations</span>
+<span class="sd">* OS: only overlap (S) calculation used to obtain e-ph coupling</span>
+<span class="sd">* PH: Phonon frequencies and e-ph coupling</span>
+<span class="sd">* TS: Transiesta adding electrode layers to CG geometry</span>
+<span class="sd">* IN: (not working at the moment)</span>
 
 <span class="sd">The basic idea is to use an existing CG (geometry optimization) setup</span>
 <span class="sd">to create all the other calculation directories needed. </span>
+
+<span class="sd">.. currentmodule:: Inelastica.SetupRuns</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">string</span>
@@ -201,7 +211,7 @@
 <span class="c1">#                                          SetupCGrun</span>
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="SetupCGrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupCGrun">[docs]</a><span class="k">def</span> <span class="nf">SetupCGrun</span><span class="p">(</span><span class="n">templateCGrun</span><span class="p">,</span> <span class="n">newCGrun</span><span class="p">,</span> <span class="n">NewContactSeparation</span><span class="p">,</span> <span class="n">AtomsPerLayer</span><span class="p">,</span>
+<div class="viewcode-block" id="SetupCGrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.SetupCGrun">[docs]</a><span class="k">def</span> <span class="nf">SetupCGrun</span><span class="p">(</span><span class="n">templateCGrun</span><span class="p">,</span> <span class="n">newCGrun</span><span class="p">,</span> <span class="n">NewContactSeparation</span><span class="p">,</span> <span class="n">AtomsPerLayer</span><span class="p">,</span>
                <span class="n">IndexShift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ListL</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ListR</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ZmatRanges</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                <span class="n">RotationAngle</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">RotationCenter</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">RotationAxis</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">RotationSubset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">PBStemplate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">submitJob</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
@@ -302,7 +312,7 @@
 <span class="c1">#                                          SetupFCrun</span>
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="SetupFCrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupFCrun">[docs]</a><span class="k">def</span> <span class="nf">SetupFCrun</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">newFCrun</span><span class="p">,</span> <span class="n">FCfirst</span><span class="p">,</span> <span class="n">FClast</span><span class="p">,</span> <span class="n">displacement</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+<div class="viewcode-block" id="SetupFCrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.SetupFCrun">[docs]</a><span class="k">def</span> <span class="nf">SetupFCrun</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">newFCrun</span><span class="p">,</span> <span class="n">FCfirst</span><span class="p">,</span> <span class="n">FClast</span><span class="p">,</span> <span class="n">displacement</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
                <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">PBStemplate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">submitJob</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    CGrun                : Path+foldername to a relaxed structure CGrun folder on</span>
@@ -376,7 +386,7 @@
 <span class="c1">#                                          SetupOSrun</span>
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="SetupOSrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupOSrun">[docs]</a><span class="k">def</span> <span class="nf">SetupOSrun</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">newOSrun</span><span class="p">,</span> <span class="n">displacement</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+<div class="viewcode-block" id="SetupOSrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.SetupOSrun">[docs]</a><span class="k">def</span> <span class="nf">SetupOSrun</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">newOSrun</span><span class="p">,</span> <span class="n">displacement</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
                <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">PBStemplate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">submitJob</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    CGrun                : Path+foldername to a relaxed structure CGrun folder on</span>
@@ -461,7 +471,7 @@
 <span class="c1">#                                          SetupTSrun</span>
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="SetupTSrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupTSrun">[docs]</a><span class="k">def</span> <span class="nf">SetupTSrun</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">templateTSrun</span><span class="p">,</span> <span class="n">newTSrun</span><span class="p">,</span>
+<div class="viewcode-block" id="SetupTSrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.SetupTSrun">[docs]</a><span class="k">def</span> <span class="nf">SetupTSrun</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">templateTSrun</span><span class="p">,</span> <span class="n">newTSrun</span><span class="p">,</span>
                <span class="n">AtomsPerLayer</span><span class="p">,</span> <span class="n">BlockSize</span><span class="p">,</span> <span class="n">LayersLeft</span><span class="p">,</span> <span class="n">LayersRight</span><span class="p">,</span>
                <span class="n">DeviceLayerInclLeft</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">DeviceLayerInclRight</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">IndexShift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                <span class="n">AddLeftList</span><span class="o">=</span><span class="p">[],</span> <span class="n">AddRightList</span><span class="o">=</span><span class="p">[],</span> <span class="n">ListL</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ListR</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
@@ -615,7 +625,7 @@
 <span class="c1">#                                          RunTBT</span>
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="RunTBT"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.RunTBT">[docs]</a><span class="k">def</span> <span class="nf">RunTBT</span><span class="p">(</span><span class="n">TSrun</span><span class="p">,</span> <span class="n">Emin</span><span class="p">,</span> <span class="n">Emax</span><span class="p">,</span> <span class="n">NPoints</span><span class="p">,</span> <span class="n">NumKxy_A1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">NumKxy_A2</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<div class="viewcode-block" id="RunTBT"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.RunTBT">[docs]</a><span class="k">def</span> <span class="nf">RunTBT</span><span class="p">(</span><span class="n">TSrun</span><span class="p">,</span> <span class="n">Emin</span><span class="p">,</span> <span class="n">Emax</span><span class="p">,</span> <span class="n">NPoints</span><span class="p">,</span> <span class="n">NumKxy_A1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">NumKxy_A2</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
            <span class="n">AtomsPerLayer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">DeviceLayerInclLeft</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">DeviceLayerInclRight</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
            <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">PBStemplate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">submitJob</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -675,7 +685,7 @@
 <span class="c1">#                                          SetupPHrun</span>
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="SetupPHrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupPHrun">[docs]</a><span class="k">def</span> <span class="nf">SetupPHrun</span><span class="p">(</span><span class="n">newPHrun</span><span class="p">,</span> <span class="n">wildcard</span><span class="p">,</span> <span class="n">onlySdir</span><span class="o">=</span><span class="s1">&#39;../OSrun&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="SetupPHrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.SetupPHrun">[docs]</a><span class="k">def</span> <span class="nf">SetupPHrun</span><span class="p">(</span><span class="n">newPHrun</span><span class="p">,</span> <span class="n">wildcard</span><span class="p">,</span> <span class="n">onlySdir</span><span class="o">=</span><span class="s1">&#39;../OSrun&#39;</span><span class="p">,</span>
                <span class="n">DeviceFirst</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">DeviceLast</span><span class="o">=</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">FCfirst</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">FClast</span><span class="o">=</span><span class="mf">1e3</span><span class="p">,</span>
                <span class="n">CalcCoupl</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">outlabel</span><span class="o">=</span><span class="s1">&#39;Out&#39;</span><span class="p">,</span>
                <span class="n">PerBoundCorrFirst</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">PerBoundCorrLast</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
@@ -742,7 +752,7 @@
 <span class="c1">#                                          SetupInelastica</span>
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="SetupInelastica"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupInelastica">[docs]</a><span class="k">def</span> <span class="nf">SetupInelastica</span><span class="p">(</span><span class="n">templateInelastica</span><span class="p">,</span> <span class="n">newInelastica</span><span class="p">,</span> <span class="n">TSrun</span><span class="p">,</span>
+<div class="viewcode-block" id="SetupInelastica"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.SetupInelastica">[docs]</a><span class="k">def</span> <span class="nf">SetupInelastica</span><span class="p">(</span><span class="n">templateInelastica</span><span class="p">,</span> <span class="n">newInelastica</span><span class="p">,</span> <span class="n">TSrun</span><span class="p">,</span>
                     <span class="n">templateInputFile</span><span class="p">,</span> <span class="n">newInputFilename</span><span class="p">,</span> <span class="n">PhononNCfile</span><span class="p">,</span>
                     <span class="n">kPoints</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                     <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">PBStemplate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">submitJob</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
@@ -802,7 +812,7 @@
 <span class="c1">#                                          Auxiliary functions</span>
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="RemoveOutputFiles"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.RemoveOutputFiles">[docs]</a><span class="k">def</span> <span class="nf">RemoveOutputFiles</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">[],</span> <span class="n">DryRun</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">FullCleanup</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="RemoveOutputFiles"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.RemoveOutputFiles">[docs]</a><span class="k">def</span> <span class="nf">RemoveOutputFiles</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">[],</span> <span class="n">DryRun</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">FullCleanup</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;SetupRuns.RemoveOutputFiles: Cleaning up </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">folder</span>
     <span class="c1"># These suffixes can always be deleted</span>
     <span class="n">suffixes</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;.ion&#39;</span><span class="p">,</span> <span class="s1">&#39;.ion.xml&#39;</span><span class="p">,</span> <span class="s1">&#39;.POT.CONF&#39;</span><span class="p">,</span> <span class="s1">&#39;INPUT_TMP&#39;</span><span class="p">,</span> <span class="s1">&#39;out.fdf&#39;</span><span class="p">,</span>
@@ -829,7 +839,7 @@
                     <span class="k">break</span>
 
 
-<div class="viewcode-block" id="ZipFolder"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.ZipFolder">[docs]</a><span class="k">def</span> <span class="nf">ZipFolder</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+<div class="viewcode-block" id="ZipFolder"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.ZipFolder">[docs]</a><span class="k">def</span> <span class="nf">ZipFolder</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;SetupRuns: Zipping &#39;</span><span class="p">,</span> <span class="n">folder</span>
     <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
     <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
@@ -841,7 +851,7 @@
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">cwd</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="UnzipFolder"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.UnzipFolder">[docs]</a><span class="k">def</span> <span class="nf">UnzipFolder</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
+<div class="viewcode-block" id="UnzipFolder"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.UnzipFolder">[docs]</a><span class="k">def</span> <span class="nf">UnzipFolder</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;SetupRuns: Unzipping&#39;</span><span class="p">,</span> <span class="nb">file</span>
     <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;gunzip </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">file</span><span class="p">)</span>
     <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
@@ -852,7 +862,7 @@
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">cwd</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="CopyInputFiles"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.CopyInputFiles">[docs]</a><span class="k">def</span> <span class="nf">CopyInputFiles</span><span class="p">(</span><span class="n">infolder</span><span class="p">,</span> <span class="n">outfolder</span><span class="p">,</span> <span class="n">suffixes</span><span class="p">):</span>
+<div class="viewcode-block" id="CopyInputFiles"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.CopyInputFiles">[docs]</a><span class="k">def</span> <span class="nf">CopyInputFiles</span><span class="p">(</span><span class="n">infolder</span><span class="p">,</span> <span class="n">outfolder</span><span class="p">,</span> <span class="n">suffixes</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;SetupRuns.CopyInputFiles:&#39;</span>
     <span class="k">for</span> <span class="n">elm</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">infolder</span><span class="o">+</span><span class="s1">&#39;/*&#39;</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">suffixes</span><span class="p">:</span>
@@ -861,7 +871,7 @@
                 <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">elm</span><span class="p">,</span> <span class="n">outfolder</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="BuildOSstruct"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.BuildOSstruct">[docs]</a><span class="k">def</span> <span class="nf">BuildOSstruct</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">displacement</span><span class="o">=</span><span class="mf">0.04</span><span class="o">*</span><span class="n">PC</span><span class="o">.</span><span class="n">Bohr2Ang</span><span class="p">):</span>
+<div class="viewcode-block" id="BuildOSstruct"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.BuildOSstruct">[docs]</a><span class="k">def</span> <span class="nf">BuildOSstruct</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">displacement</span><span class="o">=</span><span class="mf">0.04</span><span class="o">*</span><span class="n">PC</span><span class="o">.</span><span class="n">Bohr2Ang</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;BuildOSstruct: displacement = </span><span class="si">%.6f</span><span class="s1"> Ang&#39;</span><span class="o">%</span><span class="n">displacement</span>
     <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
@@ -874,7 +884,7 @@
     <span class="n">geom</span><span class="o">.</span><span class="n">writeFDF</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="CopyTree"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.CopyTree">[docs]</a><span class="k">def</span> <span class="nf">CopyTree</span><span class="p">(</span><span class="n">templateFolder</span><span class="p">,</span> <span class="n">newFolder</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CopyTree"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.CopyTree">[docs]</a><span class="k">def</span> <span class="nf">CopyTree</span><span class="p">(</span><span class="n">templateFolder</span><span class="p">,</span> <span class="n">newFolder</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="c1"># Make new directory</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">newFolder</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
@@ -891,7 +901,7 @@
     <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">templateFolder</span><span class="p">,</span> <span class="n">newFolder</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="UnitConvertTBOutput"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.UnitConvertTBOutput">[docs]</a><span class="k">def</span> <span class="nf">UnitConvertTBOutput</span><span class="p">(</span><span class="n">TBncfile</span><span class="p">,</span> <span class="n">newTBncfile</span><span class="p">):</span>
+<div class="viewcode-block" id="UnitConvertTBOutput"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.UnitConvertTBOutput">[docs]</a><span class="k">def</span> <span class="nf">UnitConvertTBOutput</span><span class="p">(</span><span class="n">TBncfile</span><span class="p">,</span> <span class="n">newTBncfile</span><span class="p">):</span>
     <span class="c1"># This function is copied from &quot;netcdf_transiestaInterpol.py&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;SetupRuns.UnitConvertTBOutput: </span><span class="si">%s</span><span class="s1">  --&gt;  </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">TBncfile</span><span class="p">,</span> <span class="n">newTBncfile</span><span class="p">)</span>
 
@@ -962,7 +972,7 @@
     <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="CheckIfFinished"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.CheckIfFinished">[docs]</a><span class="k">def</span> <span class="nf">CheckIfFinished</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
+<div class="viewcode-block" id="CheckIfFinished"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.CheckIfFinished">[docs]</a><span class="k">def</span> <span class="nf">CheckIfFinished</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
     <span class="k">print</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
@@ -978,7 +988,7 @@
         <span class="k">return</span> <span class="bp">False</span>
 
 
-<div class="viewcode-block" id="FindElectrodeSep"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.FindElectrodeSep">[docs]</a><span class="k">def</span> <span class="nf">FindElectrodeSep</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">AtomsPerLayer</span><span class="p">):</span>
+<div class="viewcode-block" id="FindElectrodeSep"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.FindElectrodeSep">[docs]</a><span class="k">def</span> <span class="nf">FindElectrodeSep</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">AtomsPerLayer</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">XVfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">dir</span><span class="o">+</span><span class="s1">&#39;/*.XV*&#39;</span><span class="p">):</span>
         <span class="k">print</span> <span class="n">XVfile</span>
         <span class="n">g</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">XVfile</span><span class="p">)</span>
@@ -989,7 +999,7 @@
 <span class="c1">### PBS code</span>
 
 
-<div class="viewcode-block" id="MakePBS"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.MakePBS">[docs]</a><span class="k">def</span> <span class="nf">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">PBSout</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="MakePBS"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.MakePBS">[docs]</a><span class="k">def</span> <span class="nf">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">PBSout</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">PBStemplate</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
         <span class="n">types</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;TS&#39;</span><span class="p">:</span> <span class="s1">&#39;RUN.TS.pbs&#39;</span><span class="p">,</span> <span class="s1">&#39;OS&#39;</span><span class="p">:</span> <span class="s1">&#39;RUN.OS.pbs&#39;</span><span class="p">,</span> <span class="s1">&#39;PY&#39;</span><span class="p">:</span> <span class="s1">&#39;RUN.py.pbs&#39;</span><span class="p">}</span>
         <span class="n">PBStemplate</span> <span class="o">=</span> <span class="n">types</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
@@ -1010,7 +1020,7 @@
         <span class="n">kuk</span>
 
 
-<div class="viewcode-block" id="WritePBS"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.WritePBS">[docs]</a><span class="k">def</span> <span class="nf">WritePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">PBSout</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">):</span>
+<div class="viewcode-block" id="WritePBS"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.WritePBS">[docs]</a><span class="k">def</span> <span class="nf">WritePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">PBSout</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">):</span>
     <span class="k">print</span> <span class="s1">&#39;SetupRuns.WritePBS: Reading&#39;</span><span class="p">,</span> <span class="n">PBStemplate</span>
     <span class="k">print</span> <span class="s1">&#39;SetupRuns.WritePBS: Writing&#39;</span><span class="p">,</span> <span class="n">PBSout</span>
 
@@ -1034,7 +1044,7 @@
     <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="SubmitPBS"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SubmitPBS">[docs]</a><span class="k">def</span> <span class="nf">SubmitPBS</span><span class="p">(</span><span class="n">workingfolder</span><span class="p">,</span> <span class="n">pbsfile</span><span class="p">):</span>
+<div class="viewcode-block" id="SubmitPBS"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.SubmitPBS">[docs]</a><span class="k">def</span> <span class="nf">SubmitPBS</span><span class="p">(</span><span class="n">workingfolder</span><span class="p">,</span> <span class="n">pbsfile</span><span class="p">):</span>
     <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">workingfolder</span><span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;qsub &#39;</span><span class="o">+</span><span class="n">pbsfile</span><span class="p">)</span>
@@ -1054,7 +1064,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2002-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
 
     </p>
   </div>
@@ -1076,7 +1086,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-12',
+            VERSION:'1.3.0-49',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
