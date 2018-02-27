@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(_this_dir)))
 
 project = u'Inelastica'
 author = u'Magnus Paulsson and Thomas Frederiksen'
-copyright = u'2002-2018, ' + author
+copyright = u'2003-2018, ' + author
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

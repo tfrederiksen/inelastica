@@ -11,11 +11,10 @@
 Welcome to Inelastica's documentation!
 ======================================
 
-Inelastica is a `Python`_ package for the `SIESTA`_/`TranSIESTA`_ DFT codes as well as a script to compute inelastic transport (and inelastica is the corresponding repository name).
+Inelastica is both the name of this whole `Python`_ package as well as that of an included script to compute inelastic transport characteristics.
+Inelastica is based on the `SIESTA`_/`TranSIESTA`_ DFT codes.
 
-Inelastica was originaly hosted at `SourceForge <inelastica-old_>`_, but since 2018 is on `GitHub <inelastica_>`_.
-
-Release 1.3 can obtained `here <releases_>`_ and the development version through:
+The latest release can obtained `here <releases_>`_ and the development version through:
 
 .. code-block:: bash
 
@@ -24,9 +23,8 @@ Release 1.3 can obtained `here <releases_>`_ and the development version through
 
 History
 -------
-
-The original Inelastica were originally written by Thomas Frederiksen. However, the parts included here were developed jointly by Thomas Frederiksen and Magnus Paulsson in the group of Mads Brandbyge at the Technical University of Denmark 2003-2005. The code has then gone through different editions with features added/removed and is still being developed.
-
+The project was initiated around 2003-2005 by Thomas Frederiksen and Magnus Paulsson while they worked in the group of Mads Brandbyge at the Technical University of Denmark.
+Inelastica was originally hosted at `SourceForge <inelastica-old_>`_ but moved to `GitHub <inelastica_>`_ in February 2018.
 
 Features
 --------
