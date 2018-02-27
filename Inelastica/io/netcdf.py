@@ -1,3 +1,21 @@
+"""
+
+netcdf (:mod:`Inelastica.io.netcdf`)
+====================================
+
+IO interface for handling NetCDF files
+
+.. currentmodule:: Inelastica.io.netcdf
+
+classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   NCfile
+
+"""
 import numpy as N
 import netCDF4 as NC4
 
