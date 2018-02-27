@@ -1,3 +1,22 @@
+"""
+
+Symmetry (:mod:`Inelastica.Symmetry`)
+=====================================
+
+Symmetry operations of lattice and basis.
+
+.. currentmodule:: Inelastica.Symmetry
+
+classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   Symmetry
+
+"""
+
 import Inelastica.io.siesta as SIO
 import Inelastica.MiscMath as MM
 import numpy as N

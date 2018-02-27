@@ -1,34 +1,55 @@
 """
-A completely rewritten Phonons.py script with various improvements
+
+Phonons (:mod:`Inelastica.Phonons`)
+===================================
+
+A completely rewritten ``Phonons.py`` script with various improvements
 and additional flexibility:
 
-* The dynamic atoms no longer need to be a complete range(FCfirst,FClast+1).
-  Any arbitrary list of atoms (options.DynamicAtoms) can now be specified.
+* The dynamic atoms no longer need to be a complete range (FCfirst,FClast+1).
+  Any arbitrary list of atoms (``options.DynamicAtoms``) can now be specified.
 
-* The displacement amplitude in the various FCrun and OSrun directories
+* The displacement amplitude in the various `FCrun` and `OSrun` directories
   may correspond to different values.
 
-* The code accepts that some atoms may have been displaced in several FCrun directories.
-  Only the first instance (first FCrun directory) encountered is read/used.
+* The code accepts that some atoms may have been displaced in several `FCrun`
+  directories. Only the first instance (first `FCrun` directory) encountered 
+  is read/used.
 
-* The auxiliary NetCDF file has been eliminated by simply interchanging 
-  the loops over gradients and phonon modes. Thus, only one gradient
-  need to be present in the memory at one time.
+* The auxiliary NetCDF file has been eliminated by simply interchanging the 
+  loops over gradients and phonon modes. Thus, only one gradient need to be 
+  present in the memory at one time.
 
-Thomas Frederiksen, August 2014
+Thomas Frederiksen, August 2014.
 
 Additional improvements to facilitate large-scale calcuations:
 
 * The code allows to specify the range of dynamic atoms for which the 
-  electron-phonon coupling elements are evaluated (flags:--EPHfirst,--EPHlast)
+  electron-phonon coupling elements are evaluated 
+  (flags: ``--EPHfirst``, ``--EPHlast``)
 
-* It is possible to restart the code (flag:--Restart) by using the NetCDF output obtained 
-  from a previous calculation as checkpoint file (flag:--CheckPointNetCDF)
+* It is possible to restart the code (flag: ``--Restart``) by using the 
+  NetCDF output obtained from a previous calculation as checkpoint file 
+  (flag: ``--CheckPointNetCDF``)
 
-* The matrix of electron-phonon coupling elements can be evaluated in 
-  single precision to reduce disk space usage (flag:--SinglePrec).
+* The matrix of electron-phonon coupling elements can be evaluated in single 
+  precision to reduce disk space usage (flag: ``--SinglePrec``).
 
-Daniele Stradi, April 2015
+Daniele Stradi, April 2015.
+
+.. currentmodule:: Inelastica.Phonons
+
+classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   FCrun
+   OTSrun
+   OSrun
+   DynamicalMatrix
+
 """
 
 import Inelastica.io.siesta as SIO

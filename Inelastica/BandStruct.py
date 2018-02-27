@@ -1,5 +1,12 @@
 """
+
+BandStruct (:mod:`Inelastica.BandStruct`)
+=========================================
+
 Bandstructure and Fermi surface calculator
+
+.. currentmodule:: Inelastica.BandStruct
+
 """
 
 import Inelastica.Symmetry as SYM

@@ -1,3 +1,22 @@
+"""
+
+Math Miscellaneous (:mod:`Inelastica.MiscMath`)
+===============================================
+
+Miscellaneous functions for mathematical operrations.
+
+.. currentmodule:: Inelastica.MiscMath
+
+classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   SpectralMatrix
+
+"""
+
 import numpy as N
 import numpy.linalg as LA
 import numpy.fft as FFT

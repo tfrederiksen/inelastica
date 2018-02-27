@@ -1,4 +1,22 @@
-# Kmesh module by T. Frederiksen
+"""
+
+Mesh (:mod:`Inelastica.physics.mesh`)
+=====================================
+
+Written by Thomas Frederikse.
+
+.. currentmodule:: Inelastica.physics.mesh
+
+classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   kmesh
+
+"""
+
 import Inelastica.MiscMath as MM
 import numpy as N
 

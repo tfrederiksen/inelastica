@@ -1,3 +1,25 @@
+"""
+
+NEGF (:mod:`Inelastica.NEGF`)
+=============================
+
+Non-Equilibrium Green's function
+
+.. currentmodule:: Inelastica.NEGF
+
+classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   SigDir
+   SavedSigClass
+   ElectrodeSelfEnergy
+   GF
+
+"""
+
 import Inelastica.io.siesta as SIO
 import Inelastica.MiscMath as MM
 import numpy as N

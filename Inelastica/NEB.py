@@ -1,6 +1,24 @@
 """
+
+NEB (:mod:`Inelastica.NEB`)
+===========================
+
 Nudged elastic band
+
+.. currentmodule:: Inelastica.NEB
+
+classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   general
+   savedData
+   step
+
 """
+
 import Inelastica.io.siesta as SIO
 import Inelastica.SetupRuns as SUR
 import Inelastica.MakeGeom as MG

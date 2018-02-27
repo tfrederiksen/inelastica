@@ -1,15 +1,25 @@
 """
+
+SetupRuns (:mod:`Inelastica.SetupRuns`)
+=======================================
+
 Functions to setup (Tran)SIESTA calculation and submit pbs jobs.
-CG: Optimization including scaling of electrode distances
-FC: For phonon and e-ph calculations
-OS: only overlap (S) calculation used to obtain e-ph coupling
-PH: Phonon frequencies and e-ph coupling
-TS: Transiesta adding electrode layers to CG geometry
-IN: (not working at the moment)
+
+* CG: Optimization including scaling of electrode distances
+* FC: For phonon and e-ph calculations
+* OS: only overlap (S) calculation used to obtain e-ph coupling
+* PH: Phonon frequencies and e-ph coupling
+* TS: Transiesta adding electrode layers to CG geometry
+* IN: (not working at the moment)
 
 The basic idea is to use an existing CG (geometry optimization) setup
 to create all the other calculation directories needed. 
+
+.. currentmodule:: Inelastica.SetupRuns
+
+
 """
+
 import os
 import glob
 import string

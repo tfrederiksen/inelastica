@@ -1,10 +1,26 @@
 """
+
+siesta (:mod:`Inelastica.io.siesta`)
+====================================
+
 Routines for IO in different formats:
-1: Geometries in xyz, XV, ANI, fdf, mkl etc formats
-2: Read Hamiltonian and Overlap from .TSHS file.
-3: fdf manipulations
-4: Real space Gaussian cube files
-5: Obtain information of basis orbitals for calculation (.ion.nc)
+
+1. Geometries in xyz, XV, ANI, fdf, mkl etc formats
+2. Read Hamiltonian and Overlap from *.TSHS* file
+3. fdf manipulations
+4. Real space Gaussian cube files
+5. Obtain information of basis orbitals for calculation (*.ion.nc*)
+
+.. currentmodule:: Inelastica.io.siesta
+
+classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   HS
+
 """
 import numpy as N
 import numpy.linalg as LA
@@ -1509,43 +1525,49 @@ def CheckTermination(infile):
 
 class HS:
     """
-    Create full HS from TSHS file. Read fn and assemble for specified k-point
+    Create full *HS* from *TSHS* file. Read fn and assemble for specified k-point
 
     External variables:
-    N            : Size of matrices
-    H[ispin,i,j] : Hamiltonian
-    S[i,j]       : Overlap
 
-    Internal variables from TS (index described as fortran def):
-    (NOTE all python lists start with index 0!)
-    nua          : Number of atoms in unitcell
-    nuo          : Number of orbitals in unitcell
-    nspin        : Number of spin
-    no           : Number of orbitals in supercell
-    maxnh        : Size of sparse matrices
-    isa(1:nua)   : Atomic number (not in netcdf)
-    lasto(0:nua) : Last orbital of atom in unitcell
-    xa(1:nua,1:3): Position of atoms (NOTE transpose of TS standard)
-    indxuo(1:no) : Index of equivalent orbital in unitcell
-    numh(1:nuo)  : Number of non-zero elements in row of H
-    listh(1:nuo) : Column index of H element 
-    Hsparse(1:nspin,1:maxnh) : Sparse H
-    Ssparse(1:nspin,1:maxnh) : Sparse S
-    qtot         : ??
-    temp         : ??
-    ef           : Fermi energy (why spin dependent?)
-    cell(1:3,1:3): Unitcell (ixyz,ivec)
-    gamma        : Logical Gamma-point
-    xij(1:maxnh,1:3) : Vector between orbital centers (NOTE transpose of TS)
-                       NOTE: xij=Rj-Ri where i,j correspond to Hij
+    - *N*                        : Size of matrices
+    - *H[ispin,i,j]*             : Hamiltonian
+    - *S[i,j]*                   : Overlap
+
+    Internal variables from TS (**NOTE**: index described as fortran
+    definition -- all python lists start with index 0!):
+
+    - *nua*                      : Number of atoms in unitcell
+    - *nuo*                      : Number of orbitals in unitcell
+    - *nspin*                    : Number of spin
+    - *no*                       : Number of orbitals in supercell
+    - *maxnh*                    : Size of sparse matrices
+    - *isa(1:nua)*               : Atomic number (not in netcdf)
+    - *lasto(0:nua)*             : Last orbital of atom in unitcell
+    - *xa(1:nua,1:3)*            : Position of atoms (NOTE transpose of TS standard)
+    - *indxuo(1:no)*             : Index of equivalent orbital in unitcell
+    - *numh(1:nuo)*              : Number of non-zero elements in row of H
+    - *listh(1:nuo)*             : Column index of H element 
+    - *Hsparse(1:nspin,1:maxnh)* : Sparse H
+    - *Ssparse(1:nspin,1:maxnh)* : Sparse S
+    - *qtot*                     : ??
+    - *temp*                     : ??
+    - *ef*                       : Fermi energy (why spin dependent?)
+    - *cell(1:3,1:3)*            : Unitcell (ixyz,ivec)
+    - *gamma*                    : Logical Gamma-point
+    - *xij(1:maxnh,1:3)*         : Vector between orbital centers
+       * (**NOTE1:** transpose of TS)
+       * (**NOTE2:** xij=Rj-Ri where i,j correspond to Hij)
 
     Derived internal variables:
-    listhptr(1:nuo) : Start of row-1 in sparse matrix 
-    atomindx(1:nuo) : Atom index corresponding to orbital in unitcell
-    rcell(1:3,1:3) : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)
+
+    - *listhptr(1:nuo)*          : Start of row-1 in sparse matrix 
+    - *atomindx(1:nuo)*          : Atom index corresponding to orbital in unitcell
+    - *rcell(1:3,1:3)*           : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)
 
     For onlyS: Hsparse is not avalable and gamma point is assumed
-        gamma: xij is set to 0 and indxuo set manually to 1:nou and -1 for nou+1:no to catch errors!
+
+    For gamma: xij is set to 0 and indxuo set manually to 1:nou and -1 for nou+1:no to catch errors!
+
     """
 
     def __init__(self, fn, BufferAtoms=N.empty((0,)), UseF90helpers=True):

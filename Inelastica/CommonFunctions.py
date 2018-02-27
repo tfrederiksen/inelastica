@@ -1,3 +1,12 @@
+"""
+
+CommonFunctions (:mod:`Inelastica.CommonFunctions`)
+===================================================
+
+.. currentmodule:: Inelastica.CommonFunctions
+
+"""
+
 from __future__ import print_function, absolute_import
 
 import sys
@@ -46,15 +55,13 @@ def CreatePipeOutput(f):
 def PrintMainHeader(name, options):
     import Inelastica.info as info
     print('=======================================================================')
-    print('INELASTICA VERSION %s [ GIT %s ]'%(info.version, info.git_revision_short))
+    print('INELASTICA VERSION : %s'%(info.label))
     print('RUNNING %s : %s'%(name.upper(), time.ctime()))
-    print()
-    print('\nOPTIONS:')
+    print('\nOPTIONS :')
     opts_dict = vars(options)
     keys = sorted(opts_dict)
     for i in keys:
         print('    ', i, '-->', opts_dict[i])
-    print()
     print('=======================================================================')
 
 
