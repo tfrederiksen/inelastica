@@ -3,7 +3,8 @@
 Publications using Inelastica
 =============================
 
-`Inelastica <docs_>`_ was used in the research publications listed below. 
+`Inelastica <docs_>`_ was used in the research publications listed below.
+Please help maintaining the list complete via a `pull request <pr_>`_ or simply an email to `thomas_frederiksen@ehu.eus <mailto:thomas_frederiksen@ehu.eus>`_. 
 
 #. T. Jasper-Tönnies, A. Garcia-Lekue, T. Frederiksen, S. Ulrich, R. Herges, and R. Berndt,
    *Conductance of a freestanding conjugated molecular wire*,
