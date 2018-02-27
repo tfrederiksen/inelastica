@@ -1,7 +1,13 @@
 """
-Eigenchannels:
-1: Eigenchannels, method from Paulsson and Brandbyge PRB 2007
-2: Calculate "bond" currents
+
+Eigenchannels (:mod:`Inelastica.EigenChannels`)
+===============================================
+
+1. Eigenchannels, method from Paulsson and Brandbyge PRB 2007
+2. Calculate "bond" currents
+
+.. currentmodule:: Inelastica.EigenChannels
+
 """
 
 import Inelastica.NEGF as NEGF

@@ -10,8 +10,10 @@ different routines for electronic structure calculations.
 
    api-gen/Inelastica.Phonons
    api-gen/Inelastica.NEGF
+   api-gen/Inelastica.EigenChannels
    api-gen/Inelastica.NEB
    api-gen/Inelastica.MiscMath
+   api-gen/Inelastica.MakeGeom
    api-gen/Inelastica.io
    api-gen/Inelastica.physics
 ..   api-gen/Inelastica.fortran
