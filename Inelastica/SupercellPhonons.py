@@ -53,6 +53,7 @@ import netCDF4 as NC4
 
 __all__ = ['Supercell_DynamicalMatrix']
 
+
 def GetOptions(argv, **kwargs):
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):

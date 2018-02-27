@@ -22,6 +22,7 @@ different routines for electronic structure calculations.
    api-gen/Inelastica.MakeGeom
    api-gen/Inelastica.BandStruct
    api-gen/Inelastica.CommonFunctions
+   api-gen/Inelastica.SetupRuns
    api-gen/Inelastica.ValueCheck
    api-gen/Inelastica.io
    api-gen/Inelastica.physics

@@ -790,6 +790,7 @@ class Plot:
         os.system(printcmd+tmpfile)
         print 'Plot send to printer (\"%s %s\")'%(printcmd, tmpfile)
 
+
 def test():
     print
     print '----------------------------------------------------'
