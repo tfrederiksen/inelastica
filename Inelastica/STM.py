@@ -12,7 +12,7 @@ same real space grid as `TranSIESTA`_ (real-space cutoff). These are
 saved in `DestDir/SystemLabel.A[LR][0-99].nc` files and are reused if 
 found. **NEEDS:** `TranSIESTA`_ calculation.
 
-2. Propagation of the scattering states from a surface (defined by a 
+2. Propagation of the scattering states from a surface (defined by a
 constant charge density) out into the vacuum region. After the x-y plane, 
 where the average potential of the slice is maximum (the separation 
 plane), is found, the potential is ascribed a constant value at this 

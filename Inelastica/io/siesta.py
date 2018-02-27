@@ -1546,7 +1546,7 @@ class HS:
     - *xa(1:nua,1:3)*            : Position of atoms (NOTE transpose of TS standard)
     - *indxuo(1:no)*             : Index of equivalent orbital in unitcell
     - *numh(1:nuo)*              : Number of non-zero elements in row of H
-    - *listh(1:nuo)*             : Column index of H element 
+    - *listh(1:nuo)*             : Column index of H element
     - *Hsparse(1:nspin,1:maxnh)* : Sparse H
     - *Ssparse(1:nspin,1:maxnh)* : Sparse S
     - *qtot*                     : ??

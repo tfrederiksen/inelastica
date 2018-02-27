@@ -441,7 +441,7 @@ class ElectrodeSelfEnergy:
 
         Algorith: Lopez Sancho*2 J Phys F:Met Phys 15 (1985) 851
 
-        I'm still very suspicios of this algorithm ... but it works and is really quick! 
+        I'm still very suspicios of this algorithm ... but it works and is really quick!
         The convergence is always checked against gs (E S - H - (E S01^+ - H01^+) gs (E S01 -H01) ) = I!
         """
         H, S, H01, S01 = self.H[ispin, :, :], self.S, self.H01[ispin, :, :], self.S01
