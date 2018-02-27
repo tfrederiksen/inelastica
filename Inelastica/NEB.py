@@ -206,6 +206,7 @@ class step:
                     done=True
             except:
                 done=False
+                pass
             return done
 
     def run(self):
