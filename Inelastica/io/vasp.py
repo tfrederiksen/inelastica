@@ -102,8 +102,8 @@ def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LA
         for jj in range(3):
             file.write(string.rjust('%.9f'%vectors[ii][jj], 16)+' ')
         file.write('\n')
-    for ii in range(len(specieslabels)):
-        file.write('  %s'%specieslabels[ii])
+    for lbl in specieslabels:
+        file.write('  %s'%lbl)
     file.write('\n')
     for ii in range(len(speciesnumbers)):
         file.write('  %i'%speciesnumbers[ii])

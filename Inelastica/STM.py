@@ -19,7 +19,7 @@ plane), is found, the potential is ascribed a constant value at this
 average. Saves the propagated wavefunctions at the separation plane in 
 `DestDir/[kpoint]/FD[kpoint].nc`. **NEEDS:** *TotalPotential.grid.nc* and 
 *Rho.grid.nc*.
- 
+
 3. Conductance calculation where the tip/substrate wavefunctions are 
 displaced to simulate the conductance at different tip-positions. The k 
 averaged STM image and the STM images of individual k points are saved in 

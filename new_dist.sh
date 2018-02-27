@@ -5,7 +5,7 @@ pack_name=Inelastica
 
 tmp_dir=.tmp
 # Get the revision number...
-r=`svn info | grep Revision | awk '{print $2}'`
+r=$(svn info | grep Revision | awk '{print $2}')
 echo "Found revision $r"
 
 function exp_clean {

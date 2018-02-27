@@ -33,7 +33,7 @@ class Symmetry:
     xyz : xyz coordinates [NN,3]
     snr : Siesta numbering of atoms [NN]
     anr : atomic number [NN]
-    pbc : periodic boundary conditions [3,3] (first index is basis vector, 
+    pbc : periodic boundary conditions [3,3] (first index is basis vector,
                                               second is x/y/z)
     # Derived quantities
     a1..3    : Lattice vectors of unitcell
@@ -43,7 +43,7 @@ class Symmetry:
     basis.xyz : xyz of basis inside a1..a3
     basis.snr, .anr, .NN : Siesta/atomic number and number of atoms
 
-    pointU33 : List of lattice point symmetries [?,3,3], i.e., the 
+    pointU33 : List of lattice point symmetries [?,3,3], i.e., the
              rotation/mirror symmetry operators in space
 
     # Full set of point operations around rotation center

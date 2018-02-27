@@ -771,7 +771,7 @@ def writeLOEData2Datafile(file, hw, T, nHT, HT):
     f = open(file, 'w')
     f.write("## Almost First Order Born Approximation (kbT=0)\n")
     f.write("## hw(eV)      Trans        non-H-term (e/pi/hbar)   H-term\n")
-    for ii in range(len(hw)):
-        f.write("## %e %e %e %e\n" % (hw[ii], T, nHT[ii], HT[ii]))
+    for ii,val in enumerate(hw):
+        f.write("## %e %e %e %e\n" % (val, T, nHT[ii], HT[ii]))
     f.write("\n")
     f.close()

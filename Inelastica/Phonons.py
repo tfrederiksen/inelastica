@@ -32,7 +32,7 @@ Additional improvements to facilitate large-scale calcuations:
   NetCDF output obtained from a previous calculation as checkpoint file 
   (flag: ``--CheckPointNetCDF``)
 
-* The matrix of electron-phonon coupling elements can be evaluated in single 
+* The matrix of electron-phonon coupling elements can be evaluated in single
   precision to reduce disk space usage (flag: ``--SinglePrec``).
 
 Daniele Stradi, April 2015.
