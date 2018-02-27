@@ -5,13 +5,7 @@ Physical objects (:mod:`Inelastica.physics`)
 
 .. module:: Inelastica.physics
 
-Available classes
-=================
-
-.. autosummary::
-   :toctree:
-
-   kmesh
+Manipulation of k-sampling mesh and physical quantities.
 
 """
 

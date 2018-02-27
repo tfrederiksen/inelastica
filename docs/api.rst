@@ -9,4 +9,6 @@ different routines for electronic structure calculations.
    :maxdepth: 2
 
    api-gen/Inelastica
+   api-gen/Inelastica.io
+   api-gen/Inelastica.physics
 

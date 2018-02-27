@@ -1,3 +1,14 @@
+"""
+
+Constantes (:mod:`Inelastica.physics.constants`)
+================================================
+
+Physical quantities and conversions.
+
+.. currentmodule:: Inelastica.physics.constants
+
+"""
+
 import numpy as N
 
 # From Kittel: Introd. Solid State Physics, 7th ed. (1996)
