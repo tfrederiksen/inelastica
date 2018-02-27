@@ -1,31 +1,107 @@
 """
-==============================
-Inelastica (:mod:`Inelastica`)
-==============================
+============================
+Inelastica (:mod:`MakeGeom`)
+============================
 
-.. module:: Inelastica
+.. module:: MakeGeom
 
-All classes defined in Inelastica.
-
-All classes
-===========
+classes
+=======
 
 .. autosummary::
    :toctree:
 
    Geom
+
+============================
+Inelastica (:mod:`MiscMath`)
+============================
+
+.. module:: MiscMath
+
+classes
+=======
+
+.. autosummary::
+   :toctree:
+
    SpectralMatrix
+
+=======================
+Inelastica (:mod:`NEB`)
+=======================
+
+.. module:: NEB
+
+classes
+=======
+
+.. autosummary::
+   :toctree:
+
    savedData
    step
    SigDir
    SavedSigClass
+
+========================
+Inelastica (:mod:`NEGF`)
+========================
+
+.. module:: NEGF
+
+classes
+=======
+
+.. autosummary::
+   :toctree:
+
    ElectrodeSelfEnergy
    GF
+
+===========================
+Inelastica (:mod:`Phonons`)
+===========================
+
+.. module:: Phonons
+
+classes
+=======
+
+.. autosummary::
+   :toctree:
+
    FCrun
    OTSrun
    OSrun
    DynamicalMatrix
+
+====================================
+Inelastica (:mod:`SupercellPhonons`)
+====================================
+
+.. module:: SupercellPhonons
+
+classes
+=======
+
+.. autosummary::
+   :toctree:
+
    Supercell_DynamicalMatrix
+
+============================
+Inelastica (:mod:`Symmetry`)
+============================
+
+.. module:: Symmetry
+
+classes
+=======
+
+.. autosummary::
+   :toctree:
+
    Symmetry
 
 """
