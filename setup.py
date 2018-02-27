@@ -4,38 +4,27 @@ import sys
 import time
 import subprocess
 
-# TODO: Compile F90helpers
-# TODO: Check prerequireies
-# TODO: Testcalculations
-
-
 def test_prereq():
 
     try:
         import numpy as N
         import numpy.linalg as LA
     except:
-        print "#### ERROR ####"
         print "Inelastica needs the package 'numpy' to run."
-        print "#### ERROR ####"
         raise NameError('numpy package not found')
 
     try:
         import numpy.distutils
         import numpy.distutils.extension
     except:
-        print "#### ERROR ####"
         print "Inelastica requires the f2py extension of numpy."
-        print "#### ERROR ####"
         raise NameError('numpy f2py package not found')
 
     try:
         import netCDF4 as NC4
     except:
-        print "#### ERROR ####"
         print "Inelastica requires netCDF4 (1.2.7 or newer recommended)"
-        print "https://pypi.python.org/pypi/netCDF4"
-        print "#### ERROR ####"
+        print "See https://pypi.python.org/pypi/netCDF4"
         raise NameError('netCDF4 package not found')
 
     # Make sure that numpy is compiled with optimized LAPACK/BLAS
@@ -79,16 +68,7 @@ for subdir, dirs, files in os.walk('Inelastica'):
         packages.append(subdir.replace(os.sep, '.'))
 
 
-# Inelastica version info
-MAJOR = 1
-MINOR = 3
-MICRO = 0
-VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
-GIT_REVISION = "unknown"
-
 # Generate configuration
-
-
 def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration(None, parent_package, top_path)
@@ -101,9 +81,17 @@ def configuration(parent_package='', top_path=None):
 
     return config
 
+# Inelastica version info
+MAJOR = 1
+MINOR = 3
+MICRO = 0
+VERSION = [MAJOR, MINOR, MICRO]
+GIT_REVISION = "82ed6cb22d00597f8910930958f095c161757b79"
 
+# Derive Inelastica version info from git tags
 def git_version():
     global GIT_REVISION
+    global VERSION
 
     def _minimal_ext_cmd(cmd):
         # construct minimal environment
@@ -125,8 +113,13 @@ def git_version():
         out = _minimal_ext_cmd(['git', 'rev-parse', 'HEAD'])
         rev = out.strip().decode('ascii')
         # Get latest tag
-        out = _minimal_ext_cmd(['git', 'describe', '--abbrev=0'])
+        out = _minimal_ext_cmd(['git', 'describe', '--abbrev=0', '--tags'])
         tag = out.strip().decode('ascii')
+        tag = tag.replace('v','')
+        version = tag.split('.')
+        # Get complete "git describe" string
+        out = _minimal_ext_cmd(['git', 'describe', '--tags'])
+        label = out.strip().decode('ascii')
         # Get number of commits since tag
         out = _minimal_ext_cmd(['git', 'rev-list', tag + '..', '--count'])
         count = out.strip().decode('ascii')
@@ -136,10 +129,13 @@ def git_version():
         print(e)
         # Retain the revision name
         rev = GIT_REVISION
+        # Retain version
+        version = VERSION
+        label = 'v'+'.'.join(map(str,VERSION))
         # Assume it is on tag
         count = '0'
 
-    return rev, int(count)
+    return rev, version, int(count), label
 
 
 def write_version(filename='Inelastica/info.py'):
@@ -155,6 +151,7 @@ minor   = {version[1]}
 micro   = {version[2]}
 version = '.'.join(map(str,[major, minor, micro]))
 release = version
+label   = '{description}'
 
 if git_count > 2:
     # Add git-revision to the version string
@@ -162,17 +159,17 @@ if git_count > 2:
 """
     # If we are in git we try and fetch the
     # git version as well
-    GIT_REV, GIT_COUNT = git_version()
+    GIT_REV, GIT_VER, GIT_COUNT, GIT_DESCR = git_version()
     with open(filename, 'w') as fh:
-        fh.write(version_str.format(version=[MAJOR, MINOR, MICRO],
+        fh.write(version_str.format(version=GIT_VER,
                                     count=GIT_COUNT,
-                                    git=GIT_REV))
+                                    git=GIT_REV,
+                                    description=GIT_DESCR))
 
 write_version()
 
 # Main setup of python modules
 setup(name='Inelastica',
-      # version=git_version()[0],
       requires = ['python (>=2.7)', 'numpy (>=1.8)', 'scipy (>=0.17)', 'netCDF4 (>=1.2.7)'],
       description='Python tools for SIESTA/TranSIESTA',
       author='Magnus Paulsson and Thomas Frederiksen',
