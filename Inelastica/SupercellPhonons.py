@@ -1,52 +1,35 @@
 """
 
-==========================================
-SupercellPhonons (:mod:`SupercellPhonons`)
-==========================================
+SupercellPhonons (:mod:`Inelastica.SupercellPhonons`)
+=====================================================
 
 A simple interface to evaluate electron and phonon bands on 
 a set of points in reciprocal space.
 
-The input file format with N points is simply:
+The input file format with `N` points is simply:
 
-  kx(1) ky(1) kz(1) [label]
-  kx(2) ky(2) kz(2) [label]
-...
-  kx(N) ky(N) kz(N) [label]
+.. code-block:: bash
 
-Units: 1/Ang.
+    kx(1) ky(1) kz(1) [label]
+    kx(2) ky(2) kz(2) [label]
+    ...
+    kx(N) ky(N) kz(N) [label]
 
-Phase factors defined as: exp(i k.r)
+**Units:** 1/Ang.
 
-Thomas Frederiksen, March 2015
+Phase factors defined as: `exp(i k.r)`
 
-.. module:: SupercellPhonons
+Thomas Frederiksen, March 2015.
+
+.. currentmodule:: Inelastica.SupercellPhonons
 
 classes
-=======
+-------
 
 .. autosummary::
    :toctree:
 
    Supercell_DynamicalMatrix
-
-functions
-=========
-
-.. autosummary::
-   :toctree:
-
-   GetOptions
-   ReadKpoints
-   ReadKpoints_netcdf
-   ReadKpoints_ascii
-   WriteKpoints
-   WritePath
-   SortBands
-   PlotElectronBands
-   PlotPhononBands
-   ComputeDOS
-   WriteDOS
 
 """
 
@@ -68,6 +51,7 @@ import string
 import scipy.linalg as SLA
 import netCDF4 as NC4
 
+__all__ = ['Supercell_DynamicalMatrix']
 
 def GetOptions(argv, **kwargs):
     # if text string is specified, convert to list

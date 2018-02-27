@@ -1,3 +1,12 @@
+"""
+
+STMFD (:mod:`Inelastica.STMFD`)
+===============================
+
+.. currentmodule:: Inelastica.STMFD
+
+"""
+
 import numpy               as N
 import scipy.linalg        as SLA
 import netCDF4             as NC

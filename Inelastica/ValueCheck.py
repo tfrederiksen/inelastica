@@ -1,16 +1,24 @@
-# Simple case for allowing the newer print function (Python3 compliant)
-from __future__ import print_function
-
 """
+
+ValueCheck (:mod:`Inelastica.ValueCheck`)
+=========================================
+
 Contains general quantities that are used to do checks in the 
-Inelastica package.
+`Inelastica`_ package.
 
 It allows users to edit the criterias of crashes without editing
 the code.
 
-Currently if this is to be used with Inelastica or pyTBT, it should
+Currently if this is to be used with `Inelastica`_ or `pyTBT`, it should
 be in a wrapper call which emulates the options.
+
+.. currentmodule:: Inelastica.ValueCheck
+
+
 """
+
+# Simple case for allowing the newer print function (Python3 compliant)
+from __future__ import print_function
 
 import sys as s
 import numpy as _np
