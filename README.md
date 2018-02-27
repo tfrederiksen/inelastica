@@ -3,15 +3,15 @@
 
 # Inelastica #
 
-__Inelastica__ is both the name of this whole Python package
+[__Inelastica__][docs] is both the name of this whole Python package
 as well as that of an included script to compute inelastic transport characteristics.
-__Inelastica__ is based on the [SIESTA/TranSIESTA][siesta] DFT codes.
+[__Inelastica__][docs] is based on the [SIESTA/TranSIESTA][siesta] DFT codes.
 
 The project was initiated around 2003-2005 by Thomas Frederiksen and Magnus Paulsson
 while they worked in the group of Mads Brandbyge at the Technical University of Denmark.
 
 ## Features ##
-__Inelastica__ contains a number of scripts such as
+[__Inelastica__][docs] contains a number of scripts such as
 
    - `geom2geom`: Geometry conversion between different file formats
    - `Bandstructures`: Computation of electron and phonon band structures
@@ -74,7 +74,7 @@ If you find any bugs please form a [bug report/issue][issues]
 If you have a fix please consider adding a [pull request][pulls].
 
 ## License ##
-The Inelastica license is [LGPL][lgpl], please see the LICENSE file.
+The [__Inelastica__][docs] license is [LGPL][lgpl], please see the LICENSE file.
 
 <!---
 Links to external and internal sites.
