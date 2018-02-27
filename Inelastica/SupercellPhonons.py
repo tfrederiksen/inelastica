@@ -1,4 +1,9 @@
 """
+
+==========================================
+SupercellPhonons (:mod:`SupercellPhonons`)
+==========================================
+
 A simple interface to evaluate electron and phonon bands on 
 a set of points in reciprocal space.
 
@@ -14,6 +19,35 @@ Units: 1/Ang.
 Phase factors defined as: exp(i k.r)
 
 Thomas Frederiksen, March 2015
+
+.. module:: SupercellPhonons
+
+classes
+=======
+
+.. autosummary::
+   :toctree:
+
+   Supercell_DynamicalMatrix
+
+functions
+=========
+
+.. autosummary::
+   :toctree:
+
+   GetOptions
+   ReadKpoints
+   ReadKpoints_netcdf
+   ReadKpoints_ascii
+   WriteKpoints
+   WritePath
+   SortBands
+   PlotElectronBands
+   PlotPhononBands
+   ComputeDOS
+   WriteDOS
+
 """
 
 import Inelastica.io.siesta as SIO

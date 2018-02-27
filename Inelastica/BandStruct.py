@@ -1,5 +1,26 @@
 """
+
+==============================
+BandStruct (:mod:`BandStruct`)
+==============================
+
+.. module:: BandStruct
+
 Bandstructure and Fermi surface calculator
+
+.. autosummary::
+   :toctree:
+
+   main
+   readxv
+   readbasis
+   readHS
+   calcFS
+   writeFS
+   calcBands
+   writeBands
+   setupParameters
+
 """
 
 import Inelastica.Symmetry as SYM

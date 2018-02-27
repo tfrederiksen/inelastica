@@ -1,7 +1,7 @@
 """
-============================
-Inelastica (:mod:`MakeGeom`)
-============================
+==========================
+MakeGeom (:mod:`MakeGeom`)
+==========================
 
 .. module:: MakeGeom
 
@@ -13,9 +13,9 @@ classes
 
    Geom
 
-============================
-Inelastica (:mod:`MiscMath`)
-============================
+==========================
+MiscMath (:mod:`MiscMath`)
+==========================
 
 .. module:: MiscMath
 
@@ -27,9 +27,9 @@ classes
 
    SpectralMatrix
 
-=======================
-Inelastica (:mod:`NEB`)
-=======================
+================
+NEB (:mod:`NEB`)
+================
 
 .. module:: NEB
 
@@ -44,9 +44,9 @@ classes
    SigDir
    SavedSigClass
 
-========================
-Inelastica (:mod:`NEGF`)
-========================
+==================
+NEGF (:mod:`NEGF`)
+==================
 
 .. module:: NEGF
 
@@ -59,9 +59,9 @@ classes
    ElectrodeSelfEnergy
    GF
 
-===========================
-Inelastica (:mod:`Phonons`)
-===========================
+========================
+Phonons (:mod:`Phonons`)
+========================
 
 .. module:: Phonons
 
@@ -76,9 +76,9 @@ classes
    OSrun
    DynamicalMatrix
 
-====================================
-Inelastica (:mod:`SupercellPhonons`)
-====================================
+==========================================
+SupercellPhonons (:mod:`SupercellPhonons`)
+==========================================
 
 .. module:: SupercellPhonons
 
@@ -90,9 +90,9 @@ classes
 
    Supercell_DynamicalMatrix
 
-============================
-Inelastica (:mod:`Symmetry`)
-============================
+==========================
+Symmetry (:mod:`Symmetry`)
+==========================
 
 .. module:: Symmetry
 
