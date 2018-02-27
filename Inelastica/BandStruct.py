@@ -1,25 +1,11 @@
 """
 
-==============================
-BandStruct (:mod:`BandStruct`)
-==============================
-
-.. module:: BandStruct
+BandStruct (:mod:`Inelastica.BandStruct`)
+=========================================
 
 Bandstructure and Fermi surface calculator
 
-.. autosummary::
-   :toctree:
-
-   main
-   readxv
-   readbasis
-   readHS
-   calcFS
-   writeFS
-   calcBands
-   writeBands
-   setupParameters
+.. currentmodule:: Inelastica.BandStruct
 
 """
 

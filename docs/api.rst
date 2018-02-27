@@ -20,6 +20,8 @@ different routines for electronic structure calculations.
    api-gen/Inelastica.SupercellPhonons
    api-gen/Inelastica.MiscMath
    api-gen/Inelastica.MakeGeom
+   api-gen/Inelastica.BandStruct
+   api-gen/Inelastica.CommonFunctions
    api-gen/Inelastica.ValueCheck
    api-gen/Inelastica.io
    api-gen/Inelastica.physics
