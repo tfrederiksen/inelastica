@@ -1,3 +1,14 @@
+"""
+=============================================
+Fortran interface (:mod:`Inelastica.fortran`)
+=============================================
+
+.. module:: Inelastica.fortran
+
+Interface to fortran routines.
+
+"""
+
 import F90helpers
 import F90_lapack
 

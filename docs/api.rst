@@ -8,7 +8,8 @@ different routines for electronic structure calculations.
 .. toctree::
    :maxdepth: 2
 
-   api-gen/Inelastica
+   api-gen/Inelastica.Phonons
    api-gen/Inelastica.io
    api-gen/Inelastica.physics
+..   api-gen/Inelastica.fortran
 

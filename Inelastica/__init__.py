@@ -1,4 +1,12 @@
 """
+==============================
+Inelastica (:mod:`Inelastica`)
+==============================
+
+.. module:: Inelastica
+
+Inelastica is a `Python`_ package that provides modules/scripts for
+electronic structure and elastic/inelastic transport calculations.
 
 """
 
