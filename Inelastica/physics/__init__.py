@@ -15,7 +15,7 @@ Available classes
 
 """
 
-from .mesh import *
-from .constants import *
+import mesh
+import constants
 
 __all__ = [s for s in dir() if not s.startswith('_')]
