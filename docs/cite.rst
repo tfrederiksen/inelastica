@@ -30,3 +30,12 @@ If `Inelastica <docs_>`_ is used to produce scientific contributions please incl
       doi = {10.1103/PhysRevB.76.115117}
     }
 
+    @Article{stm,
+      Title = {Scanning tunneling microscopy current from localized basis orbital density functional theory},
+      Author = {Gustafsson, A. and Paulsson, M.},
+      Journal = {Phys. Rev. B},
+      Year = {2016},
+      Pages = {115434},
+      Volume = {93},
+      Doi = {10.1103/PhysRevB.93.115434},
+    }
