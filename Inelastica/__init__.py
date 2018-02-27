@@ -5,28 +5,8 @@ Inelastica (:mod:`Inelastica`)
 
 .. module:: Inelastica
 
-All classes defined in Inelastica.
-
-All classes
-===========
-
-.. autosummary::
-   :toctree:
-
-   Geom
-   SpectralMatrix
-   savedData
-   step
-   SigDir
-   SavedSigClass
-   ElectrodeSelfEnergy
-   GF
-   FCrun
-   OTSrun
-   OSrun
-   DynamicalMatrix
-   Supercell_DynamicalMatrix
-   Symmetry
+Inelastica is a `Python`_ package that provides modules/scripts for
+electronic structure and elastic/inelastic transport calculations.
 
 """
 

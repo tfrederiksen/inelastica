@@ -1,61 +1,71 @@
-import time
-import math
-import os
-import string
-import numpy as N
-
 """
-###########################################################################
-#   Module WriteXMGR.py / Inelastica.io.xmgrace                           #
-#   Written by Thomas Frederiksen, July 2007.                             #
-#   Copyright (c), All Rights Reserved                                    #
-#                                                                         #
-#   This program is free software; you can redistribute it and/or modify  #
-#   it under the terms of the GNU General Public License as published by  #
-#   the Free Software Foundation; either version 3 of the License, or     #
-#   (at your option) any later version.                                   #
-#                                                                         #
-#   This program is distributed in the hope that it will be useful,       #
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of        #
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
-#   GNU General Public License for more details.                          #
-#                                                                         #
-#   You should have received a copy of the GNU General Public License     #
-#   along with this program.  If not, see <http://www.gnu.org/licenses/>. #
-###########################################################################
 
+xmgrace (:mod:`Inelastica.io.xmgrace`)
+======================================
 
-This module provides a Python interface to XMGR/GRACE (get the newest
-information about GRACE and download the latest version at
-http://plasma-gate.weizmann.ac.il/Grace/).
+This module provides a `Python`_ interface to write `XMGR/GRACE <xmgrace_>`_ files.
 
-To create a GRACE file from a given data set, the minimal script
-structure will take the following form:
+To create a `GRACE <xmgrace_>`_ plot from a given data set, a minimal 
+script structure takes the following form:
 
+.. code-block:: bash
+
+    >>> from Inelastica.io.xmgrace import *
+    >>> x,y = [1,2],[3,4]
     >>> data = XYset(x,y)
     >>> graph = Graph(data)
     >>> plot = Plot('test.agr',graph)
     >>> plot.WriteFile()
 
-...Done!
+More graphs and data sets are easily appended. Continuing on the 
+example above:
 
-More graphs and data sets are easily appended. Continuing on
-the example above:
+.. code-block:: bash
 
+    >>> x2,y2 = [0,1],[2,1]
     >>> data2 = XYset(x2,y2)
     >>> graph2 = Graph(data2)
     >>> plot.AddGraphs(graph2)
     >>> plot.ArrangeGraphs(nx=2,ny=1)
     >>> plot.WriteFile('test2.agr')
 
-With these additional lines we end up with a plot containing
-two graphs. The function \"ArrangeGraphs(...)\" is called
-to arrange the graphs nicely on the canvas (side by side).
+With these additional lines we end up with a plot containing two graphs. 
+The function call to ``ArrangeGraphs(...)`` arranges them nicely on the
+canvas side by side.
 
-A more detailed demonstration of this module can be generated
-by typing \"python WriteXMGR.py\" in the command promt. This
-will create a file \"test.agr\".
+A more detailed demonstration of this module can be generated with
+
+    >>> import Inelastica.io.xmgrace as xmgr
+    >>> xmgr.test()
+
+creating the file `test.agr`.
+
+Written by Thomas Frederiksen, July 2007.
+
+.. currentmodule:: Inelastica.io.xmgrace
+
+classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   Dataset
+   XYset
+   XYDXset
+   XYDYset
+   XYDXDYset
+   XYSIZEset
+   Graph
+   Plot
+
 """
+
+import time
+import math
+import os
+import string
+import numpy as N
 
 symbols = {'\alpha': '\\f{Symbol}a',
            '\beta': '\\f{Symbol}b',
@@ -86,6 +96,9 @@ def Array2XYsets(A, **keywords):
 
 
 def Datafile2XYsets(fn, Sort=False, **keywords):
+    """
+    Reads an ascii file and applies ``Array2XYsets(...)``
+    """
     print 'WriteXMGR.Datafile2XYsets: reading', fn
     f = open(fn, 'r')
     A = []
@@ -778,7 +791,7 @@ class Plot:
         print 'Plot send to printer (\"%s %s\")'%(printcmd, tmpfile)
 
 
-if __name__ == '__main__':
+def test():
     print
     print '----------------------------------------------------'
     print 'Generating an example of the \"WriteXMGR.py\" module'
@@ -857,3 +870,6 @@ if __name__ == '__main__':
     p.WriteFile()
     p.Print2File('test.eps')
     #p.Print()
+
+if __name__ == '__main__':
+    test()

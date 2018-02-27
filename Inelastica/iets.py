@@ -1,3 +1,14 @@
+"""
+
+IETS (:mod:`Inelastica.iets`)
+=============================
+
+Inelastic transport module
+
+.. currentmodule:: Inelastica.iets
+
+"""
+
 import Inelastica.NEGF as NEGF
 import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG

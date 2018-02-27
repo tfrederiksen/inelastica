@@ -1,3 +1,12 @@
+"""
+
+CommonFunctions (:mod:`Inelastica.CommonFunctions`)
+===================================================
+
+.. currentmodule:: Inelastica.CommonFunctions
+
+"""
+
 from __future__ import print_function, absolute_import
 
 import sys

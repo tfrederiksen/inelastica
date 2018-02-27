@@ -1,6 +1,22 @@
 """
+
+Geometry (:mod:`Inelastica.MakeGeom`)
+=====================================
+
 Routines to read, write and manipulate geometries.
+
+.. currentmodule:: Inelastica.MakeGeom
+
+classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   Geom
+
 """
+
 import Inelastica.io.siesta as SIO
 import Inelastica.io.vasp as VIO
 import numpy as N
