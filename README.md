@@ -64,8 +64,7 @@ If used to produce scientific contributions please include relevant citations to
     }
 
 ## Documentation ##
-Some documentation may be found at the Inelastica wiki [here][wiki].
-
+Some documentation may be found at the [__Inelastica__][docs] page [here][docs].
 
 ## Contributions, issues and bugs ##
 Contributions are highly appreciated.
@@ -84,4 +83,4 @@ Links to external and internal sites.
 [issues]: https://github.com/tfrederiksen/inelastica/issues
 [pulls]: https://github.com/tfrederiksen/inelastica/pulls
 [lgpl]: http://www.gnu.org/licenses/lgpl.html
-[wiki]:  http://dipc.ehu.es/frederiksen/inelastica
+[docs]: https://tfrederiksen.github.io/inelastica
