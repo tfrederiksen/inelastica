@@ -12,6 +12,9 @@ different routines for electronic structure calculations.
    api-gen/Inelastica.NEGF
    api-gen/Inelastica.EigenChannels
    api-gen/Inelastica.NEB
+   api-gen/Inelastica.iets
+   api-gen/Inelastica.pyTBT
+   api-gen/Inelastica.STM
    api-gen/Inelastica.MiscMath
    api-gen/Inelastica.MakeGeom
    api-gen/Inelastica.io

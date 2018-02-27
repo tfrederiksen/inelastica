@@ -1,20 +1,29 @@
 """
-################################################################
 
- python TBTrans 
- Magnus Paulsson magnus.paulsson@hik.se
+python TBTrans (:mod:`Inelastica.pyTBT`)
+========================================
 
- Requires: numpy (compile it linked with mkl, acml or atlas!)
-           For speed compile the fortran subroutines in F90 
-           (cd F90;source compile.bat)
+Magnus Paulsson magnus.paulsson@hik.se
 
-  UNITS! Always eV and Angstrom!
-         k-values always given in range [0,1.0] (or [-0.5,0.5])
-         They are not in reciprocal space. Instead they corresponds
-         to the mathematical orthogonal space that is fourier 
-         transformed.
+Requires:
 
-################################################################
+* numpy (compile it linked with mkl, acml or atlas!)
+
+For speed compile the fortran subroutines in `fortran` directory:
+
+.. code-block:: bash
+
+    cd Inelastica/fortran
+    source compile.bat
+
+**UNITS:** Always eV and Angstrom!
+
+k-values always given in range [0,1.0] (or [-0.5,0.5]). They are not 
+in reciprocal space. Instead they corresponds to the mathematical 
+orthogonal space that is fourier transformed.
+
+.. currentmodule:: Inelastica.pyTBT
+
 """
 
 import Inelastica.io.siesta as SIO
