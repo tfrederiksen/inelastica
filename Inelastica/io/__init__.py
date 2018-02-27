@@ -25,9 +25,9 @@ IO classes
 
 """
 
-from .siesta import *
-from .vasp import *
-from .xmgrace import *
-from .netcdf import *
+import siesta
+import vasp
+import xmgrace
+import netcdf
 
 __all__ = [s for s in dir() if not s.startswith('_')]
