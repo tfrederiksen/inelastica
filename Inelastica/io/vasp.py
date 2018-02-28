@@ -281,7 +281,7 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
                 else:
                     # VASP wrote 3-column data...
                     extrablock = 1
-            for i, sval enumerate(s):
+            for i, sval in enumerate(s):
                 s[i] = float(sval)
             if (j-extrablock) in atom_index:
                 dat[e, 0] = s[0]-eF
