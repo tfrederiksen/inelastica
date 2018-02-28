@@ -16,10 +16,8 @@ import Inelastica.MakeGeom as MG
 import Inelastica.MiscMath as MM
 import numpy as N
 import netCDF4 as NC4
-import sys
 import string
 import struct
-import glob
 import Inelastica.physics.constants as PC
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
@@ -257,7 +255,7 @@ def calcWF(options, geom, basis, Y):
         ri=dr/basis.delta[ii]
         ri=N.where(ri<imax, ri, imax)
         ri=ri.astype(N.int)
-        costh, sinth = MM.outerAdd(0*ddx, 0*ddy, ddz)/dr, drho/dr
+        costh = MM.outerAdd(0*ddx, 0*ddy, ddz)/dr
         cosfi, sinfi = MM.outerAdd(ddx, 0*ddy, 0*ddz)/drho, MM.outerAdd(0*ddx, ddy, 0*ddz)/drho
 
         # Numpy has changed the choose function to crap!

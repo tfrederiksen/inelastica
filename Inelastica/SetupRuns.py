@@ -71,7 +71,7 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
     """
 
     # Make new directories
-    head, tail = os.path.split(newCGrun)
+    head = os.path.split(newCGrun)[0]
     if not os.path.isdir(head):
         print '\nSetupRuns.SetupCGrun: Creating folder %s' %head
         os.mkdir(head)
@@ -354,7 +354,7 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
               %newTSrun
     # Copy all sub-directories
     for elm in glob.glob(templateTSrun+'/*'):
-        head, tail = os.path.split(elm)
+        tail = os.path.split(elm)[1]
         if os.path.isdir(elm):
             CopyTree(elm, newTSrun+'/'+tail, overwrite=overwrite)
     # Copy template files
@@ -545,7 +545,7 @@ def SetupPHrun(newPHrun, wildcard, onlySdir='../OSrun',
             print "Error: directory already exist ", newPHrun
             sys.exit(1)
 
-    head, tail = os.path.split(newPHrun)
+    tail = os.path.split(newPHrun)[1]
     # find device?
     print 'SetupRuns.SetupPHrun: Writing', newPHrun+'/PHrun.py'
     file = open(newPHrun+'/PHrun.py', 'w')
@@ -604,7 +604,7 @@ def SetupInelastica(templateInelastica, newInelastica, TSrun,
     """
     print 'SetupRuns.SetupInelastica: Creating', newInelastica
     CopyTree(templateInelastica, newInelastica, overwrite=False)
-    head, tail = os.path.split(templateInputFile)
+    tail = os.path.split(templateInputFile)[1]
 
     name, ext = os.path.splitext(newInputFilename)
     cmmd = []
@@ -830,7 +830,7 @@ def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, type = 'TS'):
         if os.path.exists(os.path.expanduser('~/.Inelastica/'+PBStemplate)):
             PBStemplate = os.path.expanduser('~/.Inelastica/'+PBStemplate)
         else:
-            InelasticaDir, crap = os.path.split(__file__)
+            InelasticaDir = os.path.split(__file__)[0]
             PBStemplate = os.path.abspath(InelasticaDir+'/PBS/'+PBStemplate)
 
     if os.path.exists(PBStemplate):
@@ -849,7 +849,7 @@ def WritePBS(PBStemplate, PBSout, PBSsubs):
     print 'SetupRuns.WritePBS: Writing', PBSout
 
     # Make default job name
-    fullPath, crap = os.path.split(os.path.abspath(PBSout))
+    fullPath = os.path.split(os.path.abspath(PBSout))[0]
     last2dir = string.split(fullPath, '/')[-2:]
     try: # Check for numbers at start ... not liked by PBS
         tmp=int(last2dir[0][0])+1

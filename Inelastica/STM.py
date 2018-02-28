@@ -45,7 +45,6 @@ import sys
 import string
 import glob
 import os
-import resource
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
 import Inelastica.io.netcdf as writeNC

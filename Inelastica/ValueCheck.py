@@ -121,7 +121,7 @@ def OptionsCheck(opts, exe):
         raise IOError("FDF-file not found: "+opts.fn)
 
     # Read SIESTA files
-    opts.head, tail = osp.split(opts.fn)
+    opts.head = osp.split(opts.fn)[0]
     if opts.head == '': # set filepath if missing
         opts.head = '.'
     print(exe+": Reading keywords from {0} \n".format(opts.fn))

@@ -146,7 +146,6 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     pot = N.array(file.variables['gridfunc'][:], N.float)[0]
 
     print 'Reading DFT density from:  Rho.grid.nc'
-    size=[file.dimensions['n1'], file.dimensions['n2'], file.dimensions['n3']]
     rho = N.array(file.variables['gridfunc'][:], N.float)[0]
 
     #Import supercell grid from one localized-basis state

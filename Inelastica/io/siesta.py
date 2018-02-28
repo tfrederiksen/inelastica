@@ -318,7 +318,7 @@ def ReadWFSFile(filename):
                     label = ''
                     for a in range(20): label += 'c'
                     out =  ReadFortranBin(file, 'I'+label+'III'+label+'dd', 1)
-                    iaorb, lab1, j, cnfigfio, lab2, repsi, impsi = out[0], out[1:21], out[21], out[23], out[24:44], out[44], out[45]
+                    lab1, j, lab2, repsi, impsi = out[1:21], out[21], out[24:44], out[44], out[45]
                     labelfis, symfio = '', ''
                     for a in range(20):
                         labelfis += lab1[a]
@@ -559,7 +559,6 @@ def ReadSTRUCT_OUTFile(filename):
 
 def WriteFortranBin(file, type, data):
     "Writes Fortran binary data structures"
-    import struct
     try:
         L = len(data)
         if L == 1: data = data[0]
@@ -584,7 +583,7 @@ def ReadFDFLines(infile, head='', printAlot=True):
         infile = input file"""
     infile = os.path.abspath(infile)
     if head == '':
-        head, tail =  os.path.split(infile)
+        head =  os.path.split(infile)[0]
     if printAlot:
         print 'io.siesta.ReadFDFLines: Reading', infile
     file = SIO_open(infile, 'r')
