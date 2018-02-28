@@ -17,7 +17,7 @@ and additional flexibility:
   is read/used.
 
 * The auxiliary NetCDF file has been eliminated by simply interchanging the
-  loops over gradients and phonon modes. Thus, only one gradient need to be 
+  loops over gradients and phonon modes. Thus, only one gradient need to be
   present in the memory at one time.
 
 Thomas Frederiksen, August 2014.
@@ -25,11 +25,11 @@ Thomas Frederiksen, August 2014.
 Additional improvements to facilitate large-scale calcuations:
 
 * The code allows to specify the range of dynamic atoms for which the
-  electron-phonon coupling elements are evaluated 
+  electron-phonon coupling elements are evaluated
   (flags: ``--EPHfirst``, ``--EPHlast``)
 
 * It is possible to restart the code (flag: ``--Restart``) by using the
-  NetCDF output obtained from a previous calculation as checkpoint file 
+  NetCDF output obtained from a previous calculation as checkpoint file
   (flag: ``--CheckPointNetCDF``)
 
 * The matrix of electron-phonon coupling elements can be evaluated in single

@@ -3,18 +3,18 @@
 STM (:mod:`Inelastica.STM`)
 ===========================
 
-Script that calculates STM images using the Bardeen approximation 
+Script that calculates STM images using the Bardeen approximation
 outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The
 script is divided into 3 parts:
 
 1. Calculation of the scattering states at the Fermi-energy on the
 same real space grid as `TranSIESTA`_ (real-space cutoff). These are
-saved in `DestDir/SystemLabel.A[LR][0-99].nc` files and are reused if 
+saved in `DestDir/SystemLabel.A[LR][0-99].nc` files and are reused if
 found. **NEEDS:** `TranSIESTA`_ calculation.
 
 2. Propagation of the scattering states from a surface (defined by a
-constant charge density) out into the vacuum region. After the x-y plane, 
-where the average potential of the slice is maximum (the separation 
+constant charge density) out into the vacuum region. After the x-y plane,
+where the average potential of the slice is maximum (the separation
 plane), is found, the potential is ascribed a constant value at this
 average. Saves the propagated wavefunctions at the separation plane in
 `DestDir/[kpoint]/FD[kpoint].nc`. **NEEDS:** *TotalPotential.grid.nc* and
@@ -269,9 +269,9 @@ def calcTSWF(options, ikpoint):
         A=A*PC.Rydberg2eV # Change to 1/Ryd
         ev, U = LA.eigh(A)
         Utilde = N.empty(U.shape, U.dtype)
-        for jj in range(len(ev)): # Problems with negative numbers
-            if ev[jj]<0: ev[jj]=0
-            Utilde[:, jj]=N.sqrt(ev[jj]/(2*N.pi))*U[:, jj]
+        for jj, val in enumerate(ev): # Problems with negative numbers
+            if val<0: val=0
+            Utilde[:, jj]=N.sqrt(val/(2*N.pi))*U[:, jj]
         indx2 = N.where(abs(abs(ev)>1e-4))[0] # Pick non-zero states
 
         ev=ev[indx2]
@@ -369,7 +369,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
     the real space wavefunction folded into the cell using the k-vector.
     If Folded==False, you can choose any 'a' but folding by the PBC will
     not be done.
-    Note: Folding assumes coupling only between N.N. cells 
+    Note: Folding assumes coupling only between N.N. cells
 
     INPUT:
       geom        : MakeGeom structure for full geometry

@@ -23,7 +23,6 @@ import Inelastica.io.siesta as SIO
 def main(options, kpoint, ikpoint):
     Ef = SIO.HS(options.systemlabel+'.TSHS').ef/PC.Rydberg2eV
     kpt = ikpoint
-    path = './'+options.DestDir+'/'
     pathkpt = './'+options.DestDir+'/'+str(kpt)+'/'
     print 'k-point: '+str(ikpoint)+'/'
     print '(k1,k2): ('+str(kpoint[0])+','+str(kpoint[1])+')'

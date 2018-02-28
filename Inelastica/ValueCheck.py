@@ -3,7 +3,7 @@
 ValueCheck (:mod:`Inelastica.ValueCheck`)
 =========================================
 
-Contains general quantities that are used to do checks in the 
+Contains general quantities that are used to do checks in the
 `Inelastica`_ package.
 
 It allows users to edit the criterias of crashes without editing

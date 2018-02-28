@@ -189,8 +189,8 @@ def main(options):
             print 'EigenChannels: Writing', fn
             fnfile = open(fn, 'w')
             fnfile.write('# Device region = [%i,%i], units in eV\n'%(options.DeviceFirst, options.DeviceLast))
-            for i in range(len(ev)):
-                fnfile.write('%i %.8f\n'%(i, ev[i]))
+            for i, val in enumerate(ev):
+                fnfile.write('%i %.8f\n'%(i, val))
             fnfile.close()
             # Compute selected eigenstates
             for ii, val in enumerate(ev):
@@ -356,34 +356,34 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
     """
     THF: Write eigenchannels to netcdf format
     """
-    file = NC4.Dataset(fn, 'w')
-    file.createDimension('nx', nx)
-    file.createDimension('ny', ny)
-    file.createDimension('nz', nz)
-    file.createDimension('natoms', len(geom.xyz))
-    file.createDimension('naxes', 3)
-    file.createDimension('number', 1)
-    #file.createDimension('pair',2)
+    ncfile = NC4.Dataset(fn, 'w')
+    ncfile.createDimension('nx', nx)
+    ncfile.createDimension('ny', ny)
+    ncfile.createDimension('nz', nz)
+    ncfile.createDimension('natoms', len(geom.xyz))
+    ncfile.createDimension('naxes', 3)
+    ncfile.createDimension('number', 1)
+    #ncfile.createDimension('pair',2)
 
     # Grid
-    #grid = file.createVariable('grid','d',('naxes','pair'))
+    #grid = ncfile.createVariable('grid','d',('naxes','pair'))
     #tmp  = [origo,[dstep,dstep,dstep]]
     #grid[:] = N.transpose(N.array(tmp))
 
     # Fields
-    varRe = file.createVariable('Re-Psi', 'd', ('nx', 'ny', 'nz'))
+    varRe = ncfile.createVariable('Re-Psi', 'd', ('nx', 'ny', 'nz'))
     varRe[:] = YY.real
 
-    varIm = file.createVariable('Im-Psi', 'd', ('nx', 'ny', 'nz'))
+    varIm = ncfile.createVariable('Im-Psi', 'd', ('nx', 'ny', 'nz'))
     varIm[:] = YY.imag
 
-    varAbsSq = file.createVariable('Abs-sqr-Psi', 'd', ('nx', 'ny', 'nz'))
+    varAbsSq = ncfile.createVariable('Abs-sqr-Psi', 'd', ('nx', 'ny', 'nz'))
     varAbsSq[:] = N.absolute(N.square(YY))
 
-    vardstep = file.createVariable('dstep', 'd', ('number',))
+    vardstep = ncfile.createVariable('dstep', 'd', ('number',))
     vardstep[:]  = dstep
 
-    vargeom = file.createVariable('xyz', 'f', ('natoms', 'naxes'))
+    vargeom = ncfile.createVariable('xyz', 'f', ('natoms', 'naxes'))
     # OpenDX needs float for positions
     tmp = []
     for i in range(len(geom.xyz)):
@@ -393,7 +393,7 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
                     float(tmp2[2])])
     vargeom[:] = tmp
 
-    varanr = file.createVariable('anr', 'i', ('natoms',))
+    varanr = ncfile.createVariable('anr', 'i', ('natoms',))
     varanr[:] = N.array(geom.anr, N.int32)
 
     # Set attributes
@@ -406,7 +406,7 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
     #setattr(varIm,'field','Im-Psi')
     #setattr(varIm,'positions','grid, compact')
 
-    file.close()
+    ncfile.close()
 
 ################# Write cube file ######################
 
@@ -571,9 +571,9 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
 
     foT=file(fn+'.abs.txt', 'w')
     foT.write('Atom nr M L abs(Y)\n')
-    for ii in range(len(Y)):
+    for ii, Yval in enumerate(Y):
         foT.write('%3.0i %3.0i %3.1i %3.1i %1.8f \n'%
-        (basis.ii[ii], basis.atomnum[ii], basis.M[ii], basis.L[ii], abs(Y[ii])))
+        (basis.ii[ii], basis.atomnum[ii], basis.M[ii], basis.L[ii], abs(Yval)))
     foT.close()
 
     YY, dstep, origo, nx, ny, nz = calcWF(options, geom, basis, Y)

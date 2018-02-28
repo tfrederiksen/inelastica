@@ -66,7 +66,7 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
     PBSsubs              : A list of string substitutions to be applied to the template
                               PBS script in order to generate a new PBS script
                               (e.g., PBSsubs=[['JOBNAME','newjobname'],...]' will replace
-                              any JOBNAME string with newjobname)                              
+                              any JOBNAME string with newjobname)
     submitJob            : (True/False) Submit to batch queue via qsub command?
     """
 
@@ -93,8 +93,8 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
         geom = MG.Geom(XVfiles[0])
     elif len(XVfiles)>1:
         print 'More than one XV file was found in folder %s:'%templateCGrun
-        for i in range(len(XVfiles)):
-            print '   No. %i :'%i, XVfiles[i]
+        for i, xvfile in enumerate(XVfiles):
+            print '   No. %i :'%i, xvfile
         select = raw_input('   ... select file:')
         geom = MG.Geom(XVfiles[int(select)])
     else:
@@ -130,7 +130,7 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
     geom.writeXYZ(newCGrun+'/STRUCT.xyz')
     geom.writeXYZ(newCGrun+'/STRUCT2.xyz', rep=[2, 2, 2])
     # PBS files
-    MakePBS(PBStemplate, newCGrun+'/RUN.pbs', PBSsubs, submitJob, type = 'TS')
+    MakePBS(PBStemplate, newCGrun+'/RUN.pbs', PBSsubs, submitJob, rtype = 'TS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
             for line in lines: f.write(line)
             f.close()
     # PBS files
-    MakePBS(PBStemplate, newFCrun+'/RUN.pbs', PBSsubs, submitJob, type = 'TS')
+    MakePBS(PBStemplate, newFCrun+'/RUN.pbs', PBSsubs, submitJob, rtype = 'TS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -270,9 +270,9 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
                    'STRUCT_4.fdf', 'STRUCT_5.fdf', 'STRUCT_6.fdf']
     inputfiles = ['RUN_1.fdf', 'RUN_2.fdf', 'RUN_3.fdf', 'RUN_4.fdf', 'RUN_5.fdf', 'RUN_6.fdf']
     # Write input files
-    for i in range(len(inputfiles)):
-        print 'SetupRuns.SetupOSrun: Writing %s' %(newOSrun+'/'+inputfiles[i])
-        f = open((newOSrun+'/'+inputfiles[i]), 'w')
+    for i, inputfile in enumerate(inputfiles):
+        print 'SetupRuns.SetupOSrun: Writing %s' %(newOSrun+'/'+inputfile)
+        f = open((newOSrun+'/'+inputfile), 'w')
         f.write('### Lines written %s \n' %time.ctime())
         #f.write('MD.NumCGSteps 0\n')
         #f.write('DM.NumberPulay 0 \n')
@@ -288,7 +288,7 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
             else: f.write(line)
         f.close()
     # PBS files
-    MakePBS(PBStemplate, newOSrun+'/RUN.pbs', PBSsubs, submitJob, type = 'OS')
+    MakePBS(PBStemplate, newOSrun+'/RUN.pbs', PBSsubs, submitJob, rtype = 'OS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -324,7 +324,7 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
                               right contact BEFORE eventual electrode layers are pasted.
     AddLeftList          : Add list of atoms to the left side
     AddRightList         : Add list of atoms to the right side
-    ListL/ListR          : These atom indices (SIESTA numbering) are forced to be a part of 
+    ListL/ListR          : These atom indices (SIESTA numbering) are forced to be a part of
                               the electrodes and hence not affected by stretching
     NewContactSeparation : (Optional) value to set a different electrode separation
                               than in the CG geometry
@@ -338,7 +338,7 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
     PBSsubs              : A list of string substitutions to be applied to the template
                               PBS script in order to generate a new PBS script
                               (e.g., PBSsubs=[['JOBNAME','newjobname'],...]' will replace
-                              any JOBNAME string with newjobname)                              
+                              any JOBNAME string with newjobname)
     submitJob            : (True/False) Submit to batch queue via qsub command?
     """
     # Make new directory
@@ -442,7 +442,7 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
             for line in lines: f.write(line)
             f.close()
     # PBS files
-    MakePBS(PBStemplate, newTSrun+'/RUN.pbs', PBSsubs, submitJob, type = 'TS')
+    MakePBS(PBStemplate, newTSrun+'/RUN.pbs', PBSsubs, submitJob, rtype = 'TS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -502,7 +502,7 @@ def RunTBT(TSrun, Emin, Emax, NPoints, NumKxy_A1=1, NumKxy_A2=1,
     for line in lines: f.write(line)
     f.close()
     # PBS files
-    MakePBS(PBStemplate, newTSrun+'/RUN.pyTBT.pbs', PBSsubs, submitJob, type = 'PY')
+    MakePBS(PBStemplate, newTSrun+'/RUN.pyTBT.pbs', PBSsubs, submitJob, rtype = 'PY')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -545,31 +545,30 @@ def SetupPHrun(newPHrun, wildcard, onlySdir='../OSrun',
             print "Error: directory already exist ", newPHrun
             sys.exit(1)
 
-    tail = os.path.split(newPHrun)[1]
     # find device?
     print 'SetupRuns.SetupPHrun: Writing', newPHrun+'/PHrun.py'
-    file = open(newPHrun+'/PHrun.py', 'w')
-    file.write('from Inelastica.Phonons import *\n\n')
-    file.write('\nAnalyze(FCwildcard=\'%s\',onlySdir=\'%s\',\n' %(wildcard, onlySdir))
-    file.write('        DeviceFirst=%s,DeviceLast=%s,\n' %(DeviceFirst, DeviceLast))
-    file.write('        FCfirst=%s,FClast=%s,\n' %(FCfirst, FClast))
-    file.write('        outlabel=\'%s\',\n'%outlabel)
-    file.write('        CalcCoupl=%s,\n' %CalcCoupl)
+    phfile = open(newPHrun+'/PHrun.py', 'w')
+    phfile.write('from Inelastica.Phonons import *\n\n')
+    phfile.write('\nAnalyze(FCwildcard=\'%s\',onlySdir=\'%s\',\n' %(wildcard, onlySdir))
+    phfile.write('        DeviceFirst=%s,DeviceLast=%s,\n' %(DeviceFirst, DeviceLast))
+    phfile.write('        FCfirst=%s,FClast=%s,\n' %(FCfirst, FClast))
+    phfile.write('        outlabel=\'%s\',\n'%outlabel)
+    phfile.write('        CalcCoupl=%s,\n' %CalcCoupl)
     if AuxNCfile:
-        file.write('        AuxNCfile=\'%s\',\n' %AuxNCfile)
+        phfile.write('        AuxNCfile=\'%s\',\n' %AuxNCfile)
     else:
-        file.write('        AuxNCfile=False,\n')
-    file.write('        PerBoundCorrFirst=%i,PerBoundCorrLast=%i,\n'
+        phfile.write('        AuxNCfile=False,\n')
+    phfile.write('        PerBoundCorrFirst=%i,PerBoundCorrLast=%i,\n'
                %(PerBoundCorrFirst, PerBoundCorrLast))
-    file.write('        PrintSOrbitals=%s)' %PrintSOrbitals)
-    file.close()
+    phfile.write('        PrintSOrbitals=%s)' %PrintSOrbitals)
+    phfile.close()
 
     # write WritePythonPBS(...)
     # PBS files
     if PBSsubs == None:
         PBSsubs=[]
     PBSsubs = [['$PYTHONSCRIPT$', 'PHrun.py']] + PBSsubs
-    MakePBS(PBStemplate, newPHrun+'/RUN.pbs', PBSsubs, submitJob, type = 'PY')
+    MakePBS(PBStemplate, newPHrun+'/RUN.pbs', PBSsubs, submitJob, rtype = 'PY')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -604,7 +603,6 @@ def SetupInelastica(templateInelastica, newInelastica, TSrun,
     """
     print 'SetupRuns.SetupInelastica: Creating', newInelastica
     CopyTree(templateInelastica, newInelastica, overwrite=False)
-    tail = os.path.split(templateInputFile)[1]
 
     name, ext = os.path.splitext(newInputFilename)
     cmmd = []
@@ -629,7 +627,7 @@ def SetupInelastica(templateInelastica, newInelastica, TSrun,
         infile.close()
         cmmd.append('inelastica.py '+inputfile+' -R')
     # PBS files
-    MakePBS(PBStemplate, newInelastica+'/RUN.pbs', PBSsubs, submitJob, type = 'PY')
+    MakePBS(PBStemplate, newInelastica+'/RUN.pbs', PBSsubs, submitJob, rtype = 'PY')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -812,8 +810,8 @@ def CheckIfFinished(outfile):
         return False
 
 
-def FindElectrodeSep(dir, AtomsPerLayer):
-    for XVfile in glob.glob(dir+'/*.XV*'):
+def FindElectrodeSep(directory, AtomsPerLayer):
+    for XVfile in glob.glob(directory+'/*.XV*'):
         print XVfile
         g = MG.Geom(XVfile)
         g.findContactsAndDevice(AtomsPerLayer)
