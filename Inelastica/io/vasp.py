@@ -8,8 +8,8 @@ IO interface with VASP
 .. currentmodule:: Inelastica.io.vasp
 
 """
+
 import numpy as N
-import numpy.linalg as LA
 import string
 import struct
 import os.path

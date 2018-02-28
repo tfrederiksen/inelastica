@@ -170,7 +170,7 @@ def main(options):
         for ii in f.readlines():
             oldk += [N.array(string.split(ii), N.float)]
         oldk = N.array(oldk)
-        bool = len(options.kpoints.k)==len(oldk)
+        #bool = len(options.kpoints.k)==len(oldk)
 
     options.kpoints.mesh2file(options.DestDir+'/kpoints')
     doK = []

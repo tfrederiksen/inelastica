@@ -31,7 +31,6 @@ import netCDF4 as NC4
 import numpy as N
 import numpy.linalg as LA
 import Inelastica.MakeGeom as MG
-import Inelastica.io.siesta as SIO
 import Inelastica.physics.constants as PC
 
 

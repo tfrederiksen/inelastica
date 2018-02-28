@@ -10,7 +10,6 @@ STMFD (:mod:`Inelastica.STMFD`)
 import numpy               as N
 import scipy.linalg        as SLA
 import netCDF4             as NC
-from   scipy.interpolate   import interp1d
 from   scipy.sparse.linalg import isolve
 from   scipy               import sparse
 from   scipy               import interpolate

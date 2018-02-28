@@ -64,7 +64,6 @@ classes
 import time
 import math
 import os
-import string
 import numpy as N
 
 symbols = {'\alpha': '\\f{Symbol}a',

@@ -47,7 +47,6 @@ import numpy.linalg as LA
 import glob
 import os
 import sys
-import string
 import scipy.linalg as SLA
 import netCDF4 as NC4
 

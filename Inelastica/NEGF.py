@@ -28,7 +28,6 @@ import string
 import pickle
 import hashlib
 import glob
-import time
 import os
 import netCDF4 as NC4
 import Inelastica.ValueCheck as VC
