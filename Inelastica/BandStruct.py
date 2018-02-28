@@ -101,9 +101,9 @@ def calcFS(ispin):
                 # "unitless" k-vect
                 kpnt = N.array([ix, iy, iz], N.float)/float(NNk-1)
                 HS.setkpoint(kpnt)
-                eval = LA.eigvals(mm(LA.inv(HS.S), HS.H[ispin, :, :]))
-                ipiv = N.argsort(eval)
-                bands[ix, iy, iz, :] = eval[ipiv]
+                eival = LA.eigvals(mm(LA.inv(HS.S), HS.H[ispin, :, :]))
+                ipiv = N.argsort(eival)
+                bands[ix, iy, iz, :] = eival[ipiv]
         SIO.printDone(ix, NNk, 'Fermi Surface: ')
     writeFS(ispin, NNk, bands)
 
@@ -170,9 +170,9 @@ def calcBands(ispin):
             kpnt2 = mm(N.array([geom.sym.a1, geom.sym.a2, geom.sym.a3]), kpnt)
 
             HS.setkpoint(kpnt2)
-            eval = LA.eigvals(mm(LA.inv(HS.S), HS.H[ispin, :, :]))
-            ipiv = N.argsort(eval)
-            ev[ii, :] = eval[ipiv]
+            eival = LA.eigvals(mm(LA.inv(HS.S), HS.H[ispin, :, :]))
+            ipiv = N.argsort(eival)
+            ev[ii, :] = eival[ipiv]
         bands += [ev]
 
     writeBands(ispin, what, bands)

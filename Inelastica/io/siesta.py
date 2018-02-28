@@ -64,14 +64,14 @@ def SIO_open(filename, mode='r'):
     try:
         if filename[-3:]=='.gz':
             # filename is explicitly a gzip file
-            file = gzip.open(filename, mode)
+            gzfile = gzip.open(filename, mode)
         else:
             # filename is given as a non-zip file
-            file = open(filename, mode)
+            gzfile = open(filename, mode)
     except:
         # if filename is not existing upon read, then try append the '.gz' ending
-        file = gzip.open(filename+'.gz', mode)
-    return file
+        gzfile = gzip.open(filename+'.gz', mode)
+    return gzfile
 
 #--------------------------------------------------------------------------------
 # XV-format
@@ -85,24 +85,24 @@ def ReadXVFile(filename, InUnits='Bohr', OutUnits='Ang', ReadVelocity=False):
     elif (((InUnits=='Ang') and (OutUnits=='Ang')) \
        or ((InUnits=='Bohr') and (OutUnits=='Bohr'))): convFactor = 1
     else: print 'io.siesta.ReadXVFile: Unit conversion error!'
-    file = SIO_open(filename, 'r')
+    xvfile = SIO_open(filename, 'r')
     # Read cell vectors (lines 1-3)
     vectors = []
     for i in range(3):
-        data = string.split(file.readline())
+        data = string.split(xvfile.readline())
         vectors.append([string.atof(data[j])*convFactor for j in range(3)])
     # Read number of atoms (line 4)
-    numberOfAtoms = string.atoi(string.split(file.readline())[0])
+    numberOfAtoms = string.atoi(string.split(xvfile.readline())[0])
     # Read remaining lines
     speciesnumber, atomnumber, xyz, V = [], [], [], []
-    for line in file.readlines():
+    for line in xvfile.readlines():
         if len(line)>5: # Ignore blank lines
             data = string.split(line)
             speciesnumber.append(string.atoi(data[0]))
             atomnumber.append(string.atoi(data[1]))
             xyz.append([string.atof(data[2+j])*convFactor for j in range(3)])
             V.append([string.atof(data[5+j])*convFactor for j in range(3)])
-    file.close()
+    xvfile.close()
     if len(speciesnumber)!=numberOfAtoms:
         print 'io.siesta.ReadXVFile: Inconstency in %s detected!' %filename
     if ReadVelocity:
@@ -120,17 +120,17 @@ def WriteXVFile(filename, vectors, speciesnumber, atomnumber, xyz,\
     elif (((InUnits=='Ang') and (OutUnits=='Ang')) \
        or ((InUnits=='Bohr') and (OutUnits=='Bohr'))): convFactor = 1
     else: print 'io.siesta.WriteXVFile: Unit conversion error!'
-    file = SIO_open(filename, 'w')
+    xvfile = SIO_open(filename, 'w')
     # Write basis vectors (lines 1-3)
     for i in range(3):
         line = '  '
         for j in range(3):
             line += string.rjust('%.9f'%(vectors[i][j]*convFactor), 16)
         line += '     0.00  0.00  0.00 \n'
-        file.write(line)
+        xvfile.write(line)
     # Write number of atoms (line 4)
     numberOfAtoms = len(speciesnumber)
-    file.write('     %i\n' %numberOfAtoms)
+    xvfile.write('     %i\n' %numberOfAtoms)
     # Go through the remaining lines
     for i in range(numberOfAtoms):
         line = '  %i' %speciesnumber[i]
@@ -142,8 +142,8 @@ def WriteXVFile(filename, vectors, speciesnumber, atomnumber, xyz,\
         else:
             for j in range(3):
                 line += string.rjust('%.9f'%(Velocity[i][j]*convFactor), 16)
-        file.write(line+'\n')
-    file.close()
+        xvfile.write(line+'\n')
+    xvfile.close()
 
 
 def ReadAXVFile(filename, MDstep, tmpXVfile="tmp.XV", ReadVelocity=False):
@@ -186,7 +186,7 @@ def WriteAXSFFiles(filename, geoms, forces=None):
             ln = ' %i'%geoms[i].anr[j]
             for k in range(3):
                 ln += ' %.6f'%geoms[i].xyz[j][k]
-            if type(forces) != bool:
+            if not isinstance(forces, bool):
                 for k in range(3):
                     ln += ' %.6f'%forces[i][j][k]
             ln += '\n'
@@ -204,17 +204,17 @@ def WriteANIFile(filename, Geom, Energy, InUnits='Ang', OutUnits='Ang'):
     elif (((InUnits=='Ang') and (OutUnits=='Ang')) \
        or ((InUnits=='Bohr') and (OutUnits=='Bohr'))): convFactor = 1
     else: print 'io.siesta.WriteANIFile: Unit conversion error!'
-    file = open(filename, 'w')
+    anifile = open(filename, 'w')
     for ii, iGeom in enumerate(Geom):
-        file.write('%i \n'%iGeom.natoms)
-        file.write('%f \n'%Energy[ii])
+        anifile.write('%i \n'%iGeom.natoms)
+        anifile.write('%f \n'%Energy[ii])
         for iixyz in range(iGeom.natoms):
-            file.write('%s %2.6f %2.6f %2.6f\n'%\
+            anifile.write('%s %2.6f %2.6f %2.6f\n'%\
                        (PC.PeriodicTable[abs(iGeom.anr[iixyz])],\
                         convFactor*iGeom.xyz[iixyz][0],\
                         convFactor*iGeom.xyz[iixyz][1],\
                         convFactor*iGeom.xyz[iixyz][2]))
-    file.close()
+    anifile.close()
 
 
 def ReadANIFile(filename, InUnits='Ang', OutUnits='Ang'):
@@ -255,30 +255,30 @@ def ReadANIFile(filename, InUnits='Ang', OutUnits='Ang'):
 def ReadFCFile(filename):
     "Returns FC from an FC-file"
     print 'io.siesta.ReadFCFile: Reading', filename
-    file = SIO_open(filename, 'rb')
+    fcfile = SIO_open(filename, 'rb')
     # Read comment line (line 1)
-    line = file.readline()
+    line = fcfile.readline()
     if string.strip(line)!='Force constants matrix':
         print 'io.siesta.ReadFCFile: Inconstency in %s detected!' %filename
     # Read remaining lines
     FC = []
-    for line in file.readlines():
+    for line in fcfile.readlines():
         data = string.split(line)
         FC.append([string.atof(data[j]) for j in range(3)])
-    file.close()
+    fcfile.close()
     return FC
 
 #--------------------------------------------------------------------------------
 # Reading SIESTA Fortan binary files
 
 
-def ReadFortranBin(file, type, num, printLength=False, unpack=True):
+def ReadFortranBin(fortfile, type, num, printLength=False, unpack=True):
     "Reads Fortran binary data structures"
     fmt = ''
     for i in range(num): fmt += type
-    bin = file.read(struct.calcsize(fortranPrefix+fortranuLong+fmt+fortranuLong))
+    fbin = fortfile.read(struct.calcsize(fortranPrefix+fortranuLong+fmt+fortranuLong))
     if unpack:
-        data = struct.unpack(fortranPrefix+fortranLong+fmt+fortranLong, bin)
+        data = struct.unpack(fortranPrefix+fortranLong+fmt+fortranLong, fbin)
         if printLength:
             print 'io.siesta.ReadFortranBin: %i bytes read' %data[0]
         if data[0]!=data[-1] or data[0]!=struct.calcsize(fortranPrefix+fmt):
@@ -286,7 +286,7 @@ def ReadFortranBin(file, type, num, printLength=False, unpack=True):
             sys.exit(1)
         return data[1:-1]
     else:
-        return bin
+        return fbin
 
 
 def ReadWFSFile(filename):
@@ -348,8 +348,8 @@ def WriteMKLFile(filename, atomnumber, xyz, freq, vec, FCfirst, FClast):
     print 'io.siesta.WriteMKLFile: Writing', filename
     file = open(filename, 'w')
     file.write('$MKL\n$COORD\n')
-    for i in range(len(atomnumber)):
-        line = str(atomnumber[i])
+    for i, iatom in enumerate(atomnumber):
+        line = str(iatom)
         for j in range(3):
             line += string.rjust('%.9f'%xyz[i][j], 16)
         line +='\n'
@@ -557,22 +557,22 @@ def ReadSTRUCT_OUTFile(filename):
 # Writing SIESTA Fortran binary files
 
 
-def WriteFortranBin(file, type, data):
+def WriteFortranBin(fortfile, dtype, data):
     "Writes Fortran binary data structures"
     try:
         L = len(data)
         if L == 1: data = data[0]
     except: L = 1
     fmt = ''
-    for i in range(L): fmt += type
-    bin = struct.pack(fortranPrefix+fortranLong, struct.calcsize(fmt))
+    for i in range(L): fmt += dtype
+    fbin = struct.pack(fortranPrefix+fortranLong, struct.calcsize(fmt))
     if L>1:
         for i in range(L):
-            bin += struct.pack(type, data[i])
+            fbin += struct.pack(dtype, data[i])
     else:
-        bin += struct.pack(type, data)
-    bin += struct.pack(fortranuLong, struct.calcsize(fmt))
-    file.write(bin)
+        fbin += struct.pack(dtype, data)
+    fbin += struct.pack(fortranuLong, struct.calcsize(fmt))
+    fortfile.write(fbin)
 
 
 #--------------------------------------------------------------------------------
@@ -586,9 +586,9 @@ def ReadFDFLines(infile, head='', printAlot=True):
         head =  os.path.split(infile)[0]
     if printAlot:
         print 'io.siesta.ReadFDFLines: Reading', infile
-    file = SIO_open(infile, 'r')
+    fdffile = SIO_open(infile, 'r')
     lines = []
-    tmp = file.readline()
+    tmp = fdffile.readline()
     while tmp != '':
         if len(tmp)>3:
             tmp = tmp.replace(':', ' ') # Remove ':' from fdf
@@ -606,8 +606,8 @@ def ReadFDFLines(infile, head='', printAlot=True):
                     lines += tmp2
                 else:
                     lines.append(tmp)
-        tmp = file.readline()
-    file.close()
+        tmp = fdffile.readline()
+    fdffile.close()
     return lines
 
 
@@ -1749,7 +1749,7 @@ class HS:
         Remove displacements within unitcell from xij
         NOTE: We remove the in cell difference so xij corresponds to 
               lattice vectors to the relevant part of the supercell.
-        NOTE: xij = Rj-Ri where Ri,j corresponds to positions of the orbitals H_{i,j} 
+        NOTE: xij = Rj-Ri where Ri,j corresponds to positions of the orbitals H_{i,j}
         TODO: Check why some orbitals in sparse matrix reported within cell but have xij!
         """
 
@@ -1797,11 +1797,11 @@ class HS:
     def setkpointhelper(self, Sparse, kpoint, UseF90helpers=True, atype=N.complex):
         """
         Make full matrices from sparse for specific k-point
-        NOTE: Assumption for Fourier transform                     
+        NOTE: Assumption for Fourier transform
         Psi(i) =           sum_R exp(i k.R) Psi_k(i)               NOTE sign!
         (Full waveunction)                   (Unit cell part of wavefunction)
               which gives:
-        i,j part of unitcell gives from the rows of the full H: 
+        i,j part of unitcell gives from the rows of the full H:
             H_k(i,j) = H_(i,j) + sum_R H(i,j+R) exp(i*k*R)         NOTE sign!
             where R corresponds to R_j-R_0 which is Xij            NOTE sign!
 

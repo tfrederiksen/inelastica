@@ -4,25 +4,25 @@ STM (:mod:`Inelastica.STM`)
 ===========================
 
 Script that calculates STM images using the Bardeen approximation 
-outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The 
+outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The
 script is divided into 3 parts:
 
-1. Calculation of the scattering states at the Fermi-energy on the 
-same real space grid as `TranSIESTA`_ (real-space cutoff). These are 
+1. Calculation of the scattering states at the Fermi-energy on the
+same real space grid as `TranSIESTA`_ (real-space cutoff). These are
 saved in `DestDir/SystemLabel.A[LR][0-99].nc` files and are reused if 
 found. **NEEDS:** `TranSIESTA`_ calculation.
 
 2. Propagation of the scattering states from a surface (defined by a
 constant charge density) out into the vacuum region. After the x-y plane, 
 where the average potential of the slice is maximum (the separation 
-plane), is found, the potential is ascribed a constant value at this 
-average. Saves the propagated wavefunctions at the separation plane in 
-`DestDir/[kpoint]/FD[kpoint].nc`. **NEEDS:** *TotalPotential.grid.nc* and 
+plane), is found, the potential is ascribed a constant value at this
+average. Saves the propagated wavefunctions at the separation plane in
+`DestDir/[kpoint]/FD[kpoint].nc`. **NEEDS:** *TotalPotential.grid.nc* and
 *Rho.grid.nc*.
 
-3. Conductance calculation where the tip/substrate wavefunctions are 
-displaced to simulate the conductance at different tip-positions. The k 
-averaged STM image and the STM images of individual k points are saved in 
+3. Conductance calculation where the tip/substrate wavefunctions are
+displaced to simulate the conductance at different tip-positions. The k
+averaged STM image and the STM images of individual k points are saved in
 `DestDir/STMimage.nc`.
 
 .. currentmodule:: Inelastica.STM
@@ -60,7 +60,7 @@ DEBUGPDE = False
 
 def GetOptions(argv, **kwargs):
     # if text string is specified, convert to list
-    if type(argv)==type(''): argv = argv.split()
+    if isinstance(argv, basestring): argv = argv.split()
 
     import optparse as o
 
@@ -378,7 +378,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
       Y           : Wavefunction for the device region
       NN          : [N1,N2,N3,minN3,maxN3] number of points along [a1, a2, a3]
                     only calculate from minN3 to maxN3
-      Fold        : fold periodic boundary conditions 
+      Fold        : fold periodic boundary conditions
       k           : k-vector to use for folding [-0.5,0.5]
       a           : if Fold==True, uses geom.pbc, if false: [a1, a2, a3]
                     along these directions, i.e., da1=a1/N1 ...

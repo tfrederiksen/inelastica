@@ -5,7 +5,7 @@ xmgrace (:mod:`Inelastica.io.xmgrace`)
 
 This module provides a `Python`_ interface to write `XMGR/GRACE <xmgrace_>`_ files.
 
-To create a `GRACE <xmgrace_>`_ plot from a given data set, a minimal 
+To create a `GRACE <xmgrace_>`_ plot from a given data set, a minimal
 script structure takes the following form:
 
 .. code-block:: bash
@@ -17,7 +17,7 @@ script structure takes the following form:
     >>> plot = Plot('test.agr',graph)
     >>> plot.WriteFile()
 
-More graphs and data sets are easily appended. Continuing on the 
+More graphs and data sets are easily appended. Continuing on the
 example above:
 
 .. code-block:: bash
@@ -104,8 +104,8 @@ def Datafile2XYsets(fn, Sort=False, **keywords):
     for line in f:
         if line[0] != '#' and len(line) > 0:
             l = line.split()
-            for i in range(len(l)):
-                l[i] = float(l[i])
+            for i, lval in enumerate(l):
+                l[i] = float(lval)
             if len(l)>=2:
                 A.append(l)
     f.close()
@@ -520,13 +520,13 @@ class Graph:
             if xmax<=0.: self.SetXaxis(max=1e10)
             else: self.SetXaxis(max=xmax)
 
-    def SetYaxis(self, min='', max='', label='', labelsize='', labelautopos='',
+    def SetYaxis(self, vmin='', vmax='', label='', labelsize='', labelautopos='',
                  labelpospar='', labelposper='', majorUnit='', minorUnit='', useticks='',
                  useticklabels='', ticklabelsize='', majorGridlines='', minorGridlines='',
                  autoscale='', scale=''):
         """
         Sets the axis parameters (if specified):
-        - min/max        = [float]
+        - vmin/vmax      = [float]
         - label          = [string]
         - labelsize      = [float]
         - labelautopos   = [bool]
@@ -542,10 +542,10 @@ class Graph:
         - autoscale      = [bool]
         - scale          = [\"Normal\"/\"Logarithmic\"]
         """
-        if min!='':
-            self.SetWorld(ymin=min)
-        if max!='':
-            self.SetWorld(ymax=max)
+        if vmin!='':
+            self.SetWorld(ymin=vmin)
+        if vmax!='':
+            self.SetWorld(ymax=vmax)
         if label!='':
             self.string += '@ yaxis label \"%s\" \n'%str(label)
         if labelsize!='':
@@ -578,15 +578,15 @@ class Graph:
                 unit = 2* 10**math.floor(math.log(rng, 10))
             else:
                 unit = 1
-            self.SetYaxis(min=ymin, max=ymax, majorUnit=unit, minorUnit=unit/2.)
+            self.SetYaxis(vmin=ymin, vmax=ymax, majorUnit=unit, minorUnit=unit/2.)
         if scale =='Logarithmic':
             self.string += '@ yaxes scale %s \n'%scale
             # Scale axis to positive numbers
             xmin, ymin, xmax, ymax = self.GetWorldOfDatasets()
-            if ymin<=0.: self.SetYaxis(min=1e-10)
-            else: self.SetYaxis(min=ymin)
-            if ymax<=0.: self.SetYaxis(max=1e10)
-            else: self.SetYaxis(max=ymax)
+            if ymin<=0.: self.SetYaxis(vmin=1e-10)
+            else: self.SetYaxis(vmin=ymin)
+            if ymax<=0.: self.SetYaxis(vmax=1e10)
+            else: self.SetYaxis(vmax=ymax)
 
     def SetXaxisSpecialTicks(self, ticklist):
         "Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],...]."
@@ -615,13 +615,13 @@ class Graph:
 
     def AddDatasets(self, *datasets):
         "Append data set object(s) to graph."
-        for set in datasets:
-            if isinstance(set, Dataset):
-                self.datasets.append(set)
-            elif isinstance(set, tuple):
-                self.AddDatasets(*set)
-            elif isinstance(set, list):
-                self.AddDatasets(*tuple(set))
+        for dset in datasets:
+            if isinstance(dset, Dataset):
+                self.datasets.append(dset)
+            elif isinstance(dset, tuple):
+                self.AddDatasets(*dset)
+            elif isinstance(dset, list):
+                self.AddDatasets(*tuple(dset))
 
     def GetXMGRstring(self, graphnr):
         "Returns a string containing the GRACE commands that describe the graph and its data sets."

@@ -3,7 +3,7 @@
 SupercellPhonons (:mod:`Inelastica.SupercellPhonons`)
 =====================================================
 
-A simple interface to evaluate electron and phonon bands on 
+A simple interface to evaluate electron and phonon bands on
 a set of points in reciprocal space.
 
 The input file format with `N` points is simply:
@@ -332,8 +332,8 @@ def ReadKpoints_ascii(filename):
 
 def WriteKpoints(filename, klist, labels=None):
     f = open(filename, 'w')
-    for i in range(len(klist)):
-        k = klist[i]
+    for i, kval in enumerate(klist):
+        k = kval
         for j in range(3):
             f.write('%.8e '%k[j])
         if labels:

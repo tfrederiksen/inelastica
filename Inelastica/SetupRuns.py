@@ -13,7 +13,7 @@ Functions to setup (Tran)SIESTA calculation and submit pbs jobs.
 * IN: (not working at the moment)
 
 The basic idea is to use an existing CG (geometry optimization) setup
-to create all the other calculation directories needed. 
+to create all the other calculation directories needed.
 
 .. currentmodule:: Inelastica.SetupRuns
 
@@ -54,7 +54,7 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
     IndexShift           : Number of atoms which is periodically translated from left to
                               right during the formation of the new STRUCT.fdf from the
                               template *.XV file
-    ListL/ListR          : These atom indices (SIESTA numbering) are forced to be a part of 
+    ListL/ListR          : These atom indices (SIESTA numbering) are forced to be a part of
                               the electrodes and hence not affected by stretching
     RotationAngle/       : Rotate whole CG geometry (or only RotationSubset if specified)
     RotationCenter/           an angle RotationAngle (in degrees) around RotationAxis vector through
@@ -600,7 +600,7 @@ def SetupInelastica(templateInelastica, newInelastica, TSrun,
                               PBS script in order to generate a new PBS script
                               (e.g., PBSsubs=[['JOBNAME','newjobname'],...]' will replace
                               any JOBNAME string with newjobname)                              
-    submitJob            : (True/False) Submit to batch queue via qsub command?  
+    submitJob            : (True/False) Submit to batch queue via qsub command?
     """
     print 'SetupRuns.SetupInelastica: Creating', newInelastica
     CopyTree(templateInelastica, newInelastica, overwrite=False)
@@ -622,11 +622,11 @@ def SetupInelastica(templateInelastica, newInelastica, TSrun,
             UnitConvertTBOutput(TSrun+TBT_NCfile, newInelastica+Mod_NCfile)
         print 'SetupRuns.SetupInelastica: Creating', newInelastica+'/'+inputfile
         shutil.copy(templateInputFile, newInelastica+'/'+inputfile)
-        file = open(newInelastica+'/'+inputfile, 'a')
-        file.write('\n# AUTOMATICALLY APPENDED LINES: \n')
-        file.write('RunThis.ncfile_e    = \'.%s\'\n'%Mod_NCfile)
-        file.write('RunThis.ncfile_ph    = \'%s\'\n' %PhononNCfile)
-        file.close()
+        infile = open(newInelastica+'/'+inputfile, 'a')
+        infile.write('\n# AUTOMATICALLY APPENDED LINES: \n')
+        infile.write('RunThis.ncfile_e    = \'.%s\'\n'%Mod_NCfile)
+        infile.write('RunThis.ncfile_ph    = \'%s\'\n' %PhononNCfile)
+        infile.close()
         cmmd.append('inelastica.py '+inputfile+' -R')
     # PBS files
     MakePBS(PBStemplate, newInelastica+'/RUN.pbs', PBSsubs, submitJob, type = 'PY')
@@ -675,10 +675,10 @@ def ZipFolder(folder):
     os.chdir(cwd)
 
 
-def UnzipFolder(file):
-    print 'SetupRuns: Unzipping', file
-    os.system('gunzip %s'%file)
-    head, tail = os.path.split(file)
+def UnzipFolder(zfile):
+    print 'SetupRuns: Unzipping', zfile
+    os.system('gunzip %s'%zfile)
+    head, tail = os.path.split(zfile)
     cwd = os.getcwd()
     os.chdir(head)
     os.system('tar -xf %s'%tail[:-3])
@@ -699,10 +699,10 @@ def BuildOSstruct(infile, outfile, axes=[0, 1, 2], direction=[-1, 1], displaceme
     print 'BuildOSstruct: displacement = %.6f Ang'%displacement
     geom = MG.Geom(infile)
     for i in axes:
-        for dir in direction:
+        for displdir in direction:
             new = MG.Geom(infile)
             displ = [0., 0., 0.]
-            displ[i] = dir*displacement
+            displ[i] = displdir*displacement
             new.move(displ)
             geom.addGeom(new)
     geom.writeFDF(outfile)
@@ -823,10 +823,10 @@ def FindElectrodeSep(dir, AtomsPerLayer):
 ### PBS code
 
 
-def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, type = 'TS'):
+def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, rtype = 'TS'):
     if PBStemplate==None:
-        types = {'TS': 'RUN.TS.pbs', 'OS': 'RUN.OS.pbs', 'PY': 'RUN.py.pbs'}
-        PBStemplate = types[type]
+        rtypes = {'TS': 'RUN.TS.pbs', 'OS': 'RUN.OS.pbs', 'PY': 'RUN.py.pbs'}
+        PBStemplate = rtypes[rtype]
         if os.path.exists(os.path.expanduser('~/.Inelastica/'+PBStemplate)):
             PBStemplate = os.path.expanduser('~/.Inelastica/'+PBStemplate)
         else:

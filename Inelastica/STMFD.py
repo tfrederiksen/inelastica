@@ -141,12 +141,13 @@ def LayersAndTipheight(options, kpoint, ikpoint):
 
 
 def readDFT(options, kpt, pathkpt, posZMol, posZTip):
-    file = NC.Dataset('TotalPotential.grid.nc', 'r')
+    ncfile = NC.Dataset('TotalPotential.grid.nc', 'r')
     print '\nReading potential from:    TotalPotential.grid.nc'
-    pot = N.array(file.variables['gridfunc'][:], N.float)[0]
+    pot = N.array(ncfile.variables['gridfunc'][:], N.float)[0]
 
     print 'Reading DFT density from:  Rho.grid.nc'
-    rho = N.array(file.variables['gridfunc'][:], N.float)[0]
+    ncfile = NC.Dataset('Rho.grid.nc', 'r')
+    rho = N.array(ncfile.variables['gridfunc'][:], N.float)[0]
 
     #Import supercell grid from one localized-basis state
     tmp  = NC.Dataset(pathkpt+options.systemlabel+'.AL0.nc', 'r')
@@ -162,28 +163,28 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
 
     print '\nReading localized-basis wave functions from substrate side...'
     for ii in range(SubChans):
-        file = NC.Dataset(pathkpt+options.systemlabel+'.AL'+N.str(ii)+'.nc', 'r')
+        ncfile = NC.Dataset(pathkpt+options.systemlabel+'.AL'+N.str(ii)+'.nc', 'r')
         print options.systemlabel+'.AL'+N.str(ii)+'.nc'
-        Re_AL = N.array(file.variables['Re-Psi'][:], N.float)
-        Im_AL = N.array(file.variables['Im-Psi'][:], N.float)
+        Re_AL = N.array(ncfile.variables['Re-Psi'][:], N.float)
+        Im_AL = N.array(ncfile.variables['Im-Psi'][:], N.float)
         Subwfs[ii, :, :, :] = Re_AL+1j*Im_AL
-        file.close()
+        ncfile.close()
 
     print 'Reading localized-basis wave functions from tip side ...'
     for ii in range(TipChans):
-        file = NC.Dataset(pathkpt+options.systemlabel+'.AR'+N.str(ii)+'.nc', 'r')
+        ncfile = NC.Dataset(pathkpt+options.systemlabel+'.AR'+N.str(ii)+'.nc', 'r')
         print options.systemlabel+'.AR'+N.str(ii)+'.nc'
-        Re_AR = N.array(file.variables['Re-Psi'][:], N.float)
-        Im_AR = N.array(file.variables['Im-Psi'][:], N.float)
+        Re_AR = N.array(ncfile.variables['Re-Psi'][:], N.float)
+        Im_AR = N.array(ncfile.variables['Im-Psi'][:], N.float)
         Tipwfs[ii, :, :, ::-1] = Re_AR+1j*Im_AR
-        file.close()
-    file = NC.Dataset(pathkpt+options.systemlabel+'.AL0.nc', 'r')
-    steps = N.array(file.variables['steps'][:], N.float)
+        ncfile.close()
+    ncfile = NC.Dataset(pathkpt+options.systemlabel+'.AL0.nc', 'r')
+    steps = N.array(ncfile.variables['steps'][:], N.float)
     dS = SLA.norm(N.cross(steps[0], steps[1]))
     theta = N.arccos(N.dot(steps[0], steps[1])/(SLA.norm(steps[0])*SLA.norm(steps[1])))
     a1, a2, a3 = SLA.norm(steps[0]), SLA.norm(steps[1]), SLA.norm(steps[2])
     avec = [a1, a2, a3]
-    orig = N.array(file.variables['origin'][:], N.float)[2]
+    orig = N.array(ncfile.variables['origin'][:], N.float)[2]
     Nzi  = N.int(orig/a3)
     Nzf  = Nzi+Nz
     PotDevice = pot[Nzi:Nzf, :, :]

@@ -187,15 +187,15 @@ def main(options):
             # Write eigenvalues to file
             fn = options.DestDir+'/'+options.systemlabel+'.EIGVAL'
             print 'EigenChannels: Writing', fn
-            file = open(fn, 'w')
-            file.write('# Device region = [%i,%i], units in eV\n'%(options.DeviceFirst, options.DeviceLast))
+            fnfile = open(fn, 'w')
+            fnfile.write('# Device region = [%i,%i], units in eV\n'%(options.DeviceFirst, options.DeviceLast))
             for i in range(len(ev)):
-                file.write('%i %.8f\n'%(i, ev[i]))
-            file.close()
+                fnfile.write('%i %.8f\n'%(i, ev[i]))
+            fnfile.close()
             # Compute selected eigenstates
-            for ii in range(len(ev)):
-                if N.abs(ev[ii])<options.MolStates:
-                    fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii, ev[ii])
+            for ii, val in enumerate(ev):
+                if N.abs(val)<options.MolStates:
+                    fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii, val)
                     writeWavefunction(options, geom, basis, es[:, ii], fn=fn)
         except:
             print 'You need to install scipy to solve the generalized eigenvalue problem'
@@ -233,7 +233,7 @@ def calcWF(options, geom, basis, Y):
     ry=N.array(range(ny), N.float)*dy+origo[1]
     rz=N.array(range(nz), N.float)*dz+origo[2]
 
-    for ii in range(len(Y)):
+    for ii, Yval in enumerate(Y):
         if ii>0:# and ii%(int(len(Y)/10))==0:
             SIO.printDone(ii, len(Y), 'Wavefunction')
 
@@ -269,7 +269,7 @@ def calcWF(options, geom, basis, Y):
         thisSphHar = MM.sphericalHarmonics(l, m, costh, sinfi, cosfi)
 
         YY[ixmin:ixmax, iymin:iymax, izmin:izmax]=YY[ixmin:ixmax, iymin:iymax, izmin:izmax]+\
-                                                 RR*thisSphHar*Y[ii]
+                                                 RR*thisSphHar*Yval
 
     print "Wave function norm on real space grid:", N.sum(YY.conjugate()*YY)*dx*dy*dz
 
@@ -454,12 +454,12 @@ def writemacubin(fn, YY, nx, ny, nz, origo, dstep):
                          xmin, xmax, ymin, ymax, zmin, zmax, nx, ny, nz, nx*ny*nz))
 
     for ii in range(nz):
-        bin=struct.pack('i', nx*ny*4)
+        mlklbin=struct.pack('i', nx*ny*4)
         for kk in range(ny):
             for jj in range(nx):
-                bin+=struct.pack('f', YY[jj, kk, ii])
-        bin+=struct.pack('i', nx*ny*4)
-        fo.write(bin)
+                mlklbin+=struct.pack('f', YY[jj, kk, ii])
+        mlklbin+=struct.pack('i', nx*ny*4)
+        fo.write(mlklbin)
 
     fo.close()
 
@@ -563,10 +563,10 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
     max_amp=-1.0
     phase=1.0+0.0j
 
-    for kk in range(len(Y)):
-        if abs(Y[kk])>max_amp:
-            max_amp=abs(Y[kk])
-            phase=Y[kk]/max_amp
+    for Ykk in Y:
+        if abs(Ykk)>max_amp:
+            max_amp=abs(Ykk)
+            phase=Ykk/max_amp
     Y=Y/phase
 
     foT=file(fn+'.abs.txt', 'w')
