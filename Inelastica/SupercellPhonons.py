@@ -43,10 +43,7 @@ import Inelastica.ValueCheck as VC
 import Inelastica.io.xmgrace as XMGR
 
 import numpy as N
-import numpy.linalg as LA
 import glob
-import os
-import sys
 import scipy.linalg as SLA
 import netCDF4 as NC4
 
@@ -221,7 +218,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         # No folding yet onto k and q
         self.dH = {}
         # Loop over dynamic atoms
-        for i, v in enumerate(self.DynamicAtoms):
+        for v in self.DynamicAtoms:
             # Loop over axes
             for j in range(3):
                 # Compute gradient

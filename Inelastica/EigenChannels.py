@@ -20,7 +20,6 @@ import sys
 import string
 import struct
 import glob
-import os
 import Inelastica.physics.constants as PC
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
@@ -153,7 +152,7 @@ def main(options):
         BC = True
 
     # Eigenchannels from left
-    ECleft, EigT = DevGF.ECleft, DevGF.EigTleft
+    ECleft = DevGF.ECleft
     for jj in range(options.numchan):
         options.iSide, options.iChan = 0, jj+1
         writeWavefunction(options, geom, basis, ECleft[jj])
@@ -163,7 +162,7 @@ def main(options):
 
     # Calculate eigenchannels from right
     if options.bothsides:
-        ECright, EigT = DevGF.ECright, DevGF.EigTright
+        ECright = DevGF.ECright
         for jj in range(options.numchan):
             options.iSide, options.iChan = 1, jj+1
             writeWavefunction(options, geom, basis, ECright[jj])
@@ -219,7 +218,6 @@ def calcWF(options, geom, basis, Y):
     """
 
     xyz=N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
-    atomnum=geom.anr[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]]
 
     # Size of cube
     xmin, xmax = min(xyz[:, 0])-5.0, max(xyz[:, 0])+5.0
@@ -360,7 +358,6 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
     """
     THF: Write eigenchannels to netcdf format
     """
-    import time
     file = NC4.Dataset(fn, 'w')
     file.createDimension('nx', nx)
     file.createDimension('ny', ny)
@@ -476,7 +473,6 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     Write XSF datagrid for XCrysden
     """
     fo=file(fn, 'w')
-    vectors=geom.pbc
     speciesnumber=geom.snr
     atomnumber=geom.anr
     xyz=geom.xyz
@@ -505,7 +501,6 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, ymax-ymin, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, 0.0000, zmax-zmin))
     data=[]
-    ll=0
     for ii in range(nz):
         for kk in range(ny):
             for jj in range(nx):
@@ -524,7 +519,6 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, ymax-ymin, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, 0.0000, zmax-zmin))
     data=[]
-    ll=0
     for ii in range(nz):
         for kk in range(ny):
             for jj in range(nx):
@@ -543,7 +537,6 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, ymax-ymin, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, 0.0000, zmax-zmin))
     data=[]
-    ll=0
     YYA2 = N.absolute(N.square(YY))
     for ii in range(nz):
         for kk in range(ny):

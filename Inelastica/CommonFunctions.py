@@ -19,7 +19,6 @@ _default_stderr = sys.stderr
 
 def CreatePipeOutput(f):
     global _default_stdout, _default_stderr
-    import subprocess
     import os
     import os.path as osp
     import errno

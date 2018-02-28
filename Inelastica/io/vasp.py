@@ -11,9 +11,6 @@ IO interface with VASP
 
 import numpy as N
 import string
-import struct
-import os.path
-import sys
 import gzip
 
 

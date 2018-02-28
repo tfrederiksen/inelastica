@@ -20,7 +20,6 @@ to create all the other calculation directories needed.
 
 """
 
-import os
 import glob
 import string
 import time
@@ -29,7 +28,6 @@ import shutil
 import os
 import netCDF4 as NC4
 import numpy as N
-import numpy.linalg as LA
 import Inelastica.MakeGeom as MG
 import Inelastica.physics.constants as PC
 
@@ -271,7 +269,6 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
     structfiles = ['STRUCT_1.fdf', 'STRUCT_2.fdf', 'STRUCT_3.fdf',
                    'STRUCT_4.fdf', 'STRUCT_5.fdf', 'STRUCT_6.fdf']
     inputfiles = ['RUN_1.fdf', 'RUN_2.fdf', 'RUN_3.fdf', 'RUN_4.fdf', 'RUN_5.fdf', 'RUN_6.fdf']
-    outputfiles = ['RUN_1.out', 'RUN_2.out', 'RUN_3.out', 'RUN_4.out', 'RUN_5.out', 'RUN_6.out']
     # Write input files
     for i in range(len(inputfiles)):
         print 'SetupRuns.SetupOSrun: Writing %s' %(newOSrun+'/'+inputfiles[i])

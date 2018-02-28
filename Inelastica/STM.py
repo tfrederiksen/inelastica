@@ -38,23 +38,16 @@ import Inelastica.MakeGeom as MG
 import Inelastica.MiscMath as MM
 import Inelastica.physics.constants as PC
 import Inelastica.physics.mesh as Kmesh
-import Inelastica.Symmetry as SYM
 import numpy as N
 import numpy.linalg as LA
 import netCDF4 as NC
 import sys
 import string
-import struct
 import glob
 import os
-import time
 import resource
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
-import scipy
-import scipy.io
-import scipy.sparse.linalg as SLA
-import scipy.sparse as SS
 import Inelastica.io.netcdf as writeNC
 import Inelastica.STMFD as STMFD
 
@@ -170,7 +163,6 @@ def main(options):
         for ii in f.readlines():
             oldk += [N.array(string.split(ii), N.float)]
         oldk = N.array(oldk)
-        #bool = len(options.kpoints.k)==len(oldk)
 
     options.kpoints.mesh2file(options.DestDir+'/kpoints')
     doK = []
@@ -286,7 +278,6 @@ def calcTSWF(options, ikpoint):
         ev=ev[indx2]
         Utilde=Utilde[:, indx2]
         indx=ev.real.argsort()[::-1]
-        args=[]
         fn=options.DestDir+'/%i/'%(ikpoint)+options.systemlabel+'.%s'%(txt)
 
         path = './'+options.DestDir+'/'
@@ -543,7 +534,6 @@ def writenetcdf2(geom, fn, YY, nx, ny, nz, minnz, maxnz, pbc, DeviceAtoms):
 ##################### Start main routine #####################
 if __name__ == '__main__':
     from datetime import datetime
-    import profile
     start = datetime.now()
     options = GetOptions(sys.argv[1:])
     print(dir(options))

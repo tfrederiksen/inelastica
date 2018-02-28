@@ -16,11 +16,9 @@ import Inelastica.MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
 import sys
-import struct
 import glob
 import os
 from optparse import OptionParser, OptionGroup
-import Inelastica.physics.constants as PC
 import Inelastica.io.xmgrace as XMGR
 
 mm = MM.mm

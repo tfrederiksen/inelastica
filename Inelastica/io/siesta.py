@@ -274,7 +274,6 @@ def ReadFCFile(filename):
 
 def ReadFortranBin(file, type, num, printLength=False, unpack=True):
     "Reads Fortran binary data structures"
-    import struct
     fmt = ''
     for i in range(num): fmt += type
     bin = file.read(struct.calcsize(fortranPrefix+fortranuLong+fmt+fortranuLong))
@@ -319,7 +318,7 @@ def ReadWFSFile(filename):
                     label = ''
                     for a in range(20): label += 'c'
                     out =  ReadFortranBin(file, 'I'+label+'III'+label+'dd', 1)
-                    iaorb, lab1, j, iphorb, cnfigfio, lab2, repsi, impsi = out[0], out[1:21], out[21], out[22], out[23], out[24:44], out[44], out[45]
+                    iaorb, lab1, j, cnfigfio, lab2, repsi, impsi = out[0], out[1:21], out[21], out[23], out[24:44], out[44], out[45]
                     labelfis, symfio = '', ''
                     for a in range(20):
                         labelfis += lab1[a]

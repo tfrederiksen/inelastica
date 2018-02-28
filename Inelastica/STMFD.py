@@ -13,13 +13,8 @@ import netCDF4             as NC
 from   scipy.sparse.linalg import isolve
 from   scipy               import sparse
 from   scipy               import interpolate
-from   datetime            import datetime
-import scipy.io
 import time
 import glob
-import os
-import shutil
-import sys
 import Inelastica.io.netcdf as wNC
 import Inelastica.physics.constants as PC
 import Inelastica.io.siesta as SIO
@@ -88,7 +83,6 @@ def main(options, kpoint, ikpoint):
 
 def LayersAndTipheight(options, kpoint, ikpoint):
     tmp  = NC.Dataset('./'+options.DestDir+'/'+str(ikpoint)+'/'+options.systemlabel+'.AL0.nc', 'r')
-    tmp2 = N.array(tmp.variables['xyz'][:], N.float)
     xyzSupercell = N.array(tmp.variables['xyz'][:], N.float)
     xyz = xyzSupercell.copy()
     noAtoms = len(xyzSupercell[:, 0])
@@ -149,11 +143,9 @@ def LayersAndTipheight(options, kpoint, ikpoint):
 def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     file = NC.Dataset('TotalPotential.grid.nc', 'r')
     print '\nReading potential from:    TotalPotential.grid.nc'
-    size=[file.dimensions['n1'], file.dimensions['n2'], file.dimensions['n3']]
     pot = N.array(file.variables['gridfunc'][:], N.float)[0]
 
     print 'Reading DFT density from:  Rho.grid.nc'
-    file = NC.Dataset('Rho.grid.nc', 'r')
     size=[file.dimensions['n1'], file.dimensions['n2'], file.dimensions['n3']]
     rho = N.array(file.variables['gridfunc'][:], N.float)[0]
 

@@ -33,7 +33,7 @@ def test_prereq():
     # For release 600!
     a = N.ones((600, 600), N.complex)
     b = N.dot(a, a)
-    c, d = LA.eigh(b)
+    c = LA.eigvalsh(b)
     en = time.time()
     if en - st > 4.0:
         print "#### Warning ####"
