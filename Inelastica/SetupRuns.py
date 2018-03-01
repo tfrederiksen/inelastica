@@ -225,7 +225,7 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
     PBSsubs              : A list of string substitutions to be applied to the template
                               PBS script in order to generate a new PBS script
                               (e.g., PBSsubs=[['JOBNAME','newjobname'],...]' will replace
-                              any JOBNAME string with newjobname)                              
+                              any JOBNAME string with newjobname)
     submitJob            : (True/False) Submit to batch queue via qsub command?
     """
     # Make new directory

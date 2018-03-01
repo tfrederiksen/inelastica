@@ -594,7 +594,7 @@ class Geom:
         label, self.anr, self.xyz = SIO.ReadXYZFile(fn)
         self.natoms=len(self.xyz)
         #self.move2origo()
-        self.snr = eval(raw_input('Input snr expression:'))
+        self.snr = ast.literal_eval(raw_input('Input snr expression:'))
         if len(self.xyz)!=len(self.snr):
             print 'Error assigning snr!'
         self.pbc = []
