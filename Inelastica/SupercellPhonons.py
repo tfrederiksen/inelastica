@@ -79,6 +79,8 @@ def GetOptions(argv, **kwargs):
                  help='Sort eigenvalues along k-mesh for nice plots? [default=%(default)s]')
     p.add_argument('--TSdir', dest='onlyTSdir', type=str, default=None,
                  help='Location of TranSIESTA calculation directory (will ignore FC and OnlyS directories) [default=%(default)s]')
+    p.add_argument('--nbands', dest='nbands', type=int, default=None,
+                 help='Number of electronic bands to be included in netCDF output (lower energy bands) [default=%(default)s]')
 
     options = p.parse_args(argv)
 
@@ -544,7 +546,11 @@ def main(options):
             if i==0:
                 ncf.createDimension('nspin', SCDM.nspin)
                 ncf.createDimension('orbs', SCDM.rednao)
-                ncf.createDimension('bands', SCDM.rednao)
+                if options.nbands and options.nbands < SCDM.rednao:
+                    nbands = options.nbands
+                else:
+                    nbands = SCDM.rednao
+                ncf.createDimension('bands', nbands)
                 evals = ncf.createVariable('eigenvalues', 'd', ('gridpts', 'nspin', 'bands'))
                 evals.units = 'eV'
                 evecsRe = ncf.createVariable('eigenvectors.re', 'd', ('gridpts', 'nspin', 'orbs', 'bands'))
@@ -556,9 +562,9 @@ def main(options):
                     print ' ... spin %i: Allclose='%j, N.allclose(ev[j], ev2, atol=1e-5, rtol=1e-3)
                 ncf.sync()
             # Write to NetCDF
-            evals[i, :] = ev
-            evecsRe[i, :] = evec.real
-            evecsIm[i, :] = evec.imag
+            evals[i, :] = ev[:, :nbands]
+            evecsRe[i, :] = evec[:, :, :nbands].real
+            evecsIm[i, :] = evec[:, :, :nbands].imag
         ncf.sync()
         # Include basis orbitals in netcdf file
         if SCDM.Sym.basis.NN == len(SCDM.OrbIndx):

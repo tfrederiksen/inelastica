@@ -222,8 +222,8 @@ class Geom:
         dr = N.outer(N.ones(len(xyz)), N.array(vec))
         for j in range(1, rep):
             xyz += dr
-            for i in range(len(xyz)):
-                self.addAtom(xyz[i], self.snr[i], self.anr[i])
+            for i, xyzval in enumerate(xyz):
+                self.addAtom(xyzval, self.snr[i], self.anr[i])
 
     def addGeom(self, Other):
         #TF/050606
@@ -280,7 +280,6 @@ class Geom:
 
     def AlignPlane(self, v1, v2, normal=[0, 0, 1]):
         # Align a plane (specified by v1 and v2) such that "normal" becomes a normal vector
-        import math
         v1 = N.array(v1, N.float)
         v2 = N.array(v2, N.float)
         normal = N.array(normal, N.float)
@@ -301,14 +300,14 @@ class Geom:
     def GetGeometricCenter(self, Subset=None):
         x0, y0, z0 = 0.0, 0.0, 0.0
         if not Subset:
-            set = self.xyz
+            sset = self.xyz
         else:
-            set = [self.xyz[i] for i in Subset]
+            sset = [self.xyz[i] for i in Subset]
         for coord in set:
             x0 += coord[0]
             y0 += coord[1]
             z0 += coord[2]
-        return [x0/len(set), y0/len(set), z0/len(set)]
+        return [x0/len(sset), y0/len(sset), z0/len(sset)]
 
     def MoveInsideUnitCell(self):
         # Assuming xyz-basis vectors
@@ -372,7 +371,7 @@ class Geom:
         - rightContactList
         - deviceList
         - zLeftContact
-        - ContactSeparation        
+        - ContactSeparation
         '''
 
         self.leftContactList = []
@@ -513,10 +512,10 @@ class Geom:
         "Returns a new geometry object with 7 times as many atoms"
         geom=copy.deepcopy(self)
         for dim in range(3):
-            for dir in [-1, 1]:
+            for displdir in [-1, 1]:
                 new = copy.deepcopy(self)
                 displ = [0., 0., 0.]
-                displ[dim] = dir*displacement
+                displ[dim] = displdir*displacement
                 new.move(displ)
                 geom.addGeom(new)
         return geom
@@ -562,16 +561,16 @@ class Geom:
                              geom.snr[0], geom.anr[0])
             geom.pbc[2][2]+=len(AddRightList)/AtomsPerLayer*dz
 
-    def StretchAlongEigenvector(self, ncfile, modeindex, displacement=0.04*PC.Bohr2Ang):
+    def StretchAlongEigenvector(self, ncfilename, modeindex, displacement=0.04*PC.Bohr2Ang):
         'Displace a geometry along a calculated eigenmode'
         # TF/080527
-        file = NC4.Dataset(ncfile, 'r')
-        hw = file.variables['hw'][modeindex]
-        U = file.variables['U'][modeindex]
+        ncfile = NC4.Dataset(ncfilename, 'r')
+        hw = ncfile.variables['hw'][modeindex]
+        U = ncfile.variables['U'][modeindex]
         print 'MakeGeom.StretchAlongEigenvector: Stretching %.3e Ang along mode #%i (hw = %.4f eV).'%(displacement, modeindex, hw)
         d = len(U)/3
         U = N.reshape(U, (d, 3))
-        firstdynatom = int(file.variables['DynamicAtoms'][0]-1)
+        firstdynatom = int(ncfile.variables['DynamicAtoms'][0]-1)
         for i in range(d):
             self.xyz[i+firstdynatom] += displacement*N.array(U[i])
 
@@ -659,9 +658,9 @@ class Geom:
         self.natoms = len(xyz)
         self.snr = []
         self.anr = []
-        for i in range(len(speciesnumbers)):
-            self.snr += speciesnumbers[i]*[i+1]
-            self.anr += speciesnumbers[i]*[PC.PeriodicTable[specieslabels[i]]]
+        for i, nspcecie in enumerate(speciesnumbers):
+            self.snr += nspecie*[i+1]
+            self.anr += nspecie*[PC.PeriodicTable[specieslabels[i]]]
 
 #--------------------------------------------------------------------------------
 # Interface with VASP
@@ -684,9 +683,9 @@ class Geom:
             cons += [list(geom.constrained[j])]
         speciesnumbers = []
         specieslabels = []
-        for i in range(len(anrnum)):
-            if anrnum[i]!=0:
-                speciesnumbers += [anrnum[i]]
+        for nanr in anrnum:
+            if nanr!=0:
+                speciesnumbers += [nanr]
                 specieslabels += [PC.PeriodicTable[i]]
         VIO.WritePOSCAR(fn, geom.pbc, specieslabels, speciesnumbers, xyz, constrained=N.array(cons))
 

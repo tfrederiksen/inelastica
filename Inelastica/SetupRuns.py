@@ -459,7 +459,7 @@ def RunTBT(TSrun, Emin, Emax, NPoints, NumKxy_A1=1, NumKxy_A2=1,
     PBSsubs              : A list of string substitutions to be applied to the template
                               PBS script in order to generate a new PBS script
                               (e.g., PBSsubs=[['JOBNAME','newjobname'],...] will replace
-                              any JOBNAME string with newjobname)                              
+                              any JOBNAME string with newjobname)
     submitJob            : (True/False) Submit to batch queue via qsub command?
     """
     # Remove old Green's functions
