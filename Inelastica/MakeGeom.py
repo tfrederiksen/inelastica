@@ -659,7 +659,7 @@ class Geom:
         self.natoms = len(xyz)
         self.snr = []
         self.anr = []
-        for i, nspcecie in enumerate(speciesnumbers):
+        for i, nspecie in enumerate(speciesnumbers):
             self.snr += nspecie*[i+1]
             self.anr += nspecie*[PC.PeriodicTable[specieslabels[i]]]
 
