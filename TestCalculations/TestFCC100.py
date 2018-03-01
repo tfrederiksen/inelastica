@@ -1,10 +1,9 @@
 import sys
-import profile
-sys.path+=['../..']
-
 import Inelastica.NEGF as NEGF
 import numpy as N
 import numpy.random as RA
+
+sys.path+=['../..']
 
 
 def err_SE_k(ee, E1, E2, k, **kwargs):

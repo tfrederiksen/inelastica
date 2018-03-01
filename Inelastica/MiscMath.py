@@ -321,7 +321,7 @@ def abwe1(n, m, tol, coef2, even, b, x):
 #    of Gauss and Lobatto,
 #    Mathematics of Computation,
 #    Volume 28, Number 125, January 1974, pages 135-139.
-    from sys import exit
+
     if (x == 0.0):    ka = 1
     else:    ka = 0
     for iter in range(1, 51):

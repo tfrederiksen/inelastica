@@ -19,7 +19,6 @@ _default_stderr = sys.stderr
 
 def CreatePipeOutput(f):
     global _default_stdout, _default_stderr
-    import subprocess
     import os
     import os.path as osp
     import errno
@@ -27,7 +26,7 @@ def CreatePipeOutput(f):
     # First ensure that the path to the file exists
     # In case one wishes to create a log folder this should
     # not be limited.
-    head, tail = osp.split(f)
+    head = osp.split(f)[0]
     try:
         # Create directory tree
         os.makedirs(head)

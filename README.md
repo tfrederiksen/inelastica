@@ -1,5 +1,6 @@
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 [![Build Status](https://travis-ci.org/tfrederiksen/inelastica.svg?branch=master)](https://travis-ci.org/tfrederiksen/inelastica)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/013fe70aa6564ea1bec9df0b3831c834)](https://www.codacy.com/app/brandimarte/inelastica?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tfrederiksen/inelastica&amp;utm_campaign=Badge_Grade)
 
 # Inelastica #
 

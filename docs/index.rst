@@ -6,6 +6,7 @@
 
 |license|_
 |buildstatus|_
+|codacy|_
 
 
 Welcome to Inelastica's documentation!
@@ -88,3 +89,5 @@ Indices
 .. |license| image:: https://img.shields.io/badge/License-LGPL%20v3-blue.svg
 .. _license: https://www.gnu.org/licenses/lgpl-3.0
 
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/013fe70aa6564ea1bec9df0b3831c834
+.. _codacy: https://www.codacy.com/app/brandimarte/inelastica?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tfrederiksen/inelastica&amp;utm_campaign=Badge_Grade

@@ -3,26 +3,26 @@
 STM (:mod:`Inelastica.STM`)
 ===========================
 
-Script that calculates STM images using the Bardeen approximation 
-outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The 
+Script that calculates STM images using the Bardeen approximation
+outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The
 script is divided into 3 parts:
 
-1. Calculation of the scattering states at the Fermi-energy on the 
-same real space grid as `TranSIESTA`_ (real-space cutoff). These are 
-saved in `DestDir/SystemLabel.A[LR][0-99].nc` files and are reused if 
+1. Calculation of the scattering states at the Fermi-energy on the
+same real space grid as `TranSIESTA`_ (real-space cutoff). These are
+saved in `DestDir/SystemLabel.A[LR][0-99].nc` files and are reused if
 found. **NEEDS:** `TranSIESTA`_ calculation.
 
-2. Propagation of the scattering states from a surface (defined by a 
-constant charge density) out into the vacuum region. After the x-y plane, 
-where the average potential of the slice is maximum (the separation 
-plane), is found, the potential is ascribed a constant value at this 
-average. Saves the propagated wavefunctions at the separation plane in 
-`DestDir/[kpoint]/FD[kpoint].nc`. **NEEDS:** *TotalPotential.grid.nc* and 
+2. Propagation of the scattering states from a surface (defined by a
+constant charge density) out into the vacuum region. After the x-y plane,
+where the average potential of the slice is maximum (the separation
+plane), is found, the potential is ascribed a constant value at this
+average. Saves the propagated wavefunctions at the separation plane in
+`DestDir/[kpoint]/FD[kpoint].nc`. **NEEDS:** *TotalPotential.grid.nc* and
 *Rho.grid.nc*.
- 
-3. Conductance calculation where the tip/substrate wavefunctions are 
-displaced to simulate the conductance at different tip-positions. The k 
-averaged STM image and the STM images of individual k points are saved in 
+
+3. Conductance calculation where the tip/substrate wavefunctions are
+displaced to simulate the conductance at different tip-positions. The k
+averaged STM image and the STM images of individual k points are saved in
 `DestDir/STMimage.nc`.
 
 .. currentmodule:: Inelastica.STM
@@ -38,23 +38,15 @@ import Inelastica.MakeGeom as MG
 import Inelastica.MiscMath as MM
 import Inelastica.physics.constants as PC
 import Inelastica.physics.mesh as Kmesh
-import Inelastica.Symmetry as SYM
 import numpy as N
 import numpy.linalg as LA
 import netCDF4 as NC
 import sys
 import string
-import struct
 import glob
 import os
-import time
-import resource
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
-import scipy
-import scipy.io
-import scipy.sparse.linalg as SLA
-import scipy.sparse as SS
 import Inelastica.io.netcdf as writeNC
 import Inelastica.STMFD as STMFD
 
@@ -68,7 +60,7 @@ DEBUGPDE = False
 
 def GetOptions(argv, **kwargs):
     # if text string is specified, convert to list
-    if type(argv)==type(''): argv = argv.split()
+    if isinstance(argv, basestring): argv = argv.split()
 
     import optparse as o
 
@@ -170,7 +162,6 @@ def main(options):
         for ii in f.readlines():
             oldk += [N.array(string.split(ii), N.float)]
         oldk = N.array(oldk)
-        bool = len(options.kpoints.k)==len(oldk)
 
     options.kpoints.mesh2file(options.DestDir+'/kpoints')
     doK = []
@@ -241,7 +232,7 @@ def main(options):
     for ii in range(len(tmp)):
         for jj in range(1, 5):
             tmp2 = tmp[ii].split()
-            xyz[ii, jj-1] = eval(tmp2[jj])
+            xyz[ii, jj-1] = ast.literal_eval(tmp2[jj])
             if jj>1:
                 xyz[ii, jj-1] = xyz[ii, jj-1]*PC.Bohr2Ang
 
@@ -278,15 +269,14 @@ def calcTSWF(options, ikpoint):
         A=A*PC.Rydberg2eV # Change to 1/Ryd
         ev, U = LA.eigh(A)
         Utilde = N.empty(U.shape, U.dtype)
-        for jj in range(len(ev)): # Problems with negative numbers
-            if ev[jj]<0: ev[jj]=0
-            Utilde[:, jj]=N.sqrt(ev[jj]/(2*N.pi))*U[:, jj]
+        for jj, val in enumerate(ev): # Problems with negative numbers
+            if val<0: val=0
+            Utilde[:, jj]=N.sqrt(val/(2*N.pi))*U[:, jj]
         indx2 = N.where(abs(abs(ev)>1e-4))[0] # Pick non-zero states
 
         ev=ev[indx2]
         Utilde=Utilde[:, indx2]
         indx=ev.real.argsort()[::-1]
-        args=[]
         fn=options.DestDir+'/%i/'%(ikpoint)+options.systemlabel+'.%s'%(txt)
 
         path = './'+options.DestDir+'/'
@@ -379,7 +369,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
     the real space wavefunction folded into the cell using the k-vector.
     If Folded==False, you can choose any 'a' but folding by the PBC will
     not be done.
-    Note: Folding assumes coupling only between N.N. cells 
+    Note: Folding assumes coupling only between N.N. cells
 
     INPUT:
       geom        : MakeGeom structure for full geometry
@@ -388,7 +378,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
       Y           : Wavefunction for the device region
       NN          : [N1,N2,N3,minN3,maxN3] number of points along [a1, a2, a3]
                     only calculate from minN3 to maxN3
-      Fold        : fold periodic boundary conditions 
+      Fold        : fold periodic boundary conditions
       k           : k-vector to use for folding [-0.5,0.5]
       a           : if Fold==True, uses geom.pbc, if false: [a1, a2, a3]
                     along these directions, i.e., da1=a1/N1 ...
@@ -543,7 +533,6 @@ def writenetcdf2(geom, fn, YY, nx, ny, nz, minnz, maxnz, pbc, DeviceAtoms):
 ##################### Start main routine #####################
 if __name__ == '__main__':
     from datetime import datetime
-    import profile
     start = datetime.now()
     options = GetOptions(sys.argv[1:])
     print(dir(options))

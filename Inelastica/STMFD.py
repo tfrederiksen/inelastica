@@ -10,17 +10,11 @@ STMFD (:mod:`Inelastica.STMFD`)
 import numpy               as N
 import scipy.linalg        as SLA
 import netCDF4             as NC
-from   scipy.interpolate   import interp1d
 from   scipy.sparse.linalg import isolve
 from   scipy               import sparse
 from   scipy               import interpolate
-from   datetime            import datetime
-import scipy.io
 import time
 import glob
-import os
-import shutil
-import sys
 import Inelastica.io.netcdf as wNC
 import Inelastica.physics.constants as PC
 import Inelastica.io.siesta as SIO
@@ -29,7 +23,6 @@ import Inelastica.io.siesta as SIO
 def main(options, kpoint, ikpoint):
     Ef = SIO.HS(options.systemlabel+'.TSHS').ef/PC.Rydberg2eV
     kpt = ikpoint
-    path = './'+options.DestDir+'/'
     pathkpt = './'+options.DestDir+'/'+str(kpt)+'/'
     print 'k-point: '+str(ikpoint)+'/'
     print '(k1,k2): ('+str(kpoint[0])+','+str(kpoint[1])+')'
@@ -89,7 +82,6 @@ def main(options, kpoint, ikpoint):
 
 def LayersAndTipheight(options, kpoint, ikpoint):
     tmp  = NC.Dataset('./'+options.DestDir+'/'+str(ikpoint)+'/'+options.systemlabel+'.AL0.nc', 'r')
-    tmp2 = N.array(tmp.variables['xyz'][:], N.float)
     xyzSupercell = N.array(tmp.variables['xyz'][:], N.float)
     xyz = xyzSupercell.copy()
     noAtoms = len(xyzSupercell[:, 0])
@@ -148,15 +140,13 @@ def LayersAndTipheight(options, kpoint, ikpoint):
 
 
 def readDFT(options, kpt, pathkpt, posZMol, posZTip):
-    file = NC.Dataset('TotalPotential.grid.nc', 'r')
+    ncfile = NC.Dataset('TotalPotential.grid.nc', 'r')
     print '\nReading potential from:    TotalPotential.grid.nc'
-    size=[file.dimensions['n1'], file.dimensions['n2'], file.dimensions['n3']]
-    pot = N.array(file.variables['gridfunc'][:], N.float)[0]
+    pot = N.array(ncfile.variables['gridfunc'][:], N.float)[0]
 
     print 'Reading DFT density from:  Rho.grid.nc'
-    file = NC.Dataset('Rho.grid.nc', 'r')
-    size=[file.dimensions['n1'], file.dimensions['n2'], file.dimensions['n3']]
-    rho = N.array(file.variables['gridfunc'][:], N.float)[0]
+    ncfile = NC.Dataset('Rho.grid.nc', 'r')
+    rho = N.array(ncfile.variables['gridfunc'][:], N.float)[0]
 
     #Import supercell grid from one localized-basis state
     tmp  = NC.Dataset(pathkpt+options.systemlabel+'.AL0.nc', 'r')
@@ -172,28 +162,28 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
 
     print '\nReading localized-basis wave functions from substrate side...'
     for ii in range(SubChans):
-        file = NC.Dataset(pathkpt+options.systemlabel+'.AL'+N.str(ii)+'.nc', 'r')
+        ncfile = NC.Dataset(pathkpt+options.systemlabel+'.AL'+N.str(ii)+'.nc', 'r')
         print options.systemlabel+'.AL'+N.str(ii)+'.nc'
-        Re_AL = N.array(file.variables['Re-Psi'][:], N.float)
-        Im_AL = N.array(file.variables['Im-Psi'][:], N.float)
+        Re_AL = N.array(ncfile.variables['Re-Psi'][:], N.float)
+        Im_AL = N.array(ncfile.variables['Im-Psi'][:], N.float)
         Subwfs[ii, :, :, :] = Re_AL+1j*Im_AL
-        file.close()
+        ncfile.close()
 
     print 'Reading localized-basis wave functions from tip side ...'
     for ii in range(TipChans):
-        file = NC.Dataset(pathkpt+options.systemlabel+'.AR'+N.str(ii)+'.nc', 'r')
+        ncfile = NC.Dataset(pathkpt+options.systemlabel+'.AR'+N.str(ii)+'.nc', 'r')
         print options.systemlabel+'.AR'+N.str(ii)+'.nc'
-        Re_AR = N.array(file.variables['Re-Psi'][:], N.float)
-        Im_AR = N.array(file.variables['Im-Psi'][:], N.float)
+        Re_AR = N.array(ncfile.variables['Re-Psi'][:], N.float)
+        Im_AR = N.array(ncfile.variables['Im-Psi'][:], N.float)
         Tipwfs[ii, :, :, ::-1] = Re_AR+1j*Im_AR
-        file.close()
-    file = NC.Dataset(pathkpt+options.systemlabel+'.AL0.nc', 'r')
-    steps = N.array(file.variables['steps'][:], N.float)
+        ncfile.close()
+    ncfile = NC.Dataset(pathkpt+options.systemlabel+'.AL0.nc', 'r')
+    steps = N.array(ncfile.variables['steps'][:], N.float)
     dS = SLA.norm(N.cross(steps[0], steps[1]))
     theta = N.arccos(N.dot(steps[0], steps[1])/(SLA.norm(steps[0])*SLA.norm(steps[1])))
     a1, a2, a3 = SLA.norm(steps[0]), SLA.norm(steps[1]), SLA.norm(steps[2])
     avec = [a1, a2, a3]
-    orig = N.array(file.variables['origin'][:], N.float)[2]
+    orig = N.array(ncfile.variables['origin'][:], N.float)[2]
     Nzi  = N.int(orig/a3)
     Nzf  = Nzi+Nz
     PotDevice = pot[Nzi:Nzf, :, :]
@@ -208,14 +198,14 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
         for line in open('RUN.fdf').readlines():
             if 'MeshCutoff' in line:
                 break
-        eval(line.split()[1])
+        ast.literal_eval(line.split()[1])
     except:
         for line in open('Default.fdf').readlines():
             if 'MeshCutoff' in line:
                 break
-        eval(line.split()[1])
+        ast.literal_eval(line.split()[1])
 
-    MeshCutoff = eval(line.split()[1])
+    MeshCutoff = ast.literal_eval(line.split()[1])
 
     print 'Lattice obtained by using DFT energy cutoff '+str(MeshCutoff)+' Ry:'
     print '          [Nx Ny Nz] = ['+str(Nx), str(Ny), str(Nz)+']'

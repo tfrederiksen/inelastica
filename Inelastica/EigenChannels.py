@@ -15,13 +15,9 @@ import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
 import Inelastica.MiscMath as MM
 import numpy as N
-import numpy.linalg as LA
 import netCDF4 as NC4
-import sys
 import string
 import struct
-import glob
-import os
 import Inelastica.physics.constants as PC
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
@@ -154,7 +150,7 @@ def main(options):
         BC = True
 
     # Eigenchannels from left
-    ECleft, EigT = DevGF.ECleft, DevGF.EigTleft
+    ECleft = DevGF.ECleft
     for jj in range(options.numchan):
         options.iSide, options.iChan = 0, jj+1
         writeWavefunction(options, geom, basis, ECleft[jj])
@@ -164,7 +160,7 @@ def main(options):
 
     # Calculate eigenchannels from right
     if options.bothsides:
-        ECright, EigT = DevGF.ECright, DevGF.EigTright
+        ECright = DevGF.ECright
         for jj in range(options.numchan):
             options.iSide, options.iChan = 1, jj+1
             writeWavefunction(options, geom, basis, ECright[jj])
@@ -191,15 +187,15 @@ def main(options):
             # Write eigenvalues to file
             fn = options.DestDir+'/'+options.systemlabel+'.EIGVAL'
             print 'EigenChannels: Writing', fn
-            file = open(fn, 'w')
-            file.write('# Device region = [%i,%i], units in eV\n'%(options.DeviceFirst, options.DeviceLast))
-            for i in range(len(ev)):
-                file.write('%i %.8f\n'%(i, ev[i]))
-            file.close()
+            fnfile = open(fn, 'w')
+            fnfile.write('# Device region = [%i,%i], units in eV\n'%(options.DeviceFirst, options.DeviceLast))
+            for i, val in enumerate(ev):
+                fnfile.write('%i %.8f\n'%(i, val))
+            fnfile.close()
             # Compute selected eigenstates
-            for ii in range(len(ev)):
-                if N.abs(ev[ii])<options.MolStates:
-                    fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii, ev[ii])
+            for ii, val in enumerate(ev):
+                if N.abs(val)<options.MolStates:
+                    fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii, val)
                     writeWavefunction(options, geom, basis, es[:, ii], fn=fn)
         except:
             print 'You need to install scipy to solve the generalized eigenvalue problem'
@@ -220,7 +216,6 @@ def calcWF(options, geom, basis, Y):
     """
 
     xyz=N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
-    atomnum=geom.anr[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]]
 
     # Size of cube
     xmin, xmax = min(xyz[:, 0])-5.0, max(xyz[:, 0])+5.0
@@ -238,7 +233,7 @@ def calcWF(options, geom, basis, Y):
     ry=N.array(range(ny), N.float)*dy+origo[1]
     rz=N.array(range(nz), N.float)*dz+origo[2]
 
-    for ii in range(len(Y)):
+    for ii, Yval in enumerate(Y):
         if ii>0:# and ii%(int(len(Y)/10))==0:
             SIO.printDone(ii, len(Y), 'Wavefunction')
 
@@ -260,7 +255,7 @@ def calcWF(options, geom, basis, Y):
         ri=dr/basis.delta[ii]
         ri=N.where(ri<imax, ri, imax)
         ri=ri.astype(N.int)
-        costh, sinth = MM.outerAdd(0*ddx, 0*ddy, ddz)/dr, drho/dr
+        costh = MM.outerAdd(0*ddx, 0*ddy, ddz)/dr
         cosfi, sinfi = MM.outerAdd(ddx, 0*ddy, 0*ddz)/drho, MM.outerAdd(0*ddx, ddy, 0*ddz)/drho
 
         # Numpy has changed the choose function to crap!
@@ -274,7 +269,7 @@ def calcWF(options, geom, basis, Y):
         thisSphHar = MM.sphericalHarmonics(l, m, costh, sinfi, cosfi)
 
         YY[ixmin:ixmax, iymin:iymax, izmin:izmax]=YY[ixmin:ixmax, iymin:iymax, izmin:izmax]+\
-                                                 RR*thisSphHar*Y[ii]
+                                                 RR*thisSphHar*Yval
 
     print "Wave function norm on real space grid:", N.sum(YY.conjugate()*YY)*dx*dy*dz
 
@@ -361,35 +356,34 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
     """
     THF: Write eigenchannels to netcdf format
     """
-    import time
-    file = NC4.Dataset(fn, 'w')
-    file.createDimension('nx', nx)
-    file.createDimension('ny', ny)
-    file.createDimension('nz', nz)
-    file.createDimension('natoms', len(geom.xyz))
-    file.createDimension('naxes', 3)
-    file.createDimension('number', 1)
-    #file.createDimension('pair',2)
+    ncfile = NC4.Dataset(fn, 'w')
+    ncfile.createDimension('nx', nx)
+    ncfile.createDimension('ny', ny)
+    ncfile.createDimension('nz', nz)
+    ncfile.createDimension('natoms', len(geom.xyz))
+    ncfile.createDimension('naxes', 3)
+    ncfile.createDimension('number', 1)
+    #ncfile.createDimension('pair',2)
 
     # Grid
-    #grid = file.createVariable('grid','d',('naxes','pair'))
+    #grid = ncfile.createVariable('grid','d',('naxes','pair'))
     #tmp  = [origo,[dstep,dstep,dstep]]
     #grid[:] = N.transpose(N.array(tmp))
 
     # Fields
-    varRe = file.createVariable('Re-Psi', 'd', ('nx', 'ny', 'nz'))
+    varRe = ncfile.createVariable('Re-Psi', 'd', ('nx', 'ny', 'nz'))
     varRe[:] = YY.real
 
-    varIm = file.createVariable('Im-Psi', 'd', ('nx', 'ny', 'nz'))
+    varIm = ncfile.createVariable('Im-Psi', 'd', ('nx', 'ny', 'nz'))
     varIm[:] = YY.imag
 
-    varAbsSq = file.createVariable('Abs-sqr-Psi', 'd', ('nx', 'ny', 'nz'))
+    varAbsSq = ncfile.createVariable('Abs-sqr-Psi', 'd', ('nx', 'ny', 'nz'))
     varAbsSq[:] = N.absolute(N.square(YY))
 
-    vardstep = file.createVariable('dstep', 'd', ('number',))
+    vardstep = ncfile.createVariable('dstep', 'd', ('number',))
     vardstep[:]  = dstep
 
-    vargeom = file.createVariable('xyz', 'f', ('natoms', 'naxes'))
+    vargeom = ncfile.createVariable('xyz', 'f', ('natoms', 'naxes'))
     # OpenDX needs float for positions
     tmp = []
     for i in range(len(geom.xyz)):
@@ -399,7 +393,7 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
                     float(tmp2[2])])
     vargeom[:] = tmp
 
-    varanr = file.createVariable('anr', 'i', ('natoms',))
+    varanr = ncfile.createVariable('anr', 'i', ('natoms',))
     varanr[:] = N.array(geom.anr, N.int32)
 
     # Set attributes
@@ -412,7 +406,7 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
     #setattr(varIm,'field','Im-Psi')
     #setattr(varIm,'positions','grid, compact')
 
-    file.close()
+    ncfile.close()
 
 ################# Write cube file ######################
 
@@ -460,12 +454,12 @@ def writemacubin(fn, YY, nx, ny, nz, origo, dstep):
                          xmin, xmax, ymin, ymax, zmin, zmax, nx, ny, nz, nx*ny*nz))
 
     for ii in range(nz):
-        bin=struct.pack('i', nx*ny*4)
+        mlklbin=struct.pack('i', nx*ny*4)
         for kk in range(ny):
             for jj in range(nx):
-                bin+=struct.pack('f', YY[jj, kk, ii])
-        bin+=struct.pack('i', nx*ny*4)
-        fo.write(bin)
+                mlklbin+=struct.pack('f', YY[jj, kk, ii])
+        mlklbin+=struct.pack('i', nx*ny*4)
+        fo.write(mlklbin)
 
     fo.close()
 
@@ -477,7 +471,6 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     Write XSF datagrid for XCrysden
     """
     fo=file(fn, 'w')
-    vectors=geom.pbc
     speciesnumber=geom.snr
     atomnumber=geom.anr
     xyz=geom.xyz
@@ -506,7 +499,6 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, ymax-ymin, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, 0.0000, zmax-zmin))
     data=[]
-    ll=0
     for ii in range(nz):
         for kk in range(ny):
             for jj in range(nx):
@@ -525,7 +517,6 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, ymax-ymin, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, 0.0000, zmax-zmin))
     data=[]
-    ll=0
     for ii in range(nz):
         for kk in range(ny):
             for jj in range(nx):
@@ -544,7 +535,6 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, ymax-ymin, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, 0.0000, zmax-zmin))
     data=[]
-    ll=0
     YYA2 = N.absolute(N.square(YY))
     for ii in range(nz):
         for kk in range(ny):
@@ -573,17 +563,17 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
     max_amp=-1.0
     phase=1.0+0.0j
 
-    for kk in range(len(Y)):
-        if abs(Y[kk])>max_amp:
-            max_amp=abs(Y[kk])
-            phase=Y[kk]/max_amp
+    for Ykk in Y:
+        if abs(Ykk)>max_amp:
+            max_amp=abs(Ykk)
+            phase=Ykk/max_amp
     Y=Y/phase
 
     foT=file(fn+'.abs.txt', 'w')
     foT.write('Atom nr M L abs(Y)\n')
-    for ii in range(len(Y)):
+    for ii, Yval in enumerate(Y):
         foT.write('%3.0i %3.0i %3.1i %3.1i %1.8f \n'%
-        (basis.ii[ii], basis.atomnum[ii], basis.M[ii], basis.L[ii], abs(Y[ii])))
+        (basis.ii[ii], basis.atomnum[ii], basis.M[ii], basis.L[ii], abs(Yval)))
     foT.close()
 
     YY, dstep, origo, nx, ny, nz = calcWF(options, geom, basis, Y)

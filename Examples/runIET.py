@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys
-import os
 from Inelastica import ValueCheck as VC
 import Inelastica.iets as I
 from Inelastica import EigenChannels as E

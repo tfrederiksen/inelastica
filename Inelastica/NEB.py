@@ -276,13 +276,13 @@ def checkConst(initial, final):
 ########################################################
 
 
-def readxv(dir):
+def readxv(dirpath):
     global geom
-    # Read geometry from first .XV file found in dir
-    fns=glob.glob(dir+'/*.XV')
+    # Read geometry from first .XV file found in dirpath
+    fns=glob.glob(dirpath+'/*.XV')
 
     if len(fns)>1:
-        print "ERROR: NEB: More than one .XV file in dir:%s"%dir
+        print "ERROR: NEB: More than one .XV file in dir:%s"%dirpath
         sys.exit(1)
     elif len(fns)<1:
         return None
