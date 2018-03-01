@@ -25,6 +25,7 @@ import math
 import sys
 import netCDF4 as NC4
 import Inelastica.physics.constants as PC
+import ast
 
 
 def interpolateGeom(g0, g1, newlength):

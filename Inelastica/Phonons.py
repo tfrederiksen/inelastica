@@ -66,6 +66,7 @@ import glob
 import os
 import sys
 import string
+import ast
 
 
 def GetOptions(argv, **kwargs):

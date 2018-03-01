@@ -46,6 +46,7 @@ import numpy as N
 import glob
 import scipy.linalg as SLA
 import netCDF4 as NC4
+import ast
 
 __all__ = ['Supercell_DynamicalMatrix']
 

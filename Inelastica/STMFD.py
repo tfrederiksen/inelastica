@@ -18,6 +18,7 @@ import glob
 import Inelastica.io.netcdf as wNC
 import Inelastica.physics.constants as PC
 import Inelastica.io.siesta as SIO
+import ast
 
 
 def main(options, kpoint, ikpoint):

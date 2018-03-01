@@ -49,6 +49,7 @@ import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
 import Inelastica.io.netcdf as writeNC
 import Inelastica.STMFD as STMFD
+import ast
 
 #Units: Bohr and Rydberg!
 
