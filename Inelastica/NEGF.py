@@ -24,7 +24,6 @@ import Inelastica.io.siesta as SIO
 import Inelastica.MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
-import pickle
 import hashlib
 import glob
 import os

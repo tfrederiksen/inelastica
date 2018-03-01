@@ -304,8 +304,8 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
                     spin = 2
                 elif len(s)==10:
                     spin = 1
-            for i in range(len(s)):
-                s[i] = float(s[i])
+            for i, val in enumerate(s):
+                s[i] = float(val)
             if (j-extrablock) in atom_index:
                 dat[e, 0] = s[0]-eF
                 dat[e, 1:1+9*spin] += N.array(s[1:1+9*spin])

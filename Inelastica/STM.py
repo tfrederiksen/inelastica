@@ -232,7 +232,7 @@ def main(options):
     for ii in range(len(tmp)):
         for jj in range(1, 5):
             tmp2 = tmp[ii].split()
-            xyz[ii, jj-1] = eval(tmp2[jj])
+            xyz[ii, jj-1] = ast.literal_eval(tmp2[jj])
             if jj>1:
                 xyz[ii, jj-1] = xyz[ii, jj-1]*PC.Bohr2Ang
 

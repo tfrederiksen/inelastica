@@ -599,7 +599,7 @@ class Geom:
             print 'Error assigning snr!'
         self.pbc = []
         for i in range(3):
-            vec = eval(raw_input('Input cell vector (%i):'%i))
+            vec = ast.literal_eval(raw_input('Input cell vector (%i):'%i))
             if len(vec)!=3:
                 print 'Error assigning cell vector!'
             else:

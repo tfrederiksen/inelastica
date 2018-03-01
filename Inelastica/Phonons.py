@@ -167,7 +167,7 @@ def GetOptions(argv, **kwargs):
         for line in f.readlines():
             s += line.replace('\n', '')
         options.Isotopes = s
-    options.Isotopes=eval(options.Isotopes)
+    options.Isotopes=ast.literal_eval(options.Isotopes)
 
     return options
 

@@ -90,7 +90,7 @@ def GetOptions(argv, **kwargs):
 
     # Check if AtomicMasses are specified
     if options.AtomicMass!='[]':
-        masslist = eval(options.AtomicMass.replace('\n', '').replace(' ', ''))
+        masslist = ast.literal_eval(options.AtomicMass.replace('\n', '').replace(' ', ''))
         for elm in masslist:
             anr = int(elm[0])
             mass = float(elm[1])
@@ -488,7 +488,7 @@ def main(options):
     WritePath(options.DestDir+'/symmetry-path', SCDM.Sym.path, options.steps)
 
     # Write mesh
-    k1, k2, k3 = eval(options.mesh)
+    k1, k2, k3 = ast.literal_eval(options.mesh)
     rvec = 2*N.pi*N.array([SCDM.Sym.b1, SCDM.Sym.b2, SCDM.Sym.b3])
     import Inelastica.physics.mesh as Kmesh
     # Full mesh

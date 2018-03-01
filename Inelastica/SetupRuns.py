@@ -153,7 +153,7 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
     PBSsubs              : A list of string substitutions to be applied to the template
                               PBS script in order to generate a new PBS script
                               (e.g., PBSsubs=[['JOBNAME','newjobname'],...]' will replace
-                              any JOBNAME string with newjobname)                              
+                              any JOBNAME string with newjobname)
     submitJob            : (True/False) Submit to batch queue via qsub command?
     """
     # Make new directory
@@ -175,8 +175,8 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
         geom = MG.Geom(XVfiles[0])
     elif len(XVfiles)>1:
         print 'More than one XV file was found in folder %s:'%CGrun
-        for i in range(len(XVfiles)):
-            print '   No. %i :'%i, XVfiles[i]
+        for i, xvfile in enumerate(XVfiles):
+            print '   No. %i :'%i, xvfile
         select = raw_input('   ... select file:')
         geom = MG.Geom(XVfiles[int(select)])
     else:
@@ -251,8 +251,8 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
         infile = XVfiles[0]
     elif len(XVfiles)>1:
         print 'More than one XV file was found in folder %s:'%CGrun
-        for i in range(len(XVfiles)):
-            print '   No. %i :'%i, XVfiles[i]
+        for i, xvfile in enumerate(XVfiles):
+            print '   No. %i :'%i, xvfile
         select = raw_input('   ... select file:')
         infile = XVfiles[int(select)]
     else:
@@ -365,8 +365,8 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
         geom = MG.Geom(XVfiles[0])
     elif len(XVfiles)>1:
         print 'More than one XV file was found in folder %s:'%CGrun
-        for i in range(len(XVfiles)):
-            print '   No. %i :'%i, XVfiles[i]
+        for i, xvfile in enumerate(XVfiles):
+            print '   No. %i :'%i, xvfile
         select = raw_input('   ... select file:')
         geom = MG.Geom(XVfiles[int(select)])
     else:
@@ -811,9 +811,9 @@ def CheckIfFinished(outfile):
 
 
 def FindElectrodeSep(directory, AtomsPerLayer):
-    for XVfile in glob.glob(directory+'/*.XV*'):
-        print XVfile
-        g = MG.Geom(XVfile)
+    for xvfile in glob.glob(directory+'/*.XV*'):
+        print xvfile
+        g = MG.Geom(xvfile)
         g.findContactsAndDevice(AtomsPerLayer)
         DeviceFirst, DeviceLast = g.deviceList[0], g.deviceList[-1]
     return g.ContactSeparation, DeviceFirst, DeviceLast

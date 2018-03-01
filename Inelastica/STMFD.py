@@ -198,14 +198,14 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
         for line in open('RUN.fdf').readlines():
             if 'MeshCutoff' in line:
                 break
-        eval(line.split()[1])
+        ast.literal_eval(line.split()[1])
     except:
         for line in open('Default.fdf').readlines():
             if 'MeshCutoff' in line:
                 break
-        eval(line.split()[1])
+        ast.literal_eval(line.split()[1])
 
-    MeshCutoff = eval(line.split()[1])
+    MeshCutoff = ast.literal_eval(line.split()[1])
 
     print 'Lattice obtained by using DFT energy cutoff '+str(MeshCutoff)+' Ry:'
     print '          [Nx Ny Nz] = ['+str(Nx), str(Ny), str(Nz)+']'
