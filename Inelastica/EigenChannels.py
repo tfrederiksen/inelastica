@@ -10,10 +10,6 @@ Eigenchannels (:mod:`Inelastica.EigenChannels`)
 
 """
 
-import Inelastica.NEGF as NEGF
-import Inelastica.io.siesta as SIO
-import Inelastica.MakeGeom as MG
-import Inelastica.MiscMath as MM
 import numpy as N
 import netCDF4 as NC4
 import string
@@ -21,6 +17,10 @@ import struct
 import Inelastica.physics.constants as PC
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
+import Inelastica.NEGF as NEGF
+import Inelastica.io.siesta as SIO
+import Inelastica.MakeGeom as MG
+import Inelastica.MiscMath as MM
 
 # For doing loops with Eigenchannels we encourage the usage of this function
 # By creating the parser locally we can actually pass down these informations easily.

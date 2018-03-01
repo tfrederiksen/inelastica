@@ -33,6 +33,11 @@ classes
 
 """
 
+import numpy as N
+import glob
+import scipy.linalg as SLA
+import netCDF4 as NC4
+import ast
 import Inelastica.io.siesta as SIO
 import Inelastica.Symmetry as Symmetry
 import Inelastica.CommonFunctions as CF
@@ -41,11 +46,6 @@ import Inelastica.physics.constants as PC
 import Inelastica.MiscMath as MM
 import Inelastica.ValueCheck as VC
 import Inelastica.io.xmgrace as XMGR
-
-import numpy as N
-import glob
-import scipy.linalg as SLA
-import netCDF4 as NC4
 
 __all__ = ['Supercell_DynamicalMatrix']
 
