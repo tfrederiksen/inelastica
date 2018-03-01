@@ -318,7 +318,7 @@ def ReadWFSFile(filename):
                     label = ''
                     for a in range(20): label += 'c'
                     out =  ReadFortranBin(fortfile, 'I'+label+'III'+label+'dd', 1)
-                    lab1, j, lab2, repsi, impsi = out[1:21], out[21], out[24:44], out[44], out[45]
+                    lab1, lab2, repsi, impsi = out[1:21], out[24:44], out[44], out[45]
                     labelfis, symfio = '', ''
                     for a in range(20):
                         labelfis += lab1[a]

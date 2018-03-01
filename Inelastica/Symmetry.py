@@ -541,7 +541,6 @@ class Symmetry:
                     done = True
             else:
                 i1, i2, i3 = increase(i1, i2, i3, NP, 1)
-            print 'AQUI', NP, i1, i2, i3, incindx
 
         if not done:
             # Should not be necessary since PBC is added to possible!
