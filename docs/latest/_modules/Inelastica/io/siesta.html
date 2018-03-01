@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-49
+                1.3.0-65
               </div>
             
           
@@ -236,14 +236,14 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">filename</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span><span class="o">==</span><span class="s1">&#39;.gz&#39;</span><span class="p">:</span>
             <span class="c1"># filename is explicitly a gzip file</span>
-            <span class="nb">file</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+            <span class="n">gzfile</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># filename is given as a non-zip file</span>
-            <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+            <span class="n">gzfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="c1"># if filename is not existing upon read, then try append the &#39;.gz&#39; ending</span>
-        <span class="nb">file</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="o">+</span><span class="s1">&#39;.gz&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
-    <span class="k">return</span> <span class="nb">file</span>
+        <span class="n">gzfile</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="o">+</span><span class="s1">&#39;.gz&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">gzfile</span>
 
 <span class="c1">#--------------------------------------------------------------------------------</span>
 <span class="c1"># XV-format</span>
@@ -257,24 +257,24 @@
     <span class="k">elif</span> <span class="p">(((</span><span class="n">InUnits</span><span class="o">==</span><span class="s1">&#39;Ang&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">OutUnits</span><span class="o">==</span><span class="s1">&#39;Ang&#39;</span><span class="p">))</span> \
        <span class="ow">or</span> <span class="p">((</span><span class="n">InUnits</span><span class="o">==</span><span class="s1">&#39;Bohr&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">OutUnits</span><span class="o">==</span><span class="s1">&#39;Bohr&#39;</span><span class="p">))):</span> <span class="n">convFactor</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">else</span><span class="p">:</span> <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadXVFile: Unit conversion error!&#39;</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">xvfile</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="c1"># Read cell vectors (lines 1-3)</span>
     <span class="n">vectors</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">xvfile</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
         <span class="n">vectors</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">string</span><span class="o">.</span><span class="n">atof</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">])</span><span class="o">*</span><span class="n">convFactor</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
     <span class="c1"># Read number of atoms (line 4)</span>
-    <span class="n">numberOfAtoms</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">atoi</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">())[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">numberOfAtoms</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">atoi</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">xvfile</span><span class="o">.</span><span class="n">readline</span><span class="p">())[</span><span class="mi">0</span><span class="p">])</span>
     <span class="c1"># Read remaining lines</span>
     <span class="n">speciesnumber</span><span class="p">,</span> <span class="n">atomnumber</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">xvfile</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">5</span><span class="p">:</span> <span class="c1"># Ignore blank lines</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="n">speciesnumber</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">atoi</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
             <span class="n">atomnumber</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">atoi</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
             <span class="n">xyz</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">string</span><span class="o">.</span><span class="n">atof</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="o">+</span><span class="n">j</span><span class="p">])</span><span class="o">*</span><span class="n">convFactor</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
             <span class="n">V</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">string</span><span class="o">.</span><span class="n">atof</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="o">+</span><span class="n">j</span><span class="p">])</span><span class="o">*</span><span class="n">convFactor</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">xvfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">speciesnumber</span><span class="p">)</span><span class="o">!=</span><span class="n">numberOfAtoms</span><span class="p">:</span>
         <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadXVFile: Inconstency in </span><span class="si">%s</span><span class="s1"> detected!&#39;</span> <span class="o">%</span><span class="n">filename</span>
     <span class="k">if</span> <span class="n">ReadVelocity</span><span class="p">:</span>
@@ -292,17 +292,17 @@
     <span class="k">elif</span> <span class="p">(((</span><span class="n">InUnits</span><span class="o">==</span><span class="s1">&#39;Ang&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">OutUnits</span><span class="o">==</span><span class="s1">&#39;Ang&#39;</span><span class="p">))</span> \
        <span class="ow">or</span> <span class="p">((</span><span class="n">InUnits</span><span class="o">==</span><span class="s1">&#39;Bohr&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">OutUnits</span><span class="o">==</span><span class="s1">&#39;Bohr&#39;</span><span class="p">))):</span> <span class="n">convFactor</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">else</span><span class="p">:</span> <span class="k">print</span> <span class="s1">&#39;io.siesta.WriteXVFile: Unit conversion error!&#39;</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">xvfile</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
     <span class="c1"># Write basis vectors (lines 1-3)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;  &#39;</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
             <span class="n">line</span> <span class="o">+=</span> <span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">vectors</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">convFactor</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span>
         <span class="n">line</span> <span class="o">+=</span> <span class="s1">&#39;     0.00  0.00  0.00 </span><span class="se">\n</span><span class="s1">&#39;</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">xvfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
     <span class="c1"># Write number of atoms (line 4)</span>
     <span class="n">numberOfAtoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">speciesnumber</span><span class="p">)</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;     </span><span class="si">%i</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">numberOfAtoms</span><span class="p">)</span>
+    <span class="n">xvfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;     </span><span class="si">%i</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">numberOfAtoms</span><span class="p">)</span>
     <span class="c1"># Go through the remaining lines</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numberOfAtoms</span><span class="p">):</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;  </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">speciesnumber</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
@@ -314,8 +314,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
                 <span class="n">line</span> <span class="o">+=</span> <span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">Velocity</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">convFactor</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
-    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">xvfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+    <span class="n">xvfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="ReadAXVFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadAXVFile">[docs]</a><span class="k">def</span> <span class="nf">ReadAXVFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">MDstep</span><span class="p">,</span> <span class="n">tmpXVfile</span><span class="o">=</span><span class="s2">&quot;tmp.XV&quot;</span><span class="p">,</span> <span class="n">ReadVelocity</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
@@ -358,7 +358,7 @@
             <span class="n">ln</span> <span class="o">=</span> <span class="s1">&#39; </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">geoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
                 <span class="n">ln</span> <span class="o">+=</span> <span class="s1">&#39; </span><span class="si">%.6f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">geoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">forces</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">forces</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
                     <span class="n">ln</span> <span class="o">+=</span> <span class="s1">&#39; </span><span class="si">%.6f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">forces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
             <span class="n">ln</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
@@ -376,17 +376,17 @@
     <span class="k">elif</span> <span class="p">(((</span><span class="n">InUnits</span><span class="o">==</span><span class="s1">&#39;Ang&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">OutUnits</span><span class="o">==</span><span class="s1">&#39;Ang&#39;</span><span class="p">))</span> \
        <span class="ow">or</span> <span class="p">((</span><span class="n">InUnits</span><span class="o">==</span><span class="s1">&#39;Bohr&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">OutUnits</span><span class="o">==</span><span class="s1">&#39;Bohr&#39;</span><span class="p">))):</span> <span class="n">convFactor</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">else</span><span class="p">:</span> <span class="k">print</span> <span class="s1">&#39;io.siesta.WriteANIFile: Unit conversion error!&#39;</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">anifile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">iGeom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Geom</span><span class="p">):</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%i</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">iGeom</span><span class="o">.</span><span class="n">natoms</span><span class="p">)</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%f</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">Energy</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+        <span class="n">anifile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%i</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">iGeom</span><span class="o">.</span><span class="n">natoms</span><span class="p">)</span>
+        <span class="n">anifile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%f</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">Energy</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">iixyz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iGeom</span><span class="o">.</span><span class="n">natoms</span><span class="p">):</span>
-            <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%2.6f</span><span class="s1"> </span><span class="si">%2.6f</span><span class="s1"> </span><span class="si">%2.6f</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span>\
+            <span class="n">anifile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%2.6f</span><span class="s1"> </span><span class="si">%2.6f</span><span class="s1"> </span><span class="si">%2.6f</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span>\
                        <span class="p">(</span><span class="n">PC</span><span class="o">.</span><span class="n">PeriodicTable</span><span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">iGeom</span><span class="o">.</span><span class="n">anr</span><span class="p">[</span><span class="n">iixyz</span><span class="p">])],</span>\
                         <span class="n">convFactor</span><span class="o">*</span><span class="n">iGeom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">iixyz</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>\
                         <span class="n">convFactor</span><span class="o">*</span><span class="n">iGeom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">iixyz</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>\
                         <span class="n">convFactor</span><span class="o">*</span><span class="n">iGeom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">iixyz</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span></div>
-    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">anifile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="ReadANIFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadANIFile">[docs]</a><span class="k">def</span> <span class="nf">ReadANIFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">InUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">,</span> <span class="n">OutUnits</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">):</span>
@@ -427,31 +427,30 @@
 <div class="viewcode-block" id="ReadFCFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadFCFile">[docs]</a><span class="k">def</span> <span class="nf">ReadFCFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="s2">&quot;Returns FC from an FC-file&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadFCFile: Reading&#39;</span><span class="p">,</span> <span class="n">filename</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+    <span class="n">fcfile</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
     <span class="c1"># Read comment line (line 1)</span>
-    <span class="n">line</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="n">fcfile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">!=</span><span class="s1">&#39;Force constants matrix&#39;</span><span class="p">:</span>
         <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadFCFile: Inconstency in </span><span class="si">%s</span><span class="s1"> detected!&#39;</span> <span class="o">%</span><span class="n">filename</span>
     <span class="c1"># Read remaining lines</span>
     <span class="n">FC</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fcfile</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="n">FC</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">string</span><span class="o">.</span><span class="n">atof</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+    <span class="n">fcfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
     <span class="k">return</span> <span class="n">FC</span>
 
 <span class="c1">#--------------------------------------------------------------------------------</span>
 <span class="c1"># Reading SIESTA Fortan binary files</span>
 
 
-<div class="viewcode-block" id="ReadFortranBin"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadFortranBin">[docs]</a><span class="k">def</span> <span class="nf">ReadFortranBin</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">printLength</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="ReadFortranBin"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadFortranBin">[docs]</a><span class="k">def</span> <span class="nf">ReadFortranBin</span><span class="p">(</span><span class="n">fortfile</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">printLength</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="s2">&quot;Reads Fortran binary data structures&quot;</span>
-    <span class="kn">import</span> <span class="nn">struct</span>
     <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">):</span> <span class="n">fmt</span> <span class="o">+=</span> <span class="nb">type</span>
-    <span class="nb">bin</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">fortranPrefix</span><span class="o">+</span><span class="n">fortranuLong</span><span class="o">+</span><span class="n">fmt</span><span class="o">+</span><span class="n">fortranuLong</span><span class="p">))</span>
+    <span class="n">fbin</span> <span class="o">=</span> <span class="n">fortfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">fortranPrefix</span><span class="o">+</span><span class="n">fortranuLong</span><span class="o">+</span><span class="n">fmt</span><span class="o">+</span><span class="n">fortranuLong</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">unpack</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">fortranPrefix</span><span class="o">+</span><span class="n">fortranLong</span><span class="o">+</span><span class="n">fmt</span><span class="o">+</span><span class="n">fortranLong</span><span class="p">,</span> <span class="nb">bin</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">fortranPrefix</span><span class="o">+</span><span class="n">fortranLong</span><span class="o">+</span><span class="n">fmt</span><span class="o">+</span><span class="n">fortranLong</span><span class="p">,</span> <span class="n">fbin</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">printLength</span><span class="p">:</span>
             <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadFortranBin: </span><span class="si">%i</span><span class="s1"> bytes read&#39;</span> <span class="o">%</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">fortranPrefix</span><span class="o">+</span><span class="n">fmt</span><span class="p">):</span>
@@ -459,7 +458,7 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span></div>
-        <span class="k">return</span> <span class="nb">bin</span>
+        <span class="k">return</span> <span class="n">fbin</span>
 
 
 <div class="viewcode-block" id="ReadWFSFile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.ReadWFSFile">[docs]</a><span class="k">def</span> <span class="nf">ReadWFSFile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
@@ -491,7 +490,7 @@
                     <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
                     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span> <span class="n">label</span> <span class="o">+=</span> <span class="s1">&#39;c&#39;</span>
                     <span class="n">out</span> <span class="o">=</span>  <span class="n">ReadFortranBin</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="o">+</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39;III&#39;</span><span class="o">+</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39;dd&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">iaorb</span><span class="p">,</span> <span class="n">lab1</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">iphorb</span><span class="p">,</span> <span class="n">cnfigfio</span><span class="p">,</span> <span class="n">lab2</span><span class="p">,</span> <span class="n">repsi</span><span class="p">,</span> <span class="n">impsi</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">21</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">21</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">22</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">23</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">24</span><span class="p">:</span><span class="mi">44</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">44</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">45</span><span class="p">]</span>
+                    <span class="n">lab1</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">lab2</span><span class="p">,</span> <span class="n">repsi</span><span class="p">,</span> <span class="n">impsi</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">21</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">21</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">24</span><span class="p">:</span><span class="mi">44</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">44</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">45</span><span class="p">]</span>
                     <span class="n">labelfis</span><span class="p">,</span> <span class="n">symfio</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
                     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
                         <span class="n">labelfis</span> <span class="o">+=</span> <span class="n">lab1</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
@@ -521,8 +520,8 @@
     <span class="k">print</span> <span class="s1">&#39;io.siesta.WriteMKLFile: Writing&#39;</span><span class="p">,</span> <span class="n">filename</span>
     <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
     <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;$MKL</span><span class="se">\n</span><span class="s1">$COORD</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atomnumber</span><span class="p">)):</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">atomnumber</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">iatom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">atomnumber</span><span class="p">):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">iatom</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
             <span class="n">line</span> <span class="o">+=</span> <span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
         <span class="n">line</span> <span class="o">+=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
@@ -730,23 +729,22 @@
 <span class="c1"># Writing SIESTA Fortran binary files</span>
 
 
-<div class="viewcode-block" id="WriteFortranBin"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteFortranBin">[docs]</a><span class="k">def</span> <span class="nf">WriteFortranBin</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="WriteFortranBin"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.WriteFortranBin">[docs]</a><span class="k">def</span> <span class="nf">WriteFortranBin</span><span class="p">(</span><span class="n">fortfile</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
     <span class="s2">&quot;Writes Fortran binary data structures&quot;</span>
-    <span class="kn">import</span> <span class="nn">struct</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">L</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">L</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">except</span><span class="p">:</span> <span class="n">L</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span> <span class="n">fmt</span> <span class="o">+=</span> <span class="nb">type</span>
-    <span class="nb">bin</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fortranPrefix</span><span class="o">+</span><span class="n">fortranLong</span><span class="p">,</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">fmt</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span> <span class="n">fmt</span> <span class="o">+=</span> <span class="n">dtype</span>
+    <span class="n">fbin</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fortranPrefix</span><span class="o">+</span><span class="n">fortranLong</span><span class="p">,</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">fmt</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">L</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
-            <span class="nb">bin</span> <span class="o">+=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">fbin</span> <span class="o">+=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">bin</span> <span class="o">+=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-    <span class="nb">bin</span> <span class="o">+=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fortranuLong</span><span class="p">,</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">fmt</span><span class="p">))</span></div>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bin</span><span class="p">)</span>
+        <span class="n">fbin</span> <span class="o">+=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">fbin</span> <span class="o">+=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fortranuLong</span><span class="p">,</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">fmt</span><span class="p">))</span></div>
+    <span class="n">fortfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fbin</span><span class="p">)</span>
 
 
 <span class="c1">#--------------------------------------------------------------------------------</span>
@@ -757,12 +755,12 @@
 <span class="sd">        infile = input file&quot;&quot;&quot;</span>
     <span class="n">infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">head</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-        <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
+        <span class="n">head</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">infile</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">printAlot</span><span class="p">:</span>
         <span class="k">print</span> <span class="s1">&#39;io.siesta.ReadFDFLines: Reading&#39;</span><span class="p">,</span> <span class="n">infile</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">fdffile</span> <span class="o">=</span> <span class="n">SIO_open</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">tmp</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">fdffile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
     <span class="k">while</span> <span class="n">tmp</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">:</span>
             <span class="n">tmp</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="c1"># Remove &#39;:&#39; from fdf</span>
@@ -780,8 +778,8 @@
                     <span class="n">lines</span> <span class="o">+=</span> <span class="n">tmp2</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">fdffile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="n">fdffile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
     <span class="k">return</span> <span class="n">lines</span>
 
 
@@ -1718,7 +1716,7 @@
 <span class="sd">    - *xa(1:nua,1:3)*            : Position of atoms (NOTE transpose of TS standard)</span>
 <span class="sd">    - *indxuo(1:no)*             : Index of equivalent orbital in unitcell</span>
 <span class="sd">    - *numh(1:nuo)*              : Number of non-zero elements in row of H</span>
-<span class="sd">    - *listh(1:nuo)*             : Column index of H element </span>
+<span class="sd">    - *listh(1:nuo)*             : Column index of H element</span>
 <span class="sd">    - *Hsparse(1:nspin,1:maxnh)* : Sparse H</span>
 <span class="sd">    - *Ssparse(1:nspin,1:maxnh)* : Sparse S</span>
 <span class="sd">    - *qtot*                     : ??</span>
@@ -1923,7 +1921,7 @@
 <span class="sd">        Remove displacements within unitcell from xij</span>
 <span class="sd">        NOTE: We remove the in cell difference so xij corresponds to </span>
 <span class="sd">              lattice vectors to the relevant part of the supercell.</span>
-<span class="sd">        NOTE: xij = Rj-Ri where Ri,j corresponds to positions of the orbitals H_{i,j} </span>
+<span class="sd">        NOTE: xij = Rj-Ri where Ri,j corresponds to positions of the orbitals H_{i,j}</span>
 <span class="sd">        TODO: Check why some orbitals in sparse matrix reported within cell but have xij!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1971,11 +1969,11 @@
 <div class="viewcode-block" id="HS.setkpointhelper"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.siesta.html#Inelastica.io.siesta.HS.setkpointhelper">[docs]</a>    <span class="k">def</span> <span class="nf">setkpointhelper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Sparse</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">UseF90helpers</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">atype</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make full matrices from sparse for specific k-point</span>
-<span class="sd">        NOTE: Assumption for Fourier transform                     </span>
+<span class="sd">        NOTE: Assumption for Fourier transform</span>
 <span class="sd">        Psi(i) =           sum_R exp(i k.R) Psi_k(i)               NOTE sign!</span>
 <span class="sd">        (Full waveunction)                   (Unit cell part of wavefunction)</span>
 <span class="sd">              which gives:</span>
-<span class="sd">        i,j part of unitcell gives from the rows of the full H: </span>
+<span class="sd">        i,j part of unitcell gives from the rows of the full H:</span>
 <span class="sd">            H_k(i,j) = H_(i,j) + sum_R H(i,j+R) exp(i*k*R)         NOTE sign!</span>
 <span class="sd">            where R corresponds to R_j-R_0 which is Xij            NOTE sign!</span>
 
@@ -2130,7 +2128,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.3.0-49',
+            VERSION:'1.3.0-65',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

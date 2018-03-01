@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-49
+                1.3.0-65
               </div>
             
           
@@ -185,14 +185,13 @@
 <span class="sd">* IN: (not working at the moment)</span>
 
 <span class="sd">The basic idea is to use an existing CG (geometry optimization) setup</span>
-<span class="sd">to create all the other calculation directories needed. </span>
+<span class="sd">to create all the other calculation directories needed.</span>
 
 <span class="sd">.. currentmodule:: Inelastica.SetupRuns</span>
 
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">string</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -201,9 +200,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span> <span class="kn">as</span> <span class="nn">NC4</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
-<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
 <span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
-<span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
 <span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
 
 
@@ -229,7 +226,7 @@
 <span class="sd">    IndexShift           : Number of atoms which is periodically translated from left to</span>
 <span class="sd">                              right during the formation of the new STRUCT.fdf from the</span>
 <span class="sd">                              template *.XV file</span>
-<span class="sd">    ListL/ListR          : These atom indices (SIESTA numbering) are forced to be a part of </span>
+<span class="sd">    ListL/ListR          : These atom indices (SIESTA numbering) are forced to be a part of</span>
 <span class="sd">                              the electrodes and hence not affected by stretching</span>
 <span class="sd">    RotationAngle/       : Rotate whole CG geometry (or only RotationSubset if specified)</span>
 <span class="sd">    RotationCenter/           an angle RotationAngle (in degrees) around RotationAxis vector through</span>
@@ -241,12 +238,12 @@
 <span class="sd">    PBSsubs              : A list of string substitutions to be applied to the template</span>
 <span class="sd">                              PBS script in order to generate a new PBS script</span>
 <span class="sd">                              (e.g., PBSsubs=[[&#39;JOBNAME&#39;,&#39;newjobname&#39;],...]&#39; will replace</span>
-<span class="sd">                              any JOBNAME string with newjobname)                              </span>
+<span class="sd">                              any JOBNAME string with newjobname)</span>
 <span class="sd">    submitJob            : (True/False) Submit to batch queue via qsub command?</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Make new directories</span>
-    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">newCGrun</span><span class="p">)</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">newCGrun</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">head</span><span class="p">):</span>
         <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">SetupRuns.SetupCGrun: Creating folder </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">head</span>
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">head</span><span class="p">)</span>
@@ -268,8 +265,8 @@
         <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
         <span class="k">print</span> <span class="s1">&#39;More than one XV file was found in folder </span><span class="si">%s</span><span class="s1">:&#39;</span><span class="o">%</span><span class="n">templateCGrun</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">)):</span>
-            <span class="k">print</span> <span class="s1">&#39;   No. </span><span class="si">%i</span><span class="s1"> :&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="n">XVfiles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xvfile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s1">&#39;   No. </span><span class="si">%i</span><span class="s1"> :&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="n">xvfile</span>
         <span class="n">select</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s1">&#39;   ... select file:&#39;</span><span class="p">)</span>
         <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">select</span><span class="p">)])</span>
     <span class="k">else</span><span class="p">:</span>
@@ -305,7 +302,7 @@
     <span class="n">geom</span><span class="o">.</span><span class="n">writeXYZ</span><span class="p">(</span><span class="n">newCGrun</span><span class="o">+</span><span class="s1">&#39;/STRUCT.xyz&#39;</span><span class="p">)</span>
     <span class="n">geom</span><span class="o">.</span><span class="n">writeXYZ</span><span class="p">(</span><span class="n">newCGrun</span><span class="o">+</span><span class="s1">&#39;/STRUCT2.xyz&#39;</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
     <span class="c1"># PBS files</span></div>
-    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newCGrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">)</span>
+    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newCGrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="n">rtype</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">)</span>
 
 
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
@@ -328,7 +325,7 @@
 <span class="sd">    PBSsubs              : A list of string substitutions to be applied to the template</span>
 <span class="sd">                              PBS script in order to generate a new PBS script</span>
 <span class="sd">                              (e.g., PBSsubs=[[&#39;JOBNAME&#39;,&#39;newjobname&#39;],...]&#39; will replace</span>
-<span class="sd">                              any JOBNAME string with newjobname)                              </span>
+<span class="sd">                              any JOBNAME string with newjobname)</span>
 <span class="sd">    submitJob            : (True/False) Submit to batch queue via qsub command?</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Make new directory</span>
@@ -350,8 +347,8 @@
         <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
         <span class="k">print</span> <span class="s1">&#39;More than one XV file was found in folder </span><span class="si">%s</span><span class="s1">:&#39;</span><span class="o">%</span><span class="n">CGrun</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">)):</span>
-            <span class="k">print</span> <span class="s1">&#39;   No. </span><span class="si">%i</span><span class="s1"> :&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="n">XVfiles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xvfile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s1">&#39;   No. </span><span class="si">%i</span><span class="s1"> :&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="n">xvfile</span>
         <span class="n">select</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s1">&#39;   ... select file:&#39;</span><span class="p">)</span>
         <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">select</span><span class="p">)])</span>
     <span class="k">else</span><span class="p">:</span>
@@ -379,7 +376,7 @@
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="c1"># PBS files</span></div>
-    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newFCrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">)</span>
+    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newFCrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="n">rtype</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">)</span>
 
 
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
@@ -400,7 +397,7 @@
 <span class="sd">    PBSsubs              : A list of string substitutions to be applied to the template</span>
 <span class="sd">                              PBS script in order to generate a new PBS script</span>
 <span class="sd">                              (e.g., PBSsubs=[[&#39;JOBNAME&#39;,&#39;newjobname&#39;],...]&#39; will replace</span>
-<span class="sd">                              any JOBNAME string with newjobname)                              </span>
+<span class="sd">                              any JOBNAME string with newjobname)</span>
 <span class="sd">    submitJob            : (True/False) Submit to batch queue via qsub command?</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Make new directory</span>
@@ -426,8 +423,8 @@
         <span class="n">infile</span> <span class="o">=</span> <span class="n">XVfiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
         <span class="k">print</span> <span class="s1">&#39;More than one XV file was found in folder </span><span class="si">%s</span><span class="s1">:&#39;</span><span class="o">%</span><span class="n">CGrun</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">)):</span>
-            <span class="k">print</span> <span class="s1">&#39;   No. </span><span class="si">%i</span><span class="s1"> :&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="n">XVfiles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xvfile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s1">&#39;   No. </span><span class="si">%i</span><span class="s1"> :&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="n">xvfile</span>
         <span class="n">select</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s1">&#39;   ... select file:&#39;</span><span class="p">)</span>
         <span class="n">infile</span> <span class="o">=</span> <span class="n">XVfiles</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">select</span><span class="p">)]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -444,11 +441,10 @@
     <span class="n">structfiles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;STRUCT_1.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;STRUCT_2.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;STRUCT_3.fdf&#39;</span><span class="p">,</span>
                    <span class="s1">&#39;STRUCT_4.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;STRUCT_5.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;STRUCT_6.fdf&#39;</span><span class="p">]</span>
     <span class="n">inputfiles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;RUN_1.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_2.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_3.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_4.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_5.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_6.fdf&#39;</span><span class="p">]</span>
-    <span class="n">outputfiles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;RUN_1.out&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_2.out&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_3.out&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_4.out&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_5.out&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_6.out&#39;</span><span class="p">]</span>
     <span class="c1"># Write input files</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputfiles</span><span class="p">)):</span>
-        <span class="k">print</span> <span class="s1">&#39;SetupRuns.SetupOSrun: Writing </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">inputfiles</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">((</span><span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">inputfiles</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">inputfile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputfiles</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;SetupRuns.SetupOSrun: Writing </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">inputfile</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">((</span><span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">inputfile</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;### Lines written </span><span class="si">%s</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">())</span>
         <span class="c1">#f.write(&#39;MD.NumCGSteps 0\n&#39;)</span>
         <span class="c1">#f.write(&#39;DM.NumberPulay 0 \n&#39;)</span>
@@ -464,7 +460,7 @@
             <span class="k">else</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="c1"># PBS files</span></div>
-    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;OS&#39;</span><span class="p">)</span>
+    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="n">rtype</span> <span class="o">=</span> <span class="s1">&#39;OS&#39;</span><span class="p">)</span>
 
 
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
@@ -500,7 +496,7 @@
 <span class="sd">                              right contact BEFORE eventual electrode layers are pasted.</span>
 <span class="sd">    AddLeftList          : Add list of atoms to the left side</span>
 <span class="sd">    AddRightList         : Add list of atoms to the right side</span>
-<span class="sd">    ListL/ListR          : These atom indices (SIESTA numbering) are forced to be a part of </span>
+<span class="sd">    ListL/ListR          : These atom indices (SIESTA numbering) are forced to be a part of</span>
 <span class="sd">                              the electrodes and hence not affected by stretching</span>
 <span class="sd">    NewContactSeparation : (Optional) value to set a different electrode separation</span>
 <span class="sd">                              than in the CG geometry</span>
@@ -514,7 +510,7 @@
 <span class="sd">    PBSsubs              : A list of string substitutions to be applied to the template</span>
 <span class="sd">                              PBS script in order to generate a new PBS script</span>
 <span class="sd">                              (e.g., PBSsubs=[[&#39;JOBNAME&#39;,&#39;newjobname&#39;],...]&#39; will replace</span>
-<span class="sd">                              any JOBNAME string with newjobname)                              </span>
+<span class="sd">                              any JOBNAME string with newjobname)</span>
 <span class="sd">    submitJob            : (True/False) Submit to batch queue via qsub command?</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Make new directory</span>
@@ -530,7 +526,7 @@
               <span class="o">%</span><span class="n">newTSrun</span>
     <span class="c1"># Copy all sub-directories</span>
     <span class="k">for</span> <span class="n">elm</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">templateTSrun</span><span class="o">+</span><span class="s1">&#39;/*&#39;</span><span class="p">):</span>
-        <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">elm</span><span class="p">)</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">elm</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">elm</span><span class="p">):</span>
             <span class="n">CopyTree</span><span class="p">(</span><span class="n">elm</span><span class="p">,</span> <span class="n">newTSrun</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">tail</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
     <span class="c1"># Copy template files</span>
@@ -541,8 +537,8 @@
         <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
         <span class="k">print</span> <span class="s1">&#39;More than one XV file was found in folder </span><span class="si">%s</span><span class="s1">:&#39;</span><span class="o">%</span><span class="n">CGrun</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">)):</span>
-            <span class="k">print</span> <span class="s1">&#39;   No. </span><span class="si">%i</span><span class="s1"> :&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="n">XVfiles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xvfile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s1">&#39;   No. </span><span class="si">%i</span><span class="s1"> :&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="n">xvfile</span>
         <span class="n">select</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s1">&#39;   ... select file:&#39;</span><span class="p">)</span>
         <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">select</span><span class="p">)])</span>
     <span class="k">else</span><span class="p">:</span>
@@ -618,7 +614,7 @@
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="c1"># PBS files</span></div>
-    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newTSrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">)</span>
+    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newTSrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="n">rtype</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">)</span>
 
 
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
@@ -678,7 +674,7 @@
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="c1"># PBS files</span></div>
-    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newTSrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pyTBT.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;PY&#39;</span><span class="p">)</span>
+    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newTSrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pyTBT.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="n">rtype</span> <span class="o">=</span> <span class="s1">&#39;PY&#39;</span><span class="p">)</span>
 
 
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
@@ -721,31 +717,30 @@
             <span class="k">print</span> <span class="s2">&quot;Error: directory already exist &quot;</span><span class="p">,</span> <span class="n">newPHrun</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">newPHrun</span><span class="p">)</span>
     <span class="c1"># find device?</span>
     <span class="k">print</span> <span class="s1">&#39;SetupRuns.SetupPHrun: Writing&#39;</span><span class="p">,</span> <span class="n">newPHrun</span><span class="o">+</span><span class="s1">&#39;/PHrun.py&#39;</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">newPHrun</span><span class="o">+</span><span class="s1">&#39;/PHrun.py&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;from Inelastica.Phonons import *</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Analyze(FCwildcard=</span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1">,onlySdir=</span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">wildcard</span><span class="p">,</span> <span class="n">onlySdir</span><span class="p">))</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        DeviceFirst=</span><span class="si">%s</span><span class="s1">,DeviceLast=</span><span class="si">%s</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">DeviceFirst</span><span class="p">,</span> <span class="n">DeviceLast</span><span class="p">))</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        FCfirst=</span><span class="si">%s</span><span class="s1">,FClast=</span><span class="si">%s</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">FCfirst</span><span class="p">,</span> <span class="n">FClast</span><span class="p">))</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        outlabel=</span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">outlabel</span><span class="p">)</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        CalcCoupl=</span><span class="si">%s</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">CalcCoupl</span><span class="p">)</span>
+    <span class="n">phfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">newPHrun</span><span class="o">+</span><span class="s1">&#39;/PHrun.py&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">phfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;from Inelastica.Phonons import *</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">phfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Analyze(FCwildcard=</span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1">,onlySdir=</span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">wildcard</span><span class="p">,</span> <span class="n">onlySdir</span><span class="p">))</span>
+    <span class="n">phfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        DeviceFirst=</span><span class="si">%s</span><span class="s1">,DeviceLast=</span><span class="si">%s</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">DeviceFirst</span><span class="p">,</span> <span class="n">DeviceLast</span><span class="p">))</span>
+    <span class="n">phfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        FCfirst=</span><span class="si">%s</span><span class="s1">,FClast=</span><span class="si">%s</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">FCfirst</span><span class="p">,</span> <span class="n">FClast</span><span class="p">))</span>
+    <span class="n">phfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        outlabel=</span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">outlabel</span><span class="p">)</span>
+    <span class="n">phfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        CalcCoupl=</span><span class="si">%s</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">CalcCoupl</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">AuxNCfile</span><span class="p">:</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        AuxNCfile=</span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">AuxNCfile</span><span class="p">)</span>
+        <span class="n">phfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        AuxNCfile=</span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">AuxNCfile</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        AuxNCfile=False,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        PerBoundCorrFirst=</span><span class="si">%i</span><span class="s1">,PerBoundCorrLast=</span><span class="si">%i</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">phfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        AuxNCfile=False,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">phfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        PerBoundCorrFirst=</span><span class="si">%i</span><span class="s1">,PerBoundCorrLast=</span><span class="si">%i</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span>
                <span class="o">%</span><span class="p">(</span><span class="n">PerBoundCorrFirst</span><span class="p">,</span> <span class="n">PerBoundCorrLast</span><span class="p">))</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        PrintSOrbitals=</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span><span class="n">PrintSOrbitals</span><span class="p">)</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">phfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;        PrintSOrbitals=</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span><span class="n">PrintSOrbitals</span><span class="p">)</span>
+    <span class="n">phfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="c1"># write WritePythonPBS(...)</span>
     <span class="c1"># PBS files</span>
     <span class="k">if</span> <span class="n">PBSsubs</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">PBSsubs</span><span class="o">=</span><span class="p">[]</span>
     <span class="n">PBSsubs</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;$PYTHONSCRIPT$&#39;</span><span class="p">,</span> <span class="s1">&#39;PHrun.py&#39;</span><span class="p">]]</span> <span class="o">+</span> <span class="n">PBSsubs</span></div>
-    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newPHrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;PY&#39;</span><span class="p">)</span>
+    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newPHrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="n">rtype</span> <span class="o">=</span> <span class="s1">&#39;PY&#39;</span><span class="p">)</span>
 
 
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
@@ -776,11 +771,10 @@
 <span class="sd">                              PBS script in order to generate a new PBS script</span>
 <span class="sd">                              (e.g., PBSsubs=[[&#39;JOBNAME&#39;,&#39;newjobname&#39;],...]&#39; will replace</span>
 <span class="sd">                              any JOBNAME string with newjobname)                              </span>
-<span class="sd">    submitJob            : (True/False) Submit to batch queue via qsub command?  </span>
+<span class="sd">    submitJob            : (True/False) Submit to batch queue via qsub command?</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;SetupRuns.SetupInelastica: Creating&#39;</span><span class="p">,</span> <span class="n">newInelastica</span>
     <span class="n">CopyTree</span><span class="p">(</span><span class="n">templateInelastica</span><span class="p">,</span> <span class="n">newInelastica</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">templateInputFile</span><span class="p">)</span>
 
     <span class="n">name</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">newInputFilename</span><span class="p">)</span>
     <span class="n">cmmd</span> <span class="o">=</span> <span class="p">[]</span>
@@ -798,14 +792,14 @@
             <span class="n">UnitConvertTBOutput</span><span class="p">(</span><span class="n">TSrun</span><span class="o">+</span><span class="n">TBT_NCfile</span><span class="p">,</span> <span class="n">newInelastica</span><span class="o">+</span><span class="n">Mod_NCfile</span><span class="p">)</span>
         <span class="k">print</span> <span class="s1">&#39;SetupRuns.SetupInelastica: Creating&#39;</span><span class="p">,</span> <span class="n">newInelastica</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">inputfile</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">templateInputFile</span><span class="p">,</span> <span class="n">newInelastica</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">inputfile</span><span class="p">)</span>
-        <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">newInelastica</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">inputfile</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"># AUTOMATICALLY APPENDED LINES: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;RunThis.ncfile_e    = </span><span class="se">\&#39;</span><span class="s1">.</span><span class="si">%s</span><span class="se">\&#39;\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">Mod_NCfile</span><span class="p">)</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;RunThis.ncfile_ph    = </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">PhononNCfile</span><span class="p">)</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">infile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">newInelastica</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">inputfile</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"># AUTOMATICALLY APPENDED LINES: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;RunThis.ncfile_e    = </span><span class="se">\&#39;</span><span class="s1">.</span><span class="si">%s</span><span class="se">\&#39;\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">Mod_NCfile</span><span class="p">)</span>
+        <span class="n">infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;RunThis.ncfile_ph    = </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">PhononNCfile</span><span class="p">)</span>
+        <span class="n">infile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">cmmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;inelastica.py &#39;</span><span class="o">+</span><span class="n">inputfile</span><span class="o">+</span><span class="s1">&#39; -R&#39;</span><span class="p">)</span>
     <span class="c1"># PBS files</span></div>
-    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newInelastica</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;PY&#39;</span><span class="p">)</span>
+    <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newInelastica</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="n">rtype</span> <span class="o">=</span> <span class="s1">&#39;PY&#39;</span><span class="p">)</span>
 
 
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
@@ -851,10 +845,10 @@
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">cwd</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="UnzipFolder"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.UnzipFolder">[docs]</a><span class="k">def</span> <span class="nf">UnzipFolder</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
-    <span class="k">print</span> <span class="s1">&#39;SetupRuns: Unzipping&#39;</span><span class="p">,</span> <span class="nb">file</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;gunzip </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">file</span><span class="p">)</span>
-    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+<div class="viewcode-block" id="UnzipFolder"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.UnzipFolder">[docs]</a><span class="k">def</span> <span class="nf">UnzipFolder</span><span class="p">(</span><span class="n">zfile</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s1">&#39;SetupRuns: Unzipping&#39;</span><span class="p">,</span> <span class="n">zfile</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;gunzip </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">zfile</span><span class="p">)</span>
+    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">zfile</span><span class="p">)</span>
     <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">head</span><span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;tar -xf </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">tail</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span>
@@ -875,10 +869,10 @@
     <span class="k">print</span> <span class="s1">&#39;BuildOSstruct: displacement = </span><span class="si">%.6f</span><span class="s1"> Ang&#39;</span><span class="o">%</span><span class="n">displacement</span>
     <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
-        <span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">direction</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">displdir</span> <span class="ow">in</span> <span class="n">direction</span><span class="p">:</span>
             <span class="n">new</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
             <span class="n">displ</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]</span>
-            <span class="n">displ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span><span class="o">*</span><span class="n">displacement</span>
+            <span class="n">displ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">displdir</span><span class="o">*</span><span class="n">displacement</span>
             <span class="n">new</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">displ</span><span class="p">)</span>
             <span class="n">geom</span><span class="o">.</span><span class="n">addGeom</span><span class="p">(</span><span class="n">new</span><span class="p">)</span></div>
     <span class="n">geom</span><span class="o">.</span><span class="n">writeFDF</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
@@ -988,10 +982,10 @@
         <span class="k">return</span> <span class="bp">False</span>
 
 
-<div class="viewcode-block" id="FindElectrodeSep"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.FindElectrodeSep">[docs]</a><span class="k">def</span> <span class="nf">FindElectrodeSep</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">AtomsPerLayer</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">XVfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">dir</span><span class="o">+</span><span class="s1">&#39;/*.XV*&#39;</span><span class="p">):</span>
-        <span class="k">print</span> <span class="n">XVfile</span>
-        <span class="n">g</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">XVfile</span><span class="p">)</span>
+<div class="viewcode-block" id="FindElectrodeSep"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.FindElectrodeSep">[docs]</a><span class="k">def</span> <span class="nf">FindElectrodeSep</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">AtomsPerLayer</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">xvfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">directory</span><span class="o">+</span><span class="s1">&#39;/*.XV*&#39;</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">xvfile</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">xvfile</span><span class="p">)</span>
         <span class="n">g</span><span class="o">.</span><span class="n">findContactsAndDevice</span><span class="p">(</span><span class="n">AtomsPerLayer</span><span class="p">)</span>
         <span class="n">DeviceFirst</span><span class="p">,</span> <span class="n">DeviceLast</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">deviceList</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">g</span><span class="o">.</span><span class="n">deviceList</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
     <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">ContactSeparation</span><span class="p">,</span> <span class="n">DeviceFirst</span><span class="p">,</span> <span class="n">DeviceLast</span>
@@ -999,14 +993,14 @@
 <span class="c1">### PBS code</span>
 
 
-<div class="viewcode-block" id="MakePBS"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.MakePBS">[docs]</a><span class="k">def</span> <span class="nf">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">PBSout</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="MakePBS"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.MakePBS">[docs]</a><span class="k">def</span> <span class="nf">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">PBSout</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="n">rtype</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">PBStemplate</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
-        <span class="n">types</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;TS&#39;</span><span class="p">:</span> <span class="s1">&#39;RUN.TS.pbs&#39;</span><span class="p">,</span> <span class="s1">&#39;OS&#39;</span><span class="p">:</span> <span class="s1">&#39;RUN.OS.pbs&#39;</span><span class="p">,</span> <span class="s1">&#39;PY&#39;</span><span class="p">:</span> <span class="s1">&#39;RUN.py.pbs&#39;</span><span class="p">}</span>
-        <span class="n">PBStemplate</span> <span class="o">=</span> <span class="n">types</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
+        <span class="n">rtypes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;TS&#39;</span><span class="p">:</span> <span class="s1">&#39;RUN.TS.pbs&#39;</span><span class="p">,</span> <span class="s1">&#39;OS&#39;</span><span class="p">:</span> <span class="s1">&#39;RUN.OS.pbs&#39;</span><span class="p">,</span> <span class="s1">&#39;PY&#39;</span><span class="p">:</span> <span class="s1">&#39;RUN.py.pbs&#39;</span><span class="p">}</span>
+        <span class="n">PBStemplate</span> <span class="o">=</span> <span class="n">rtypes</span><span class="p">[</span><span class="n">rtype</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.Inelastica/&#39;</span><span class="o">+</span><span class="n">PBStemplate</span><span class="p">)):</span>
             <span class="n">PBStemplate</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.Inelastica/&#39;</span><span class="o">+</span><span class="n">PBStemplate</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">InelasticaDir</span><span class="p">,</span> <span class="n">crap</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+            <span class="n">InelasticaDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">PBStemplate</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">InelasticaDir</span><span class="o">+</span><span class="s1">&#39;/PBS/&#39;</span><span class="o">+</span><span class="n">PBStemplate</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">):</span>
@@ -1025,7 +1019,7 @@
     <span class="k">print</span> <span class="s1">&#39;SetupRuns.WritePBS: Writing&#39;</span><span class="p">,</span> <span class="n">PBSout</span>
 
     <span class="c1"># Make default job name</span>
-    <span class="n">fullPath</span><span class="p">,</span> <span class="n">crap</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">PBSout</span><span class="p">))</span>
+    <span class="n">fullPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">PBSout</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">last2dir</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fullPath</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
     <span class="k">try</span><span class="p">:</span> <span class="c1"># Check for numbers at start ... not liked by PBS</span>
         <span class="n">tmp</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">last2dir</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span>
@@ -1086,7 +1080,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-49',
+            VERSION:'1.3.0-65',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

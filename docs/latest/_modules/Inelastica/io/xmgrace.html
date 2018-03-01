@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-49
+                1.3.0-65
               </div>
             
           
@@ -177,7 +177,7 @@
 
 <span class="sd">This module provides a `Python`_ interface to write `XMGR/GRACE &lt;xmgrace_&gt;`_ files.</span>
 
-<span class="sd">To create a `GRACE &lt;xmgrace_&gt;`_ plot from a given data set, a minimal </span>
+<span class="sd">To create a `GRACE &lt;xmgrace_&gt;`_ plot from a given data set, a minimal</span>
 <span class="sd">script structure takes the following form:</span>
 
 <span class="sd">.. code-block:: bash</span>
@@ -189,7 +189,7 @@
 <span class="sd">    &gt;&gt;&gt; plot = Plot(&#39;test.agr&#39;,graph)</span>
 <span class="sd">    &gt;&gt;&gt; plot.WriteFile()</span>
 
-<span class="sd">More graphs and data sets are easily appended. Continuing on the </span>
+<span class="sd">More graphs and data sets are easily appended. Continuing on the</span>
 <span class="sd">example above:</span>
 
 <span class="sd">.. code-block:: bash</span>
@@ -236,7 +236,6 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">string</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 
 <span class="n">symbols</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;</span><span class="se">\a</span><span class="s1">lpha&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">f{Symbol}a&#39;</span><span class="p">,</span>
@@ -277,8 +276,8 @@
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;#&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)):</span>
-                <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lval</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">2</span><span class="p">:</span>
                 <span class="n">A</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -693,13 +692,13 @@
             <span class="k">if</span> <span class="n">xmax</span><span class="o">&lt;=</span><span class="mf">0.</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="mf">1e10</span><span class="p">)</span></div>
             <span class="k">else</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="n">xmax</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Graph.SetYaxis"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Graph.SetYaxis">[docs]</a>    <span class="k">def</span> <span class="nf">SetYaxis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">labelautopos</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="Graph.SetYaxis"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Graph.SetYaxis">[docs]</a>    <span class="k">def</span> <span class="nf">SetYaxis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">labelautopos</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                  <span class="n">labelpospar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">labelposper</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">useticks</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                  <span class="n">useticklabels</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ticklabelsize</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">majorGridlines</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">minorGridlines</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                  <span class="n">autoscale</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the axis parameters (if specified):</span>
-<span class="sd">        - min/max        = [float]</span>
+<span class="sd">        - vmin/vmax      = [float]</span>
 <span class="sd">        - label          = [string]</span>
 <span class="sd">        - labelsize      = [float]</span>
 <span class="sd">        - labelautopos   = [bool]</span>
@@ -715,10 +714,10 @@
 <span class="sd">        - autoscale      = [bool]</span>
 <span class="sd">        - scale          = [\&quot;Normal\&quot;/\&quot;Logarithmic\&quot;]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">min</span><span class="o">!=</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">SetWorld</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="nb">min</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">max</span><span class="o">!=</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">SetWorld</span><span class="p">(</span><span class="n">ymax</span><span class="o">=</span><span class="nb">max</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vmin</span><span class="o">!=</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SetWorld</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="n">vmin</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vmax</span><span class="o">!=</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SetWorld</span><span class="p">(</span><span class="n">ymax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">label</span><span class="o">!=</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;@ yaxis label </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">labelsize</span><span class="o">!=</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
@@ -751,15 +750,15 @@
                 <span class="n">unit</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">unit</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="n">unit</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="n">unit</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">scale</span> <span class="o">==</span><span class="s1">&#39;Logarithmic&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;@ yaxes scale </span><span class="si">%s</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">scale</span>
             <span class="c1"># Scale axis to positive numbers</span>
             <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetWorldOfDatasets</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">ymin</span><span class="o">&lt;=</span><span class="mf">0.</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="n">ymin</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ymax</span><span class="o">&lt;=</span><span class="mf">0.</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="mf">1e10</span><span class="p">)</span></div>
-            <span class="k">else</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="n">ymax</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ymin</span><span class="o">&lt;=</span><span class="mf">0.</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">ymin</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ymax</span><span class="o">&lt;=</span><span class="mf">0.</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">vmax</span><span class="o">=</span><span class="mf">1e10</span><span class="p">)</span></div>
+            <span class="k">else</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">vmax</span><span class="o">=</span><span class="n">ymax</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Graph.SetXaxisSpecialTicks"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Graph.SetXaxisSpecialTicks">[docs]</a>    <span class="k">def</span> <span class="nf">SetXaxisSpecialTicks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ticklist</span><span class="p">):</span>
         <span class="s2">&quot;Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],...].&quot;</span>
@@ -788,13 +787,13 @@
 
 <div class="viewcode-block" id="Graph.AddDatasets"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Graph.AddDatasets">[docs]</a>    <span class="k">def</span> <span class="nf">AddDatasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">datasets</span><span class="p">):</span>
         <span class="s2">&quot;Append data set object(s) to graph.&quot;</span>
-        <span class="k">for</span> <span class="nb">set</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">AddDatasets</span><span class="p">(</span><span class="o">*</span><span class="nb">set</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span></div>
-                <span class="bp">self</span><span class="o">.</span><span class="n">AddDatasets</span><span class="p">(</span><span class="o">*</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">set</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dset</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">AddDatasets</span><span class="p">(</span><span class="o">*</span><span class="n">dset</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">AddDatasets</span><span class="p">(</span><span class="o">*</span><span class="nb">tuple</span><span class="p">(</span><span class="n">dset</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Graph.GetXMGRstring"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Graph.GetXMGRstring">[docs]</a>    <span class="k">def</span> <span class="nf">GetXMGRstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphnr</span><span class="p">):</span>
         <span class="s2">&quot;Returns a string containing the GRACE commands that describe the graph and its data sets.&quot;</span>
@@ -1081,7 +1080,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.3.0-49',
+            VERSION:'1.3.0-65',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

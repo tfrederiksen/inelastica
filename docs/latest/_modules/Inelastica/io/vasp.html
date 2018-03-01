@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-49
+                1.3.0-65
               </div>
             
           
@@ -180,12 +180,9 @@
 <span class="sd">.. currentmodule:: Inelastica.io.vasp</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
-<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
 <span class="kn">import</span> <span class="nn">string</span>
-<span class="kn">import</span> <span class="nn">struct</span>
-<span class="kn">import</span> <span class="nn">os.path</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">gzip</span>
 
 
@@ -194,14 +191,14 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">filename</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span><span class="o">==</span><span class="s1">&#39;.gz&#39;</span><span class="p">:</span>
             <span class="c1"># filename is explicitly a gzip file</span>
-            <span class="nb">file</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+            <span class="n">vfile</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># filename is given as a non-zip file</span>
-            <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+            <span class="n">vfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="c1"># if filename is not existing upon read, then try append the &#39;.gz&#39; ending</span>
-        <span class="nb">file</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="o">+</span><span class="s1">&#39;.gz&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
-    <span class="k">return</span> <span class="nb">file</span>
+        <span class="n">vfile</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="o">+</span><span class="s1">&#39;.gz&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">vfile</span>
 
 <span class="c1">#--------------------------------------------------------------------------------</span>
 <span class="c1"># Interface with VASP</span>
@@ -210,16 +207,16 @@
 <div class="viewcode-block" id="ReadCONTCAR"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.ReadCONTCAR">[docs]</a><span class="k">def</span> <span class="nf">ReadCONTCAR</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="s2">&quot;Read CONTCAR file&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.vasp.ReadCONTCAR: Reading&#39;</span><span class="p">,</span> <span class="n">filename</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-    <span class="n">label</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-    <span class="n">scalefactor</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+    <span class="n">ccarfile</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">ccarfile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="n">scalefactor</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ccarfile</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
     <span class="n">vectors</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">ccarfile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="n">vectors</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
     <span class="c1"># The species labels are not always included in CONTCAR</span>
-    <span class="n">firstline</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-    <span class="n">line</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">firstline</span> <span class="o">=</span> <span class="n">ccarfile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="n">ccarfile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">specieslabels</span> <span class="o">=</span> <span class="n">firstline</span>
         <span class="n">speciesnumbers</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
@@ -234,13 +231,13 @@
     <span class="c1"># Read &#39;Selective Dynamics&#39; and &#39;Direct&#39; lines</span>
     <span class="n">dircoor</span> <span class="o">=</span> <span class="bp">True</span> <span class="c1"># Default is reading direct coordinates</span>
     <span class="k">while</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">!=</span><span class="s1">&#39;DIRECT&#39;</span> <span class="ow">and</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">!=</span><span class="s1">&#39;CARTESIAN&#39;</span><span class="p">:</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">ccarfile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;CARTESIAN&#39;</span><span class="p">:</span>
             <span class="n">dircoor</span> <span class="o">=</span> <span class="bp">False</span>
     <span class="c1"># Read coordinates and degrees of freedom</span>
     <span class="n">xyz</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">natoms</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">natoms</span><span class="p">):</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">ccarfile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -250,7 +247,7 @@
             <span class="c1"># No constraints given</span>
             <span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
     <span class="c1"># Ignore rest of the file</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">ccarfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="c1"># Convert to cartesian coordinates</span>
     <span class="k">print</span> <span class="s1">&#39;Read direct coordinates?&#39;</span><span class="p">,</span> <span class="n">dircoor</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">natoms</span><span class="p">):</span>
@@ -264,27 +261,27 @@
 <div class="viewcode-block" id="WritePOSCAR"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.WritePOSCAR">[docs]</a><span class="k">def</span> <span class="nf">WritePOSCAR</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">specieslabels</span><span class="p">,</span> <span class="n">speciesnumbers</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;LABEL&#39;</span><span class="p">,</span> <span class="n">scalefactor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">constrained</span><span class="o">=</span><span class="p">[]):</span>
     <span class="s2">&quot;Write POSCAR file&quot;</span>
     <span class="k">print</span> <span class="s1">&#39;io.vasp.WritePOSCAR: Writing&#39;</span><span class="p">,</span> <span class="n">filename</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">pcarfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">label</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">label</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">%.12f</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">scalefactor</span><span class="p">)</span>
+        <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">%.12f</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">scalefactor</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-            <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">vectors</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">specieslabels</span><span class="p">)):</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">specieslabels</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">speciesnumbers</span><span class="p">)):</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">speciesnumbers</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Selective dynamics</span><span class="se">\n</span><span class="s1">Cartesian</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xyz</span><span class="p">)):</span>
-        <span class="n">line</span>  <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span>
-        <span class="n">line</span> <span class="o">+=</span> <span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span>
-        <span class="n">line</span> <span class="o">+=</span> <span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span>
+            <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">vectors</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="n">specieslabels</span><span class="p">:</span>
+        <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">lbl</span><span class="p">)</span>
+    <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">speciesnumbers</span><span class="p">:</span>
+        <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">ii</span><span class="p">)</span>
+    <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Selective dynamics</span><span class="se">\n</span><span class="s1">Cartesian</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">xyzval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xyz</span><span class="p">):</span>
+        <span class="n">line</span>  <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">xyzval</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span>
+        <span class="n">line</span> <span class="o">+=</span> <span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">xyzval</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span>
+        <span class="n">line</span> <span class="o">+=</span> <span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">xyzval</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; &#39;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">constrained</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">constrained</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -294,15 +291,15 @@
             <span class="n">line</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">line</span> <span class="o">+=</span> <span class="s1">&#39; F F F</span><span class="se">\n</span><span class="s1">&#39;</span></div>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="GetEnergies"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetEnergies">[docs]</a><span class="k">def</span> <span class="nf">GetEnergies</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">):</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">ocarfile</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="k">print</span> <span class="s1">&#39;io.vasp.GetEnergies: Reading&#39;</span><span class="p">,</span> <span class="n">OUTCAR</span>
     <span class="c1">#</span>
     <span class="n">freeE</span><span class="p">,</span> <span class="n">Etot</span><span class="p">,</span> <span class="n">EtotSigma0</span> <span class="o">=</span> <span class="mf">1e100</span><span class="p">,</span> <span class="mf">1e100</span><span class="p">,</span> <span class="mf">1e100</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">file</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ocarfile</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;free energy    TOTEN&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
             <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="n">freeE</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>      <span class="c1"># Pick last appearance</span>
@@ -314,16 +311,16 @@
             <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="n">Etot</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>       <span class="c1"># Pick last appearance</span>
             <span class="n">EtotSigma0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span> <span class="c1"># Pick last appearance</span>
-    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+    <span class="n">ocarfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
     <span class="k">return</span> <span class="n">freeE</span><span class="p">,</span> <span class="n">Etot</span><span class="p">,</span> <span class="n">EtotSigma0</span>
 
 
 <div class="viewcode-block" id="GetEnergiesFromOszi"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetEnergiesFromOszi">[docs]</a><span class="k">def</span> <span class="nf">GetEnergiesFromOszi</span><span class="p">(</span><span class="n">OSZICAR</span><span class="p">):</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OSZICAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">oszicarfile</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OSZICAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="k">print</span> <span class="s1">&#39;io.vasp.GetEnergiesFromOszi: Reading&#39;</span><span class="p">,</span> <span class="n">OSZICAR</span>
     <span class="c1">#</span>
     <span class="n">f</span><span class="p">,</span> <span class="n">e0</span> <span class="o">=</span> <span class="mf">1e100</span><span class="p">,</span> <span class="mf">1e100</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">file</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">oszicarfile</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;F=&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
             <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="n">f</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="c1"># read Free energy</span>
@@ -332,11 +329,11 @@
 
 
 <div class="viewcode-block" id="GetMagnetization"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetMagnetization">[docs]</a><span class="k">def</span> <span class="nf">GetMagnetization</span><span class="p">(</span><span class="n">OSZICAR</span><span class="p">):</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OSZICAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">oszicarfile</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OSZICAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="k">print</span> <span class="s1">&#39;io.vasp.GetMagnetization: Reading&#39;</span><span class="p">,</span> <span class="n">OSZICAR</span>
     <span class="c1">#</span>
     <span class="n">mag</span> <span class="o">=</span> <span class="mf">1e100</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">file</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">oszicarfile</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;mag=&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
             <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="n">mag</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>      <span class="c1"># Pick last appearance</span></div>
@@ -344,10 +341,10 @@
 
 
 <div class="viewcode-block" id="GetSpecies"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetSpecies">[docs]</a><span class="k">def</span> <span class="nf">GetSpecies</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">):</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">ocarfile</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="k">print</span> <span class="s1">&#39;io.vasp.GetSpecies: Reading&#39;</span><span class="p">,</span> <span class="n">OUTCAR</span>
     <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">file</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ocarfile</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;TITEL&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
             <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="k">print</span> <span class="n">l</span>
@@ -356,13 +353,13 @@
 
 
 <div class="viewcode-block" id="GetVibModesNoScaling"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetVibModesNoScaling">[docs]</a><span class="k">def</span> <span class="nf">GetVibModesNoScaling</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">):</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">ocarfile</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="k">print</span> <span class="s1">&#39;io.vasp.GetVibrations: Reading&#39;</span><span class="p">,</span> <span class="n">OUTCAR</span>
     <span class="n">freq</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">modes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">datablock</span> <span class="o">=</span> <span class="bp">False</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">file</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ocarfile</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;Eigenvectors and eigenvalues of the dynamical matrix&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
             <span class="n">datablock</span> <span class="o">=</span> <span class="bp">True</span> <span class="c1"># beginning of data block</span>
         <span class="k">if</span> <span class="s1">&#39;Eigenvectors after division by SQRT(mass)&#39;</span> <span class="ow">in</span> <span class="n">line</span> \
@@ -387,13 +384,13 @@
 
 
 <div class="viewcode-block" id="GetVibModesMassScaled"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetVibModesMassScaled">[docs]</a><span class="k">def</span> <span class="nf">GetVibModesMassScaled</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">):</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">ocarfile</span> <span class="o">=</span> <span class="n">VIO_open</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="k">print</span> <span class="s1">&#39;io.vasp.GetVibrations: Reading&#39;</span><span class="p">,</span> <span class="n">OUTCAR</span>
     <span class="n">freq</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">modes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">datablock</span> <span class="o">=</span> <span class="bp">False</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">file</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ocarfile</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;Finite differences POTIM=&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
             <span class="n">datablock</span> <span class="o">=</span> <span class="bp">False</span> <span class="c1"># end of data block</span>
         <span class="k">if</span> <span class="n">datablock</span><span class="p">:</span>
@@ -456,8 +453,8 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># VASP wrote 3-column data...</span>
                     <span class="n">extrablock</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
-                <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+                <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sval</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">extrablock</span><span class="p">)</span> <span class="ow">in</span> <span class="n">atom_index</span><span class="p">:</span>
                 <span class="n">dat</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">eF</span>
                 <span class="n">dat</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="o">+</span><span class="mi">9</span><span class="o">*</span><span class="n">spin</span><span class="p">]</span> <span class="o">+=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="o">+</span><span class="mi">9</span><span class="o">*</span><span class="n">spin</span><span class="p">])</span>
@@ -479,8 +476,8 @@
                     <span class="n">spin</span> <span class="o">=</span> <span class="mi">2</span>
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="mi">10</span><span class="p">:</span>
                     <span class="n">spin</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
-                <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+                <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sval</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">extrablock</span><span class="p">)</span> <span class="ow">in</span> <span class="n">atom_index</span><span class="p">:</span>
                 <span class="n">dat</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">eF</span>
                 <span class="n">dat</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="o">+</span><span class="mi">9</span><span class="o">*</span><span class="n">spin</span><span class="p">]</span> <span class="o">+=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="o">+</span><span class="mi">9</span><span class="o">*</span><span class="n">spin</span><span class="p">])</span>
@@ -543,7 +540,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.3.0-49',
+            VERSION:'1.3.0-65',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

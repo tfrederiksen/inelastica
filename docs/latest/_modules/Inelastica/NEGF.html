@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-49
+                1.3.0-65
               </div>
             
           
@@ -196,11 +196,8 @@
 <span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
-<span class="kn">import</span> <span class="nn">string</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span> <span class="kn">as</span> <span class="nn">NC4</span>
 <span class="kn">import</span> <span class="nn">Inelastica.ValueCheck</span> <span class="kn">as</span> <span class="nn">VC</span>
@@ -264,7 +261,7 @@
         <span class="k">if</span> <span class="s1">&#39;Done&#39;</span> <span class="ow">in</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
             <span class="k">print</span> <span class="s2">&quot;Read &quot;</span><span class="p">,</span> <span class="n">fn</span>
             <span class="n">ncv</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">variables</span>
-            <span class="nb">hash</span><span class="p">,</span> <span class="n">hash2l</span><span class="p">,</span> <span class="n">reE</span><span class="p">,</span> <span class="n">imE</span><span class="p">,</span> <span class="n">kp</span><span class="p">,</span> <span class="n">LR</span><span class="p">,</span> <span class="n">ispin</span><span class="p">,</span> <span class="n">etaLead</span> <span class="o">=</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;hash2&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;reE&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;imE&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;kp&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;ispin&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;etaLead&#39;</span><span class="p">][:]</span>
+            <span class="nb">hash</span><span class="p">,</span> <span class="n">hash2l</span><span class="p">,</span> <span class="n">reE</span><span class="p">,</span> <span class="n">imE</span><span class="p">,</span> <span class="n">LR</span><span class="p">,</span> <span class="n">ispin</span><span class="p">,</span> <span class="n">etaLead</span> <span class="o">=</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;hash2&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;reE&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;imE&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;ispin&#39;</span><span class="p">][:],</span> <span class="n">ncv</span><span class="p">[</span><span class="s1">&#39;etaLead&#39;</span><span class="p">][:]</span>
             <span class="nb">hash</span> <span class="o">=</span> <span class="p">[</span><span class="n">dec2hash</span><span class="p">(</span><span class="n">ii</span><span class="p">)</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">hash</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">reE</span><span class="p">)):</span>
                 <span class="n">hash2</span> <span class="o">=</span> <span class="n">dec2hash</span><span class="p">(</span><span class="n">hash2l</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
@@ -613,7 +610,7 @@
 
 <span class="sd">        Algorith: Lopez Sancho*2 J Phys F:Met Phys 15 (1985) 851</span>
 
-<span class="sd">        I&#39;m still very suspicios of this algorithm ... but it works and is really quick! </span>
+<span class="sd">        I&#39;m still very suspicios of this algorithm ... but it works and is really quick!</span>
 <span class="sd">        The convergence is always checked against gs (E S - H - (E S01^+ - H01^+) gs (E S01 -H01) ) = I!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">H</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">H01</span><span class="p">,</span> <span class="n">S01</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">[</span><span class="n">ispin</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">H01</span><span class="p">[</span><span class="n">ispin</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">S01</span>
@@ -776,7 +773,7 @@
 <span class="sd">        Uses SpectralMatrix format for the spectralfunction matrices, see MiscMath, if cutoff&gt;0.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">nuo</span><span class="p">,</span> <span class="n">nuoL</span><span class="p">,</span> <span class="n">nuoR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nuo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nuoL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nuoR</span>
+        <span class="n">nuoL</span><span class="p">,</span> <span class="n">nuoR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nuoL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nuoR</span>
         <span class="n">nuo0</span><span class="p">,</span> <span class="n">nuoL0</span><span class="p">,</span> <span class="n">nuoR0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nuo0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nuoL0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nuoR0</span>
         <span class="n">FoldedL</span><span class="p">,</span> <span class="n">FoldedR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FoldedL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FoldedR</span>
         <span class="n">devSt</span><span class="p">,</span> <span class="n">devEnd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DeviceOrbs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">DeviceOrbs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -1093,7 +1090,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-49',
+            VERSION:'1.3.0-65',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

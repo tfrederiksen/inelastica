@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                1.3.0-49
+                1.3.0-65
               </div>
             
           
@@ -228,12 +228,12 @@ to create all the other calculation directories needed.</p>
 
 <dl class="function">
 <dt id="Inelastica.SetupRuns.FindElectrodeSep">
-<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">FindElectrodeSep</code><span class="sig-paren">(</span><em>dir</em>, <em>AtomsPerLayer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#FindElectrodeSep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.FindElectrodeSep" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">FindElectrodeSep</code><span class="sig-paren">(</span><em>directory</em>, <em>AtomsPerLayer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#FindElectrodeSep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.FindElectrodeSep" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.SetupRuns.MakePBS">
-<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">MakePBS</code><span class="sig-paren">(</span><em>PBStemplate</em>, <em>PBSout</em>, <em>PBSsubs</em>, <em>submitJob</em>, <em>type='TS'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#MakePBS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.MakePBS" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">MakePBS</code><span class="sig-paren">(</span><em>PBStemplate</em>, <em>PBSout</em>, <em>PBSsubs</em>, <em>submitJob</em>, <em>rtype='TS'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#MakePBS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.MakePBS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -277,7 +277,7 @@ been relaxed)</div></blockquote>
 <dt>IndexShift <span class="classifier-delimiter">:</span> <span class="classifier">Number of atoms which is periodically translated from left to</span></dt>
 <dd>right during the formation of the new STRUCT.fdf from the
 template <a href="#id1"><span class="problematic" id="id2">*</span></a>.XV file</dd>
-<dt>ListL/ListR <span class="classifier-delimiter">:</span> <span class="classifier">These atom indices (SIESTA numbering) are forced to be a part of </span></dt>
+<dt>ListL/ListR <span class="classifier-delimiter">:</span> <span class="classifier">These atom indices (SIESTA numbering) are forced to be a part of</span></dt>
 <dd>the electrodes and hence not affected by stretching</dd>
 </dl>
 <p>RotationAngle/       : Rotate whole CG geometry (or only RotationSubset if specified)
@@ -463,7 +463,7 @@ any JOBNAME string with newjobname)</div></blockquote>
 
 <dl class="function">
 <dt id="Inelastica.SetupRuns.UnzipFolder">
-<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">UnzipFolder</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#UnzipFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.UnzipFolder" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">UnzipFolder</code><span class="sig-paren">(</span><em>zfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#UnzipFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.UnzipFolder" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -522,7 +522,7 @@ any JOBNAME string with newjobname)</div></blockquote>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.3.0-49',
+            VERSION:'1.3.0-65',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

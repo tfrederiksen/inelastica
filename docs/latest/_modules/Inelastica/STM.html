@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-49
+                1.3.0-65
               </div>
             
           
@@ -175,26 +175,26 @@
 <span class="sd">STM (:mod:`Inelastica.STM`)</span>
 <span class="sd">===========================</span>
 
-<span class="sd">Script that calculates STM images using the Bardeen approximation </span>
-<span class="sd">outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The </span>
+<span class="sd">Script that calculates STM images using the Bardeen approximation</span>
+<span class="sd">outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The</span>
 <span class="sd">script is divided into 3 parts:</span>
 
-<span class="sd">1. Calculation of the scattering states at the Fermi-energy on the </span>
-<span class="sd">same real space grid as `TranSIESTA`_ (real-space cutoff). These are </span>
-<span class="sd">saved in `DestDir/SystemLabel.A[LR][0-99].nc` files and are reused if </span>
+<span class="sd">1. Calculation of the scattering states at the Fermi-energy on the</span>
+<span class="sd">same real space grid as `TranSIESTA`_ (real-space cutoff). These are</span>
+<span class="sd">saved in `DestDir/SystemLabel.A[LR][0-99].nc` files and are reused if</span>
 <span class="sd">found. **NEEDS:** `TranSIESTA`_ calculation.</span>
 
-<span class="sd">2. Propagation of the scattering states from a surface (defined by a </span>
-<span class="sd">constant charge density) out into the vacuum region. After the x-y plane, </span>
-<span class="sd">where the average potential of the slice is maximum (the separation </span>
-<span class="sd">plane), is found, the potential is ascribed a constant value at this </span>
-<span class="sd">average. Saves the propagated wavefunctions at the separation plane in </span>
-<span class="sd">`DestDir/[kpoint]/FD[kpoint].nc`. **NEEDS:** *TotalPotential.grid.nc* and </span>
+<span class="sd">2. Propagation of the scattering states from a surface (defined by a</span>
+<span class="sd">constant charge density) out into the vacuum region. After the x-y plane,</span>
+<span class="sd">where the average potential of the slice is maximum (the separation</span>
+<span class="sd">plane), is found, the potential is ascribed a constant value at this</span>
+<span class="sd">average. Saves the propagated wavefunctions at the separation plane in</span>
+<span class="sd">`DestDir/[kpoint]/FD[kpoint].nc`. **NEEDS:** *TotalPotential.grid.nc* and</span>
 <span class="sd">*Rho.grid.nc*.</span>
-<span class="sd"> </span>
-<span class="sd">3. Conductance calculation where the tip/substrate wavefunctions are </span>
-<span class="sd">displaced to simulate the conductance at different tip-positions. The k </span>
-<span class="sd">averaged STM image and the STM images of individual k points are saved in </span>
+
+<span class="sd">3. Conductance calculation where the tip/substrate wavefunctions are</span>
+<span class="sd">displaced to simulate the conductance at different tip-positions. The k</span>
+<span class="sd">averaged STM image and the STM images of individual k points are saved in</span>
 <span class="sd">`DestDir/STMimage.nc`.</span>
 
 <span class="sd">.. currentmodule:: Inelastica.STM</span>
@@ -210,23 +210,15 @@
 <span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
 <span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
 <span class="kn">import</span> <span class="nn">Inelastica.physics.mesh</span> <span class="kn">as</span> <span class="nn">Kmesh</span>
-<span class="kn">import</span> <span class="nn">Inelastica.Symmetry</span> <span class="kn">as</span> <span class="nn">SYM</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span> <span class="kn">as</span> <span class="nn">NC</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">string</span>
-<span class="kn">import</span> <span class="nn">struct</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">resource</span>
 <span class="kn">import</span> <span class="nn">Inelastica.ValueCheck</span> <span class="kn">as</span> <span class="nn">VC</span>
 <span class="kn">import</span> <span class="nn">Inelastica.CommonFunctions</span> <span class="kn">as</span> <span class="nn">CF</span>
-<span class="kn">import</span> <span class="nn">scipy</span>
-<span class="kn">import</span> <span class="nn">scipy.io</span>
-<span class="kn">import</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">as</span> <span class="nn">SLA</span>
-<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="kn">as</span> <span class="nn">SS</span>
 <span class="kn">import</span> <span class="nn">Inelastica.io.netcdf</span> <span class="kn">as</span> <span class="nn">writeNC</span>
 <span class="kn">import</span> <span class="nn">Inelastica.STMFD</span> <span class="kn">as</span> <span class="nn">STMFD</span>
 
@@ -240,7 +232,7 @@
 
 <div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.STM.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="c1"># if text string is specified, convert to list</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span><span class="o">==</span><span class="nb">type</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">):</span> <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span> <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
 
     <span class="kn">import</span> <span class="nn">optparse</span> <span class="kn">as</span> <span class="nn">o</span>
 
@@ -342,7 +334,6 @@
         <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
             <span class="n">oldk</span> <span class="o">+=</span> <span class="p">[</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">ii</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)]</span>
         <span class="n">oldk</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">oldk</span><span class="p">)</span>
-        <span class="nb">bool</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">k</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">oldk</span><span class="p">)</span>
 
     <span class="n">options</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">mesh2file</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/kpoints&#39;</span><span class="p">)</span>
     <span class="n">doK</span> <span class="o">=</span> <span class="p">[]</span>
@@ -413,7 +404,7 @@
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)):</span>
         <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
             <span class="n">tmp2</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-            <span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">tmp2</span><span class="p">[</span><span class="n">jj</span><span class="p">])</span>
+            <span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">tmp2</span><span class="p">[</span><span class="n">jj</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">jj</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
                 <span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">PC</span><span class="o">.</span><span class="n">Bohr2Ang</span>
 
@@ -450,15 +441,14 @@
         <span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="o">*</span><span class="n">PC</span><span class="o">.</span><span class="n">Rydberg2eV</span> <span class="c1"># Change to 1/Ryd</span>
         <span class="n">ev</span><span class="p">,</span> <span class="n">U</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
         <span class="n">Utilde</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">U</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">U</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="p">)):</span> <span class="c1"># Problems with negative numbers</span>
-            <span class="k">if</span> <span class="n">ev</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span> <span class="n">ev</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
-            <span class="n">Utilde</span><span class="p">[:,</span> <span class="n">jj</span><span class="p">]</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span><span class="o">*</span><span class="n">U</span><span class="p">[:,</span> <span class="n">jj</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">jj</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ev</span><span class="p">):</span> <span class="c1"># Problems with negative numbers</span>
+            <span class="k">if</span> <span class="n">val</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span> <span class="n">val</span><span class="o">=</span><span class="mi">0</span>
+            <span class="n">Utilde</span><span class="p">[:,</span> <span class="n">jj</span><span class="p">]</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">val</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span><span class="o">*</span><span class="n">U</span><span class="p">[:,</span> <span class="n">jj</span><span class="p">]</span>
         <span class="n">indx2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span><span class="o">&gt;</span><span class="mf">1e-4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># Pick non-zero states</span>
 
         <span class="n">ev</span><span class="o">=</span><span class="n">ev</span><span class="p">[</span><span class="n">indx2</span><span class="p">]</span>
         <span class="n">Utilde</span><span class="o">=</span><span class="n">Utilde</span><span class="p">[:,</span> <span class="n">indx2</span><span class="p">]</span>
         <span class="n">indx</span><span class="o">=</span><span class="n">ev</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">[]</span>
         <span class="n">fn</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/</span><span class="si">%i</span><span class="s1">/&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">ikpoint</span><span class="p">)</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">systemlabel</span><span class="o">+</span><span class="s1">&#39;.</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
 
         <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span>
@@ -551,7 +541,7 @@
 <span class="sd">    the real space wavefunction folded into the cell using the k-vector.</span>
 <span class="sd">    If Folded==False, you can choose any &#39;a&#39; but folding by the PBC will</span>
 <span class="sd">    not be done.</span>
-<span class="sd">    Note: Folding assumes coupling only between N.N. cells </span>
+<span class="sd">    Note: Folding assumes coupling only between N.N. cells</span>
 
 <span class="sd">    INPUT:</span>
 <span class="sd">      geom        : MakeGeom structure for full geometry</span>
@@ -560,7 +550,7 @@
 <span class="sd">      Y           : Wavefunction for the device region</span>
 <span class="sd">      NN          : [N1,N2,N3,minN3,maxN3] number of points along [a1, a2, a3]</span>
 <span class="sd">                    only calculate from minN3 to maxN3</span>
-<span class="sd">      Fold        : fold periodic boundary conditions </span>
+<span class="sd">      Fold        : fold periodic boundary conditions</span>
 <span class="sd">      k           : k-vector to use for folding [-0.5,0.5]</span>
 <span class="sd">      a           : if Fold==True, uses geom.pbc, if false: [a1, a2, a3]</span>
 <span class="sd">                    along these directions, i.e., da1=a1/N1 ...</span>
@@ -715,7 +705,6 @@
 <span class="c1">##################### Start main routine #####################</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-    <span class="kn">import</span> <span class="nn">profile</span>
     <span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
     <span class="n">options</span> <span class="o">=</span> <span class="n">GetOptions</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
     <span class="k">print</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
@@ -760,7 +749,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-49',
+            VERSION:'1.3.0-65',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

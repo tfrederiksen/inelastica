@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-49
+                1.3.0-65
               </div>
             
           
@@ -448,13 +448,13 @@
 <span class="c1">########################################################</span>
 
 
-<div class="viewcode-block" id="readxv"><a class="viewcode-back" href="../../api-gen/Inelastica.NEB.html#Inelastica.NEB.readxv">[docs]</a><span class="k">def</span> <span class="nf">readxv</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
+<div class="viewcode-block" id="readxv"><a class="viewcode-back" href="../../api-gen/Inelastica.NEB.html#Inelastica.NEB.readxv">[docs]</a><span class="k">def</span> <span class="nf">readxv</span><span class="p">(</span><span class="n">dirpath</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">geom</span>
-    <span class="c1"># Read geometry from first .XV file found in dir</span>
-    <span class="n">fns</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">dir</span><span class="o">+</span><span class="s1">&#39;/*.XV&#39;</span><span class="p">)</span>
+    <span class="c1"># Read geometry from first .XV file found in dirpath</span>
+    <span class="n">fns</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">dirpath</span><span class="o">+</span><span class="s1">&#39;/*.XV&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fns</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s2">&quot;ERROR: NEB: More than one .XV file in dir:</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="nb">dir</span>
+        <span class="k">print</span> <span class="s2">&quot;ERROR: NEB: More than one .XV file in dir:</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">dirpath</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">fns</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">None</span>
@@ -587,7 +587,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-49',
+            VERSION:'1.3.0-65',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
