@@ -282,7 +282,7 @@ class Symmetry:
         ipiv, sign, rotn = self.reduce(self.pointU33)
 
         # Go through the different rotation centers
-        lasto, nU, nO, nR, nS = 0, [], [], [], []
+        lasto, nU, nO, nR = 0, [], [], []
         for ii in range(1, len(self.origo)):
             if not N.allclose(self.origo[ii-1], self.origo[ii], atol=self.accuracy):
                 ipiv, sign, rotn = self.reduce(N.concatenate((self.U33[lasto:ii], [N.eye(3)])))
@@ -326,7 +326,6 @@ class Symmetry:
             while not N.allclose(N.eye(3), a, atol=self.accuracy):
                 a, M =mm(a, ii), M+1
             rotn+=[M]
-        fullRank = rotn[:]
 
         def pick(x, y):
             tmp=[]
@@ -397,7 +396,7 @@ class Symmetry:
                 xyz, nxyz = self.basis.xyz, mm(U, self.basis.xyz.transpose()-o.reshape((3, 1))).transpose()+o
                 xyz, nxyz = moveIntoCell(xyz, a1, a2, a3, self.accuracy), moveIntoCell(nxyz, a1, a2, a3, self.accuracy)
                 thisipiv = []
-                for ix, x in enumerate(xyz):
+                for x in xyz:
                     for iy, y in enumerate(nxyz):
                         if N.allclose(x, y, atol=self.accuracy):
                             thisipiv+=[iy]
@@ -480,7 +479,7 @@ class Symmetry:
 
     def findLattice(self):
         """
-        Find lattice vectors a1..3, reciprocal vectors b1..3 
+        Find lattice vectors a1..3, reciprocal vectors b1..3
         such that a_i b_j=delta_ij
         """
         # Use least abundant atom type
@@ -779,7 +778,6 @@ class Symmetry:
 
     def fullCheck(self, a):
         # Check that atoms repeats over a
-        bp1, bp2, bp3 = self.bp1, self.bp2, self.bp3
         atomtypes = N.unique(self.snr)
         passed = True
         for atomtype in atomtypes:
@@ -805,7 +803,6 @@ class Symmetry:
 
     def what(self):
         # Returns directions to calculate bandstructure
-        a1, a2, a3= self.a1, self.a2, self.a3
         b1, b2, b3= self.b1, self.b2, self.b3
         # Here we adopt the solid-state physics definition
         # a_i b_j=2*pi*delta_ij
@@ -977,16 +974,16 @@ def moveIntoClosest(xyz, a1, a2, a3):
     return xyz
 
 
-def myPermute(list):
-    if len(list)==0: return[]
+def myPermute(plist):
+    if len(plist)==0: return[]
     nlist=[]
-    low = myPermute(list[1:])
-    for ii in range(len(list[0])):
+    low = myPermute(plist[1:])
+    for ii in range(len(plist[0])):
         if len(low)>0:
             for jj in low:
-                nlist += [[list[0][ii]]+jj]
+                nlist += [[plist[0][ii]]+jj]
         else:
-            nlist += [[list[0][ii]]]
+            nlist += [[plist[0][ii]]]
     return nlist
 
 

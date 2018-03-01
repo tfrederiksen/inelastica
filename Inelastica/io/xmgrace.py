@@ -29,7 +29,7 @@ example above:
     >>> plot.ArrangeGraphs(nx=2,ny=1)
     >>> plot.WriteFile('test2.agr')
 
-With these additional lines we end up with a plot containing two graphs. 
+With these additional lines we end up with a plot containing two graphs.
 The function call to ``ArrangeGraphs(...)`` arranges them nicely on the
 canvas side by side.
 
@@ -393,11 +393,11 @@ class Graph:
     def GetWorldOfDatasets(self):
         "Returns tuple (xmin,ymin,xmax,ymax) of the data included in the graph."
         xmin, ymin, xmax, ymax = self.datasets[0].GetWorld()
-        for set in self.datasets:
-            if set.xmin < xmin: xmin = set.xmin
-            if set.ymin < ymin: ymin = set.ymin
-            if set.xmax > xmax: xmax = set.xmax
-            if set.ymax > ymax: ymax = set.ymax
+        for dset in self.datasets:
+            if dset.xmin < xmin: xmin = dset.xmin
+            if dset.ymin < ymin: ymin = dset.ymin
+            if dset.xmax > xmax: xmax = dset.xmax
+            if dset.ymax > ymax: ymax = dset.ymax
         return xmin, ymin, xmax, ymax
 
     def SetView(self, xmin='', xmax='', ymin='', ymax=''):
@@ -631,8 +631,8 @@ class Graph:
         string += '@ view %.8f, %.8f, %.8f, %.8f\n'%tuple(self.view)
         string += self.string
         for setnr in range(len(self.datasets)):
-            set = self.datasets[setnr]
-            string += set.GetXMGRstring(graphnr, setnr)
+            dset = self.datasets[setnr]
+            string += dset.GetXMGRstring(graphnr, setnr)
         return string
 
 
