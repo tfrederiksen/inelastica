@@ -59,17 +59,17 @@ def main():
 
     geom = MG.Geom(fns[0])
 
-    file=open(infile, 'r')
-    tmp=SIO.ReadFortranBin(file, 'd', 9)
+    fortfile=open(infile, 'r')
+    tmp=SIO.ReadFortranBin(fortfile, 'd', 9)
     cell=N.array([tmp[0:3], tmp[3:6], tmp[6:9]])
     print cell
-    Nx, Ny, Nz, Nspin = SIO.ReadFortranBin(file, 'i', 4)
+    Nx, Ny, Nz, Nspin = SIO.ReadFortranBin(fortfile, 'i', 4)
 
     data=N.zeros((Nx, Ny, Nz), N.float32)
     for iz in range(Nz):
         for iy in range(Ny):
-            data[:, iy, iz]=SIO.ReadFortranBin(file, 'f', Nx)
-    file.close()
+            data[:, iy, iz]=SIO.ReadFortranBin(fortfile, 'f', Nx)
+    fortfile.close()
 
     if outformat == '.cube':
         writecube(outfile, data, Nx, Ny, Nz, cell, geom)

@@ -207,13 +207,13 @@ def writeBands(ispin, what, bands):
             g.AddDatasets(data)
         g.SetSubtitle(what[jj][0])
 
-        g.SetXaxis(label='', majorUnit=0.5, minorUnit=0.1, max=1, min=0)
+        g.SetXaxis(label='', majorUnit=0.5, minorUnit=0.1, vmax=1, vmin=0)
         if jj==0:
             g.SetYaxis(label='eV', majorUnit=1, minorUnit=0.2,\
-                           max=general.eMax, min=general.eMin)
+                           vmax=general.eMax, vmin=general.eMin)
         else:
             g.SetYaxis(label='', majorUnit=1e10, minorUnit=0.2,\
-                           max=general.eMax, min=general.eMin)
+                           vmax=general.eMax, vmin=general.eMin)
         Graphs+=[g]
 
     p = XMGR.Plot(general.DestDir+'/BandStruct.agr', Graphs[0])
@@ -267,10 +267,10 @@ For help use --help!
     else:
         parser.error('ERROR: destination directory %s already exist!'%general.DestDir)
 
-    def myprint(arg, file):
+    def myprint(arg, iofile):
         # Save in parameter file
         print arg
-        file.write(arg+'\n')
+        iofile.write(arg+'\n')
 
     class myopen:
         # Double stdout to RUN.out and stdout
@@ -282,16 +282,16 @@ For help use --help!
     fo.stdout, fo.file = sys.stdout, open(general.DestDir+'/RUN.out', 'w', 0)
     sys.stdout = fo
 
-    file = open(general.DestDir+'/Parameters', 'w')
+    iofile = open(general.DestDir+'/Parameters', 'w')
     argv=""
     for ii in sys.argv: argv+=" "+ii
-    myprint(argv, file)
-    myprint('##################################################################################', file)
-    myprint('## Band structure ', file)
-    myprint('fdfFile            : %s'%general.fdfFile, file)
-    myprint('Number of k-points : %f'%general.NNk, file)
-    myprint('##################################################################################', file)
-    file.close()
+    myprint(argv, iofile)
+    myprint('##################################################################################', iofile)
+    myprint('## Band structure ', iofile)
+    myprint('fdfFile            : %s'%general.fdfFile, iofile)
+    myprint('Number of k-points : %f'%general.NNk, iofile)
+    myprint('##################################################################################', iofile)
+    iofile.close()
 
 
 ##################### Start main routine #####################
