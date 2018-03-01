@@ -15,10 +15,10 @@ from   scipy               import sparse
 from   scipy               import interpolate
 import time
 import glob
+import ast
 import Inelastica.io.netcdf as wNC
 import Inelastica.physics.constants as PC
 import Inelastica.io.siesta as SIO
-import ast
 
 
 def main(options, kpoint, ikpoint):

@@ -32,12 +32,6 @@ averaged STM image and the STM images of individual k points are saved in
 
 from __future__ import absolute_import, print_function
 
-import Inelastica.NEGF as NEGF
-import Inelastica.io.siesta as SIO
-import Inelastica.MakeGeom as MG
-import Inelastica.MiscMath as MM
-import Inelastica.physics.constants as PC
-import Inelastica.physics.mesh as Kmesh
 import numpy as N
 import numpy.linalg as LA
 import netCDF4 as NC
@@ -45,11 +39,17 @@ import sys
 import string
 import glob
 import os
+import ast
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
 import Inelastica.io.netcdf as writeNC
 import Inelastica.STMFD as STMFD
-import ast
+import Inelastica.NEGF as NEGF
+import Inelastica.io.siesta as SIO
+import Inelastica.MakeGeom as MG
+import Inelastica.MiscMath as MM
+import Inelastica.physics.constants as PC
+import Inelastica.physics.mesh as Kmesh
 
 #Units: Bohr and Rydberg!
 

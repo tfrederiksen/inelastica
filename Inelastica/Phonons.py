@@ -52,13 +52,6 @@ classes
 
 """
 
-import Inelastica.io.siesta as SIO
-import Inelastica.Symmetry as Symmetry
-import Inelastica.CommonFunctions as CF
-import Inelastica.MakeGeom as MG
-import Inelastica.physics.constants as PC
-import Inelastica.MiscMath as MM
-import Inelastica.ValueCheck as VC
 import netCDF4 as NC4
 import numpy as N
 import numpy.linalg as LA
@@ -67,6 +60,13 @@ import os
 import sys
 import string
 import ast
+import Inelastica.io.siesta as SIO
+import Inelastica.Symmetry as Symmetry
+import Inelastica.CommonFunctions as CF
+import Inelastica.MakeGeom as MG
+import Inelastica.physics.constants as PC
+import Inelastica.MiscMath as MM
+import Inelastica.ValueCheck as VC
 
 
 def GetOptions(argv, **kwargs):

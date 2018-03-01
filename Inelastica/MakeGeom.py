@@ -17,16 +17,15 @@ classes
 
 """
 
-import Inelastica.io.siesta as SIO
-import Inelastica.io.vasp as VIO
 import numpy as N
 import copy
 import math
 import sys
 import netCDF4 as NC4
-import Inelastica.physics.constants as PC
 import ast
-
+import Inelastica.io.siesta as SIO
+import Inelastica.io.vasp as VIO
+import Inelastica.physics.constants as PC
 
 def interpolateGeom(g0, g1, newlength):
     '''
