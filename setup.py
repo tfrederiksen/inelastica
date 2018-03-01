@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import sys
 import time
 import subprocess
+
 
 def test_prereq():
 
@@ -89,6 +89,8 @@ VERSION = [MAJOR, MINOR, MICRO]
 GIT_REVISION = "82ed6cb22d00597f8910930958f095c161757b79"
 
 # Derive Inelastica version info from git tags
+
+
 def git_version():
     global GIT_REVISION
     global VERSION
@@ -115,7 +117,7 @@ def git_version():
         # Get latest tag
         out = _minimal_ext_cmd(['git', 'describe', '--abbrev=0', '--tags'])
         tag = out.strip().decode('ascii')
-        tag = tag.replace('v','')
+        tag = tag.replace('v', '')
         version = tag.split('.')
         # Get complete "git describe" string
         out = _minimal_ext_cmd(['git', 'describe', '--tags'])
@@ -131,7 +133,7 @@ def git_version():
         rev = GIT_REVISION
         # Retain version
         version = VERSION
-        label = 'v'+'.'.join(map(str,VERSION))
+        label = 'v'+'.'.join(map(str, VERSION))
         # Assume it is on tag
         count = '0'
 

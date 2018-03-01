@@ -24,11 +24,8 @@ import Inelastica.io.siesta as SIO
 import Inelastica.MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
-import string
-import pickle
 import hashlib
 import glob
-import time
 import os
 import netCDF4 as NC4
 import Inelastica.ValueCheck as VC
@@ -92,7 +89,7 @@ class SigDir:
         if 'Done' in ncfile.variables:
             print "Read ", fn
             ncv = ncfile.variables
-            hash, hash2l, reE, imE, kp, LR, ispin, etaLead = ncv['hash'][:], ncv['hash2'][:], ncv['reE'][:], ncv['imE'][:], ncv['kp'][:], ncv['left'][:], ncv['ispin'][:], ncv['etaLead'][:]
+            hash, hash2l, reE, imE, LR, ispin, etaLead = ncv['hash'][:], ncv['hash2'][:], ncv['reE'][:], ncv['imE'][:], ncv['left'][:], ncv['ispin'][:], ncv['etaLead'][:]
             hash = [dec2hash(ii) for ii in hash]
             for ii in range(len(reE)):
                 hash2 = dec2hash(hash2l[ii])
@@ -441,7 +438,7 @@ class ElectrodeSelfEnergy:
 
         Algorith: Lopez Sancho*2 J Phys F:Met Phys 15 (1985) 851
 
-        I'm still very suspicios of this algorithm ... but it works and is really quick! 
+        I'm still very suspicios of this algorithm ... but it works and is really quick!
         The convergence is always checked against gs (E S - H - (E S01^+ - H01^+) gs (E S01 -H01) ) = I!
         """
         H, S, H01, S01 = self.H[ispin, :, :], self.S, self.H01[ispin, :, :], self.S01
@@ -604,7 +601,7 @@ class GF:
         Uses SpectralMatrix format for the spectralfunction matrices, see MiscMath, if cutoff>0.0
         """
 
-        nuo, nuoL, nuoR = self.nuo, self.nuoL, self.nuoR
+        nuoL, nuoR = self.nuoL, self.nuoR
         nuo0, nuoL0, nuoR0 = self.nuo0, self.nuoL0, self.nuoR0
         FoldedL, FoldedR = self.FoldedL, self.FoldedR
         devSt, devEnd = self.DeviceOrbs[0], self.DeviceOrbs[1]

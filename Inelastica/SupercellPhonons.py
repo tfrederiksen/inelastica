@@ -3,7 +3,7 @@
 SupercellPhonons (:mod:`Inelastica.SupercellPhonons`)
 =====================================================
 
-A simple interface to evaluate electron and phonon bands on 
+A simple interface to evaluate electron and phonon bands on
 a set of points in reciprocal space.
 
 The input file format with `N` points is simply:
@@ -43,11 +43,7 @@ import Inelastica.ValueCheck as VC
 import Inelastica.io.xmgrace as XMGR
 
 import numpy as N
-import numpy.linalg as LA
 import glob
-import os
-import sys
-import string
 import scipy.linalg as SLA
 import netCDF4 as NC4
 
@@ -94,7 +90,7 @@ def GetOptions(argv, **kwargs):
 
     # Check if AtomicMasses are specified
     if options.AtomicMass!='[]':
-        masslist = eval(options.AtomicMass.replace('\n', '').replace(' ', ''))
+        masslist = ast.literal_eval(options.AtomicMass.replace('\n', '').replace(' ', ''))
         for elm in masslist:
             anr = int(elm[0])
             mass = float(elm[1])
@@ -222,7 +218,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         # No folding yet onto k and q
         self.dH = {}
         # Loop over dynamic atoms
-        for i, v in enumerate(self.DynamicAtoms):
+        for v in self.DynamicAtoms:
             # Loop over axes
             for j in range(3):
                 # Compute gradient
@@ -336,8 +332,8 @@ def ReadKpoints_ascii(filename):
 
 def WriteKpoints(filename, klist, labels=None):
     f = open(filename, 'w')
-    for i in range(len(klist)):
-        k = klist[i]
+    for i, kval in enumerate(klist):
+        k = kval
         for j in range(3):
             f.write('%.8e '%k[j])
         if labels:
@@ -492,7 +488,7 @@ def main(options):
     WritePath(options.DestDir+'/symmetry-path', SCDM.Sym.path, options.steps)
 
     # Write mesh
-    k1, k2, k3 = eval(options.mesh)
+    k1, k2, k3 = ast.literal_eval(options.mesh)
     rvec = 2*N.pi*N.array([SCDM.Sym.b1, SCDM.Sym.b2, SCDM.Sym.b3])
     import Inelastica.physics.mesh as Kmesh
     # Full mesh

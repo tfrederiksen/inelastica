@@ -8,12 +8,9 @@ IO interface with VASP
 .. currentmodule:: Inelastica.io.vasp
 
 """
+
 import numpy as N
-import numpy.linalg as LA
 import string
-import struct
-import os.path
-import sys
 import gzip
 
 
@@ -22,14 +19,14 @@ def VIO_open(filename, mode='r'):
     try:
         if filename[-3:]=='.gz':
             # filename is explicitly a gzip file
-            file = gzip.open(filename, mode)
+            vfile = gzip.open(filename, mode)
         else:
             # filename is given as a non-zip file
-            file = open(filename, mode)
+            vfile = open(filename, mode)
     except:
         # if filename is not existing upon read, then try append the '.gz' ending
-        file = gzip.open(filename+'.gz', mode)
-    return file
+        vfile = gzip.open(filename+'.gz', mode)
+    return vfile
 
 #--------------------------------------------------------------------------------
 # Interface with VASP
@@ -38,16 +35,16 @@ def VIO_open(filename, mode='r'):
 def ReadCONTCAR(filename):
     "Read CONTCAR file"
     print 'io.vasp.ReadCONTCAR: Reading', filename
-    file = VIO_open(filename, 'r')
-    label = file.readline()
-    scalefactor = float(file.readline())
+    ccarfile = VIO_open(filename, 'r')
+    label = ccarfile.readline()
+    scalefactor = float(ccarfile.readline())
     vectors = N.zeros((3, 3), N.float)
     for ii in range(3):
-        tmp = file.readline().split()
+        tmp = ccarfile.readline().split()
         vectors[ii] = N.array(tmp, N.float)
     # The species labels are not always included in CONTCAR
-    firstline = file.readline().split()
-    line = file.readline().split()
+    firstline = ccarfile.readline().split()
+    line = ccarfile.readline().split()
     try:
         specieslabels = firstline
         speciesnumbers = N.array(line, N.int)
@@ -62,13 +59,13 @@ def ReadCONTCAR(filename):
     # Read 'Selective Dynamics' and 'Direct' lines
     dircoor = True # Default is reading direct coordinates
     while line[0].upper()!='DIRECT' and line[0].upper()!='CARTESIAN':
-        line = file.readline().split()
+        line = ccarfile.readline().split()
         if line[0].upper()=='CARTESIAN':
             dircoor = False
     # Read coordinates and degrees of freedom
     xyz = N.zeros((natoms, 6), N.float)
     for ii in range(natoms):
-        line = file.readline()
+        line = ccarfile.readline()
         line = line.replace('F', '0')
         line = line.replace('T', '1')
         line = line.split()
@@ -78,7 +75,7 @@ def ReadCONTCAR(filename):
             # No constraints given
             xyz[ii, :3] = N.array(line, N.float)
     # Ignore rest of the file
-    file.close()
+    ccarfile.close()
     # Convert to cartesian coordinates
     print 'Read direct coordinates?', dircoor
     for ii in range(natoms):
@@ -92,27 +89,27 @@ def ReadCONTCAR(filename):
 def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LABEL', scalefactor=1.0, constrained=[]):
     "Write POSCAR file"
     print 'io.vasp.WritePOSCAR: Writing', filename
-    file = open(filename, 'w')
+    pcarfile = open(filename, 'w')
     if label[:-2]!='\n':
-        file.write(label+'\n')
+        pcarfile.write(label+'\n')
     else:
-        file.write(label)
-    file.write('  %.12f \n'%scalefactor)
+        pcarfile.write(label)
+    pcarfile.write('  %.12f \n'%scalefactor)
     for ii in range(3):
         for jj in range(3):
-            file.write(string.rjust('%.9f'%vectors[ii][jj], 16)+' ')
-        file.write('\n')
-    for ii in range(len(specieslabels)):
-        file.write('  %s'%specieslabels[ii])
-    file.write('\n')
-    for ii in range(len(speciesnumbers)):
-        file.write('  %i'%speciesnumbers[ii])
-    file.write('\n')
-    file.write('Selective dynamics\nCartesian\n')
-    for ii in range(len(xyz)):
-        line  = string.rjust('%.9f'%xyz[ii][0], 16)+' '
-        line += string.rjust('%.9f'%xyz[ii][1], 16)+' '
-        line += string.rjust('%.9f'%xyz[ii][2], 16)+' '
+            pcarfile.write(string.rjust('%.9f'%vectors[ii][jj], 16)+' ')
+        pcarfile.write('\n')
+    for lbl in specieslabels:
+        pcarfile.write('  %s'%lbl)
+    pcarfile.write('\n')
+    for ii in speciesnumbers:
+        pcarfile.write('  %i'%ii)
+    pcarfile.write('\n')
+    pcarfile.write('Selective dynamics\nCartesian\n')
+    for ii, xyzval in enumerate(xyz):
+        line  = string.rjust('%.9f'%xyzval[0], 16)+' '
+        line += string.rjust('%.9f'%xyzval[1], 16)+' '
+        line += string.rjust('%.9f'%xyzval[2], 16)+' '
         if len(constrained)>0:
             for jj in range(3):
                 if constrained[ii, jj] > 0:
@@ -122,15 +119,15 @@ def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LA
             line += '\n'
         else:
             line += ' F F F\n'
-        file.write(line)
+        pcarfile.write(line)
 
 
 def GetEnergies(OUTCAR):
-    file = VIO_open(OUTCAR, 'r')
+    ocarfile = VIO_open(OUTCAR, 'r')
     print 'io.vasp.GetEnergies: Reading', OUTCAR
     #
     freeE, Etot, EtotSigma0 = 1e100, 1e100, 1e100
-    for line in file:
+    for line in ocarfile:
         if 'free energy    TOTEN' in line:
             l = line.split()
             freeE = float(l[4])      # Pick last appearance
@@ -142,16 +139,16 @@ def GetEnergies(OUTCAR):
             l = line.split()
             Etot = float(l[4])       # Pick last appearance
             EtotSigma0 = float(l[7]) # Pick last appearance
-    file.close()
+    ocarfile.close()
     return freeE, Etot, EtotSigma0
 
 
 def GetEnergiesFromOszi(OSZICAR):
-    file = VIO_open(OSZICAR, 'r')
+    oszicarfile = VIO_open(OSZICAR, 'r')
     print 'io.vasp.GetEnergiesFromOszi: Reading', OSZICAR
     #
     f, e0 = 1e100, 1e100
-    for line in file:
+    for line in oszicarfile:
         if 'F=' in line:
             l = line.split()
             f = float(l[2]) # read Free energy
@@ -160,11 +157,11 @@ def GetEnergiesFromOszi(OSZICAR):
 
 
 def GetMagnetization(OSZICAR):
-    file = VIO_open(OSZICAR, 'r')
+    oszicarfile = VIO_open(OSZICAR, 'r')
     print 'io.vasp.GetMagnetization: Reading', OSZICAR
     #
     mag = 1e100
-    for line in file:
+    for line in oszicarfile:
         if 'mag=' in line:
             l = line.split()
             mag = float(l[-1])      # Pick last appearance
@@ -172,10 +169,10 @@ def GetMagnetization(OSZICAR):
 
 
 def GetSpecies(OUTCAR):
-    file = VIO_open(OUTCAR, 'r')
+    ocarfile = VIO_open(OUTCAR, 'r')
     print 'io.vasp.GetSpecies: Reading', OUTCAR
     atoms = []
-    for line in file:
+    for line in ocarfile:
         if 'TITEL' in line:
             l = line.split()
             print l
@@ -184,13 +181,13 @@ def GetSpecies(OUTCAR):
 
 
 def GetVibModesNoScaling(OUTCAR):
-    file = VIO_open(OUTCAR, 'r')
+    ocarfile = VIO_open(OUTCAR, 'r')
     print 'io.vasp.GetVibrations: Reading', OUTCAR
     freq = []
     modes = []
     v = []
     datablock = False
-    for line in file:
+    for line in ocarfile:
         if 'Eigenvectors and eigenvalues of the dynamical matrix' in line:
             datablock = True # beginning of data block
         if 'Eigenvectors after division by SQRT(mass)' in line \
@@ -215,13 +212,13 @@ def GetVibModesNoScaling(OUTCAR):
 
 
 def GetVibModesMassScaled(OUTCAR):
-    file = VIO_open(OUTCAR, 'r')
+    ocarfile = VIO_open(OUTCAR, 'r')
     print 'io.vasp.GetVibrations: Reading', OUTCAR
     freq = []
     modes = []
     v = []
     datablock = False
-    for line in file:
+    for line in ocarfile:
         if 'Finite differences POTIM=' in line:
             datablock = False # end of data block
         if datablock:
@@ -284,8 +281,8 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
                 else:
                     # VASP wrote 3-column data...
                     extrablock = 1
-            for i in range(len(s)):
-                s[i] = float(s[i])
+            for i, sval in enumerate(s):
+                s[i] = float(sval)
             if (j-extrablock) in atom_index:
                 dat[e, 0] = s[0]-eF
                 dat[e, 1:1+9*spin] += N.array(s[1:1+9*spin])
@@ -307,8 +304,8 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
                     spin = 2
                 elif len(s)==10:
                     spin = 1
-            for i in range(len(s)):
-                s[i] = float(s[i])
+            for i, sval in enumerate(s):
+                s[i] = float(sval)
             if (j-extrablock) in atom_index:
                 dat[e, 0] = s[0]-eF
                 dat[e, 1:1+9*spin] += N.array(s[1:1+9*spin])

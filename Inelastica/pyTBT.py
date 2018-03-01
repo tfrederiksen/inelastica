@@ -313,7 +313,6 @@ def WritePDOS(fn, options, DevGF, DOS, basis):
     devOrbSt = DevGF.HS.lasto[options.DeviceAtoms[0]-1]
     pyTBTdevOrbSt = devOrbSt-DevGF.HS.lasto[options.DeviceAtoms[0]-1]
     devOrbEnd = DevGF.HS.lasto[options.DeviceAtoms[1]]-1
-    pyTBTdevOrbEnd = devOrbEnd-DevGF.HS.lasto[options.DeviceAtoms[0]-1]
 
     doc = xml.Document()
     pdos = doc.createElement('pdos')

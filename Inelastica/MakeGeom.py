@@ -20,13 +20,11 @@ classes
 import Inelastica.io.siesta as SIO
 import Inelastica.io.vasp as VIO
 import numpy as N
-import string
 import copy
 import math
 import sys
 import netCDF4 as NC4
 import Inelastica.physics.constants as PC
-import os
 
 
 def interpolateGeom(g0, g1, newlength):
@@ -94,8 +92,6 @@ def GetDihedral(r1, r2, r3, r4):
     v12 = r2-r1
     v23 = r3-r2
     v34 = r4-r3
-    n123 = CrossProd(v12, v23)
-    n234 = CrossProd(v23, v34)
     # atan2-definition of torsion angle with sign
     # see http://en.wikipedia.org/wiki/Dihedral_angle
     y = N.dot(v23, v23)**.5*N.dot(v12, CrossProd(v23, v34))
@@ -254,7 +250,6 @@ class Geom:
                RotateLatticeVectors=False):
         # Rotation around an axis specified by some axisvector
         # See the "rotation formula" in Goldstein 2nd ed. p. 165
-        import math
         vec = N.array(axisvector)/(N.dot(axisvector, axisvector)**0.5) # Normalized unit vector
         if Degrees:
             angle = 2*N.pi/360.0*angle
@@ -482,8 +477,6 @@ class Geom:
         print '   ... Layer(s) pasted to left      = %i' %LayersLeft
         print '   ... Layer(s) pasted to right     = %i' %LayersRight
 
-        z = self.pbc[2][2]
-
         # Make block geometry
         pieceR = Geom()
         pieceL = Geom()
@@ -531,10 +524,10 @@ class Geom:
     def ShiftPeriodicCellAlongZ(self, IndexShift):
         print 'MakeGeom.ShiftPeriodicCellAlongZ: Shifting %i atoms from LEFT to RIGHT side of the unit cell'%IndexShift
         # Find cell vector with largest z-component
-        NN, zmax = 0, 0
+        zmax = 0
         for ii in range(3):
             if self.pbc[ii][2]>zmax:
-                NN, zmax = ii, self.pbc[ii][2]
+                zmax = self.pbc[ii][2]
         for i in range(IndexShift):
             # add z-periodicity to z-coordinate
             self.xyz[i][2] += zmax
@@ -601,12 +594,12 @@ class Geom:
         label, self.anr, self.xyz = SIO.ReadXYZFile(fn)
         self.natoms=len(self.xyz)
         #self.move2origo()
-        self.snr = eval(raw_input('Input snr expression:'))
+        self.snr = ast.literal_eval(raw_input('Input snr expression:'))
         if len(self.xyz)!=len(self.snr):
             print 'Error assigning snr!'
         self.pbc = []
         for i in range(3):
-            vec = eval(raw_input('Input cell vector (%i):'%i))
+            vec = ast.literal_eval(raw_input('Input cell vector (%i):'%i))
             if len(vec)!=3:
                 print 'Error assigning cell vector!'
             else:
@@ -677,7 +670,6 @@ class Geom:
         "Write POSCAR coordinate file for VASP"
         geom = copy.deepcopy(self)
         tmp = []
-        anrlist = []
         anrnum = N.zeros(max(geom.anr)+1, N.int)
         for i in range(len(geom.xyz)):
             if geom.anr[i]>0:
