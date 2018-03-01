@@ -25,6 +25,7 @@ import Inelastica.MiscMath as MM
 import numpy as N
 import numpy.linalg as LA
 import hashlib
+import pickle
 import glob
 import os
 import netCDF4 as NC4
