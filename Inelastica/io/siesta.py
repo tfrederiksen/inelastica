@@ -295,29 +295,29 @@ def ReadWFSFile(filename):
     Returns the WF coefficients etc. from SIESTA systemlabe.WFS files
     (see siesta/utils/readwf.f for details)
     """
-    file = SIO_open(filename, 'rb')
-    nk, = ReadFortranBin(file, 'I', 1)
-    nspin, = ReadFortranBin(file, 'I', 1)
-    nuotot, = ReadFortranBin(file, 'I', 1)
+    fortfile = SIO_open(filename, 'rb')
+    nk, = ReadFortranBin(fortfile, 'I', 1)
+    nspin, = ReadFortranBin(fortfile, 'I', 1)
+    nuotot, = ReadFortranBin(fortfile, 'I', 1)
     #print nk, nspin, nuotot
 
     PSIvectors = []
     for iik in range(nk):
         for iispin in range(nspin):
-            ik, k1, k2, k3 =  ReadFortranBin(file, 'Iddd', 1)
+            ik, k1, k2, k3 =  ReadFortranBin(fortfile, 'Iddd', 1)
             #print ik,k1,k2,k3
-            ispin, = ReadFortranBin(file, 'I', 1)
-            nwflist, = ReadFortranBin(file, 'I', 1)
+            ispin, = ReadFortranBin(fortfile, 'I', 1)
+            nwflist, = ReadFortranBin(fortfile, 'I', 1)
             #print ispin,nwflist
             for iw in range(nwflist):
                 REpsi, IMpsi = [], []
-                indwf, = ReadFortranBin(file, 'I', 1)
-                energy, = ReadFortranBin(file, 'd', 1)
+                indwf, = ReadFortranBin(fortfile, 'I', 1)
+                energy, = ReadFortranBin(fortfile, 'd', 1)
                 #print indwf, energy
                 for jj in range(nuotot):
                     label = ''
                     for a in range(20): label += 'c'
-                    out =  ReadFortranBin(file, 'I'+label+'III'+label+'dd', 1)
+                    out =  ReadFortranBin(fortfile, 'I'+label+'III'+label+'dd', 1)
                     lab1, j, lab2, repsi, impsi = out[1:21], out[21], out[24:44], out[44], out[45]
                     labelfis, symfio = '', ''
                     for a in range(20):
@@ -326,7 +326,7 @@ def ReadWFSFile(filename):
                     #print labelfis,symfio
                     REpsi.append(repsi), IMpsi.append(impsi)
                 PSIvectors.append(N.array(REpsi)+1j*N.array(IMpsi))
-    file.close()
+    fortfile.close()
     return nk, nspin, nuotot, nwflist, PSIvectors
 
 
@@ -1654,44 +1654,44 @@ class HS:
         print 'io.siesta.__ReadTSHSFile: Reading', filename
         self.version = 0
         # Open binary Fortran file
-        file = SIO_open(filename, 'rb')
-        nau, nou, nos, nspin, maxnh = ReadFortranBin(file, fortranLong, 5)
-        xa = N.reshape(N.array(ReadFortranBin(file, 'd', 3*nau)), (nau, 3))*PC.Bohr2Ang
+        fortfile = SIO_open(filename, 'rb')
+        nau, nou, nos, nspin, maxnh = ReadFortranBin(fortfile, fortranLong, 5)
+        xa = N.reshape(N.array(ReadFortranBin(fortfile, 'd', 3*nau)), (nau, 3))*PC.Bohr2Ang
         xa = N.require(xa.T, requirements=['A', 'F'])
-        isa = ReadFortranBin(file, fortranLong, nau); del isa
-        ucell = N.transpose(N.reshape(N.array(ReadFortranBin(file, 'd', 9)), (3, 3)))*PC.Bohr2Ang
-        gamma = ReadFortranBin(file, 'L', 1)[0]!=0        # Read boolean (works with ifort)
-        onlyS = ReadFortranBin(file, 'L', 1)[0]!=0        # Read boolean (works with ifort)
-        ts_gamma_scf = ReadFortranBin(file, 'L', 1)[0]!=0 # Read boolean (works with ifort)
-        ts_kscell = N.reshape(N.array(ReadFortranBin(file, fortranLong, 9)), (3, 3))
-        ts_kdispl = N.array(ReadFortranBin(file, 'd', 3))
-        istep, ia1 = ReadFortranBin(file, fortranLong, 2)
-        lasto = N.array(ReadFortranBin(file, fortranLong, nau+1))
+        isa = ReadFortranBin(fortfile, fortranLong, nau); del isa
+        ucell = N.transpose(N.reshape(N.array(ReadFortranBin(fortfile, 'd', 9)), (3, 3)))*PC.Bohr2Ang
+        gamma = ReadFortranBin(fortfile, 'L', 1)[0]!=0        # Read boolean (works with ifort)
+        onlyS = ReadFortranBin(fortfile, 'L', 1)[0]!=0        # Read boolean (works with ifort)
+        ts_gamma_scf = ReadFortranBin(fortfile, 'L', 1)[0]!=0 # Read boolean (works with ifort)
+        ts_kscell = N.reshape(N.array(ReadFortranBin(fortfile, fortranLong, 9)), (3, 3))
+        ts_kdispl = N.array(ReadFortranBin(fortfile, 'd', 3))
+        istep, ia1 = ReadFortranBin(fortfile, fortranLong, 2)
+        lasto = N.array(ReadFortranBin(fortfile, fortranLong, nau+1))
         if not gamma:
-            indxuo = N.array(ReadFortranBin(file, fortranLong, nos))
+            indxuo = N.array(ReadFortranBin(fortfile, fortranLong, nos))
         else:
             # For gamma point make indxuo such that indexes not pointing to unitcell give error, i.e., -1.
             tmp1 = N.array(range(1, nou+1), N.int)
             tmp2 = -N.ones((nos-nou), N.int)
             indxuo = N.concatenate((tmp1, tmp2))
-        numhg = N.array(ReadFortranBin(file, fortranLong, nou))
-        qtot, temp = ReadFortranBin(file, 'd', 2)
+        numhg = N.array(ReadFortranBin(fortfile, fortranLong, nou))
+        qtot, temp = ReadFortranBin(fortfile, 'd', 2)
         temp = temp * PC.Rydberg2eV
-        ef = ReadFortranBin(file, 'd', 1)[0]*PC.Rydberg2eV
+        ef = ReadFortranBin(fortfile, 'd', 1)[0]*PC.Rydberg2eV
         listh = []
         for ii in range(nou):
-            listh += list(ReadFortranBin(file, fortranLong, numhg[ii]))
+            listh += list(ReadFortranBin(fortfile, fortranLong, numhg[ii]))
         listh = N.array(listh)
         Ssparse, cnt = N.zeros(maxnh, N.float), 0
         for ii in range(nou):
-            Ssparse[cnt:cnt+numhg[ii]]=ReadFortranBin(file, 'd', numhg[ii])
+            Ssparse[cnt:cnt+numhg[ii]]=ReadFortranBin(fortfile, 'd', numhg[ii])
             cnt=cnt+numhg[ii]
         if not onlyS:
             Hsparse = N.zeros((nspin, maxnh), N.float, order='F')
             for ispin in range(nspin):
                 cnt=0
                 for ii in range(nou):
-                    Hsparse[ispin, cnt:cnt+numhg[ii]]=ReadFortranBin(file, 'd', numhg[ii])
+                    Hsparse[ispin, cnt:cnt+numhg[ii]]=ReadFortranBin(fortfile, 'd', numhg[ii])
                     cnt=cnt+numhg[ii]
             Hsparse = Hsparse.T*PC.Rydberg2eV
             Hsparse = N.require(Hsparse, requirements=['A', 'F'])
@@ -1701,7 +1701,7 @@ class HS:
             xij = N.zeros((maxnh, 3), N.float, order='F')
             cnt=0
             for ii in range(nou):
-                tmp=ReadFortranBin(file, 'd', numhg[ii]*3)
+                tmp=ReadFortranBin(fortfile, 'd', numhg[ii]*3)
                 tmp = N.reshape(tmp, (3, numhg[ii]))
                 xij[cnt:cnt+numhg[ii], :] = tmp.T
                 cnt=cnt+numhg[ii]
@@ -1710,7 +1710,7 @@ class HS:
 
         else:
             xij = N.zeros((3, maxnh), N.float, order='F')
-        file.close()
+        fortfile.close()
 
         general = [nau, nou, nos, nspin, maxnh, gamma, onlyS, istep, ia1, qtot, temp, ef]
         sparse = [lasto, numhg, listh, indxuo]
