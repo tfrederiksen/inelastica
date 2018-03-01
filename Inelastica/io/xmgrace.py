@@ -452,13 +452,13 @@ class Graph:
         if Csize!='':
             self.string += '@ legend char size %.8f \n'%Csize
 
-    def SetXaxis(self, min='', max='', label='', labelsize='', labelautopos='', labelpospar='',
+    def SetXaxis(self, vmin='', vmax='', label='', labelsize='', labelautopos='', labelpospar='',
                  labelposper='', majorUnit='', minorUnit='', useticks='',
                  useticklabels='', ticklabelsize='', majorGridlines='', minorGridlines='',
                  autoscale='', scale=''):
         """
         Sets the axis parameters (if specified):
-        - min/max        = [float]
+        - vmin/vmax      = [float]
         - label          = [string]
         - labelsize      = [float]
         - labelautopos   = [bool]
@@ -474,10 +474,10 @@ class Graph:
         - autoscale      = [bool]
         - scale          = [\"Normal\"/\"Logarithmic\"]
         """
-        if min!='':
-            self.SetWorld(xmin=float(min))
-        if max!='':
-            self.SetWorld(xmax=float(max))
+        if vmin!='':
+            self.SetWorld(xmin=float(vmin))
+        if vmax!='':
+            self.SetWorld(xmax=float(vmax))
         if label!='':
             self.string += '@ xaxis label \"%s\" \n'%str(label)
         if labelsize!='':
@@ -510,15 +510,15 @@ class Graph:
                 unit = 2*10**math.floor(math.log(rng, 10))
             else:
                 unit = 1
-            self.SetXaxis(min=xmin, max=xmax, majorUnit=unit, minorUnit=unit/2.)
+            self.SetXaxis(vmin=xmin, vmax=xmax, majorUnit=unit, minorUnit=unit/2.)
         if scale =='Logarithmic':
             self.string += '@ xaxes scale %s \n'%scale
             # Scale axis to positive numbers
             xmin, ymin, xmax, ymax = self.GetWorldOfDatasets()
-            if xmin<=0.: self.SetXaxis(min=1e-10)
-            else: self.SetXaxis(min=xmin)
-            if xmax<=0.: self.SetXaxis(max=1e10)
-            else: self.SetXaxis(max=xmax)
+            if xmin<=0.: self.SetXaxis(vmin=1e-10)
+            else: self.SetXaxis(vmin=xmin)
+            if xmax<=0.: self.SetXaxis(vmax=1e10)
+            else: self.SetXaxis(vmax=xmax)
 
     def SetYaxis(self, vmin='', vmax='', label='', labelsize='', labelautopos='',
                  labelpospar='', labelposper='', majorUnit='', minorUnit='', useticks='',
@@ -846,8 +846,8 @@ def test():
         if i==5:
             # Fixed coordinate ranges
             g.ShowLegend()
-            g.SetXaxis(min=-4, max=4)
-            g.SetYaxis(min=-2, max=8)
+            g.SetXaxis(vmin=-4, vmax=4)
+            g.SetYaxis(vmin=-2, vmax=8)
             g.AddDatasets(d3)
         if i==6:
             g.AddDatasets(dsets)

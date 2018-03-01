@@ -27,6 +27,7 @@ import Inelastica.io.siesta as SIO
 import Inelastica.io.vasp as VIO
 import Inelastica.physics.constants as PC
 
+
 def interpolateGeom(g0, g1, newlength):
     '''
     Interpolate (extra-) to give new length

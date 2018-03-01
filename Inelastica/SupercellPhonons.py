@@ -402,8 +402,8 @@ def PlotElectronBands(filename, dk, elist, ticks):
     es = XMGR.Array2XYsets(e, Lwidth=2, Lcolor=1)
     ge = XMGR.Graph(es)
     ge.SetXaxisSpecialTicks(ticks)
-    ge.SetXaxis(max=dk[-1], majorGridlines=True)
-    ge.SetYaxis(min=-20, max=20, label='E-E\sF\N (eV)', majorUnit=5.0)
+    ge.SetXaxis(vmax=dk[-1], majorGridlines=True)
+    ge.SetYaxis(vmin=-20, vmax=20, label='E-E\sF\N (eV)', majorUnit=5.0)
     pe = XMGR.Plot(filename, ge)
     pe.WriteFile()
 
@@ -418,7 +418,7 @@ def PlotPhononBands(filename, dq, phlist, ticks):
     ps = XMGR.Array2XYsets(p, Lwidth=2, Lcolor=1)
     gp = XMGR.Graph(ps)
     gp.SetXaxisSpecialTicks(ticks)
-    gp.SetXaxis(max=dq[-1], majorGridlines=True)
+    gp.SetXaxis(vmax=dq[-1], majorGridlines=True)
     maxy = 1000*N.amax(phlist)
     if maxy<20: mu, mx = 5, 20
     elif maxy<30: mu, mx = 5, 30
@@ -433,7 +433,7 @@ def PlotPhononBands(filename, dq, phlist, ticks):
     elif maxy<220: mu, mx = 25, 220
     elif maxy<250: mu, mx = 25, 250
     elif maxy<500: mu, mx = 100, 500
-    gp.SetYaxis(label='\\f{Symbol}w\\f{} (meV)', majorUnit=mu, min=0.0, max=mx)
+    gp.SetYaxis(label='\\f{Symbol}w\\f{} (meV)', majorUnit=mu, vmin=0.0, vmax=mx)
     pp = XMGR.Plot(filename, gp)
     pp.WriteFile()
 
@@ -462,9 +462,9 @@ def WriteDOS(outfile, bands, emin, emax, pts, smear):
     # Write plot
     ps = XMGR.XYset(egrid, dos, Lwidth=2, Lcolor=1)
     gp = XMGR.Graph(ps)
-    gp.SetXaxis(label='E (eV)', min=emin, max=emax, majorUnit=emax/5)
+    gp.SetXaxis(label='E (eV)', vmin=emin, vmax=emax, majorUnit=emax/5)
     ymax = N.max(dos)
-    gp.SetYaxis(label='DOS (states/eV)', min=0, max=ymax, majorUnit=ymax/5)
+    gp.SetYaxis(label='DOS (states/eV)', vmin=0, vmax=ymax, majorUnit=ymax/5)
     #gp.SetSubtitle(ncfile)
     pp = XMGR.Plot(outfile, gp)
     pp.PutText('smear = %.3f meV'%(1e3*smear), 0.20, 0.75)
