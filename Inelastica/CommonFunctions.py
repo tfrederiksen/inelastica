@@ -52,22 +52,16 @@ def CreatePipeOutput(f):
 
 
 def PrintMainHeader(name, options):
-    try:
-        import Inelastica.info as info
-        infover = info.label
-    except Exception as e:
-        print('Could not import info:')
-        print(str(e))
-        infover = ''
-
+    import Inelastica.info as info
     print('=======================================================================')
-    print('INELASTICA VERSION : %s'%(infover))
+    print('INELASTICA VERSION : %s'%(info.label))
     print('RUNNING %s : %s'%(name.upper(), time.ctime()))
-    print('\nOPTIONS :')
-    opts_dict = vars(options)
-    keys = sorted(opts_dict)
-    for i in keys:
-        print('    ', i, '-->', opts_dict[i])
+    if options:
+        print('\nOPTIONS :')
+        opts_dict = vars(options)
+        keys = sorted(opts_dict)
+        for i in keys:
+            print('    ', i, '-->', opts_dict[i])
     print('=======================================================================')
 
 
