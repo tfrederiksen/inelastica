@@ -172,7 +172,7 @@ try:
     # Create version file if allowed
     write_version()
 except Exception as e:
-    print('Could not write sisl/info.py:')
+    print('Could not write Inelastica/info.py:')
     print(str(e))
 
 # Main setup of python modules
