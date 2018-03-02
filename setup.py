@@ -89,7 +89,7 @@ def git_version():
     MICRO = 0
     VERSION = [MAJOR, MINOR, MICRO]
     GIT_REVISION = "82ed6cb22d00597f8910930958f095c161757b79"
-    GIT_LABEL = "unknown" 
+    GIT_LABEL = '.'.join(map(str,[MAJOR, MINOR, MICRO]))
 
     def _minimal_ext_cmd(cmd):
         # construct minimal environment
