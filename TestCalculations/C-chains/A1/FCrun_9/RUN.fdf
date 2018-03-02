@@ -1,0 +1,27 @@
+### Lines appended Tue Feb 14 12:17:47 2017 
+MD.TypeOfRun  FC
+MD.FCfirst   9
+MD.FClast    9
+TS.SaveHS    True
+MD.FCDispl   0.02000000 Ang
+SystemTitle device
+SystemLabel device
+
+SolutionMethod     transiesta
+
+%block kgrid_Monkhorst_Pack
+  5    0    0    0.0
+  0    1    0    0.0
+  0    0    1    0.0
+%endblock kgrid_Monkhorst_Pack
+
+%include ./PARAM.fdf
+%include ./STRUCT.fdf
+
+%include ./ELEC.fdf
+%include ./TBTRANS.fdf
+
+%block Geometry.Constraints
+atom from  1 to  5
+atom from 13 to 17
+%endblock

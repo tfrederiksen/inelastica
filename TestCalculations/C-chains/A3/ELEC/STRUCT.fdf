@@ -1,0 +1,16 @@
+NumberOfAtoms 5
+NumberOfSpecies 1
+LatticeConstant 1.0 Ang
+%block LatticeVectors
+     6.500000000      0.000000000      0.000000000 
+     0.000000000      6.500000000      0.000000000 
+     0.000000000      0.000000000      6.500000000 
+%endblock LatticeVectors
+AtomicCoordinatesFormat  Ang
+%block AtomicCoordinatesAndAtomicSpecies
+     0.000000000      0.000000000      0.000000000 1
+     0.000000000      0.000000000      1.300000000 1
+     0.000000000      0.000000000      2.600000000 1
+     0.000000000      0.000000000      3.900000000 1
+     0.000000000      0.000000000      5.200000000 1
+%endblock AtomicCoordinatesAndAtomicSpecies
