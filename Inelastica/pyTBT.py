@@ -1,22 +1,36 @@
 """
 
-python TBTrans (:mod:`Inelastica.pyTBT`)
+pyTBT (:mod:`Inelastica.pyTBT`)
 ========================================
 
-Magnus Paulsson magnus.paulsson@hik.se
+``pyTBT`` was initiated by Magnus Paulsson as a Python version
+of the `tbtrans` code originally developed in Fortran by Mads Brandbyge.
 
-Requires:
+Scripting
+---------
 
-* numpy (compile it linked with mkl, acml or atlas!)
-
-For speed compile the fortran subroutines in `fortran` directory:
+To run ``pyTBT`` as a script one can execute:
 
 .. code-block:: bash
 
-    cd Inelastica/fortran
-    source compile.bat
+    >>> import Inelatica.pyTBT as TBT
+    >>> my_argv = '--Emin=-5.0 --Emax=5.0 -N 11 -f TSrun/RUN.fdf TBT_dir'
+    >>> my_opts = TBT.GetOptions(my_argv)
+    >>> TBT.main(my_opts)
 
-**UNITS:** Always eV and Angstrom!
+Classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   GetOptions
+   main
+
+Units
+-----
+
+Always eV and Angstrom!
 
 k-values always given in range [0,1.0] (or [-0.5,0.5]). They are not 
 in reciprocal space. Instead they corresponds to the mathematical 
@@ -41,6 +55,17 @@ import Inelastica.io.xmgrace as XMGR
 
 
 def GetOptions(argv, **kwargs):
+    """
+    Returns an instance of ``options`` for the ``pyTBT`` module
+
+    Parameters
+    ----------
+    argv : string
+        For example `-N 5 test_dir`, which instructs to compute transmission on 5 energy points
+        and place the results in the output directory `test_dir`.
+    """
+    CF.PrintMainHeader('GetOptions', None)
+
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
         argv = argv.split()
@@ -120,6 +145,13 @@ def GetOptions(argv, **kwargs):
 
 
 def main(options):
+    """
+    Main routine to compute elastic transmission probabilities etc.
+
+    Parameters
+    ----------
+    options : a ``pyTBT-options`` instance
+    """
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options, 'pyTBT')
     CF.PrintMainHeader('pyTBT', options)
