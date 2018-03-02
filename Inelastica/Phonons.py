@@ -272,7 +272,9 @@ class OTSrun(FCrun): # Only TranSiesta run
         # Compare with XV file corrected for last displacement
         XV = self.directory+'/%s.XV'%self.systemlabel
         geomXV = MG.Geom(XV)
-        natoms = self.geom.natoms
+        if not N.allclose(geomXV.xyz, self.geom.xyz):
+            print "Structures in fdf and XV are different! It has been relaxed?"
+            self.geom.xyz = geomXV.xyz.tolist()
         # Determine TSHS files
         files = glob.glob(self.directory+'/%s*.TSHS'%self.systemlabel)
         # Build dictionary over TSHS files and corresponding displacement amplitudes
