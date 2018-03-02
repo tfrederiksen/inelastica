@@ -131,7 +131,7 @@ def main(options):
 
     Parameters
     ----------
-    options : an ``EigenChannels-options`` instance
+    options : an ``options`` instance
     """
 
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)

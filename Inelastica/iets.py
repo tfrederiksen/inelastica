@@ -143,7 +143,7 @@ def main(options):
     
     Parameters
     ----------
-    options : an ``iets-options`` instance
+    options : an ``options`` instance
     """
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options, 'Inelastica')

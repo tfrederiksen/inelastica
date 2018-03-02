@@ -150,7 +150,7 @@ def main(options):
 
     Parameters
     ----------
-    options : a ``pyTBT-options`` instance
+    options : an ``options`` instance
     """
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options, 'pyTBT')
