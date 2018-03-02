@@ -168,7 +168,12 @@ if git_count > 2:
                                     git=GIT_REV,
                                     description=GIT_DESCR))
 
-write_version()
+try:
+    # Create version file if allowed
+    write_version()
+except Exception as e:
+    print('Could not write sisl/info.py:')
+    print(str(e))
 
 # Main setup of python modules
 setup(name='Inelastica',
