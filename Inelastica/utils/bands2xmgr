@@ -45,9 +45,9 @@ where the optional keyword flags are:
 import sys
 import os.path
 import time
-from Inelastica import SiestaIO as SIO
-import Inelastica.io.xmgrace as XMGR
 import numpy as N
+import Inelastica.io.siesta as SIO
+import Inelastica.io.xmgrace as XMGR
 
 
 def SortOnce(EvsK, factor, firstband='', lastband=''):

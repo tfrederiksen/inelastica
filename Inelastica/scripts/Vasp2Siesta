@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
-from Inelastica import io.vasp as VIO
-from Inelastica import SiestaIO as SIO
-import Inelastica.physics.constants as PC
 import sys
+import Inelastica.io.vasp as VIO
+import Inelastica.io.siesta as SIO
+import Inelastica.physics.constants as PC
 
 # File to read
 fn = sys.argv[1]

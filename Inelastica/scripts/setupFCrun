@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import Inelastica.SetupRuns as SR
 import argparse
+import Inelastica.SetupRuns as SR
 
 parser = argparse.ArgumentParser(description='Tool for generating a FCrun folder starting from CGrun')
 parser.add_argument('CGrun', metavar='CG',

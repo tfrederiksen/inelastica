@@ -2,9 +2,8 @@
 
 import sys
 from datetime import datetime
-
-from Inelastica import pyTBT as Module
-from Inelastica import CommonFunctions as CF
+import Inelastica.pyTBT as Module
+import Inelastica.CommonFunctions as CF
 
 start = datetime.now()
 

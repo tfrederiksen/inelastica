@@ -2,10 +2,9 @@
 
 import sys
 from datetime import datetime
-
-from Inelastica import SupercellPhonons as SP
-from Inelastica import CommonFunctions as CF
 import argparse
+import Inelastica.SupercellPhonons as SP
+import Inelastica.CommonFunctions as CF
 
 start = datetime.now()
 

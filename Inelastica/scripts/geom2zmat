@@ -1,7 +1,7 @@
-#!/scratch/thf/SOFTWARE/python/2.7.10/gcc-4.9.2/bin/python
+#!/usr/bin/env python
 
-import Inelastica.MakeGeom as MG
 import argparse
+import Inelastica.MakeGeom as MG
 
 description = """
 Tool for converting geometries to zmatrix FDF format.
