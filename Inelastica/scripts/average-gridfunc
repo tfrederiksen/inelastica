@@ -1,35 +1,43 @@
 #!/usr/bin/env python
 
 import numpy as N
-from scipy.io import netcdf
+import netCDF4 as netcdf
 import sys
 import argparse
 import Inelastica.physics.constants as PC
 
-def average(ncfile, axis):
+def average(ncfile, args):
     """This function writes plane-averaged 1D functions of 
     SIESTA gridfunctions such as the ElectrostaticPotential.nc
     on a selected axis"""
-    print 'Averaging %s on axis %i'%(ncfile.filename, axis)
-    dat = ncfile.variables['gridfunc'][0, :] # spin-component 0 only
+    print 'Averaging %s on axis %i'%(ncfile.filepath(), args.axis)
+    dat = ncfile.variables['gridfunc'][args.spin, :] # spin-component 0 only
     cell = ncfile.variables['cell'][:]
-    a = 3-axis
-    A = N.array(cell[axis-1])
+    a = 3-args.axis
+    A = N.array(cell[args.axis-1])
     L = N.dot(A, A)**.5
     [n3, n2, n1] =  dat.shape
     # Write output to file
-    fn = ncfile.filename+'.A%i.dat'%axis
+    fn = ncfile.filepath()+'.A%i.s%i.dat'%(args.axis, args.spin)
     fout = open(fn, 'w')
+    if args.Bohr:
+        fout.write('# Bohr units\n')
+    else:
+        fout.write('# Angstrom\n')
     n = dat.shape[a]
     for i in range(n):
         # convert distance unit to Angstrom
-        z = L/n*i*PC.Bohr2Ang
-        if axis == 1:
-            fout.write('%.8f %.8f\n'%(z, N.sum(dat[:, :, i])/(n2*n3)))
-        elif axis == 2:
-            fout.write('%.8f %.8f\n'%(z, N.sum(dat[:, i, :])/(n1*n3)))
-        elif axis == 3:
-            fout.write('%.8f %.8f\n'%(z, N.sum(dat[i, :, :])/(n1*n2)))
+        if args.Bohr:
+            z = L/n*i
+        else:
+            # Angstrom
+            z = L/n*i*PC.Bohr2Ang
+        if args.axis == 1:
+            fout.write('%.8f %.8e\n'%(z, N.sum(dat[:, :, i])/(n2*n3)))
+        elif args.axis == 2:
+            fout.write('%.8f %.8e\n'%(z, N.sum(dat[:, i, :])/(n1*n3)))
+        elif args.axis == 3:
+            fout.write('%.8f %.8e\n'%(z, N.sum(dat[i, :, :])/(n1*n2)))
     fout.close()
     print '... wrote', fn
     del dat, cell, n, n1, n2, n3, A
@@ -38,10 +46,14 @@ def average(ncfile, axis):
 
 parser = argparse.ArgumentParser(description='Tool for 2D averages of SIESTA 3D gridfunctions')
 parser.add_argument('-a', '--axis', dest='axis', type=int, default=3,
-                    help='Axis along which the transverse 2D average should be performed')
-parser.add_argument('ncfile', type=netcdf.netcdf_file, nargs='+',
+                    help='Axis along which the transverse 2D average should be performed [default: %(default)s]')
+parser.add_argument('-s', '--spin', dest='spin', type=int, default=0,
+                    help='Spin index [default: %(default)s]')
+parser.add_argument('-B', '--Bohr', dest='Bohr', default=False, action='store_true',
+                    help='Bohr units [default: %(default)s]')
+parser.add_argument('ncfile', type=netcdf.Dataset, nargs='+',
                     help='Input netcdf gridfunction file')
 args = parser.parse_args()
 
 for fn in args.ncfile:
-    average(fn, args.axis)
+    average(fn, args)
