@@ -57,7 +57,7 @@ TS.Contours.Eq.Pole 2.5 eV
 
 %block TS.Contour.nEq.neq-1
   part line
-  from -|V|/2 - 50 kT to |V|/2 + 50 kT
+  from -|V|/2 - 5 kT to |V|/2 + 5 kT
      delta 0.01 eV
       method mid-rule
 %endblock TS.Contour.nEq.neq-1
