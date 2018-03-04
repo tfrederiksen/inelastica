@@ -64,8 +64,13 @@ Indices
 
    install
    examples
-   faq
-   more
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: Scripts
+
+   scripts
 
 .. toctree::
    :hidden:

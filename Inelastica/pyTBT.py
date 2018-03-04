@@ -72,7 +72,7 @@ def GetOptions(argv, **kwargs):
 
     import argparse
 
-    p = argparse.ArgumentParser(description='pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge.')
+    p = argparse.ArgumentParser(description='pyTBT is a Python version of TBtrans originally developed by Mads Brandbyge.')
     p.add_argument('DestDir', help='Destination directory')
     # keywords with defaults from fdf-file:
     p.add_argument('-f', '--fdf', dest='fn', default='./RUN.fdf', type=str,
