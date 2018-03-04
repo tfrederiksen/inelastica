@@ -6,6 +6,7 @@ import sys
 import argparse
 import Inelastica.physics.constants as PC
 
+
 def average(ncfile, args):
     """This function writes plane-averaged 1D functions of 
     SIESTA gridfunctions such as the ElectrostaticPotential.nc

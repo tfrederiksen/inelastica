@@ -125,6 +125,7 @@ def GetOptions(argv, **kwargs):
 
     return options
 
+
 def main(options):
     """
     Main routine to compute eigenchannel scattering states

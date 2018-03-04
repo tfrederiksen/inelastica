@@ -671,6 +671,7 @@ class Plot:
     """
     Class for a plot (containing graphs)
     """
+
     def __init__(self, filename='Default.agr', *graphs):
         "Returning instance of class."
         self.filename = filename

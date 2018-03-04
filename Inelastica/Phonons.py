@@ -846,7 +846,7 @@ def main(options):
     """
     Main routine to compute vibrational modes and frequencies (and optionally
     also the corresponding electron-vibration couplings)
-    
+
     Parameters
     ----------
     options : an ``options`` instance
