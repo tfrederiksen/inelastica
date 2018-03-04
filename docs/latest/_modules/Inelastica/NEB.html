@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -95,8 +95,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -213,13 +215,13 @@
 <span class="c1">##################### Global variabels #################</span>
 
 
-<div class="viewcode-block" id="general"><a class="viewcode-back" href="../../api-gen/Inelastica.NEB.html#Inelastica.NEB.general">[docs]</a><span class="k">class</span> <span class="nc">general</span><span class="p">:</span></div>
-    <span class="k">pass</span>
+<div class="viewcode-block" id="general"><a class="viewcode-back" href="../../api-gen/Inelastica.NEB.html#Inelastica.NEB.general">[docs]</a><span class="k">class</span> <span class="nc">general</span><span class="p">:</span>
+    <span class="k">pass</span></div>
 <span class="n">steps</span><span class="o">=</span><span class="p">[]</span>
 
 
-<div class="viewcode-block" id="savedData"><a class="viewcode-back" href="../../api-gen/Inelastica.NEB.html#Inelastica.NEB.savedData">[docs]</a><span class="k">class</span> <span class="nc">savedData</span><span class="p">:</span></div>
-    <span class="k">pass</span>
+<div class="viewcode-block" id="savedData"><a class="viewcode-back" href="../../api-gen/Inelastica.NEB.html#Inelastica.NEB.savedData">[docs]</a><span class="k">class</span> <span class="nc">savedData</span><span class="p">:</span>
+    <span class="k">pass</span></div>
 
 <span class="c1">########################################################</span>
 <span class="c1">##################### Main routine #####################</span>
@@ -227,8 +229,8 @@
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.NEB.html#Inelastica.NEB.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">setupParameters</span><span class="p">()</span></div>
-    <span class="n">runNEB</span><span class="p">()</span>
+    <span class="n">setupParameters</span><span class="p">()</span>
+    <span class="n">runNEB</span><span class="p">()</span></div>
 
 
 <span class="c1">########################################################</span>
@@ -310,8 +312,8 @@
         <span class="n">done</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
             <span class="n">done</span> <span class="o">=</span> <span class="n">done</span> <span class="ow">and</span> <span class="n">ii</span><span class="o">.</span><span class="n">converged</span>
-        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">savedData</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">savedData</span><span class="o">.</span><span class="n">F</span><span class="p">,</span> <span class="n">savedData</span><span class="o">.</span><span class="n">Fmax</span><span class="p">,</span> <span class="n">savedData</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span> <span class="n">savedData</span><span class="o">.</span><span class="n">v</span><span class="p">),</span>\</div>
-                    <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;NEB_</span><span class="si">%i</span><span class="s1">/savedData.pickle&#39;</span><span class="o">%</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">))</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">savedData</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">savedData</span><span class="o">.</span><span class="n">F</span><span class="p">,</span> <span class="n">savedData</span><span class="o">.</span><span class="n">Fmax</span><span class="p">,</span> <span class="n">savedData</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span> <span class="n">savedData</span><span class="o">.</span><span class="n">v</span><span class="p">),</span>\
+                    <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;NEB_</span><span class="si">%i</span><span class="s1">/savedData.pickle&#39;</span><span class="o">%</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">))</span></div>
 
 <span class="c1">#################### Class for each step ###############</span>
 
@@ -377,8 +379,8 @@
                 <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">XVgeom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FDFgeom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">):</span>
                     <span class="n">done</span><span class="o">=</span><span class="bp">True</span>
             <span class="k">except</span><span class="p">:</span>
-                <span class="n">done</span><span class="o">=</span><span class="bp">False</span></div>
-            <span class="k">return</span> <span class="n">done</span>
+                <span class="n">done</span><span class="o">=</span><span class="bp">False</span>
+            <span class="k">return</span> <span class="n">done</span></div>
 
 <div class="viewcode-block" id="step.run"><a class="viewcode-back" href="../../api-gen/Inelastica.NEB.html#Inelastica.NEB.step.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">done</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">converged</span><span class="p">):</span>
@@ -392,8 +394,8 @@
             <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">fns</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">FDFgeom</span><span class="o">.</span><span class="n">writeFDF</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="o">+</span><span class="s2">&quot;/STRUCT.fdf&quot;</span><span class="p">)</span>
             <span class="n">SUR</span><span class="o">.</span><span class="n">MakePBS</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="o">+</span><span class="s2">&quot;/RUN.pbs&quot;</span><span class="p">,</span>\
-                            <span class="p">[[</span><span class="s1">&#39;$NODES$&#39;</span><span class="p">,</span> <span class="s1">&#39;1:ppn=</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">proc</span><span class="p">]],</span>\</div>
-                            <span class="bp">True</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">)</span>
+                            <span class="p">[[</span><span class="s1">&#39;$NODES$&#39;</span><span class="p">,</span> <span class="s1">&#39;1:ppn=</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">proc</span><span class="p">]],</span>\
+                            <span class="bp">True</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;TS&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="step.update"><a class="viewcode-back" href="../../api-gen/Inelastica.NEB.html#Inelastica.NEB.step.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
         <span class="c1"># calculate new geometry</span>
@@ -430,8 +432,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">XVgeom</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">xyz</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">Fmax</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Ftot</span><span class="o">*</span><span class="n">Ftot</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">converged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fmax</span><span class="o">&lt;</span><span class="n">general</span><span class="o">.</span><span class="n">convCrit</span></div></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">converged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fmax</span><span class="o">&lt;</span><span class="n">general</span><span class="o">.</span><span class="n">convCrit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="bp">False</span></div></div>
 
 
 <div class="viewcode-block" id="checkConst"><a class="viewcode-back" href="../../api-gen/Inelastica.NEB.html#Inelastica.NEB.checkConst">[docs]</a><span class="k">def</span> <span class="nf">checkConst</span><span class="p">(</span><span class="n">initial</span><span class="p">,</span> <span class="n">final</span><span class="p">):</span>
@@ -442,8 +444,8 @@
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">initial</span><span class="o">.</span><span class="n">const</span><span class="p">:</span>
         <span class="n">general</span><span class="o">.</span><span class="n">const</span><span class="o">+=</span><span class="p">[[</span><span class="nb">int</span><span class="p">(</span><span class="n">ii</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">ii</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
     <span class="k">print</span> <span class="s2">&quot;Constraints on atoms:&quot;</span>
-    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">general</span><span class="o">.</span><span class="n">const</span><span class="p">:</span></div>
-        <span class="k">print</span> <span class="s2">&quot;from </span><span class="si">%i</span><span class="s2"> to </span><span class="si">%i</span><span class="s2"> (Siesta numbering)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">ii</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">ii</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">general</span><span class="o">.</span><span class="n">const</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;from </span><span class="si">%i</span><span class="s2"> to </span><span class="si">%i</span><span class="s2"> (Siesta numbering)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">ii</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">ii</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></div>
 
 <span class="c1">########################################################</span>
 
@@ -460,8 +462,8 @@
         <span class="k">return</span> <span class="bp">None</span>
 
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Reading geometry from &quot;</span><span class="si">%s</span><span class="s1">&quot; file&#39;</span> <span class="o">%</span> <span class="n">fns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">fns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
-    <span class="k">return</span> <span class="n">geom</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">fns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">geom</span></div>
 
 <span class="c1">###########################################################</span>
 
@@ -537,8 +539,8 @@
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Processor                     : </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">proc</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Move constant [A/(eV/A)]      : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">moveK</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Max move distance/coord [A]   : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">maxDist</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Convergence criteria [eV/A]   : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">convCrit</span><span class="p">)</span></div>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;##################################################################################&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Convergence criteria [eV/A]   : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">convCrit</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;##################################################################################&#39;</span><span class="p">)</span></div>
 
 <span class="c1">################# Math helpers ################################</span>
 <span class="n">mm</span> <span class="o">=</span> <span class="n">MM</span><span class="o">.</span><span class="n">mm</span>
@@ -587,7 +589,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -597,7 +599,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

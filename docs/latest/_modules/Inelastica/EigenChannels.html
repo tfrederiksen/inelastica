@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -95,8 +95,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -172,20 +174,37 @@
   <h1>Source code for Inelastica.EigenChannels</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">Eigenchannels (:mod:`Inelastica.EigenChannels`)</span>
+<span class="sd">EigenChannels (:mod:`Inelastica.EigenChannels`)</span>
 <span class="sd">===============================================</span>
 
 <span class="sd">1. Eigenchannels, method from Paulsson and Brandbyge PRB 2007</span>
 <span class="sd">2. Calculate &quot;bond&quot; currents</span>
 
+<span class="sd">Scripting</span>
+<span class="sd">---------</span>
+
+<span class="sd">To run ``EigenChannels`` as a script one can execute:</span>
+
+<span class="sd">.. code-block:: bash</span>
+
+<span class="sd">    &gt;&gt;&gt; import Inelatica.EigenChannels as EC</span>
+<span class="sd">    &gt;&gt;&gt; my_argv = &#39;-F 8 -L 13 -f TSrun/RUN.fdf EC_dir&#39;</span>
+<span class="sd">    &gt;&gt;&gt; my_opts = EC.GetOptions(my_argv)</span>
+<span class="sd">    &gt;&gt;&gt; EC.main(my_opts)</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+
+<span class="sd">.. autosummary::</span>
+<span class="sd">   :toctree:</span>
+
+<span class="sd">   GetOptions</span>
+<span class="sd">   main</span>
+
 <span class="sd">.. currentmodule:: Inelastica.EigenChannels</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">Inelastica.NEGF</span> <span class="kn">as</span> <span class="nn">NEGF</span>
-<span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
-<span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
-<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span> <span class="kn">as</span> <span class="nn">NC4</span>
 <span class="kn">import</span> <span class="nn">string</span>
@@ -193,13 +212,24 @@
 <span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
 <span class="kn">import</span> <span class="nn">Inelastica.ValueCheck</span> <span class="kn">as</span> <span class="nn">VC</span>
 <span class="kn">import</span> <span class="nn">Inelastica.CommonFunctions</span> <span class="kn">as</span> <span class="nn">CF</span>
-
-<span class="c1"># For doing loops with Eigenchannels we encourage the usage of this function</span>
-<span class="c1"># By creating the parser locally we can actually pass down these informations easily.</span>
-<span class="c1"># DIRECTLY in python</span>
+<span class="kn">import</span> <span class="nn">Inelastica.NEGF</span> <span class="kn">as</span> <span class="nn">NEGF</span>
+<span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
+<span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
+<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
 
 
 <div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an instance of ``options`` for the ``EigenChannels`` module</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    argv : string</span>
+<span class="sd">        For example `-n 2 test_dir`, which instructs to compute only the two most transmitting</span>
+<span class="sd">        eigenchannel scattering states and place the results in the output directory `test_dir`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;GetOptions&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
     <span class="c1"># if text string is specified, convert to list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">VC</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
         <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -266,15 +296,18 @@
     <span class="c1"># k-point</span>
     <span class="n">options</span><span class="o">.</span><span class="n">kpoint</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">options</span><span class="o">.</span><span class="n">k1</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">k2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
     <span class="k">del</span> <span class="n">options</span><span class="o">.</span><span class="n">k1</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">k2</span>
-</div>
-    <span class="k">return</span> <span class="n">options</span>
 
-<span class="c1">########################################################</span>
-<span class="c1">##################### Main routine #####################</span>
-<span class="c1">########################################################</span>
-
+    <span class="k">return</span> <span class="n">options</span></div>
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.EigenChannels.html#Inelastica.EigenChannels.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main routine to compute eigenchannel scattering states</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    options : an ``options`` instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">CF</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
     <span class="n">VC</span><span class="o">.</span><span class="n">OptionsCheck</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="s1">&#39;EigenChannels&#39;</span><span class="p">)</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;EigenChannels&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
@@ -372,8 +405,8 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="k">print</span> <span class="s1">&#39;You need to install scipy to solve the generalized eigenvalue problem&#39;</span>
             <span class="k">print</span> <span class="s1">&#39;for the molecular eigenstates in the nonorthogonal basis&#39;</span>
-</div>
-    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;EigenChannels&#39;</span><span class="p">)</span>
+
+    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;EigenChannels&#39;</span><span class="p">)</span></div>
 
 <span class="c1">########################################################</span>
 
@@ -444,8 +477,8 @@
                                                  <span class="n">RR</span><span class="o">*</span><span class="n">thisSphHar</span><span class="o">*</span><span class="n">Yval</span>
 
     <span class="k">print</span> <span class="s2">&quot;Wave function norm on real space grid:&quot;</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">YY</span><span class="o">.</span><span class="n">conjugate</span><span class="p">()</span><span class="o">*</span><span class="n">YY</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span><span class="o">*</span><span class="n">dy</span><span class="o">*</span><span class="n">dz</span>
-</div>
-    <span class="k">return</span> <span class="n">YY</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">res</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span>
+
+    <span class="k">return</span> <span class="n">YY</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">res</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span></div>
 
 <span class="c1">###################### Current densities #########################</span>
 
@@ -479,8 +512,8 @@
                 <span class="n">a2</span><span class="o">=</span><span class="n">basis</span><span class="o">.</span><span class="n">ii</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span><span class="o">-</span><span class="n">options</span><span class="o">.</span><span class="n">DeviceAtoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">tmp</span><span class="o">=</span><span class="n">H</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span><span class="o">*</span><span class="n">Y</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span>
                 <span class="n">Curr</span><span class="p">[</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">]</span><span class="o">=</span><span class="n">Curr</span><span class="p">[</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">]</span><span class="o">+</span><span class="mi">4</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">tmp</span><span class="o">.</span><span class="n">imag</span>
-</div>
-    <span class="k">return</span> <span class="n">Curr</span>
+
+    <span class="k">return</span> <span class="n">Curr</span></div>
 
 <span class="c1">########################################################</span>
 
@@ -518,8 +551,8 @@
                         <span class="n">dr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span><span class="o">**.</span><span class="mi">5</span> <span class="c1"># Norm</span>
                         <span class="n">R</span> <span class="o">+=</span> <span class="n">r</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dr</span><span class="p">)</span> <span class="c1"># Exponential weighting</span>
                 <span class="n">R</span> <span class="o">=</span> <span class="n">R</span><span class="o">/</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span><span class="o">**.</span><span class="mi">5</span>
-                <span class="n">Curr2</span><span class="p">[</span><span class="n">options</span><span class="o">.</span><span class="n">DeviceAtoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Curr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">R</span><span class="o">/</span><span class="mi">2</span></div>
-    <span class="n">SIO</span><span class="o">.</span><span class="n">WriteAXSFFiles</span><span class="p">(</span><span class="n">fn</span><span class="o">+</span><span class="s1">&#39;.curr.AXSF&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">geom</span><span class="p">],</span> <span class="p">[</span><span class="n">Curr2</span><span class="p">])</span>
+                <span class="n">Curr2</span><span class="p">[</span><span class="n">options</span><span class="o">.</span><span class="n">DeviceAtoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Curr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">R</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">SIO</span><span class="o">.</span><span class="n">WriteAXSFFiles</span><span class="p">(</span><span class="n">fn</span><span class="o">+</span><span class="s1">&#39;.curr.AXSF&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">geom</span><span class="p">],</span> <span class="p">[</span><span class="n">Curr2</span><span class="p">])</span></div>
 
 <span class="c1">########################################################</span>
 
@@ -577,8 +610,8 @@
 
     <span class="c1">#setattr(varIm,&#39;field&#39;,&#39;Im-Psi&#39;)</span>
     <span class="c1">#setattr(varIm,&#39;positions&#39;,&#39;grid, compact&#39;)</span>
-</div>
-    <span class="n">ncfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">ncfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <span class="c1">################# Write cube file ######################</span>
 
@@ -606,8 +639,8 @@
     <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">iz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nz</span><span class="p">):</span>
-                <span class="n">foR</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%1.3e</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">YYY</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">iz</span><span class="p">])</span></div>
-    <span class="n">foR</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">foR</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%1.3e</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">YYY</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">iz</span><span class="p">])</span>
+    <span class="n">foR</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <span class="c1">################# Write wave function in macu format ######################</span>
 
@@ -632,8 +665,8 @@
                 <span class="n">mlklbin</span><span class="o">+=</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">YY</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="n">kk</span><span class="p">,</span> <span class="n">ii</span><span class="p">])</span>
         <span class="n">mlklbin</span><span class="o">+=</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">nx</span><span class="o">*</span><span class="n">ny</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
         <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mlklbin</span><span class="p">)</span>
-</div>
-    <span class="n">fo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">fo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <span class="c1">################ Write wave function in XSF format ##################################</span>
 
@@ -718,8 +751,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">%1.5E</span><span class="s1">&#39;</span><span class="o">%</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">iii</span><span class="p">]))</span>
     <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> END_DATAGRID_3D</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;END_BLOCK_DATAGRID_3D&#39;</span><span class="p">)</span></div>
-    <span class="n">fo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;END_BLOCK_DATAGRID_3D&#39;</span><span class="p">)</span>
+    <span class="n">fo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <span class="c1">########################################################</span>
@@ -764,8 +797,8 @@
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;xsf&#39;</span><span class="p">:</span>
         <span class="n">writeXSF</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">fn</span><span class="o">+</span><span class="s1">&#39;.XSF&#39;</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">dstep</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;nc&#39;</span><span class="p">:</span></div>
-        <span class="n">writenetcdf</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">fn</span><span class="o">+</span><span class="s1">&#39;.nc&#39;</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">dstep</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;nc&#39;</span><span class="p">:</span>
+        <span class="n">writenetcdf</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">fn</span><span class="o">+</span><span class="s1">&#39;.nc&#39;</span><span class="p">,</span> <span class="n">YY</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">dstep</span><span class="p">)</span></div>
 
 
 <span class="c1">################# File names ##################################</span>
@@ -781,8 +814,8 @@
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">energy</span><span class="o">!=</span><span class="mf">0.0</span><span class="p">:</span>
         <span class="n">fn</span> <span class="o">+=</span> <span class="s1">&#39;_E</span><span class="si">%.3f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">options</span><span class="o">.</span><span class="n">energy</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">kpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="mf">0.0</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">kpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="mf">0.0</span><span class="p">:</span>
-        <span class="n">fn</span> <span class="o">+=</span> <span class="s1">&#39;_kx</span><span class="si">%.3f</span><span class="s1">_ky</span><span class="si">%.3f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">kpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">options</span><span class="o">.</span><span class="n">kpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
-    <span class="k">return</span> <span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">fn</span>
+        <span class="n">fn</span> <span class="o">+=</span> <span class="s1">&#39;_kx</span><span class="si">%.3f</span><span class="s1">_ky</span><span class="si">%.3f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">kpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">options</span><span class="o">.</span><span class="n">kpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">fn</span></div>
 </pre></div>
 
            </div>
@@ -819,7 +852,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -829,7 +862,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

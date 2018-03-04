@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -95,8 +95,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -231,8 +233,8 @@
 
 
 <div class="viewcode-block" id="GetCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.GetCheck">[docs]</a><span class="k">def</span> <span class="nf">GetCheck</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="k">global</span> <span class="n">_check</span></div>
-    <span class="k">return</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">global</span> <span class="n">_check</span>
+    <span class="k">return</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="EditCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.EditCheck">[docs]</a><span class="k">def</span> <span class="nf">EditCheck</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -247,8 +249,8 @@
         <span class="n">ov</span> <span class="o">=</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
     <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Overriding variable &#39;{0}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         Old value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ov</span><span class="p">))</span></div>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         New value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         Old value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ov</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         New value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="Check"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.Check">[docs]</a><span class="k">def</span> <span class="nf">Check</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">msgs</span><span class="p">):</span>
@@ -271,8 +273,8 @@
             <span class="k">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;       Check against &#39;{0}&#39; failed...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;       Maximum value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">val</span><span class="p">)))</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;       Error value  : {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span></div>
-        <span class="k">raise</span> <span class="ne">ArithmeticError</span><span class="p">(</span><span class="s2">&quot;Criteria not met. Please check output...&quot;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;       Error value  : {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span>
+        <span class="k">raise</span> <span class="ne">ArithmeticError</span><span class="p">(</span><span class="s2">&quot;Criteria not met. Please check output...&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OptionsCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.OptionsCheck">[docs]</a><span class="k">def</span> <span class="nf">OptionsCheck</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">exe</span><span class="p">):</span>
@@ -457,15 +459,15 @@
             <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">opts</span><span class="o">.</span><span class="n">Elist</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">opts</span><span class="o">.</span><span class="n">Emin</span><span class="p">,),</span> <span class="n">_np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Linspace is just what we need</span></div>
-                <span class="n">opts</span><span class="o">.</span><span class="n">Elist</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">Emin</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">Emax</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span><span class="p">)</span>
+                <span class="c1"># Linspace is just what we need</span>
+                <span class="n">opts</span><span class="o">.</span><span class="n">Elist</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">Emin</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">Emax</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GetPositional"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.GetPositional">[docs]</a><span class="k">def</span> <span class="nf">GetPositional</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;You have not specified any positional argument&quot;</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    <span class="n">pos</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
-    <span class="k">return</span> <span class="n">pos</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pos</span></div>
 </pre></div>
 
            </div>
@@ -502,7 +504,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -512,7 +514,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

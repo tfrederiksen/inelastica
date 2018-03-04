@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -95,8 +95,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -219,8 +221,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
     <span class="c1"># Overwrite the std-out and std-err</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">TeeLog</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">_default_stdout</span><span class="p">)</span></div>
-    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">TeeLog</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">_default_stderr</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">TeeLog</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">_default_stdout</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">TeeLog</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">_default_stderr</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PrintMainHeader"><a class="viewcode-back" href="../../api-gen/Inelastica.CommonFunctions.html#Inelastica.CommonFunctions.PrintMainHeader">[docs]</a><span class="k">def</span> <span class="nf">PrintMainHeader</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
@@ -228,18 +230,19 @@
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;INELASTICA VERSION : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">label</span><span class="p">))</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;RUNNING </span><span class="si">%s</span><span class="s1"> : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">OPTIONS :&#39;</span><span class="p">)</span>
-    <span class="n">opts_dict</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
-    <span class="n">keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">opts_dict</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;    &#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s1">&#39;--&gt;&#39;</span><span class="p">,</span> <span class="n">opts_dict</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">options</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">OPTIONS :&#39;</span><span class="p">)</span>
+        <span class="n">opts_dict</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">opts_dict</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;    &#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s1">&#39;--&gt;&#39;</span><span class="p">,</span> <span class="n">opts_dict</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PrintMainFooter"><a class="viewcode-back" href="../../api-gen/Inelastica.CommonFunctions.html#Inelastica.CommonFunctions.PrintMainFooter">[docs]</a><span class="k">def</span> <span class="nf">PrintMainFooter</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;FINISHED </span><span class="si">%s</span><span class="s1"> : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()))</span></div>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;FINISHED </span><span class="si">%s</span><span class="s1"> : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PrintScriptSummary"><a class="viewcode-back" href="../../api-gen/Inelastica.CommonFunctions.html#Inelastica.CommonFunctions.PrintScriptSummary">[docs]</a><span class="k">def</span> <span class="nf">PrintScriptSummary</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">dT</span><span class="p">):</span>
@@ -253,8 +256,8 @@
     <span class="n">minutes</span> <span class="o">=</span> <span class="n">hours</span><span class="o">*</span><span class="mf">60.</span>
     <span class="n">seconds</span> <span class="o">=</span> <span class="n">minutes</span><span class="o">*</span><span class="mf">60.</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Program finished:  </span><span class="si">%s</span><span class="s1"> &#39;</span><span class="o">%</span><span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">())</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Walltime: </span><span class="si">%.2f</span><span class="s1"> hrs = </span><span class="si">%.2f</span><span class="s1"> min = </span><span class="si">%.2f</span><span class="s1"> sec&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">hours</span><span class="p">,</span> <span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span><span class="p">))</span></div>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Walltime: </span><span class="si">%.2f</span><span class="s1"> hrs = </span><span class="si">%.2f</span><span class="s1"> min = </span><span class="si">%.2f</span><span class="s1"> sec&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">hours</span><span class="p">,</span> <span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;=======================================================================&#39;</span><span class="p">)</span></div>
 
 <span class="c1">######################################################################</span>
 <span class="c1">#</span>
@@ -311,8 +314,8 @@
     <span class="k">if</span> <span class="n">OBLAS</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
         <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OPENBLAS_NUM_THREADS&#39;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OPENBLAS_NUM_THREADS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">OBLAS</span></div>
-    <span class="k">return</span> <span class="n">res</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OPENBLAS_NUM_THREADS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">OBLAS</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 </pre></div>
 
            </div>
@@ -349,7 +352,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -359,7 +362,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

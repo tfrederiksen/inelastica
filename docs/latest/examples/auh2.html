@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -112,8 +112,10 @@
 <li class="toctree-l2"><a class="reference internal" href="nacl.html">NaCl</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -190,7 +192,7 @@
             
   <div class="section" id="auh2">
 <span id="id1"></span><h1>AuH2<a class="headerlink" href="#auh2" title="Permalink to this headline">¶</a></h1>
-<p>In the folder <cite>Inelastica/Examples/AuH2</cite> you will find a folder <cite>L9.68</cite> and a Python script <code class="docutils literal notranslate"><span class="pre">AuH2-setup.py</span></code>. The folder contains two subfolders</p>
+<p>In the folder <cite>Inelastica/Examples/AuH2</cite> you will find a folder <cite>L9.68</cite> and a Python script <code class="docutils literal"><span class="pre">AuH2-setup.py</span></code>. The folder contains two subfolders</p>
 <ul class="simple">
 <li><em>CGrun</em> is a standard SIESTA geometry optimization run for a H2 molecule in a bridge configuration connected to 1D Au wires.</li>
 <li><em>TSrun</em> is a standard <a class="reference external" href="https://launchpad.net/siesta">TranSIESTA</a> setup with the H2 molecule between two semi-infinite Au leads.</li>
@@ -200,12 +202,12 @@
 <div class="section" id="geom2geom">
 <h2>geom2geom<a class="headerlink" href="#geom2geom" title="Permalink to this headline">¶</a></h2>
 <p>Go into the <cite>L9.68/CGrun</cite> folder and try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>geom2geom RUN.fdf struct3.xyz -x <span class="m">3</span> -y <span class="m">2</span> -z <span class="m">1</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>geom2geom RUN.fdf struct3.xyz -x <span class="m">3</span> -y <span class="m">2</span> -z <span class="m">1</span>
 </pre></div>
 </div>
-<p>This will convert the geometry from the <em>fdf</em> format to an <em>xyz</em> file repeated 3x2x1 times. <code class="docutils literal notranslate"><span class="pre">geom2geom</span></code> can handle <em>xyz</em>, <em>fdf</em>, <em>ANI</em>, <em>XV</em> etc files.</p>
+<p>This will convert the geometry from the <em>fdf</em> format to an <em>xyz</em> file repeated 3x2x1 times. <code class="docutils literal"><span class="pre">geom2geom</span></code> can handle <em>xyz</em>, <em>fdf</em>, <em>ANI</em>, <em>XV</em> etc files.</p>
 <p>The command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>geom2geom --help
+<div class="highlight-bash"><div class="highlight"><pre><span></span>geom2geom --help
 </pre></div>
 </div>
 <p>tells you how to use the script.</p>
@@ -214,68 +216,67 @@
 <h2>CGrun<a class="headerlink" href="#cgrun" title="Permalink to this headline">¶</a></h2>
 <p>The first task is to stretch the geometry from <cite>L9.68</cite> to a new electrode separation of 10.0 Ang (e.g., with a folder name <cite>L10.00</cite>).</p>
 <p>To do this make sure that</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CG</span> <span class="o">=</span> True
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">CG</span> <span class="o">=</span> True
 <span class="nv">FC</span> <span class="o">=</span> False
 <span class="nv">OS</span> <span class="o">=</span> False
 <span class="nv">TS</span> <span class="o">=</span> False
 </pre></div>
 </div>
-<p>in <code class="docutils literal notranslate"><span class="pre">AuH2-setup.py</span></code>. Now simply type</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python AuH2-setup.py
+<p>in <code class="docutils literal"><span class="pre">AuH2-setup.py</span></code>. Now simply type</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python AuH2-setup.py
 </pre></div>
 </div>
 <p>and the script will</p>
 <ul class="simple">
 <li>make a new <cite>L10.00/CGrun</cite> folder</li>
 <li>read the <em>L9.68/CGrun/Chain.XV</em> geometry and stretch to 10.0 Ang</li>
-<li>write <code class="docutils literal notranslate"><span class="pre">RUN.pbs</span></code> script and submit to queue</li>
+<li>write <code class="docutils literal"><span class="pre">RUN.pbs</span></code> script and submit to queue</li>
 </ul>
 </div>
 <div class="section" id="fcrun-osrun">
 <h2>FCrun/OSrun<a class="headerlink" href="#fcrun-osrun" title="Permalink to this headline">¶</a></h2>
 <p>The next task is to perform finite displacements of a selected group of atoms to determine vibrational frequencies, modes, and e-ph couplings.</p>
 <p>To do this make sure that</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CG</span> <span class="o">=</span> False
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">CG</span> <span class="o">=</span> False
 <span class="nv">FC</span> <span class="o">=</span> True
 <span class="nv">OS</span> <span class="o">=</span> True
 <span class="nv">TS</span> <span class="o">=</span> False
 </pre></div>
 </div>
-<p>in <code class="docutils literal notranslate"><span class="pre">AuH2-setup.py</span></code>. Now simply type</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python AuH2-setup.py
+<p>in <code class="docutils literal"><span class="pre">AuH2-setup.py</span></code>. Now simply type</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python AuH2-setup.py
 </pre></div>
 </div>
 </div>
 <div class="section" id="tsrun">
 <h2>TSrun<a class="headerlink" href="#tsrun" title="Permalink to this headline">¶</a></h2>
 <p>To run <a class="reference external" href="https://launchpad.net/siesta">TranSIESTA</a> for the stretched wire geometry (<cite>L10.00</cite>) use</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CG</span> <span class="o">=</span> False
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">CG</span> <span class="o">=</span> False
 <span class="nv">FC</span> <span class="o">=</span> False
 <span class="nv">OS</span> <span class="o">=</span> False
 <span class="nv">TS</span> <span class="o">=</span> True
 </pre></div>
 </div>
-<p>The content of the unformatted <em>.TSHS</em> file generated by subroutine <code class="docutils literal notranslate"><span class="pre">m_ts_io.F90</span></code> in <a class="reference external" href="https://launchpad.net/siesta">TranSIESTA</a> run can be found <a class="reference internal" href="../tshs.html#tshs"><span class="std std-ref">here</span></a>.</p>
 </div>
 <div class="section" id="phrun">
 <h2>PHrun<a class="headerlink" href="#phrun" title="Permalink to this headline">¶</a></h2>
 <p>To use the data from the <cite>FCrun/OSrun</cite> folders to determine the vibrational frequencies, modes, and e-ph couplings, you can execute on the command line:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Phonons -c -F <span class="m">9</span> -L <span class="m">14</span> --FCfirst<span class="o">=</span><span class="m">11</span> --FClast<span class="o">=</span><span class="m">12</span> PHrun
+<div class="highlight-bash"><div class="highlight"><pre><span></span>Phonons -c -F <span class="m">9</span> -L <span class="m">14</span> --FCfirst<span class="o">=</span><span class="m">11</span> --FClast<span class="o">=</span><span class="m">12</span> PHrun
 </pre></div>
 </div>
 <p>To learn about the different flags, try</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Phonons -h
+<div class="highlight-bash"><div class="highlight"><pre><span></span>Phonons -h
 </pre></div>
 </div>
 </div>
 <div class="section" id="eigenchannels">
 <h2>EigenChannels<a class="headerlink" href="#eigenchannels" title="Permalink to this headline">¶</a></h2>
 <p>Go into the <cite>TSrun</cite> folder:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>EigenChannels EC
+<div class="highlight-bash"><div class="highlight"><pre><span></span>EigenChannels EC
 </pre></div>
 </div>
-<p>will create a new subdirectory <cite>EC</cite> and calculate the eigenchannel scattering states. They are saved in the macu file format which can be read by molekel (old version?). Other file formats may be specified with the <cite>–cube=…</cite> option, see <code class="docutils literal notranslate"><span class="pre">EigenChannels</span> <span class="pre">--help</span></code>. Support for more file formats can be found by downloading the <a class="reference external" href="http://github.com/tfrederiksen/inelastica/releases">last release</a>. In addition, you will get <em>.xmgr</em> files that can be plotted in xmgrace. Also try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>EigenChannels --help
+<p>will create a new subdirectory <cite>EC</cite> and calculate the eigenchannel scattering states. They are saved in the macu file format which can be read by molekel (old version?). Other file formats may be specified with the <cite>&#8211;cube=...</cite> option, see <code class="docutils literal"><span class="pre">EigenChannels</span> <span class="pre">--help</span></code>. Support for more file formats can be found by downloading the <a class="reference external" href="http://github.com/tfrederiksen/inelastica/releases">last release</a>. In addition, you will get <em>.xmgr</em> files that can be plotted in xmgrace. Also try:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>EigenChannels --help
 </pre></div>
 </div>
 <p>to find more options.</p>
@@ -283,15 +284,15 @@
 <div class="section" id="iets-calculations">
 <h2>IETS calculations<a class="headerlink" href="#iets-calculations" title="Permalink to this headline">¶</a></h2>
 <p>Go into the <cite>TSrun</cite> folder:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Inelastica -F <span class="m">10</span> -L <span class="m">15</span> -p ../PHrun/Output.nc --LOEscale<span class="o">=</span><span class="m">0</span>.0 INrun
+<div class="highlight-bash"><div class="highlight"><pre><span></span>Inelastica -F <span class="m">10</span> -L <span class="m">15</span> -p ../PHrun/Output.nc --LOEscale<span class="o">=</span><span class="m">0</span>.0 INrun
 </pre></div>
 </div>
-<p>will create a new subdirectory <cite>INrun</cite> and calculate the IETS spectra. The results are saved in a netCDF file which can be examined by the <code class="docutils literal notranslate"><span class="pre">ncdump</span></code> command or plotted in xmgrace (compiled with netCDF support).</p>
+<p>will create a new subdirectory <cite>INrun</cite> and calculate the IETS spectra. The results are saved in a netCDF file which can be examined by the <code class="docutils literal"><span class="pre">ncdump</span></code> command or plotted in xmgrace (compiled with netCDF support).</p>
 <p>To learn about the different flags, try</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Inelastica -h
+<div class="highlight-bash"><div class="highlight"><pre><span></span>Inelastica -h
 </pre></div>
 </div>
-<p>You can compare your results to <a class="reference download internal" href="../_downloads/AuH2_L10.00_Chain.EC.Tot.IN.nc" download=""><code class="xref download docutils literal notranslate"><span class="pre">this</span> <span class="pre">netCDF</span> <span class="pre">output</span> <span class="pre">file</span></code></a>.</p>
+<p>You can compare your results to <a class="reference download internal" href="../_downloads/AuH2_L10.00_Chain.EC.Tot.IN.nc" download=""><code class="xref download docutils literal"><span class="pre">this</span> <span class="pre">netCDF</span> <span class="pre">output</span> <span class="pre">file</span></code></a>.</p>
 </div>
 </div>
 
@@ -339,7 +340,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -349,7 +350,7 @@
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

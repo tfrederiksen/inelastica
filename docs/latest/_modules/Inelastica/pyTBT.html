@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -95,8 +95,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -172,23 +174,37 @@
   <h1>Source code for Inelastica.pyTBT</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">python TBTrans (:mod:`Inelastica.pyTBT`)</span>
+<span class="sd">pyTBT (:mod:`Inelastica.pyTBT`)</span>
 <span class="sd">========================================</span>
 
-<span class="sd">Magnus Paulsson magnus.paulsson@hik.se</span>
+<span class="sd">``pyTBT`` was initiated by Magnus Paulsson as a Python version</span>
+<span class="sd">of the `tbtrans` code originally developed in Fortran by Mads Brandbyge.</span>
 
-<span class="sd">Requires:</span>
+<span class="sd">Scripting</span>
+<span class="sd">---------</span>
 
-<span class="sd">* numpy (compile it linked with mkl, acml or atlas!)</span>
-
-<span class="sd">For speed compile the fortran subroutines in `fortran` directory:</span>
+<span class="sd">To run ``pyTBT`` as a script one can execute:</span>
 
 <span class="sd">.. code-block:: bash</span>
 
-<span class="sd">    cd Inelastica/fortran</span>
-<span class="sd">    source compile.bat</span>
+<span class="sd">    &gt;&gt;&gt; import Inelatica.pyTBT as TBT</span>
+<span class="sd">    &gt;&gt;&gt; my_argv = &#39;--Emin=-5.0 --Emax=5.0 -N 11 -f TSrun/RUN.fdf TBT_dir&#39;</span>
+<span class="sd">    &gt;&gt;&gt; my_opts = TBT.GetOptions(my_argv)</span>
+<span class="sd">    &gt;&gt;&gt; TBT.main(my_opts)</span>
 
-<span class="sd">**UNITS:** Always eV and Angstrom!</span>
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+
+<span class="sd">.. autosummary::</span>
+<span class="sd">   :toctree:</span>
+
+<span class="sd">   GetOptions</span>
+<span class="sd">   main</span>
+
+<span class="sd">Units</span>
+<span class="sd">-----</span>
+
+<span class="sd">Always eV and Angstrom!</span>
 
 <span class="sd">k-values always given in range [0,1.0] (or [-0.5,0.5]). They are not </span>
 <span class="sd">in reciprocal space. Instead they corresponds to the mathematical </span>
@@ -198,10 +214,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
 <span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
-<span class="kn">import</span> <span class="nn">Inelastica.NEGF</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+<span class="kn">import</span> <span class="nn">Inelastica.NEGF</span> <span class="kn">as</span> <span class="nn">NEGF</span>
 <span class="kn">import</span> <span class="nn">Inelastica.physics.mesh</span> <span class="kn">as</span> <span class="nn">Kmesh</span>
 <span class="kn">import</span> <span class="nn">Inelastica.ValueCheck</span> <span class="kn">as</span> <span class="nn">VC</span>
 <span class="kn">import</span> <span class="nn">Inelastica.CommonFunctions</span> <span class="kn">as</span> <span class="nn">CF</span>
@@ -213,13 +229,24 @@
 
 
 <div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.pyTBT.html#Inelastica.pyTBT.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an instance of ``options`` for the ``pyTBT`` module</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    argv : string</span>
+<span class="sd">        For example `-N 5 test_dir`, which instructs to compute transmission on 5 energy points</span>
+<span class="sd">        and place the results in the output directory `test_dir`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;GetOptions&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
     <span class="c1"># if text string is specified, convert to list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">VC</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
         <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
 
     <span class="kn">import</span> <span class="nn">argparse</span>
 
-    <span class="n">p</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;pyTBT is the Python version of TBtrans originally developed by Mads Brandbyge.&#39;</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;pyTBT is a Python version of TBtrans originally developed by Mads Brandbyge.&#39;</span><span class="p">)</span>
     <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;DestDir&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Destination directory&#39;</span><span class="p">)</span>
     <span class="c1"># keywords with defaults from fdf-file:</span>
     <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="s1">&#39;--fdf&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;fn&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;./RUN.fdf&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
@@ -287,11 +314,18 @@
         <span class="n">options</span><span class="o">.</span><span class="n">Logfile</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;log&#39;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">options</span><span class="o">.</span><span class="n">Logfile</span> <span class="o">=</span> <span class="s1">&#39;pyTBT.log&#39;</span>
-</div>
-    <span class="k">return</span> <span class="n">options</span>
+
+    <span class="k">return</span> <span class="n">options</span></div>
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.pyTBT.html#Inelastica.pyTBT.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main routine to compute elastic transmission probabilities etc.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    options : an ``options`` instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
     <span class="n">VC</span><span class="o">.</span><span class="n">OptionsCheck</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="s1">&#39;pyTBT&#39;</span><span class="p">)</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;pyTBT&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
@@ -464,8 +498,8 @@
         <span class="n">WriteMPSH</span><span class="p">(</span><span class="n">outFile</span><span class="o">+</span><span class="s1">&#39;.MPSH.gz&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">DevGF</span><span class="p">,</span> <span class="n">MPSHL</span><span class="o">+</span><span class="n">MPSHR</span><span class="p">,</span> <span class="n">ev0</span><span class="p">)</span>
         <span class="n">WriteMPSH</span><span class="p">(</span><span class="n">outFile</span><span class="o">+</span><span class="s1">&#39;.MPSHL.gz&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">DevGF</span><span class="p">,</span> <span class="n">MPSHL</span><span class="p">,</span> <span class="n">ev0</span><span class="p">)</span>
         <span class="n">WriteMPSH</span><span class="p">(</span><span class="n">outFile</span><span class="o">+</span><span class="s1">&#39;.MPSHR.gz&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">DevGF</span><span class="p">,</span> <span class="n">MPSHR</span><span class="p">,</span> <span class="n">ev0</span><span class="p">)</span>
-</div>
-    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;pyTBT&#39;</span><span class="p">)</span>
+
+    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;pyTBT&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WritePDOS"><a class="viewcode-back" href="../../api-gen/Inelastica.pyTBT.html#Inelastica.pyTBT.WritePDOS">[docs]</a><span class="k">def</span> <span class="nf">WritePDOS</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">DevGF</span><span class="p">,</span> <span class="n">DOS</span><span class="p">,</span> <span class="n">basis</span><span class="p">):</span>
@@ -527,8 +561,8 @@
     <span class="n">g</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;DOS (1/eV/atom)&#39;</span><span class="p">,</span> <span class="n">autoscale</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">g</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mf">1.3</span><span class="p">)</span>
     <span class="n">g</span><span class="o">.</span><span class="n">ShowLegend</span><span class="p">()</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">fn</span><span class="o">+</span><span class="s1">&#39;.xmgr&#39;</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span></div>
-    <span class="n">p</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">fn</span><span class="o">+</span><span class="s1">&#39;.xmgr&#39;</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="WriteMPSH"><a class="viewcode-back" href="../../api-gen/Inelastica.pyTBT.html#Inelastica.pyTBT.WriteMPSH">[docs]</a><span class="k">def</span> <span class="nf">WriteMPSH</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">DevGF</span><span class="p">,</span> <span class="n">DOS</span><span class="p">,</span> <span class="n">ev0</span><span class="p">):</span>
@@ -566,8 +600,8 @@
     <span class="n">g</span><span class="o">.</span><span class="n">AddDatasets</span><span class="p">(</span><span class="n">XMGR</span><span class="o">.</span><span class="n">XYset</span><span class="p">(</span><span class="n">ev0</span><span class="p">,</span> <span class="mi">0</span><span class="o">*</span><span class="n">ev0</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">Ltype</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Stype</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
     <span class="n">g</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mf">1.3</span><span class="p">)</span>
     <span class="n">g</span><span class="o">.</span><span class="n">ShowLegend</span><span class="p">()</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">fn</span><span class="o">+</span><span class="s1">&#39;.xmgr&#39;</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span></div>
-    <span class="n">p</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">fn</span><span class="o">+</span><span class="s1">&#39;.xmgr&#39;</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="myprint"><a class="viewcode-back" href="../../api-gen/Inelastica.pyTBT.html#Inelastica.pyTBT.myprint">[docs]</a><span class="k">def</span> <span class="nf">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="c1"># Do numpy vector or matrix to string</span>
@@ -582,16 +616,16 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">columns</span><span class="p">):</span>
                 <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> &#39;</span><span class="o">%</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
-            <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span></div>
-    <span class="k">return</span> <span class="n">s</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="k">return</span> <span class="n">s</span></div>
 
 
 <div class="viewcode-block" id="xmladd"><a class="viewcode-back" href="../../api-gen/Inelastica.pyTBT.html#Inelastica.pyTBT.xmladd">[docs]</a><span class="k">def</span> <span class="nf">xmladd</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
     <span class="c1"># Who came up with xml ... accountant moroons?</span>
     <span class="n">elem</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
-    <span class="n">txt</span><span class="o">=</span><span class="n">doc</span><span class="o">.</span><span class="n">createTextNode</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
-    <span class="n">elem</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+    <span class="n">txt</span><span class="o">=</span><span class="n">doc</span><span class="o">.</span><span class="n">createTextNode</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">elem</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -628,7 +662,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -638,7 +672,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Scripts &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="index.html"/>
+        <link rel="next" title="Bandstructures" href="scripts/bandstructures.html"/>
+        <link rel="prev" title="NaCl" href="examples/nacl.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-93
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core-scripts">Core scripts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="scripts/bandstructures.html">Bandstructures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/eigenchannels.html">EigenChannels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/inelastica.html">Inelastica</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/pytbt.html">pyTBT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/phonons.html">Phonons</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/stm.html">STM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#auxiliary-scripts-and-utilities">Auxiliary scripts and utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="scripts/average-gridfunc.html">average-gridfunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/bands2xmgr.html">bands2xmgr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/computedos.html">ComputeDOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/geom2geom.html">geom2geom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/geom2zmat.html">geom2zmat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/kaverage-iets.html">kaverage-iets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/kaverage-tbt.html">kaverage-TBT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/setupfcrun.html">setupFCrun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scripts/setuposrun.html">setupOSrun</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Scripts</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/scripts.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="scripts">
+<span id="id1"></span><h1>Scripts<a class="headerlink" href="#scripts" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="core-scripts">
+<h2>Core scripts<a class="headerlink" href="#core-scripts" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="scripts/bandstructures.html">Bandstructures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/eigenchannels.html">EigenChannels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/inelastica.html">Inelastica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/pytbt.html">pyTBT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/phonons.html">Phonons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/stm.html">STM</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="auxiliary-scripts-and-utilities">
+<h2>Auxiliary scripts and utilities<a class="headerlink" href="#auxiliary-scripts-and-utilities" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="scripts/average-gridfunc.html">average-gridfunc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/bands2xmgr.html">bands2xmgr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/computedos.html">ComputeDOS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/geom2geom.html">geom2geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/geom2zmat.html">geom2zmat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/kaverage-iets.html">kaverage-iets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/kaverage-tbt.html">kaverage-TBT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/setupfcrun.html">setupFCrun</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts/setuposrun.html">setupOSrun</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="scripts/bandstructures.html" class="btn btn-neutral float-right" title="Bandstructures" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="examples/nacl.html" class="btn btn-neutral" title="NaCl" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.3.0-93',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

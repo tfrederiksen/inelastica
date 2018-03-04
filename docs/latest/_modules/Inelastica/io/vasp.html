@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -95,8 +95,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -197,8 +199,8 @@
             <span class="n">vfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="c1"># if filename is not existing upon read, then try append the &#39;.gz&#39; ending</span>
-        <span class="n">vfile</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="o">+</span><span class="s1">&#39;.gz&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
-    <span class="k">return</span> <span class="n">vfile</span>
+        <span class="n">vfile</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="o">+</span><span class="s1">&#39;.gz&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vfile</span></div>
 
 <span class="c1">#--------------------------------------------------------------------------------</span>
 <span class="c1"># Interface with VASP</span>
@@ -254,8 +256,8 @@
         <span class="k">if</span> <span class="n">dircoor</span><span class="p">:</span>
             <span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">vectors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">vectors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">vectors</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span></div>
-    <span class="k">return</span> <span class="n">label</span><span class="p">,</span> <span class="n">scalefactor</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">specieslabels</span><span class="p">,</span> <span class="n">speciesnumbers</span><span class="p">,</span> <span class="n">xyz</span>
+            <span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">label</span><span class="p">,</span> <span class="n">scalefactor</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">specieslabels</span><span class="p">,</span> <span class="n">speciesnumbers</span><span class="p">,</span> <span class="n">xyz</span></div>
 
 
 <div class="viewcode-block" id="WritePOSCAR"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.WritePOSCAR">[docs]</a><span class="k">def</span> <span class="nf">WritePOSCAR</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">specieslabels</span><span class="p">,</span> <span class="n">speciesnumbers</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;LABEL&#39;</span><span class="p">,</span> <span class="n">scalefactor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">constrained</span><span class="o">=</span><span class="p">[]):</span>
@@ -290,8 +292,8 @@
                     <span class="n">line</span> <span class="o">+=</span> <span class="s1">&#39; F&#39;</span>
             <span class="n">line</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">line</span> <span class="o">+=</span> <span class="s1">&#39; F F F</span><span class="se">\n</span><span class="s1">&#39;</span></div>
-        <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">+=</span> <span class="s1">&#39; F F F</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">pcarfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GetEnergies"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetEnergies">[docs]</a><span class="k">def</span> <span class="nf">GetEnergies</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">):</span>
@@ -311,8 +313,8 @@
             <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="n">Etot</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>       <span class="c1"># Pick last appearance</span>
             <span class="n">EtotSigma0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span> <span class="c1"># Pick last appearance</span>
-    <span class="n">ocarfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-    <span class="k">return</span> <span class="n">freeE</span><span class="p">,</span> <span class="n">Etot</span><span class="p">,</span> <span class="n">EtotSigma0</span>
+    <span class="n">ocarfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">freeE</span><span class="p">,</span> <span class="n">Etot</span><span class="p">,</span> <span class="n">EtotSigma0</span></div>
 
 
 <div class="viewcode-block" id="GetEnergiesFromOszi"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetEnergiesFromOszi">[docs]</a><span class="k">def</span> <span class="nf">GetEnergiesFromOszi</span><span class="p">(</span><span class="n">OSZICAR</span><span class="p">):</span>
@@ -324,8 +326,8 @@
         <span class="k">if</span> <span class="s1">&#39;F=&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
             <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="n">f</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="c1"># read Free energy</span>
-            <span class="n">e0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="c1"># read energy for sigma-&gt;0</span></div>
-    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">e0</span>
+            <span class="n">e0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="c1"># read energy for sigma-&gt;0</span>
+    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">e0</span></div>
 
 
 <div class="viewcode-block" id="GetMagnetization"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetMagnetization">[docs]</a><span class="k">def</span> <span class="nf">GetMagnetization</span><span class="p">(</span><span class="n">OSZICAR</span><span class="p">):</span>
@@ -336,8 +338,8 @@
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">oszicarfile</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;mag=&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
             <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-            <span class="n">mag</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>      <span class="c1"># Pick last appearance</span></div>
-    <span class="k">return</span> <span class="n">mag</span>
+            <span class="n">mag</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>      <span class="c1"># Pick last appearance</span>
+    <span class="k">return</span> <span class="n">mag</span></div>
 
 
 <div class="viewcode-block" id="GetSpecies"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetSpecies">[docs]</a><span class="k">def</span> <span class="nf">GetSpecies</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">):</span>
@@ -348,8 +350,8 @@
         <span class="k">if</span> <span class="s1">&#39;TITEL&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
             <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="k">print</span> <span class="n">l</span>
-            <span class="n">atoms</span> <span class="o">+=</span> <span class="p">[</span><span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span></div>
-    <span class="k">return</span> <span class="n">atoms</span>
+            <span class="n">atoms</span> <span class="o">+=</span> <span class="p">[</span><span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">atoms</span></div>
 
 
 <div class="viewcode-block" id="GetVibModesNoScaling"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetVibModesNoScaling">[docs]</a><span class="k">def</span> <span class="nf">GetVibModesNoScaling</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">):</span>
@@ -379,8 +381,8 @@
                 <span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">5</span><span class="p">])])</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
                 <span class="n">modes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span></div>
-    <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freq</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">modes</span><span class="p">)</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freq</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">modes</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GetVibModesMassScaled"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.GetVibModesMassScaled">[docs]</a><span class="k">def</span> <span class="nf">GetVibModesMassScaled</span><span class="p">(</span><span class="n">OUTCAR</span><span class="p">):</span>
@@ -409,8 +411,8 @@
                 <span class="n">modes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
                 <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="s1">&#39;Eigenvectors after division by SQRT(mass)&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
-            <span class="n">datablock</span> <span class="o">=</span> <span class="bp">True</span></div>
-    <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freq</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">modes</span><span class="p">)</span>
+            <span class="n">datablock</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freq</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">modes</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ExtractPDOS"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.vasp.html#Inelastica.io.vasp.ExtractPDOS">[docs]</a><span class="k">def</span> <span class="nf">ExtractPDOS</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">atom_index</span><span class="o">=</span><span class="p">[]):</span>
@@ -502,8 +504,8 @@
         <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">9</span><span class="o">*</span><span class="n">spin</span><span class="p">):</span>
             <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">%.5e</span><span class="s1"> &#39;</span><span class="o">%</span><span class="n">dat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
-    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 </pre></div>
 
            </div>
@@ -540,7 +542,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -550,7 +552,7 @@
       <script type="text/javascript" src="../../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

@@ -1,0 +1,398 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>STM &mdash; Inelastica |release| documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Inelastica |release| documentation" href="../index.html"/>
+        <link rel="up" title="Scripts" href="../scripts.html"/>
+        <link rel="next" title="average-gridfunc" href="average-gridfunc.html"/>
+        <link rel="prev" title="Phonons" href="phonons.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.0-93
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../scripts.html">Scripts</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../scripts.html#core-scripts">Core scripts</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="bandstructures.html">Bandstructures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="eigenchannels.html">EigenChannels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inelastica.html">Inelastica</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pytbt.html">pyTBT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phonons.html">Phonons</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">STM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../scripts.html#auxiliary-scripts-and-utilities">Auxiliary scripts and utilities</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../scripts.html">Scripts</a> &raquo;</li>
+        
+      <li>STM</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/scripts/stm.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="stm">
+<span id="id1"></span><h1>STM<a class="headerlink" href="#stm" title="Permalink to this headline">¶</a></h1>
+<p>Script that calculates STM images using the Bardeen approximation outlined in
+PRB 93 115434 (2016) and PRB 96 085415 (2017). The script is divided into 3
+parts: 1) Calculation of the scattering states at the Fermi-energy on the same
+real space grid as TranSiesta (real-space cutoff). These are saved in
+DestDir/SystemLabel.A[LR][0-99].nc files and are reused if found. NEEDS:
+TranSiesta calculation.  2) Propagation of the scattering states from a
+surface (defined by a constant charge density) out into the vacuum region.
+After the x-y plane, where the average potential of the slice is maximum (the
+separation plane), is found, the potential is ascribed a constant value at
+this average. Saves the propagated wavefunctions at the separation plane in
+DestDir/[kpoint]/FD[kpoint].nc. NEEDS: TotalPotential.grid.nc and Rho.grid.nc. 3)
+Conductance calculation where the tip/substrate wavefunctions are displaced
+to simulate the conductance at different tip-positions. The k averaged STM
+image and the STM images of individual k points are saved in
+DestDir/STMimage.nc.</p>
+<dl class="docutils">
+<dt>Usage:</dt>
+<dd>STM [options] DestinationDirectory</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>show this help message and exit</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-F <var>DEVICEFIRST</var></span>, <span class="option">--DeviceFirst=<var>DEVICEFIRST</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>First device atom (SIESTA numbering) [TS.TBT.PDOSFrom]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-L <var>DEVICELAST</var></span>, <span class="option">--DeviceLast=<var>DEVICELAST</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Last device atom (SIESTA numbering) [TS.TBT.PDOSTo]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-e <var>ENERGY</var></span>, <span class="option">--Energy=<var>ENERGY</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Energy where scattering states are evaluated [0.0 eV]</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--eta=<var>ETA</var></span></kbd></td>
+<td>Imaginary part added to all energies (device and
+leads) [1e-06 eV]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-l <var>ETALEAD</var></span>, <span class="option">--etaLead=<var>ETALEAD</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Additional imaginary part added ONLY in the leads
+(surface GF) [0.0 eV]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-f <var>FN</var></span>, <span class="option">--fdf=<var>FN</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Input fdf-file for TranSIESTA calculations [./RUN.fdf]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-s <var>ISPIN</var></span>, <span class="option">--iSpin=<var>ISPIN</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Spin channel [0]</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-p</span>, <span class="option">--savePOS</span></kbd></td>
+<td>Save the individual solutions as .pos files</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--shift</span></kbd></td>
+<td>Shift current 1/2 cell in x, y directions</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--bulk</span></kbd></td>
+<td>Use bulk in electrodes. The Hamiltonian from the
+electrode calculation is inserted into the electrode
+region in the TranSIESTA cell [TS.UseBulkInElectrodes]</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--nobulk</span></kbd></td>
+<td>Use only self-energies in the electrodes. The full
+Hamiltonian of the TranSIESTA cell is used in
+combination with self-energies for the electrodes
+[TS.UseBulkInElectrodes]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--scaleSigL=<var>SCALESIGL</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Scale factor applied to Sigma_L [default=1.0]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--scaleSigR=<var>SCALESIGR</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Scale factor applied to Sigma_R [default=1.0]</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-u</span>, <span class="option">--useSigNC</span></kbd></td>
+<td>Use SigNCfiles [False]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--SpectralCutoff=<var>SPECTRALCUTOFF</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Cutoff value for SpectralMatrix functions (for
+ordinary matrix representation set cutoff&lt;=0.0)
+[default=0.0]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-n <var>NCPU</var></span>, <span class="option">--nCPU=<var>NCPU</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Number of processors [1]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-x <var>NK1</var></span>, <span class="option">--Nk1=<var>NK1</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>k-points Nk1 along a1 [1]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-y <var>NK2</var></span>, <span class="option">--Nk2=<var>NK2</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>k-points Nk2 along a2 [1]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-r <var>RHOISO</var></span>, <span class="option">--rhoiso=<var>RHOISO</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Density at the isosurface from which the localized-
+basis wave functions are propagated [default=0.001
+Bohr^-3Ry^-1]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--ssp=<var>SHIFTSEPARATIONPLANE</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Manually shift the separation plane (&gt;0 means away
+from the substrate) [default=0 Ang]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--sc=<var>SAMPLINGSCALE</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Sampling scale of wave functions in lateral plane. 1
+means same real-space resolution as used in
+TranSiesta, while 2 means doubling of the lateral
+lattice constants, etc. [default=2]</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-t <var>TOLSOLVE</var></span>, <span class="option">--tolsolve=<var>TOLSOLVE</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Tolerance for the iterative linear solver
+(scipy.linalg.isolve.gmres) [default=1e-06]</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--savelocwfs</span></kbd></td>
+<td>Save localized-basis wave functions.</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="average-gridfunc.html" class="btn btn-neutral float-right" title="average-gridfunc" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phonons.html" class="btn btn-neutral" title="Phonons" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.3.0-93',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

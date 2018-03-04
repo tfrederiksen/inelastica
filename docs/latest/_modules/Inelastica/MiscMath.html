@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -95,8 +95,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -207,8 +209,8 @@
         <span class="n">res</span> <span class="o">=</span> <span class="n">__mmSpectralMatrix</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">res</span><span class="o">=</span> <span class="n">__mm</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-</div>
-    <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">return</span> <span class="n">res</span></div>
 
 
 <span class="k">def</span> <span class="nf">__mmSpectralMatrix</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">where</span><span class="p">):</span>
@@ -280,12 +282,12 @@
     <span class="c1"># A_ijk=B_i+C_j+D_k</span>
     <span class="n">tmp</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
-        <span class="n">tmp</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span></div>
-    <span class="k">return</span> <span class="n">tmp</span>
+        <span class="n">tmp</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">tmp</span></div>
 
 
-<div class="viewcode-block" id="dist"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.dist">[docs]</a><span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="n">x</span><span class="p">):</span></div>
-    <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+<div class="viewcode-block" id="dist"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.dist">[docs]</a><span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="mysqrt"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.mysqrt">[docs]</a><span class="k">def</span> <span class="nf">mysqrt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -296,19 +298,19 @@
     <span class="n">tmp</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="p">)),</span> <span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="p">)):</span>
         <span class="n">tmp</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">ii</span><span class="p">]</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
-</div>
-    <span class="k">return</span> <span class="n">mm</span><span class="p">(</span><span class="n">LA</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">U</span><span class="p">),</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">U</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mm</span><span class="p">(</span><span class="n">LA</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">U</span><span class="p">),</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">U</span><span class="p">)</span></div>
 
 <span class="c1">##############################################################</span>
 
 
-<div class="viewcode-block" id="fermi"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.fermi">[docs]</a><span class="k">def</span> <span class="nf">fermi</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">kT</span><span class="p">):</span></div>
-    <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">E</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">/</span><span class="n">kT</span><span class="p">,</span> <span class="o">-</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<div class="viewcode-block" id="fermi"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.fermi">[docs]</a><span class="k">def</span> <span class="nf">fermi</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">kT</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">E</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">/</span><span class="n">kT</span><span class="p">,</span> <span class="o">-</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="box"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.box">[docs]</a><span class="k">def</span> <span class="nf">box</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span> <span class="n">mu2</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">kT</span><span class="p">):</span>
-    <span class="c1"># f2-f1 (Box!)</span></div>
-    <span class="k">return</span> <span class="n">fermi</span><span class="p">(</span><span class="n">mu2</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">kT</span><span class="p">)</span><span class="o">-</span><span class="n">fermi</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">kT</span><span class="p">)</span>
+    <span class="c1"># f2-f1 (Box!)</span>
+    <span class="k">return</span> <span class="n">fermi</span><span class="p">(</span><span class="n">mu2</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">kT</span><span class="p">)</span><span class="o">-</span><span class="n">fermi</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">kT</span><span class="p">)</span></div>
 
 <span class="c1">##############################################################</span>
 
@@ -344,8 +346,8 @@
                  <span class="n">x2</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">y0</span><span class="o">+</span><span class="n">y3</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">x0</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">y2</span><span class="o">+</span><span class="n">y3</span><span class="p">)</span><span class="o">-</span>\
                  <span class="mi">3</span><span class="o">*</span><span class="n">x2</span><span class="o">*</span><span class="p">(</span><span class="n">x3</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">y0</span><span class="o">+</span><span class="n">y1</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">y2</span><span class="p">)</span><span class="o">-</span><span class="n">x0</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">y1</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">y2</span><span class="o">+</span><span class="n">y3</span><span class="p">))</span><span class="o">+</span>\
                  <span class="mi">3</span><span class="o">*</span><span class="n">x2</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">x3</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">y0</span><span class="o">+</span><span class="n">y1</span><span class="o">+</span><span class="n">y2</span><span class="p">)</span><span class="o">-</span><span class="n">x0</span><span class="o">*</span><span class="p">(</span><span class="n">y1</span><span class="o">+</span><span class="n">y2</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">y3</span><span class="p">)))))</span><span class="o">/</span>\
-                 <span class="p">(</span><span class="mf">12.</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x3</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">x3</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x3</span><span class="p">))</span></div>
-        <span class="k">return</span> <span class="nb">sum</span>
+                 <span class="p">(</span><span class="mf">12.</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">x3</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">x3</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x3</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">sum</span></div>
 <span class="c1">##############################################################</span>
 
 
@@ -361,8 +363,8 @@
             <span class="n">ny</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">=</span><span class="n">y</span><span class="p">[</span><span class="n">pos</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="n">pos</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">pos</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">nx</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">pos</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1">#TF: NB EXTRAPOLATION condition added!</span>
-            <span class="n">ny</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">=</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">nx</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
-    <span class="k">return</span> <span class="n">ny</span>
+            <span class="n">ny</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">=</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">nx</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">ny</span></div>
 
 <span class="c1">##############################################################</span>
 <span class="c1"># DEFINITION OF THE HILBERT TRANSFORM:</span>
@@ -398,8 +400,8 @@
         <span class="k">return</span> <span class="n">transform</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ker</span><span class="p">),</span> <span class="n">ker</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">print</span> <span class="s1">&#39;Hilbert: Generating kernel&#39;</span>
-        <span class="n">ker</span> <span class="o">=</span> <span class="n">kernel</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="n">transform</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ker</span><span class="p">),</span> <span class="n">ker</span>
+        <span class="n">ker</span> <span class="o">=</span> <span class="n">kernel</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">transform</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ker</span><span class="p">),</span> <span class="n">ker</span></div>
 
 <span class="c1">##############################################################</span>
 
@@ -417,8 +419,8 @@
             <span class="n">ffi</span>  <span class="o">=</span> <span class="n">norm</span> <span class="o">*</span> <span class="n">expimfi</span><span class="o">.</span><span class="n">imag</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">norm</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">norm</span>
-            <span class="n">ffi</span>  <span class="o">=</span> <span class="n">norm</span> <span class="o">*</span> <span class="n">expimfi</span><span class="o">.</span><span class="n">real</span></div>
-    <span class="k">return</span> <span class="n">SS</span><span class="o">.</span><span class="n">lpmv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">costh</span><span class="p">)</span><span class="o">*</span><span class="n">ffi</span>
+            <span class="n">ffi</span>  <span class="o">=</span> <span class="n">norm</span> <span class="o">*</span> <span class="n">expimfi</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">return</span> <span class="n">SS</span><span class="o">.</span><span class="n">lpmv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">costh</span><span class="p">)</span><span class="o">*</span><span class="n">ffi</span></div>
 
 
 <div class="viewcode-block" id="OLD_sphericalHarmonics"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.OLD_sphericalHarmonics">[docs]</a><span class="k">def</span> <span class="nf">OLD_sphericalHarmonics</span><span class="p">(</span><span class="n">sinth</span><span class="p">,</span> <span class="n">costh</span><span class="p">,</span> <span class="n">sinfi</span><span class="p">,</span> <span class="n">cosfi</span><span class="p">):</span>
@@ -470,8 +472,8 @@
 
     <span class="k">return</span> <span class="p">[[</span><span class="n">Y00</span><span class="p">],</span>
             <span class="p">[</span><span class="n">Y1m1</span><span class="p">,</span> <span class="n">Y10</span><span class="p">,</span> <span class="n">Y11</span><span class="p">],</span>
-            <span class="p">[</span><span class="n">Y2m2</span><span class="p">,</span> <span class="n">Y2m1</span><span class="p">,</span> <span class="n">Y20</span><span class="p">,</span> <span class="n">Y21</span><span class="p">,</span> <span class="n">Y22</span><span class="p">],</span></div>
-            <span class="p">[</span><span class="n">Y3m3</span><span class="p">,</span> <span class="n">Y3m2</span><span class="p">,</span> <span class="n">Y3m1</span><span class="p">,</span> <span class="n">Y30</span><span class="p">,</span> <span class="n">Y31</span><span class="p">,</span> <span class="n">Y32</span><span class="p">,</span> <span class="n">Y33</span><span class="p">]]</span>
+            <span class="p">[</span><span class="n">Y2m2</span><span class="p">,</span> <span class="n">Y2m1</span><span class="p">,</span> <span class="n">Y20</span><span class="p">,</span> <span class="n">Y21</span><span class="p">,</span> <span class="n">Y22</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">Y3m3</span><span class="p">,</span> <span class="n">Y3m2</span><span class="p">,</span> <span class="n">Y3m1</span><span class="p">,</span> <span class="n">Y30</span><span class="p">,</span> <span class="n">Y31</span><span class="p">,</span> <span class="n">Y32</span><span class="p">,</span> <span class="n">Y33</span><span class="p">]]</span></div>
 
 <span class="c1">##############################################################</span>
 <span class="c1"># GaussKronrod</span>
@@ -556,8 +558,8 @@
         <span class="n">d2</span> <span class="o">=</span> <span class="p">((</span><span class="n">ai</span> <span class="o">+</span> <span class="n">ai</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">d1</span> <span class="o">-</span> <span class="n">ai</span> <span class="o">*</span> <span class="n">d0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ai</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
         <span class="n">d0</span> <span class="o">=</span> <span class="n">d1</span>
         <span class="n">d1</span> <span class="o">=</span> <span class="n">d2</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">coef2</span> <span class="o">/</span> <span class="p">(</span><span class="n">fd</span> <span class="o">*</span> <span class="n">d2</span><span class="p">)</span></div>
-    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">coef2</span> <span class="o">/</span> <span class="p">(</span><span class="n">fd</span> <span class="o">*</span> <span class="n">d2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span></div>
 
 
 <div class="viewcode-block" id="abwe2"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.abwe2">[docs]</a><span class="k">def</span> <span class="nf">abwe2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
@@ -626,8 +628,8 @@
     <span class="k">if</span> <span class="p">(</span><span class="n">even</span><span class="p">):</span>
         <span class="n">w1</span> <span class="o">=</span> <span class="n">w2</span> <span class="o">+</span> <span class="n">coef2</span> <span class="o">/</span> <span class="p">(</span><span class="n">pd2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">p2</span> <span class="o">-</span> <span class="n">p1</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">w1</span> <span class="o">=</span> <span class="n">w2</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">coef2</span> <span class="o">/</span> <span class="p">(</span><span class="n">pd2</span> <span class="o">*</span> <span class="p">(</span><span class="n">p2</span> <span class="o">-</span> <span class="n">p0</span><span class="p">))</span></div>
-    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span>
+        <span class="n">w1</span> <span class="o">=</span> <span class="n">w2</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">coef2</span> <span class="o">/</span> <span class="p">(</span><span class="n">pd2</span> <span class="o">*</span> <span class="p">(</span><span class="n">p2</span> <span class="o">-</span> <span class="n">p0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span></div>
 
 
 <div class="viewcode-block" id="kronrod"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.kronrod">[docs]</a><span class="k">def</span> <span class="nf">kronrod</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
@@ -780,8 +782,8 @@
         <span class="n">xx</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="p">[</span><span class="n">xx</span><span class="p">,</span> <span class="n">w1</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">abwe1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">xx</span><span class="p">)</span>
         <span class="n">w2</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xx</span></div>
-    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xx</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span></div>
 
 
 <div class="viewcode-block" id="GaussKronrod"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.GaussKronrod">[docs]</a><span class="k">def</span> <span class="nf">GaussKronrod</span><span class="p">(</span><span class="n">NN</span><span class="p">):</span>
@@ -794,8 +796,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)),</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">w1</span><span class="p">,</span> <span class="n">w1</span><span class="p">)),</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">w2</span><span class="p">,</span> <span class="n">w2</span><span class="p">))</span>
     <span class="n">indx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">indx</span><span class="p">],</span> <span class="n">w1</span><span class="p">[</span><span class="n">indx</span><span class="p">],</span> <span class="n">w2</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span></div>
-    <span class="k">return</span> <span class="n">x</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w2</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">indx</span><span class="p">],</span> <span class="n">w1</span><span class="p">[</span><span class="n">indx</span><span class="p">],</span> <span class="n">w2</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w2</span><span class="o">/</span><span class="mi">2</span></div>
 
 <span class="c1">##############################################################</span>
 <span class="c1">#</span>
@@ -824,8 +826,8 @@
             <span class="k">if</span> <span class="bp">False</span><span class="p">:</span>
                 <span class="k">print</span> <span class="n">N</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">))</span>
 
-<div class="viewcode-block" id="SpectralMatrix.full"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.SpectralMatrix.full">[docs]</a>    <span class="k">def</span> <span class="nf">full</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
-        <span class="k">return</span> <span class="n">mm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span>
+<div class="viewcode-block" id="SpectralMatrix.full"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.SpectralMatrix.full">[docs]</a>    <span class="k">def</span> <span class="nf">full</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">mm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">subtract</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="c1"># Could be improved for addition of two spectral matrices</span>
@@ -878,23 +880,23 @@
     <span class="k">def</span> <span class="nf">__dagger__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">SpectralMatrix</span><span class="p">()</span>
         <span class="n">tmp</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="n">dagger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span>
-        <span class="n">tmp</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">dagger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="n">tmp</span>
+        <span class="n">tmp</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">dagger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tmp</span></div>
 
 
 <div class="viewcode-block" id="trace"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.trace">[docs]</a><span class="k">def</span> <span class="nf">trace</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">SpectralMatrix</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">L</span><span class="p">))</span> <span class="c1"># Switch sum around to make faster!</span>
-    <span class="k">else</span><span class="p">:</span></div>
-        <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="dagger"><a class="viewcode-back" href="../../api-gen/Inelastica.MiscMath.html#Inelastica.MiscMath.dagger">[docs]</a><span class="k">def</span> <span class="nf">dagger</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="c1"># Hermitian conjugation</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SpectralMatrix</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">__dagger__</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span></div>
-        <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">x</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
@@ -931,7 +933,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -941,7 +943,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

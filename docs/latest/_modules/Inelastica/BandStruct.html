@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -95,8 +95,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -213,8 +215,8 @@
     <span class="n">readHS</span><span class="p">()</span>
     <span class="n">readbasis</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">ispin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">HS</span><span class="o">.</span><span class="n">nspin</span><span class="p">):</span>
-        <span class="n">calcBands</span><span class="p">(</span><span class="n">ispin</span><span class="p">)</span></div>
-        <span class="n">calcFS</span><span class="p">(</span><span class="n">ispin</span><span class="p">)</span>
+        <span class="n">calcBands</span><span class="p">(</span><span class="n">ispin</span><span class="p">)</span>
+        <span class="n">calcFS</span><span class="p">(</span><span class="n">ispin</span><span class="p">)</span></div>
 
 <span class="c1">########################################################</span>
 
@@ -235,16 +237,16 @@
     <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">fns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">geom</span><span class="o">.</span><span class="n">sym</span> <span class="o">=</span> <span class="n">SYM</span><span class="o">.</span><span class="n">Symmetry</span><span class="p">(</span><span class="n">fns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">onlyLatticeSym</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">NNbasis</span> <span class="o">!=</span> <span class="n">geom</span><span class="o">.</span><span class="n">natoms</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s2">&quot;ERROR: Siesta cell does not contain one unit cell&quot;</span></div>
-        <span class="n">kuk</span>
+        <span class="k">print</span> <span class="s2">&quot;ERROR: Siesta cell does not contain one unit cell&quot;</span>
+        <span class="n">kuk</span></div>
 
 <span class="c1">########################################################</span>
 
 
 <div class="viewcode-block" id="readbasis"><a class="viewcode-back" href="../../api-gen/Inelastica.BandStruct.html#Inelastica.BandStruct.readbasis">[docs]</a><span class="k">def</span> <span class="nf">readbasis</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">basis</span>
-    <span class="n">fn</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;RUN.fdf&#39;</span><span class="p">)</span></div>
-    <span class="n">basis</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">BuildBasis</span><span class="p">(</span><span class="n">fn</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">NN</span><span class="p">,</span> <span class="n">HS</span><span class="o">.</span><span class="n">lasto</span><span class="p">)</span>
+    <span class="n">fn</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;RUN.fdf&#39;</span><span class="p">)</span>
+    <span class="n">basis</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">BuildBasis</span><span class="p">(</span><span class="n">fn</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">sym</span><span class="o">.</span><span class="n">NN</span><span class="p">,</span> <span class="n">HS</span><span class="o">.</span><span class="n">lasto</span><span class="p">)</span></div>
 
 <span class="c1">########################################################</span>
 
@@ -258,8 +260,8 @@
         <span class="n">kuk</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
         <span class="k">print</span> <span class="s2">&quot;ERROR: BandStruct: No .TSHS file ???&quot;</span>
-        <span class="n">kuk</span></div>
-    <span class="n">HS</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">HS</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">kuk</span>
+    <span class="n">HS</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">HS</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
 
 <span class="c1">########################################################</span>
@@ -276,8 +278,8 @@
                 <span class="n">eival</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">LA</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">HS</span><span class="o">.</span><span class="n">S</span><span class="p">),</span> <span class="n">HS</span><span class="o">.</span><span class="n">H</span><span class="p">[</span><span class="n">ispin</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]))</span>
                 <span class="n">ipiv</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">eival</span><span class="p">)</span>
                 <span class="n">bands</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">iz</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">eival</span><span class="p">[</span><span class="n">ipiv</span><span class="p">]</span>
-        <span class="n">SIO</span><span class="o">.</span><span class="n">printDone</span><span class="p">(</span><span class="n">ix</span><span class="p">,</span> <span class="n">NNk</span><span class="p">,</span> <span class="s1">&#39;Fermi Surface: &#39;</span><span class="p">)</span></div>
-    <span class="n">writeFS</span><span class="p">(</span><span class="n">ispin</span><span class="p">,</span> <span class="n">NNk</span><span class="p">,</span> <span class="n">bands</span><span class="p">)</span>
+        <span class="n">SIO</span><span class="o">.</span><span class="n">printDone</span><span class="p">(</span><span class="n">ix</span><span class="p">,</span> <span class="n">NNk</span><span class="p">,</span> <span class="s1">&#39;Fermi Surface: &#39;</span><span class="p">)</span>
+    <span class="n">writeFS</span><span class="p">(</span><span class="n">ispin</span><span class="p">,</span> <span class="n">NNk</span><span class="p">,</span> <span class="n">bands</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="writeFS"><a class="viewcode-back" href="../../api-gen/Inelastica.BandStruct.html#Inelastica.BandStruct.writeFS">[docs]</a><span class="k">def</span> <span class="nf">writeFS</span><span class="p">(</span><span class="n">ispin</span><span class="p">,</span> <span class="n">NNk</span><span class="p">,</span> <span class="n">bands</span><span class="p">):</span>
@@ -323,8 +325,8 @@
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">   END_BANDGRID_3D</span>
-<span class="s2">END_BLOCK_BANDGRID_3D</span></div>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">END_BLOCK_BANDGRID_3D</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span></div>
 
 
 <span class="c1">########################################################</span>
@@ -346,8 +348,8 @@
             <span class="n">ipiv</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">eival</span><span class="p">)</span>
             <span class="n">ev</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">eival</span><span class="p">[</span><span class="n">ipiv</span><span class="p">]</span>
         <span class="n">bands</span> <span class="o">+=</span> <span class="p">[</span><span class="n">ev</span><span class="p">]</span>
-</div>
-    <span class="n">writeBands</span><span class="p">(</span><span class="n">ispin</span><span class="p">,</span> <span class="n">what</span><span class="p">,</span> <span class="n">bands</span><span class="p">)</span>
+
+    <span class="n">writeBands</span><span class="p">(</span><span class="n">ispin</span><span class="p">,</span> <span class="n">what</span><span class="p">,</span> <span class="n">bands</span><span class="p">)</span></div>
 
 
 <span class="c1">########################################################</span>
@@ -379,13 +381,13 @@
             <span class="n">g</span><span class="o">.</span><span class="n">AddDatasets</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">g</span><span class="o">.</span><span class="n">SetSubtitle</span><span class="p">(</span><span class="n">what</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
 
-        <span class="n">g</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">jj</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
             <span class="n">g</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>\
-                           <span class="nb">max</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)</span>
+                           <span class="n">vmax</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">g</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="mf">1e10</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>\
-                           <span class="nb">max</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)</span>
+                           <span class="n">vmax</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)</span>
         <span class="n">Graphs</span><span class="o">+=</span><span class="p">[</span><span class="n">g</span><span class="p">]</span>
 
     <span class="n">p</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/BandStruct.agr&#39;</span><span class="p">,</span> <span class="n">Graphs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -396,8 +398,8 @@
 
     <span class="c1"># Finally, write the plot file</span>
     <span class="n">p</span><span class="o">.</span><span class="n">ShowTimestamp</span><span class="p">()</span>
-    <span class="n">p</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span></div>
-    <span class="n">p</span><span class="o">.</span><span class="n">Print2File</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/BandStruct.eps&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">()</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">Print2File</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/BandStruct.eps&#39;</span><span class="p">)</span></div>
 
 
 <span class="c1">###########################################################</span>
@@ -439,10 +441,10 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: destination directory </span><span class="si">%s</span><span class="s1"> already exist!&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">myprint</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">file</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">myprint</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">iofile</span><span class="p">):</span>
         <span class="c1"># Save in parameter file</span>
         <span class="k">print</span> <span class="n">arg</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">arg</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">iofile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">arg</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="k">class</span> <span class="nc">myopen</span><span class="p">:</span>
         <span class="c1"># Double stdout to RUN.out and stdout</span>
@@ -454,16 +456,16 @@
     <span class="n">fo</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">fo</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/RUN.out&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">fo</span>
 
-    <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">iofile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
     <span class="n">argv</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">:</span> <span class="n">argv</span><span class="o">+=</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">ii</span>
-    <span class="n">myprint</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="nb">file</span><span class="p">)</span>
-    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;##################################################################################&#39;</span><span class="p">,</span> <span class="nb">file</span><span class="p">)</span>
-    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;## Band structure &#39;</span><span class="p">,</span> <span class="nb">file</span><span class="p">)</span>
-    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;fdfFile            : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">fdfFile</span><span class="p">,</span> <span class="nb">file</span><span class="p">)</span>
-    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;Number of k-points : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">NNk</span><span class="p">,</span> <span class="nb">file</span><span class="p">)</span>
-    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;##################################################################################&#39;</span><span class="p">,</span> <span class="nb">file</span><span class="p">)</span></div>
-    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">iofile</span><span class="p">)</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;##################################################################################&#39;</span><span class="p">,</span> <span class="n">iofile</span><span class="p">)</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;## Band structure &#39;</span><span class="p">,</span> <span class="n">iofile</span><span class="p">)</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;fdfFile            : </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">fdfFile</span><span class="p">,</span> <span class="n">iofile</span><span class="p">)</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;Number of k-points : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">general</span><span class="o">.</span><span class="n">NNk</span><span class="p">,</span> <span class="n">iofile</span><span class="p">)</span>
+    <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;##################################################################################&#39;</span><span class="p">,</span> <span class="n">iofile</span><span class="p">)</span>
+    <span class="n">iofile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <span class="c1">##################### Start main routine #####################</span>
@@ -506,7 +508,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -516,7 +518,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

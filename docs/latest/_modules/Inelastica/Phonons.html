@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -95,8 +95,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -175,11 +177,11 @@
 <span class="sd">Phonons (:mod:`Inelastica.Phonons`)</span>
 <span class="sd">===================================</span>
 
-<span class="sd">A completely rewritten ``Phonons.py`` script with various improvements</span>
-<span class="sd">and additional flexibility:</span>
+<span class="sd">Overview</span>
+<span class="sd">--------</span>
 
 <span class="sd">* The dynamic atoms no longer need to be a complete range (FCfirst,FClast+1).</span>
-<span class="sd">  Any arbitrary list of atoms (``options.DynamicAtoms``) can now be specified.</span>
+<span class="sd">  Any arbitrary list of atoms (the variable ``options.DynamicAtoms``) can now be specified.</span>
 
 <span class="sd">* The displacement amplitude in the various `FCrun` and `OSrun` directories</span>
 <span class="sd">  may correspond to different values.</span>
@@ -209,28 +211,36 @@
 
 <span class="sd">Daniele Stradi, April 2015.</span>
 
-<span class="sd">.. currentmodule:: Inelastica.Phonons</span>
+<span class="sd">Scripting</span>
+<span class="sd">---------</span>
 
-<span class="sd">classes</span>
+<span class="sd">To run phonon calculations as a script one can execute:</span>
+
+<span class="sd">.. code-block:: bash</span>
+
+<span class="sd">    &gt;&gt;&gt; import Inelatica.Phonons as P</span>
+<span class="sd">    &gt;&gt;&gt; my_argv = &#39;--FCfirst=9 --FClast=9 --DeviceFirst=8 --DeviceLast=13 -c PHrun&#39;</span>
+<span class="sd">    &gt;&gt;&gt; my_opts = P.GetOptions(my_argv)</span>
+<span class="sd">    &gt;&gt;&gt; P.main(my_opts)</span>
+
+
+<span class="sd">Classes and methods</span>
 <span class="sd">-------</span>
 
 <span class="sd">.. autosummary::</span>
 <span class="sd">   :toctree:</span>
 
+<span class="sd">   GetOptions</span>
+<span class="sd">   main</span>
 <span class="sd">   FCrun</span>
 <span class="sd">   OTSrun</span>
 <span class="sd">   OSrun</span>
 <span class="sd">   DynamicalMatrix</span>
 
+<span class="sd">.. currentmodule:: Inelastica.Phonons</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
-<span class="kn">import</span> <span class="nn">Inelastica.Symmetry</span> <span class="kn">as</span> <span class="nn">Symmetry</span>
-<span class="kn">import</span> <span class="nn">Inelastica.CommonFunctions</span> <span class="kn">as</span> <span class="nn">CF</span>
-<span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
-<span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
-<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
-<span class="kn">import</span> <span class="nn">Inelastica.ValueCheck</span> <span class="kn">as</span> <span class="nn">VC</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span> <span class="kn">as</span> <span class="nn">NC4</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
@@ -238,9 +248,27 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
+<span class="kn">import</span> <span class="nn">Inelastica.Symmetry</span> <span class="kn">as</span> <span class="nn">Symmetry</span>
+<span class="kn">import</span> <span class="nn">Inelastica.CommonFunctions</span> <span class="kn">as</span> <span class="nn">CF</span>
+<span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
+<span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
+<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
+<span class="kn">import</span> <span class="nn">Inelastica.ValueCheck</span> <span class="kn">as</span> <span class="nn">VC</span>
 
 
 <div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an instance of ``options`` for the ``Phonons`` module</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    argv : string</span>
+<span class="sd">        For example `-c test_dir`, which gives instructions to compute not only</span>
+<span class="sd">        vibrational modes and frequencies, but also the corresponding electron-vibration</span>
+<span class="sd">        couplings and to place the results in the output directory `test_dir`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># if text string is specified, convert to list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">VC</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
         <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -340,8 +368,8 @@
             <span class="n">s</span> <span class="o">+=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="n">options</span><span class="o">.</span><span class="n">Isotopes</span> <span class="o">=</span> <span class="n">s</span>
     <span class="n">options</span><span class="o">.</span><span class="n">Isotopes</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">Isotopes</span><span class="p">)</span>
-</div>
-    <span class="k">return</span> <span class="n">options</span>
+
+    <span class="k">return</span> <span class="n">options</span></div>
 
 
 <div class="viewcode-block" id="FCrun"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.FCrun">[docs]</a><span class="k">class</span> <span class="nc">FCrun</span><span class="p">():</span>
@@ -428,8 +456,8 @@
             <span class="n">tmpOrb</span><span class="o">+=</span><span class="n">nao</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orbitalIndices</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orbitalIndices</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nao</span> <span class="o">=</span> <span class="n">tmpOrb</span> <span class="c1"># total number of orbitals</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">snr2nao</span> <span class="o">=</span> <span class="n">snr2nao</span> <span class="c1"># orbitals per species</span></div></div>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">orbitalIndices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nao</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snr2nao</span> <span class="o">=</span> <span class="n">snr2nao</span> <span class="c1"># orbitals per species</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">orbitalIndices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nao</span></div></div>
 
 
 <div class="viewcode-block" id="OTSrun"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.OTSrun">[docs]</a><span class="k">class</span> <span class="nc">OTSrun</span><span class="p">(</span><span class="n">FCrun</span><span class="p">):</span> <span class="c1"># Only TranSiesta run</span>
@@ -450,8 +478,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">TSHS</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">TSHS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># Equilibrium TSHS</span>
-        <span class="k">except</span><span class="p">:</span></div>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Phonons.GetFileLists: No TSHS file found in </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Phonons.GetFileLists: No TSHS file found in </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OSrun"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.OSrun">[docs]</a><span class="k">class</span> <span class="nc">OSrun</span><span class="p">:</span>
@@ -499,8 +527,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">S0</span> <span class="o">=</span> <span class="n">S0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dS</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">3</span><span class="p">,)</span><span class="o">+</span><span class="n">dmat</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dmat</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">dS</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">onlyS</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">onlyS</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">Displ</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">Displ</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span></div>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Displ</span> <span class="o">=</span> <span class="n">Displ</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dS</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">onlyS</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">onlyS</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">Displ</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">Displ</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Displ</span> <span class="o">=</span> <span class="n">Displ</span></div>
 
 
 <div class="viewcode-block" id="DynamicalMatrix"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix">[docs]</a><span class="k">class</span> <span class="nc">DynamicalMatrix</span><span class="p">():</span>
@@ -539,8 +567,8 @@
                     <span class="k">break</span>
             <span class="c1"># Check that we really found the required atom</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Displ</span><span class="p">)</span><span class="o">&lt;=</span><span class="n">i</span><span class="p">:</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: Did not find FC data for a dynamic atom </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">v</span><span class="p">)</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: Did not find FC data for a dynamic atom </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">v</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span></div>
 
 <div class="viewcode-block" id="DynamicalMatrix.SetMasses"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix.SetMasses">[docs]</a>    <span class="k">def</span> <span class="nf">SetMasses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Isotopes</span><span class="o">=</span><span class="p">[]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Masses</span> <span class="o">=</span> <span class="p">[]</span>
@@ -555,8 +583,8 @@
         <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">mass</span> <span class="ow">in</span> <span class="n">Isotopes</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">ii</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DynamicAtoms</span><span class="p">:</span>
                 <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DynamicAtoms</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ii</span><span class="p">)</span>
-                <span class="k">print</span> <span class="s1">&#39;Phonons.Analyse: Setting mass for atom </span><span class="si">%i</span><span class="s1"> (SIESTA numbering) to </span><span class="si">%f</span><span class="s1">:&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="n">mass</span><span class="p">)</span></div>
-                <span class="bp">self</span><span class="o">.</span><span class="n">Masses</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span>
+                <span class="k">print</span> <span class="s1">&#39;Phonons.Analyse: Setting mass for atom </span><span class="si">%i</span><span class="s1"> (SIESTA numbering) to </span><span class="si">%f</span><span class="s1">:&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="n">mass</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Masses</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span></div>
 
 <div class="viewcode-block" id="DynamicalMatrix.ApplySumRule"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix.ApplySumRule">[docs]</a>    <span class="k">def</span> <span class="nf">ApplySumRule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">FC</span><span class="p">):</span>
         <span class="n">FC0</span> <span class="o">=</span> <span class="n">FC</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -566,8 +594,8 @@
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
                 <span class="n">FC</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">v</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mf">0.0</span>
                 <span class="n">FC</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">v</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">FC</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">print</span> <span class="s1">&#39;Total sumrule change in FC: </span><span class="si">%.3e</span><span class="s1"> eV/Ang&#39;</span> <span class="o">%</span> <span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">FC0</span><span class="p">)</span><span class="o">-</span><span class="nb">abs</span><span class="p">(</span><span class="n">FC</span><span class="p">))</span></div>
-        <span class="k">return</span> <span class="n">FC</span>
+        <span class="k">print</span> <span class="s1">&#39;Total sumrule change in FC: </span><span class="si">%.3e</span><span class="s1"> eV/Ang&#39;</span> <span class="o">%</span> <span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">FC0</span><span class="p">)</span><span class="o">-</span><span class="nb">abs</span><span class="p">(</span><span class="n">FC</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">FC</span></div>
 
 <div class="viewcode-block" id="DynamicalMatrix.ComputePhononModes"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix.ComputePhononModes">[docs]</a>    <span class="k">def</span> <span class="nf">ComputePhononModes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">FC</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="n">dyn</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DynamicAtoms</span><span class="p">)</span>
@@ -645,8 +673,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">Udisp</span> <span class="o">=</span> <span class="n">Udisp</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Ucl</span> <span class="o">=</span> <span class="n">Ucl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">UU</span> <span class="o">=</span> <span class="n">UU</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">UUdisp</span> <span class="o">=</span> <span class="n">UUdisp</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">UUcl</span> <span class="o">=</span> <span class="n">UUcl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">UUdisp</span> <span class="o">=</span> <span class="n">UUdisp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">UUcl</span> <span class="o">=</span> <span class="n">UUcl</span></div>
 
 <div class="viewcode-block" id="DynamicalMatrix.PrepareGradients"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix.PrepareGradients">[docs]</a>    <span class="k">def</span> <span class="nf">PrepareGradients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">onlySdir</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">DeviceFirst</span><span class="p">,</span> <span class="n">DeviceLast</span><span class="p">,</span> <span class="n">AbsEref</span><span class="p">,</span> <span class="n">atype</span><span class="p">,</span> <span class="n">TSrun</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Phonons.PrepareGradients: Setting up various arrays&#39;</span>
@@ -681,8 +709,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">h0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TSHS0</span><span class="o">.</span><span class="n">H</span><span class="p">[:,</span> <span class="n">first</span><span class="p">:</span><span class="n">last</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">first</span><span class="p">:</span><span class="n">last</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">s0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TSHS0</span><span class="o">.</span><span class="n">S</span><span class="p">[</span><span class="n">first</span><span class="p">:</span><span class="n">last</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">first</span><span class="p">:</span><span class="n">last</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">DeviceFirst</span> <span class="o">=</span> <span class="n">DeviceFirst</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">=</span> <span class="n">DeviceLast</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">AbsEref</span> <span class="o">=</span> <span class="n">AbsEref</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">=</span> <span class="n">DeviceLast</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AbsEref</span> <span class="o">=</span> <span class="n">AbsEref</span></div>
 
 <div class="viewcode-block" id="DynamicalMatrix.GetGradient"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix.GetGradient">[docs]</a>    <span class="k">def</span> <span class="nf">GetGradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Atom</span><span class="p">,</span> <span class="n">Axis</span><span class="p">):</span>
         <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Phonons.GetGradient: Computing dH[</span><span class="si">%i</span><span class="s1">,</span><span class="si">%i</span><span class="s1">]&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">Atom</span><span class="p">,</span> <span class="n">Axis</span><span class="p">)</span>
@@ -707,8 +735,8 @@
         <span class="k">for</span> <span class="n">iSpin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nspin</span><span class="p">):</span>
             <span class="n">dH</span><span class="p">[</span><span class="n">iSpin</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">-=</span> <span class="n">MM</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">dagger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dSdij</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">invS0H0</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">iSpin</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> \
                              <span class="o">+</span> <span class="n">MM</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invS0H0</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">iSpin</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">dSdij</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dSdij</span><span class="p">[:,</span> <span class="n">f</span><span class="p">:</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span> <span class="c1"># reset</span></div>
-        <span class="k">return</span> <span class="n">dH</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dSdij</span><span class="p">[:,</span> <span class="n">f</span><span class="p">:</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span> <span class="c1"># reset</span>
+        <span class="k">return</span> <span class="n">dH</span></div>
 
 <div class="viewcode-block" id="DynamicalMatrix.ComputeEPHcouplings"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix.ComputeEPHcouplings">[docs]</a>    <span class="k">def</span> <span class="nf">ComputeEPHcouplings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">PBCFirst</span><span class="p">,</span> <span class="n">PBCLast</span><span class="p">,</span> <span class="n">EPHAtoms</span><span class="p">,</span> <span class="n">Restart</span><span class="p">,</span> <span class="n">CheckPointNetCDF</span><span class="p">,</span> <span class="n">WriteGradients</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="n">first</span><span class="p">,</span> <span class="n">last</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">DeviceLast</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
@@ -765,8 +793,8 @@
                         <span class="c1"># already zero</span>
         <span class="k">del</span> <span class="n">dH</span><span class="p">,</span> <span class="n">dh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">heph</span> <span class="o">=</span> <span class="n">Heph</span>
-        <span class="k">if</span> <span class="n">WriteGradients</span><span class="p">:</span></div>
-            <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">WriteGradients</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DynamicalMatrix.WriteOutput"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix.WriteOutput">[docs]</a>    <span class="k">def</span> <span class="nf">WriteOutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">SinglePrec</span><span class="p">,</span> <span class="n">GammaPoint</span><span class="p">):</span>
         <span class="k">print</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Phonons.WriteOutput&#39;</span>
@@ -894,8 +922,8 @@
             <span class="k">print</span> <span class="s1">&#39;Phonons.WriteOutput: Wrote gradients to&#39;</span><span class="p">,</span> <span class="n">ncdffn</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="n">ncdf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
-        <span class="k">print</span> <span class="s1">&#39;Phonons.WriteOutput: Finished&#39;</span><span class="p">,</span> <span class="n">ncdffn</span>
+        <span class="n">ncdf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s1">&#39;Phonons.WriteOutput: Finished&#39;</span><span class="p">,</span> <span class="n">ncdffn</span></div></div>
 
 
 <div class="viewcode-block" id="WriteFreqFile"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.WriteFreqFile">[docs]</a><span class="k">def</span> <span class="nf">WriteFreqFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">hw</span><span class="p">):</span>
@@ -906,8 +934,8 @@
         <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; </span><span class="si">%f</span><span class="s1"> &#39;</span><span class="o">%</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="n">hw</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
     <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"># index   freq/meV </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hw</span><span class="p">)):</span>
-        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%i</span><span class="s1">  </span><span class="si">%f</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1000</span><span class="o">*</span><span class="n">hw</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span></div>
-    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%i</span><span class="s1">  </span><span class="si">%f</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1000</span><span class="o">*</span><span class="n">hw</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="WriteVibDOSFile"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.WriteVibDOSFile">[docs]</a><span class="k">def</span> <span class="nf">WriteVibDOSFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Gaussian&#39;</span><span class="p">):</span>
@@ -933,8 +961,8 @@
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.5e</span><span class="s1">  &#39;</span><span class="o">%</span><span class="p">(</span><span class="n">erng</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">eta</span><span class="p">)):</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.5e</span><span class="s1"> &#39;</span><span class="o">%</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">hw</span><span class="p">)))</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="WriteAXSFFiles"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.WriteAXSFFiles">[docs]</a><span class="k">def</span> <span class="nf">WriteAXSFFiles</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">anr</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">FCfirst</span><span class="p">,</span> <span class="n">FClast</span><span class="p">):</span>
@@ -957,8 +985,8 @@
                     <span class="k">except</span><span class="p">:</span>
                         <span class="n">ln</span> <span class="o">+=</span> <span class="s1">&#39; </span><span class="si">%.6f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">U</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
             <span class="n">ln</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ln</span><span class="p">)</span></div>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ln</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="WriteAXSFFilesPer"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.WriteAXSFFilesPer">[docs]</a><span class="k">def</span> <span class="nf">WriteAXSFFilesPer</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">anr</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">FCfirst</span><span class="p">,</span> <span class="n">FClast</span><span class="p">):</span>
@@ -982,11 +1010,19 @@
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
                 <span class="n">ln</span> <span class="o">+=</span> <span class="s1">&#39; </span><span class="si">%.6f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">VEC</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="n">k</span><span class="p">]</span>
             <span class="n">ln</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ln</span><span class="p">)</span></div>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ln</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main routine to compute vibrational modes and frequencies (and optionally</span>
+<span class="sd">    also the corresponding electron-vibration couplings)</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    options : an ``options`` instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
 
@@ -1020,8 +1056,8 @@
         <span class="k">return</span> <span class="n">DM</span><span class="o">.</span><span class="n">h0</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">s0</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">hw</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">heph</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">DM</span><span class="o">.</span><span class="n">WriteOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Output&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">SinglePrec</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">GammaPoint</span><span class="p">)</span>
-        <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="n">DM</span><span class="o">.</span><span class="n">hw</span>
+        <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">DM</span><span class="o">.</span><span class="n">hw</span></div>
 </pre></div>
 
            </div>
@@ -1058,7 +1094,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1068,7 +1104,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

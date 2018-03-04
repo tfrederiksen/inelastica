@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -95,8 +95,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -175,29 +177,57 @@
 <span class="sd">IETS (:mod:`Inelastica.iets`)</span>
 <span class="sd">=============================</span>
 
-<span class="sd">Inelastic transport module</span>
+<span class="sd">Inelastic transport module.</span>
+
+<span class="sd">Scripting</span>
+<span class="sd">---------</span>
+
+<span class="sd">To run inelastic transport simulations as a script one can execute:</span>
+
+<span class="sd">.. code-block:: bash</span>
+
+<span class="sd">    &gt;&gt;&gt; import Inelatica.iets as IETS</span>
+<span class="sd">    &gt;&gt;&gt; my_argv = &#39;-F 8 -L 13 -p PHrun/Output.nc -f TSrun/RUN.fdf IETS_dir&#39;</span>
+<span class="sd">    &gt;&gt;&gt; my_opts = IETS.GetOptions(my_argv)</span>
+<span class="sd">    &gt;&gt;&gt; IETS.main(my_opts)</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+
+<span class="sd">.. autosummary::</span>
+<span class="sd">   :toctree:</span>
+
+<span class="sd">   GetOptions</span>
+<span class="sd">   main</span>
 
 <span class="sd">.. currentmodule:: Inelastica.iets</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">Inelastica.NEGF</span> <span class="kn">as</span> <span class="nn">NEGF</span>
-<span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
-<span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
-<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span> <span class="kn">as</span> <span class="nn">NC4</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
 <span class="kn">import</span> <span class="nn">Inelastica.ValueCheck</span> <span class="kn">as</span> <span class="nn">VC</span>
 <span class="kn">import</span> <span class="nn">Inelastica.CommonFunctions</span> <span class="kn">as</span> <span class="nn">CF</span>
-
-<span class="c1"># For doing loops with Inelastica we encourage the usage of this function</span>
-<span class="c1"># By creating the parser locally we can actually pass down these informations easily.</span>
-<span class="c1"># DIRECTLY in python</span>
+<span class="kn">import</span> <span class="nn">Inelastica.NEGF</span> <span class="kn">as</span> <span class="nn">NEGF</span>
+<span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
+<span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
+<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
 
 
 <div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an instance of ``options`` for the ``iets`` module</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    argv : string</span>
+<span class="sd">        For example `-n 10 test_dir`, which instructs to compute 10 eigenchannels </span>
+<span class="sd">        and place the results in the output directory `test_dir`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;GetOptions&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
     <span class="c1"># if text string is specified, convert to list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">VC</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
         <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -276,14 +306,19 @@
     <span class="c1"># k-point</span>
     <span class="n">options</span><span class="o">.</span><span class="n">kpoint</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">options</span><span class="o">.</span><span class="n">k1</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">k2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
     <span class="k">del</span> <span class="n">options</span><span class="o">.</span><span class="n">k1</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">k2</span>
-</div>
-    <span class="k">return</span> <span class="n">options</span>
+
+    <span class="k">return</span> <span class="n">options</span></div>
 
 
-<span class="c1">########################################################</span>
-<span class="c1">##################### Main routine #####################</span>
-<span class="c1">########################################################</span>
+
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main routine to compute inelastic transport characteristics (dI/dV, d2I/dV2, IETS etc)</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    options : an ``options`` instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
     <span class="n">VC</span><span class="o">.</span><span class="n">OptionsCheck</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="s1">&#39;Inelastica&#39;</span><span class="p">)</span>
     <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;Inelastica&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
@@ -382,8 +417,8 @@
     <span class="n">data</span> <span class="o">=</span> <span class="n">calcIETS</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">GFp</span><span class="p">,</span> <span class="n">GFm</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">hw</span><span class="p">)</span>
     <span class="n">NCfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">NEGF</span><span class="o">.</span><span class="n">SavedSig</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;Inelastica&#39;</span><span class="p">)</span></div>
-    <span class="k">return</span> <span class="n">data</span>
+    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;Inelastica&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span></div>
 
 <span class="c1">########################################################</span>
 
@@ -465,8 +500,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">print</span> <span class="s1">&#39;... Check 3 failed: Atomic numbers inconsistent!!!&#39;</span>
         <span class="n">check3</span> <span class="o">=</span> <span class="bp">False</span>
-    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">check1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">check2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">check3</span><span class="p">):</span></div>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Inelastica: Error - inconsistency detected for device region.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">check1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">check2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">check3</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Inelastica: Error - inconsistency detected for device region.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="calcTraces"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.calcTraces">[docs]</a><span class="k">def</span> <span class="nf">calcTraces</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">GF1</span><span class="p">,</span> <span class="n">GF2</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">NCfile</span><span class="p">,</span> <span class="n">ihw</span><span class="p">):</span>
@@ -540,8 +575,8 @@
         <span class="c1"># Store relevant traces</span>
         <span class="n">GF1</span><span class="o">.</span><span class="n">dIel</span><span class="p">[</span><span class="n">ihw</span><span class="p">]</span> <span class="o">=</span> <span class="n">NEGF</span><span class="o">.</span><span class="n">AssertReal</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">Tlambda0</span><span class="p">),</span> <span class="s1">&#39;dIel[</span><span class="si">%i</span><span class="s1">]&#39;</span><span class="o">%</span><span class="n">ihw</span><span class="p">)</span>
         <span class="n">GF1</span><span class="o">.</span><span class="n">dIinel</span><span class="p">[</span><span class="n">ihw</span><span class="p">]</span> <span class="o">=</span> <span class="n">NEGF</span><span class="o">.</span><span class="n">AssertReal</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">Tlambda1</span><span class="p">),</span> <span class="s1">&#39;dIinel[</span><span class="si">%i</span><span class="s1">]&#39;</span><span class="o">%</span><span class="n">ihw</span><span class="p">)</span>
-        <span class="n">GF1</span><span class="o">.</span><span class="n">dSel</span><span class="p">[</span><span class="n">ihw</span><span class="p">]</span> <span class="o">=</span> <span class="n">NEGF</span><span class="o">.</span><span class="n">AssertReal</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">OneMinusTwoT</span><span class="p">,</span> <span class="n">Tlambda0</span><span class="p">)),</span> <span class="s1">&#39;dSel[</span><span class="si">%i</span><span class="s1">]&#39;</span><span class="o">%</span><span class="n">ihw</span><span class="p">)</span></div>
-        <span class="n">GF1</span><span class="o">.</span><span class="n">dSinel</span><span class="p">[</span><span class="n">ihw</span><span class="p">]</span> <span class="o">=</span> <span class="n">NEGF</span><span class="o">.</span><span class="n">AssertReal</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">Qlambda</span><span class="o">+</span><span class="n">MM</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">OneMinusTwoT</span><span class="p">,</span> <span class="n">Tlambda1</span><span class="p">)),</span> <span class="s1">&#39;dSinel[</span><span class="si">%i</span><span class="s1">]&#39;</span><span class="o">%</span><span class="n">ihw</span><span class="p">)</span>
+        <span class="n">GF1</span><span class="o">.</span><span class="n">dSel</span><span class="p">[</span><span class="n">ihw</span><span class="p">]</span> <span class="o">=</span> <span class="n">NEGF</span><span class="o">.</span><span class="n">AssertReal</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">OneMinusTwoT</span><span class="p">,</span> <span class="n">Tlambda0</span><span class="p">)),</span> <span class="s1">&#39;dSel[</span><span class="si">%i</span><span class="s1">]&#39;</span><span class="o">%</span><span class="n">ihw</span><span class="p">)</span>
+        <span class="n">GF1</span><span class="o">.</span><span class="n">dSinel</span><span class="p">[</span><span class="n">ihw</span><span class="p">]</span> <span class="o">=</span> <span class="n">NEGF</span><span class="o">.</span><span class="n">AssertReal</span><span class="p">(</span><span class="n">MM</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">Qlambda</span><span class="o">+</span><span class="n">MM</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">OneMinusTwoT</span><span class="p">,</span> <span class="n">Tlambda1</span><span class="p">)),</span> <span class="s1">&#39;dSinel[</span><span class="si">%i</span><span class="s1">]&#39;</span><span class="o">%</span><span class="n">ihw</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="calcIETS"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.calcIETS">[docs]</a><span class="k">def</span> <span class="nf">calcIETS</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">GFp</span><span class="p">,</span> <span class="n">GFm</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">hw</span><span class="p">):</span>
@@ -780,8 +815,8 @@
     <span class="n">tmp</span><span class="o">=</span><span class="n">outNC</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;kpoint&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;vector&#39;</span><span class="p">,))</span>
     <span class="n">tmp</span><span class="p">[:]</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">kpoint</span><span class="p">)</span>
     <span class="n">outNC</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</div>
-    <span class="k">return</span> <span class="n">V</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">dI</span><span class="p">,</span> <span class="n">ddI</span><span class="p">,</span> <span class="n">BdI</span><span class="p">,</span> <span class="n">BddI</span>
+
+    <span class="k">return</span> <span class="n">V</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">dI</span><span class="p">,</span> <span class="n">ddI</span><span class="p">,</span> <span class="n">BdI</span><span class="p">,</span> <span class="n">BddI</span></div>
 
 
 <span class="c1">########################################################</span>
@@ -834,8 +869,8 @@
         <span class="k">for</span> <span class="n">iL</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">GF</span><span class="o">.</span><span class="n">ECleft</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">iR</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">GF</span><span class="o">.</span><span class="n">ECright</span><span class="p">)):</span>
                 <span class="n">outFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%e</span><span class="s1"> &#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">PC</span><span class="o">.</span><span class="n">unitConv</span><span class="o">*</span><span class="n">rate</span><span class="p">[</span><span class="n">iL</span><span class="p">,</span> <span class="n">iR</span><span class="p">],))</span>
-            <span class="n">outFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
-    <span class="n">outFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">outFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">outFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <span class="c1">################################################################</span>
@@ -896,8 +931,8 @@
     <span class="n">NddI</span><span class="o">=</span><span class="n">MM</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">ddV</span><span class="p">,</span> <span class="n">ddI</span><span class="p">)</span>
     <span class="n">NBdI</span><span class="o">=</span><span class="n">MM</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">BdV</span><span class="p">,</span> <span class="n">BdI</span><span class="p">)</span>
     <span class="n">NBddI</span><span class="o">=</span><span class="n">MM</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">BddV</span><span class="p">,</span> <span class="n">BddI</span><span class="p">)</span>
-</div>
-    <span class="k">return</span> <span class="n">V</span><span class="p">,</span> <span class="n">NI</span><span class="p">,</span> <span class="n">NdI</span><span class="p">,</span> <span class="n">NddI</span><span class="p">,</span> <span class="n">NBdI</span><span class="p">,</span> <span class="n">NBddI</span>
+
+    <span class="k">return</span> <span class="n">V</span><span class="p">,</span> <span class="n">NI</span><span class="p">,</span> <span class="n">NdI</span><span class="p">,</span> <span class="n">NddI</span><span class="p">,</span> <span class="n">NBdI</span><span class="p">,</span> <span class="n">NBddI</span></div>
 
 <span class="c1">################################################################</span>
 <span class="c1"># Output to NetCDF file</span>
@@ -919,8 +954,8 @@
     <span class="n">ncfile</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">))</span>
     <span class="n">tmp</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">,))</span>
     <span class="n">tmp</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
-    <span class="n">tmp</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;V&#39;</span></div>
-    <span class="k">return</span> <span class="n">ncfile</span>
+    <span class="n">tmp</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;V&#39;</span>
+    <span class="k">return</span> <span class="n">ncfile</span></div>
 
 
 <div class="viewcode-block" id="write2NCfile"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.write2NCfile">[docs]</a><span class="k">def</span> <span class="nf">write2NCfile</span><span class="p">(</span><span class="n">NCfile</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
@@ -934,8 +969,8 @@
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">NCfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">,))</span>
     <span class="k">elif</span> <span class="n">var</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">dim1</span><span class="p">,</span> <span class="n">dim2</span><span class="p">):</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">NCfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Nph&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">))</span>
-    <span class="n">tmp</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">real</span></div>
-    <span class="n">tmp</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">unit</span>
+    <span class="n">tmp</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">real</span>
+    <span class="n">tmp</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">unit</span></div>
 
 
 <div class="viewcode-block" id="writeLOEData2Datafile"><a class="viewcode-back" href="../../api-gen/Inelastica.iets.html#Inelastica.iets.writeLOEData2Datafile">[docs]</a><span class="k">def</span> <span class="nf">writeLOEData2Datafile</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">nHT</span><span class="p">,</span> <span class="n">HT</span><span class="p">):</span>
@@ -944,8 +979,8 @@
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;## hw(eV)      Trans        non-H-term (e/pi/hbar)   H-term</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hw</span><span class="p">):</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;## </span><span class="si">%e</span><span class="s2"> </span><span class="si">%e</span><span class="s2"> </span><span class="si">%e</span><span class="s2"> </span><span class="si">%e</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">nHT</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">HT</span><span class="p">[</span><span class="n">ii</span><span class="p">]))</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 </pre></div>
 
            </div>
@@ -982,7 +1017,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -992,7 +1027,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

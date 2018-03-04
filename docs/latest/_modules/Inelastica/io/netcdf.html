@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.0-65
+                1.3.0-93
               </div>
             
           
@@ -95,8 +95,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">FAQ</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../more.html">More documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
@@ -198,8 +200,8 @@
 <span class="sd">    a new or existing NetCDF file</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nc</span> <span class="o">=</span> <span class="n">NCfile</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-    <span class="n">nc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">vartype</span><span class="p">)</span></div>
-    <span class="n">nc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">nc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">vartype</span><span class="p">)</span>
+    <span class="n">nc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="NCfile"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.netcdf.html#Inelastica.io.netcdf.NCfile">[docs]</a><span class="k">class</span> <span class="nc">NCfile</span><span class="p">:</span>
@@ -219,8 +221,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">invdim</span><span class="p">[</span><span class="n">val</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
 
 <div class="viewcode-block" id="NCfile.close"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.netcdf.html#Inelastica.io.netcdf.NCfile.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Closes the file instance&quot;</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="s2">&quot;Closes the file instance&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="NCfile.write"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.netcdf.html#Inelastica.io.netcdf.NCfile.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">vartype</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">):</span>
         <span class="s2">&quot;Writes numpy array to file&quot;</span>
@@ -229,8 +231,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">vartype</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">print</span> <span class="s1">&#39;  ...variable </span><span class="si">%s</span><span class="s1"> already exist. Overwriting!!!&#39;</span><span class="o">%</span><span class="n">label</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">label</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">vartype</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s1">&#39;  ...variable </span><span class="si">%s</span><span class="s1"> already exist. Overwriting!!!&#39;</span><span class="o">%</span><span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">label</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">vartype</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__checkDimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
@@ -243,8 +245,8 @@
                 <span class="s1">&#39;io.netcdf: Generating dimension </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">d</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">invdim</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
-            <span class="n">dim</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+            <span class="n">dim</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.netcdf.html#Inelastica.io.netcdf.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
@@ -262,8 +264,8 @@
     <span class="n">write</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
     <span class="n">write</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="s1">&#39;mytest&#39;</span><span class="p">)</span>
     <span class="n">write</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">)</span>
-    <span class="n">write</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="s1">&#39;He_ph&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span></div>
-    <span class="n">nc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="s1">&#39;He_ph&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+    <span class="n">nc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
@@ -304,7 +306,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.3.0-65',
+            VERSION:'1.3.0-93',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -314,7 +316,7 @@
       <script type="text/javascript" src="../../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
