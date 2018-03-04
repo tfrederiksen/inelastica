@@ -3,7 +3,7 @@
 import sys
 from datetime import datetime
 import Inelastica.Phonons as Module
-import Ielastica.CommonFunctions as CF
+import Inelastica.CommonFunctions as CF
 
 start = datetime.now()
 
