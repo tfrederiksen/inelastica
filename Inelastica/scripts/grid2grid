@@ -6,14 +6,11 @@ import sys
 import profile
 import glob
 import os
-#sys.path+=['../..']
-
+from optparse import OptionParser
 import numpy as N
-import numpy.linalg as LA
-import Inelastica.SiestaIO as SIO
+import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
 import Inelastica.physics.constants as PC
-from optparse import OptionParser
 
 #####################################################
 # Read options
@@ -34,7 +31,7 @@ For help use --help!
     parser = OptionParser(usage, description=description)
     (general, args) = parser.parse_args()
     print description
-    if len(args)!=2:
+    if len(args) != 2:
         sys.exit('ERROR: You need to supply infile and outfile.\n')
     return general, parser, args
 
@@ -51,11 +48,11 @@ def main():
 
     path=os.path.split(os.path.abspath(infile))[0]
     fns=glob.glob(path+'/*.XV')
-    if len(fns)==1:
+    if len(fns) == 1:
         print 'Reading geometry from : %s'%fns[0]
     else:
         print 'Trying to read geometry from %s/RUN.fdf'%path
-        fns=[path+'/RUN.fdf']
+        fns = [path+'/RUN.fdf']
 
     geom = MG.Geom(fns[0])
 
@@ -68,7 +65,7 @@ def main():
     data=N.zeros((Nx, Ny, Nz), N.float32)
     for iz in range(Nz):
         for iy in range(Ny):
-            data[:, iy, iz]=SIO.ReadFortranBin(fortfile, 'f', Nx)
+            data[:, iy, iz] = SIO.ReadFortranBin(fortfile, 'f', Nx)
     fortfile.close()
 
     if outformat == '.cube':
@@ -104,7 +101,5 @@ def writecube(fn, YY, nx, ny, nz, cell, geom):
                 foR.write('%1.3e\n' % YY[ix, iy, iz])
     foR.close()
 
-#####################################################
-# Start it
+
 main()
-#profile.run('main()')

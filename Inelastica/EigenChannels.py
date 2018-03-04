@@ -1,10 +1,31 @@
 """
 
-Eigenchannels (:mod:`Inelastica.EigenChannels`)
+EigenChannels (:mod:`Inelastica.EigenChannels`)
 ===============================================
 
 1. Eigenchannels, method from Paulsson and Brandbyge PRB 2007
 2. Calculate "bond" currents
+
+Scripting
+---------
+
+To run ``EigenChannels`` as a script one can execute:
+
+.. code-block:: bash
+
+    >>> import Inelatica.EigenChannels as EC
+    >>> my_argv = '-F 8 -L 13 -f TSrun/RUN.fdf EC_dir'
+    >>> my_opts = EC.GetOptions(my_argv)
+    >>> EC.main(my_opts)
+
+Classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   GetOptions
+   main
 
 .. currentmodule:: Inelastica.EigenChannels
 
@@ -22,12 +43,19 @@ import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
 import Inelastica.MiscMath as MM
 
-# For doing loops with Eigenchannels we encourage the usage of this function
-# By creating the parser locally we can actually pass down these informations easily.
-# DIRECTLY in python
-
 
 def GetOptions(argv, **kwargs):
+    """
+    Returns an instance of ``options`` for the ``EigenChannels`` module
+
+    Parameters
+    ----------
+    argv : string
+        For example `-n 2 test_dir`, which instructs to compute only the two most transmitting
+        eigenchannel scattering states and place the results in the output directory `test_dir`.
+    """
+    CF.PrintMainHeader('GetOptions', None)
+
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
         argv = argv.split()
@@ -97,12 +125,15 @@ def GetOptions(argv, **kwargs):
 
     return options
 
-########################################################
-##################### Main routine #####################
-########################################################
-
-
 def main(options):
+    """
+    Main routine to compute eigenchannel scattering states
+
+    Parameters
+    ----------
+    options : an ``options`` instance
+    """
+
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options, 'EigenChannels')
     CF.PrintMainHeader('EigenChannels', options)

@@ -1,0 +1,18 @@
+MaxSCFIterations      300
+DM.Tolerance          1.d-6
+DM.UseSaveDM          true
+DM.NumberPulay	      7
+DM.MixingWeight       0.05
+
+XC.functional         GGA
+XC.authors     	      PBE
+
+MeshCutoff            600. Ry
+
+PAO.BasisSize   SZP
+PAO.BasisType   split
+PAO.EnergyShift         0.1 Ry
+
+%block ChemicalSpeciesLabel
+    1   6 C.mpn
+%endblock ChemicalSpeciesLabel

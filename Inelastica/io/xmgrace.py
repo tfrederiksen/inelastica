@@ -3,7 +3,10 @@
 xmgrace (:mod:`Inelastica.io.xmgrace`)
 ======================================
 
-This module provides a `Python`_ interface to write `XMGR/GRACE <xmgrace_>`_ files.
+This module provides a `Python`_ interface to write `XMGR/GRACE <xmgrace_>`_ files. Written by Thomas Frederiksen, July 2007.
+
+Scripting
+---------
 
 To create a `GRACE <xmgrace_>`_ plot from a given data set, a minimal
 script structure takes the following form:
@@ -31,20 +34,20 @@ example above:
 
 With these additional lines we end up with a plot containing two graphs.
 The function call to ``ArrangeGraphs(...)`` arranges them nicely on the
-canvas side by side.
+canvas in a 2x1 layout, i.e., side by side.
 
 A more detailed demonstration of this module can be generated with
 
+.. code-block:: bash
+
     >>> import Inelastica.io.xmgrace as xmgr
-    >>> xmgr.test()
+    >>> xmgr.demo()
 
-creating the file `test.agr`.
-
-Written by Thomas Frederiksen, July 2007.
+creating the files `demo.agr` and `demo.eps`.
 
 .. currentmodule:: Inelastica.io.xmgrace
 
-classes
+Classes
 -------
 
 .. autosummary::
@@ -81,9 +84,8 @@ flag = {True: 'on', False: 'off'}
 
 def Array2XYsets(A, **keywords):
     """
-    Converts a matrix A = [[x0,y0(x0),y1(x0),...],[x1,y0(x1),y1(x1),...],...]
-    into a list of XYset objects. Keywords for the format (Lcolor, Stype, etc.)
-    are applied to all the generated XYsets.
+    Converts a matrix  A = [X,Y1,Y2,...] into a list of XYset objects.
+    Formatting keywords (Lcolor, Stype, etc.) are applied to all the generated XYsets.
     """
     sets = []
     A = N.array(A)
@@ -98,7 +100,7 @@ def Datafile2XYsets(fn, Sort=False, **keywords):
     """
     Reads an ascii file and applies ``Array2XYsets(...)``
     """
-    print 'WriteXMGR.Datafile2XYsets: reading', fn
+    print 'io.xmgrace.Datafile2XYsets: reading', fn
     f = open(fn, 'r')
     A = []
     for line in f:
@@ -120,6 +122,9 @@ def Datafile2XYsets(fn, Sort=False, **keywords):
 
 
 class Dataset:
+    """
+    Generic class for any XMGR dataset
+    """
 
     def __init__(self, **keywords):
         "Returning instance of class."
@@ -258,6 +263,9 @@ class Dataset:
 
 
 class XYset(Dataset):
+    """
+    Class for 2-dimensional (X,Y) datasets
+    """
 
     def __init__(self, x, y, **keywords):
         "Returning instance of class."
@@ -287,6 +295,9 @@ class XYset(Dataset):
 
 
 class XYDXset(XYset):
+    """
+    Class for 3-dimensional (X,Y,dX) datasets
+    """
 
     def __init__(self, x, y, dx, **keywords):
         "Returning instance of class."
@@ -304,6 +315,9 @@ class XYDXset(XYset):
 
 
 class XYDYset(XYset):
+    """
+    Class for 3-dimensional (X,Y,dY) datasets
+    """
 
     def __init__(self, x, y, dy, **keywords):
         "Returning instance of class."
@@ -321,6 +335,9 @@ class XYDYset(XYset):
 
 
 class XYDXDYset(XYset):
+    """
+    Class for 4-dimensional (X,Y,dX,dY) datasets
+    """
 
     def __init__(self, x, y, dx, dy, **keywords):
         "Returning instance of class."
@@ -339,6 +356,9 @@ class XYDXDYset(XYset):
 
 
 class XYSIZEset(XYset):
+    """
+    Class for 3-dimensional (X,Y,size) datasets
+    """
 
     def __init__(self, x, y, size, **keywords):
         "Returning instance of class."
@@ -356,6 +376,9 @@ class XYSIZEset(XYset):
 
 
 class Graph:
+    """
+    Class for a graph (containing datasets)
+    """
 
     def __init__(self, *datasets):
         "Returning instance of class."
@@ -457,22 +480,26 @@ class Graph:
                  useticklabels='', ticklabelsize='', majorGridlines='', minorGridlines='',
                  autoscale='', scale=''):
         """
-        Sets the axis parameters (if specified):
-        - vmin/vmax      = [float]
-        - label          = [string]
-        - labelsize      = [float]
-        - labelautopos   = [bool]
-        - labelpospar    = [float]
-        - labelposper    = [float]
-        - majorUnit      = [float]
-        - minorUnit      = [float]
-        - useticks       = [bool]
-        - useticklabels  = [bool]
-        - ticklabelsize  = [float]
-        - majorGridlines = [bool]
-        - minorGridlines = [bool]
-        - autoscale      = [bool]
-        - scale          = [\"Normal\"/\"Logarithmic\"]
+        Sets the following axis parameters (only those specified):
+
+        Parameters
+        ----------
+
+        vmin/vmax : float, optional
+        label : string, optional
+        labelsize : float, optional
+        labelautopos : bool, optional
+        labelpospar : float, optional
+        labelposper : float, optional
+        majorUnit : float, optional
+        minorUnit : float, optional
+        useticks : bool, optional
+        useticklabels : bool, optional
+        ticklabelsize : float, optional
+        majorGridlines : bool, optional
+        minorGridlines : bool, optional
+        autoscale : bool, optional
+        scale : \"Normal\"/\"Logarithmic\", optional
         """
         if vmin!='':
             self.SetWorld(xmin=float(vmin))
@@ -525,22 +552,26 @@ class Graph:
                  useticklabels='', ticklabelsize='', majorGridlines='', minorGridlines='',
                  autoscale='', scale=''):
         """
-        Sets the axis parameters (if specified):
-        - vmin/vmax      = [float]
-        - label          = [string]
-        - labelsize      = [float]
-        - labelautopos   = [bool]
-        - labelpospar    = [float]
-        - labelposper    = [float]
-        - majorUnit      = [float]
-        - minorUnit      = [float]
-        - useticks       = [bool]
-        - useticklabels  = [bool]
-        - ticklabelsize  = [float]
-        - majorGridlines = [bool]
-        - minorGridlines = [bool]
-        - autoscale      = [bool]
-        - scale          = [\"Normal\"/\"Logarithmic\"]
+        Sets the following axis parameters (only those specified):
+
+        Parameters
+        ---------------------
+
+        vmin/vmax : float, optional
+        label : string, optional
+        labelsize : float, optional
+        labelautopos : bool, optional
+        labelpospar : float, optional
+        labelposper : float, optional
+        majorUnit : float, optional
+        minorUnit : float, optional
+        useticks : bool, optional
+        useticklabels : bool, optional
+        ticklabelsize : float, optional
+        majorGridlines : bool, optional
+        minorGridlines : bool, optional
+        autoscale : bool, optional
+        scale : \"Normal\"/\"Logarithmic\", optional
         """
         if vmin!='':
             self.SetWorld(ymin=vmin)
@@ -637,7 +668,9 @@ class Graph:
 
 
 class Plot:
-
+    """
+    Class for a plot (containing graphs)
+    """
     def __init__(self, filename='Default.agr', *graphs):
         "Returning instance of class."
         self.filename = filename
@@ -790,13 +823,10 @@ class Plot:
         print 'Plot send to printer (\"%s %s\")'%(printcmd, tmpfile)
 
 
-def test():
-    print
-    print '----------------------------------------------------'
-    print 'Generating an example of the \"WriteXMGR.py\" module'
-    print '----------------------------------------------------'
-    print
-
+def demo():
+    """
+    Generation of a demo plot
+    """
     # Arbitrary data sets
     x = [0.5, 1.5, 3, 5]
     y1 = [2, 0.5, 5, 9.2]
@@ -815,11 +845,11 @@ def test():
     g = Graph(d1, d2, d3)
     g.SetXaxis(label='x-label', autoscale=True)
     g.SetYaxis(label='y-label', autoscale=True)
-    g.SetTitle('Graph title', size=1.2)
+    g.SetTitle('Demo of Inelastica.io.xmgrace module', size=1.1)
     g.SetSubtitle('Graph subtitle')
 
     # Create instance of a plot
-    p = Plot('test.agr', g)
+    p = Plot('demo.agr', g)
     p.DefineColor(99, [200, 10, 200])
 
     # Add more graphs to plot
@@ -867,8 +897,8 @@ def test():
     # Finally, write the plot file
     p.ShowTimestamp()
     p.WriteFile()
-    p.Print2File('test.eps')
+    p.Print2File('demo.eps')
     #p.Print()
 
 if __name__ == '__main__':
-    test()
+    demo()
