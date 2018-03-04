@@ -3,29 +3,57 @@
 IETS (:mod:`Inelastica.iets`)
 =============================
 
-Inelastic transport module
+Inelastic transport module.
+
+Scripting
+---------
+
+To run inelastic transport simulations as a script one can execute:
+
+.. code-block:: bash
+
+    >>> import Inelatica.iets as IETS
+    >>> my_argv = '-F 8 -L 13 -p PHrun/Output.nc -f TSrun/RUN.fdf IETS_dir'
+    >>> my_opts = IETS.GetOptions(my_argv)
+    >>> IETS.main(my_opts)
+
+Classes
+-------
+
+.. autosummary::
+   :toctree:
+
+   GetOptions
+   main
 
 .. currentmodule:: Inelastica.iets
 
 """
 
-import Inelastica.NEGF as NEGF
-import Inelastica.io.siesta as SIO
-import Inelastica.MakeGeom as MG
-import Inelastica.MiscMath as MM
 import numpy as N
 import netCDF4 as NC4
 import sys
 import Inelastica.physics.constants as PC
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
-
-# For doing loops with Inelastica we encourage the usage of this function
-# By creating the parser locally we can actually pass down these informations easily.
-# DIRECTLY in python
+import Inelastica.NEGF as NEGF
+import Inelastica.io.siesta as SIO
+import Inelastica.MakeGeom as MG
+import Inelastica.MiscMath as MM
 
 
 def GetOptions(argv, **kwargs):
+    """
+    Returns an instance of ``options`` for the ``iets`` module
+
+    Parameters
+    ----------
+    argv : string
+        For example `-n 10 test_dir`, which instructs to compute 10 eigenchannels 
+        and place the results in the output directory `test_dir`.
+    """
+    CF.PrintMainHeader('GetOptions', None)
+
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
         argv = argv.split()
@@ -108,10 +136,15 @@ def GetOptions(argv, **kwargs):
     return options
 
 
-########################################################
-##################### Main routine #####################
-########################################################
+
 def main(options):
+    """
+    Main routine to compute inelastic transport characteristics (dI/dV, d2I/dV2, IETS etc)
+    
+    Parameters
+    ----------
+    options : an ``options`` instance
+    """
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options, 'Inelastica')
     CF.PrintMainHeader('Inelastica', options)

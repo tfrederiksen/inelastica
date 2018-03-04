@@ -1,0 +1,23 @@
+SystemTitle elec
+SystemLabel elec
+
+SolutionMethod     diagon
+
+%block kgrid_Monkhorst_Pack
+  1    0    0    0.0
+  0    1    0    0.0
+  0    0  100    0.0
+%endblock kgrid_Monkhorst_Pack
+
+%include ./PARAM.fdf
+%include ./STRUCT.fdf
+
+%block BandLines 
+1   0.0 0.0 0.0 \Gamma
+100 0.0 0.0 0.5 X
+%endblock BandLines
+BandLinesScale  ReciprocalLatticeVectors 
+%block ProjectedDensityOfStates 
+  -20.00  20.00  0.100  1000  eV 
+%endblock ProjectedDensityOfStates 
+

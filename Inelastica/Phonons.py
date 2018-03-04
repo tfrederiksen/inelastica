@@ -3,11 +3,11 @@
 Phonons (:mod:`Inelastica.Phonons`)
 ===================================
 
-A completely rewritten ``Phonons.py`` script with various improvements
-and additional flexibility:
+Overview
+--------
 
 * The dynamic atoms no longer need to be a complete range (FCfirst,FClast+1).
-  Any arbitrary list of atoms (``options.DynamicAtoms``) can now be specified.
+  Any arbitrary list of atoms (the variable ``options.DynamicAtoms``) can now be specified.
 
 * The displacement amplitude in the various `FCrun` and `OSrun` directories
   may correspond to different values.
@@ -37,28 +37,36 @@ Additional improvements to facilitate large-scale calcuations:
 
 Daniele Stradi, April 2015.
 
-.. currentmodule:: Inelastica.Phonons
+Scripting
+---------
 
-classes
+To run phonon calculations as a script one can execute:
+
+.. code-block:: bash
+
+    >>> import Inelatica.Phonons as P
+    >>> my_argv = '--FCfirst=9 --FClast=9 --DeviceFirst=8 --DeviceLast=13 -c PHrun'
+    >>> my_opts = P.GetOptions(my_argv)
+    >>> P.main(my_opts)
+
+
+Classes and methods
 -------
 
 .. autosummary::
    :toctree:
 
+   GetOptions
+   main
    FCrun
    OTSrun
    OSrun
    DynamicalMatrix
 
+.. currentmodule:: Inelastica.Phonons
+
 """
 
-import Inelastica.io.siesta as SIO
-import Inelastica.Symmetry as Symmetry
-import Inelastica.CommonFunctions as CF
-import Inelastica.MakeGeom as MG
-import Inelastica.physics.constants as PC
-import Inelastica.MiscMath as MM
-import Inelastica.ValueCheck as VC
 import netCDF4 as NC4
 import numpy as N
 import numpy.linalg as LA
@@ -66,9 +74,27 @@ import glob
 import os
 import sys
 import string
+import ast
+import Inelastica.io.siesta as SIO
+import Inelastica.Symmetry as Symmetry
+import Inelastica.CommonFunctions as CF
+import Inelastica.MakeGeom as MG
+import Inelastica.physics.constants as PC
+import Inelastica.MiscMath as MM
+import Inelastica.ValueCheck as VC
 
 
 def GetOptions(argv, **kwargs):
+    """
+    Returns an instance of ``options`` for the ``Phonons`` module
+
+    Parameters
+    ----------
+    argv : string
+        For example `-c test_dir`, which gives instructions to compute not only
+        vibrational modes and frequencies, but also the corresponding electron-vibration
+        couplings and to place the results in the output directory `test_dir`.
+    """
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
         argv = argv.split()
@@ -815,6 +841,14 @@ def WriteAXSFFilesPer(filename, vectors, xyz, anr, hw, U, FCfirst, FClast):
 
 
 def main(options):
+    """
+    Main routine to compute vibrational modes and frequencies (and optionally
+    also the corresponding electron-vibration couplings)
+    
+    Parameters
+    ----------
+    options : an ``options`` instance
+    """
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     CF.PrintMainHeader('Phonons', options)
 

@@ -45,9 +45,9 @@ where the optional keyword flags are:
 import sys
 import os.path
 import time
-from Inelastica import SiestaIO as SIO
-import Inelastica.io.xmgrace as XMGR
 import numpy as N
+import Inelastica.io.siesta as SIO
+import Inelastica.io.xmgrace as XMGR
 
 
 def SortOnce(EvsK, factor, firstband='', lastband=''):
@@ -130,14 +130,14 @@ def MakeBandstructurePlot(filename, eF, EvsK, labels, DOS, emin=-5.0, emax=5.0, 
     g0.SetSubtitle(os.path.abspath(filename))
     g0.SetXaxis(autoscale=True, majorGridlines=True)
     g0.SetXaxisSpecialTicks(labels)
-    g0.SetYaxis(min=emin, max=emax, label='E - E\sF\N [eV]', majorUnit=1.00)
+    g0.SetYaxis(vmin=emin, vmax=emax, label='E - E\sF\N [eV]', majorUnit=1.00)
     # Build graph 2
     line1 = XMGR.XYset([kmin, max(DOS[:, 1])], [0., 0.])
     DOSset = XMGR.XYset(DOS[:, 1], DOS[:, 0]-eF, legend='TDOS')
     g1 = XMGR.Graph(line1, DOSset)
     g1.SetSubtitle('DOS')
     g1.SetXaxis(autoscale=True, useticklabels=False, useticks=False)
-    g1.SetYaxis(min=emin, max=emax, useticklabels=False, majorUnit=1.00)
+    g1.SetYaxis(vmin=emin, vmax=emax, useticklabels=False, majorUnit=1.00)
     g1.ShowLegend()
     # Build plot
     p0 = XMGR.Plot(filename, g0, g1)

@@ -228,24 +228,24 @@ def ReadANIFile(filename, InUnits='Ang', OutUnits='Ang'):
     else: print 'io.siesta.ReadANIFile: Unit conversion error!'
 
     Energy, Geom = [], []
-    file = SIO_open(filename, 'r')
-    newNN=file.readline()
+    anifile = SIO_open(filename, 'r')
+    newNN=anifile.readline()
     while newNN!='':
         NN=string.atoi(newNN)
         newG = MG.Geom()
         try:
-            Energy.append(string.atof(file.readline()))
+            Energy.append(string.atof(anifile.readline()))
         except:
             Energy.append(0.0)
         for ii in range(NN):
-            line=string.split(file.readline())
+            line=string.split(anifile.readline())
             xyz=[convFactor*string.atof(line[1]),
                  convFactor*string.atof(line[2]),\
                  convFactor*string.atof(line[3])]
             newG.addAtom(xyz, 1, PC.PeriodicTable[line[0]])
         Geom.append(newG)
-        newNN=file.readline()
-    file.close()
+        newNN=anifile.readline()
+    anifile.close()
     return Geom, Energy
 
 #--------------------------------------------------------------------------------
@@ -272,10 +272,10 @@ def ReadFCFile(filename):
 # Reading SIESTA Fortan binary files
 
 
-def ReadFortranBin(fortfile, type, num, printLength=False, unpack=True):
+def ReadFortranBin(fortfile, dtype, num, printLength=False, unpack=True):
     "Reads Fortran binary data structures"
     fmt = ''
-    for i in range(num): fmt += type
+    for i in range(num): fmt += dtype
     fbin = fortfile.read(struct.calcsize(fortranPrefix+fortranuLong+fmt+fortranuLong))
     if unpack:
         data = struct.unpack(fortranPrefix+fortranLong+fmt+fortranLong, fbin)
@@ -295,30 +295,30 @@ def ReadWFSFile(filename):
     Returns the WF coefficients etc. from SIESTA systemlabe.WFS files
     (see siesta/utils/readwf.f for details)
     """
-    file = SIO_open(filename, 'rb')
-    nk, = ReadFortranBin(file, 'I', 1)
-    nspin, = ReadFortranBin(file, 'I', 1)
-    nuotot, = ReadFortranBin(file, 'I', 1)
+    fortfile = SIO_open(filename, 'rb')
+    nk, = ReadFortranBin(fortfile, 'I', 1)
+    nspin, = ReadFortranBin(fortfile, 'I', 1)
+    nuotot, = ReadFortranBin(fortfile, 'I', 1)
     #print nk, nspin, nuotot
 
     PSIvectors = []
     for iik in range(nk):
         for iispin in range(nspin):
-            ik, k1, k2, k3 =  ReadFortranBin(file, 'Iddd', 1)
+            ik, k1, k2, k3 =  ReadFortranBin(fortfile, 'Iddd', 1)
             #print ik,k1,k2,k3
-            ispin, = ReadFortranBin(file, 'I', 1)
-            nwflist, = ReadFortranBin(file, 'I', 1)
+            ispin, = ReadFortranBin(fortfile, 'I', 1)
+            nwflist, = ReadFortranBin(fortfile, 'I', 1)
             #print ispin,nwflist
             for iw in range(nwflist):
                 REpsi, IMpsi = [], []
-                indwf, = ReadFortranBin(file, 'I', 1)
-                energy, = ReadFortranBin(file, 'd', 1)
+                indwf, = ReadFortranBin(fortfile, 'I', 1)
+                energy, = ReadFortranBin(fortfile, 'd', 1)
                 #print indwf, energy
                 for jj in range(nuotot):
                     label = ''
                     for a in range(20): label += 'c'
-                    out =  ReadFortranBin(file, 'I'+label+'III'+label+'dd', 1)
-                    lab1, j, lab2, repsi, impsi = out[1:21], out[21], out[24:44], out[44], out[45]
+                    out =  ReadFortranBin(fortfile, 'I'+label+'III'+label+'dd', 1)
+                    lab1, lab2, repsi, impsi = out[1:21], out[24:44], out[44], out[45]
                     labelfis, symfio = '', ''
                     for a in range(20):
                         labelfis += lab1[a]
@@ -326,7 +326,7 @@ def ReadWFSFile(filename):
                     #print labelfis,symfio
                     REpsi.append(repsi), IMpsi.append(impsi)
                 PSIvectors.append(N.array(REpsi)+1j*N.array(IMpsi))
-    file.close()
+    fortfile.close()
     return nk, nspin, nuotot, nwflist, PSIvectors
 
 
@@ -346,19 +346,19 @@ def printDone(i, n, mess):
 def WriteMKLFile(filename, atomnumber, xyz, freq, vec, FCfirst, FClast):
     "Writes a MKL-file"
     print 'io.siesta.WriteMKLFile: Writing', filename
-    file = open(filename, 'w')
-    file.write('$MKL\n$COORD\n')
+    mklfile = open(filename, 'w')
+    mklfile.write('$MKL\n$COORD\n')
     for i, iatom in enumerate(atomnumber):
         line = str(iatom)
         for j in range(3):
             line += string.rjust('%.9f'%xyz[i][j], 16)
         line +='\n'
-        file.write(line)
-    file.write('$END\n')
+        mklfile.write(line)
+    mklfile.write('$END\n')
     if len(freq)>0:
-        file.write('$FREQ\n')
+        mklfile.write('$FREQ\n')
         for i in range(len(freq)/3):
-            file.write('C1 C1 C1\n')
+            mklfile.write('C1 C1 C1\n')
             # Write frequencies
             line = ''
             for j in range(3):
@@ -368,38 +368,38 @@ def WriteMKLFile(filename, atomnumber, xyz, freq, vec, FCfirst, FClast):
                 except:
                     line += '%f '%f
             line += '\n'
-            file.write(line)
+            mklfile.write(line)
             # Write modes
             for j in range(FCfirst-1):
-                file.write('0 0 0 0 0 0 0 0 0\n')
+                mklfile.write('0 0 0 0 0 0 0 0 0\n')
             for j in range(FClast-FCfirst+1):
                 line = ''
                 for k in range(3):
                     line += '%f %f %f '%(vec[3*i+k][3*j], vec[3*i+k][3*j+1], vec[3*i+k][3*j+2])
                 line += '\n'
-                file.write(line)
+                mklfile.write(line)
             for j in range(FClast, len(xyz)):
-                file.write('0 0 0 0 0 0 0 0 0\n')
-        file.write('$END\n\n')
-    file.close()
+                mklfile.write('0 0 0 0 0 0 0 0 0\n')
+        mklfile.write('$END\n\n')
+    mklfile.close()
 
 #--------------------------------------------------------------------------------
 # XYZ-format IO
 
 
 def ReadXYZFile(filename):
-    file = SIO_open(filename, 'r')
+    xyzfile = SIO_open(filename, 'r')
     # Read number of atoms (line 4)
-    numberOfAtoms = string.atoi(string.split(file.readline())[0])
+    numberOfAtoms = string.atoi(string.split(xyzfile.readline())[0])
     # Read remaining lines
     label, atomnumber, xyz = [], [], []
-    for line in file.readlines():
+    for line in xyzfile.readlines():
         if len(line)>5: # Ignore blank lines
             data = string.split(line)
             label.append(data[0])
             atomnumber.append(PC.PeriodicTable[data[0]])
             xyz.append([string.atof(data[1+j]) for j in range(3)])
-    file.close()
+    xyzfile.close()
     if len(xyz)!=numberOfAtoms:
         print 'io.siesta.ReadXYZFile: Inconstency in %s detected!' %filename
     return label, N.array(atomnumber), N.array(xyz)
@@ -411,14 +411,14 @@ def WriteXYZFile(filename, atomnumber, xyz, write_ghosts=False):
     # Number of ghost atoms
     nga = len(N.where(N.array(atomnumber)<0)[0])
     # Write file
-    file = open(filename, 'w')
+    xyzfile = open(filename, 'w')
     if write_ghosts:
-        file.write(str(len(xyz)))
+        xyzfile.write(str(len(xyz)))
     else:
         if nga>0:
             print '... skipped %i ghost atoms'%nga
-        file.write(str(len(xyz)-nga))
-    file.write('\n\n')
+        xyzfile.write(str(len(xyz)-nga))
+    xyzfile.write('\n\n')
     for i in range(len(xyz)):
         try:
             element = PC.PeriodicTable[abs(atomnumber[i])]
@@ -429,8 +429,8 @@ def WriteXYZFile(filename, atomnumber, xyz, write_ghosts=False):
             line += string.rjust('%.9f'%xyz[i][j], 16)
         line +='\n'
         if atomnumber[i]>0 or write_ghosts:
-            file.write(line)
-    file.close()
+            xyzfile.write(line)
+    xyzfile.close()
 
 #--------------------------------------------------------------------------------
 # FDF format IO
@@ -452,23 +452,23 @@ def ReadFDFFile(infile):
 def WriteFDFFile(filename, vectors, speciesnumber, atomnumber, xyz):
     "Write STRUCT.fdf file"
     print 'io.siesta.WriteFDFFile: Writing', filename
-    file = open(filename, 'w')
-    file.write('NumberOfAtoms '+str(len(xyz))+'\n')
-    file.write('NumberOfSpecies '+str(max(speciesnumber))+'\n')
-    file.write('LatticeConstant 1.0 Ang\n%block LatticeVectors\n')
+    fdffile = open(filename, 'w')
+    fdffile.write('NumberOfAtoms '+str(len(xyz))+'\n')
+    fdffile.write('NumberOfSpecies '+str(max(speciesnumber))+'\n')
+    fdffile.write('LatticeConstant 1.0 Ang\n%block LatticeVectors\n')
     for ii in range(3):
         for jj in range(3):
-            file.write(string.rjust('%.9f'%vectors[ii][jj], 16)+' ')
-        file.write('\n')
-    file.write('%endblock LatticeVectors\nAtomicCoordinatesFormat  Ang'+
+            fdffile.write(string.rjust('%.9f'%vectors[ii][jj], 16)+' ')
+        fdffile.write('\n')
+    fdffile.write('%endblock LatticeVectors\nAtomicCoordinatesFormat  Ang'+
                '\n%block AtomicCoordinatesAndAtomicSpecies\n')
     for ii in range(len(xyz)):
         line=string.rjust('%.9f'%xyz[ii][0], 16)+' '
         line+=string.rjust('%.9f'%xyz[ii][1], 16)+' '
         line+=string.rjust('%.9f'%xyz[ii][2], 16)+' '
         line+=str(int(speciesnumber[ii]))+' # %i\n'%(ii+1)
-        file.write(line)
-    file.write('%endblock AtomicCoordinatesAndAtomicSpecies\n')
+        fdffile.write(line)
+    fdffile.write('%endblock AtomicCoordinatesAndAtomicSpecies\n')
 
 
 def WriteFDFFileZmat(filename, vectors, speciesnumber, atomnumber, xyz, first=0, last=0, zmat=None):
@@ -483,22 +483,22 @@ def WriteFDFFileZmat(filename, vectors, speciesnumber, atomnumber, xyz, first=0,
         first, last = 0, 0
     # Writing zmatrix
     print 'io.siesta.WriteFDFFileZmat: Writing', filename
-    file = open(filename, 'w')
-    file.write('NumberOfAtoms '+str(len(xyz))+'\n')
-    file.write('NumberOfSpecies '+str(max(speciesnumber))+'\n')
-    file.write('LatticeConstant 1.0 Ang\n%block LatticeVectors\n')
+    zmatfile = open(filename, 'w')
+    zmatfile.write('NumberOfAtoms '+str(len(xyz))+'\n')
+    zmatfile.write('NumberOfSpecies '+str(max(speciesnumber))+'\n')
+    zmatfile.write('LatticeConstant 1.0 Ang\n%block LatticeVectors\n')
     for ii in range(3):
         for jj in range(3):
-            file.write(string.rjust('%.9f'%vectors[ii][jj], 16)+' ')
-        file.write('\n')
-    file.write('%endblock LatticeVectors\nAtomicCoordinatesFormat Ang'+
+            zmatfile.write(string.rjust('%.9f'%vectors[ii][jj], 16)+' ')
+        zmatfile.write('\n')
+    zmatfile.write('%endblock LatticeVectors\nAtomicCoordinatesFormat Ang'+
                '\n\nZM.UnitsLength Ang\nZM.UnitsAngle deg\n'+
                '\n%block Zmatrix\n')
     if first != 1:
-        file.write('cartesian\n')
+        zmatfile.write('cartesian\n')
     for ii in range(len(xyz)):
         if ii+1 == first:
-            file.write('molecule\n')
+            zmatfile.write('molecule\n')
         if ii+1 >= first and ii+1 <= last:
             # We are within the molecular block
             line =string.rjust('%i'%speciesnumber[ii], 2)
@@ -508,43 +508,43 @@ def WriteFDFFileZmat(filename, vectors, speciesnumber, atomnumber, xyz, first=0,
             line+=string.rjust('%.9f'%e, 16)
             line+=string.rjust('%.9f'%f, 16)
             line+='   0 0 0\n'
-            file.write(line)
+            zmatfile.write(line)
         else:
             line =string.rjust('%i'%speciesnumber[ii], 2)
             line+=string.rjust('%.9f'%xyz[ii][0], 16)
             line+=string.rjust('%.9f'%xyz[ii][1], 16)
             line+=string.rjust('%.9f'%xyz[ii][2], 16)
             line+='   0 0 0\n'
-            file.write(line)
+            zmatfile.write(line)
         if ii+1 == last:
-            file.write('cartesian\n')
-    file.write('constants\n')
-    file.write('variables\n')
-    file.write('constraints\n')
-    file.write('%endblock Zmatrix\n')
+            zmatfile.write('cartesian\n')
+    zmatfile.write('constants\n')
+    zmatfile.write('variables\n')
+    zmatfile.write('constraints\n')
+    zmatfile.write('%endblock Zmatrix\n')
 
 #--------------------------------------------------------------------------------
 # Read systemlabel.STRUCT_OUT files
 
 
 def ReadSTRUCT_OUTFile(filename):
-    file = SIO_open(filename, 'r')
+    stfile = SIO_open(filename, 'r')
     # Read cell vectors (lines 1-3)
     vectors = []
     for i in range(3):
-        data = string.split(file.readline())
+        data = string.split(stfile.readline())
         vectors.append([string.atof(data[j]) for j in range(3)])
     # Read number of atoms (line 4)
-    numberOfAtoms = string.atoi(string.split(file.readline())[0])
+    numberOfAtoms = string.atoi(string.split(stfile.readline())[0])
     # Read remaining lines
     speciesnumber, atomnumber, xyz = [], [], []
-    for line in file.readlines():
+    for line in stfile.readlines():
         if len(line)>4: # Ignore blank lines
             data = string.split(line)
             speciesnumber.append(string.atoi(data[0]))
             atomnumber.append(string.atoi(data[1]))
             xyz.append([string.atof(data[2+j]) for j in range(3)])
-    file.close()
+    stfile.close()
     if len(speciesnumber)!=numberOfAtoms:
         print 'io.siesta.ReadSTRUCT_OUTFile: Inconstency in %s detected!' %filename
     xyz = N.array(xyz, N.float)
@@ -1558,7 +1558,7 @@ class HS:
 
     Derived internal variables:
 
-    - *listhptr(1:nuo)*          : Start of row-1 in sparse matrix 
+    - *listhptr(1:nuo)*          : Start of row-1 in sparse matrix
     - *atomindx(1:nuo)*          : Atom index corresponding to orbital in unitcell
     - *rcell(1:3,1:3)*           : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)
 
@@ -1654,44 +1654,44 @@ class HS:
         print 'io.siesta.__ReadTSHSFile: Reading', filename
         self.version = 0
         # Open binary Fortran file
-        file = SIO_open(filename, 'rb')
-        nau, nou, nos, nspin, maxnh = ReadFortranBin(file, fortranLong, 5)
-        xa = N.reshape(N.array(ReadFortranBin(file, 'd', 3*nau)), (nau, 3))*PC.Bohr2Ang
+        fortfile = SIO_open(filename, 'rb')
+        nau, nou, nos, nspin, maxnh = ReadFortranBin(fortfile, fortranLong, 5)
+        xa = N.reshape(N.array(ReadFortranBin(fortfile, 'd', 3*nau)), (nau, 3))*PC.Bohr2Ang
         xa = N.require(xa.T, requirements=['A', 'F'])
-        isa = ReadFortranBin(file, fortranLong, nau); del isa
-        ucell = N.transpose(N.reshape(N.array(ReadFortranBin(file, 'd', 9)), (3, 3)))*PC.Bohr2Ang
-        gamma = ReadFortranBin(file, 'L', 1)[0]!=0        # Read boolean (works with ifort)
-        onlyS = ReadFortranBin(file, 'L', 1)[0]!=0        # Read boolean (works with ifort)
-        ts_gamma_scf = ReadFortranBin(file, 'L', 1)[0]!=0 # Read boolean (works with ifort)
-        ts_kscell = N.reshape(N.array(ReadFortranBin(file, fortranLong, 9)), (3, 3))
-        ts_kdispl = N.array(ReadFortranBin(file, 'd', 3))
-        istep, ia1 = ReadFortranBin(file, fortranLong, 2)
-        lasto = N.array(ReadFortranBin(file, fortranLong, nau+1))
+        isa = ReadFortranBin(fortfile, fortranLong, nau); del isa
+        ucell = N.transpose(N.reshape(N.array(ReadFortranBin(fortfile, 'd', 9)), (3, 3)))*PC.Bohr2Ang
+        gamma = ReadFortranBin(fortfile, 'L', 1)[0]!=0        # Read boolean (works with ifort)
+        onlyS = ReadFortranBin(fortfile, 'L', 1)[0]!=0        # Read boolean (works with ifort)
+        ts_gamma_scf = ReadFortranBin(fortfile, 'L', 1)[0]!=0 # Read boolean (works with ifort)
+        ts_kscell = N.reshape(N.array(ReadFortranBin(fortfile, fortranLong, 9)), (3, 3))
+        ts_kdispl = N.array(ReadFortranBin(fortfile, 'd', 3))
+        istep, ia1 = ReadFortranBin(fortfile, fortranLong, 2)
+        lasto = N.array(ReadFortranBin(fortfile, fortranLong, nau+1))
         if not gamma:
-            indxuo = N.array(ReadFortranBin(file, fortranLong, nos))
+            indxuo = N.array(ReadFortranBin(fortfile, fortranLong, nos))
         else:
             # For gamma point make indxuo such that indexes not pointing to unitcell give error, i.e., -1.
             tmp1 = N.array(range(1, nou+1), N.int)
             tmp2 = -N.ones((nos-nou), N.int)
             indxuo = N.concatenate((tmp1, tmp2))
-        numhg = N.array(ReadFortranBin(file, fortranLong, nou))
-        qtot, temp = ReadFortranBin(file, 'd', 2)
+        numhg = N.array(ReadFortranBin(fortfile, fortranLong, nou))
+        qtot, temp = ReadFortranBin(fortfile, 'd', 2)
         temp = temp * PC.Rydberg2eV
-        ef = ReadFortranBin(file, 'd', 1)[0]*PC.Rydberg2eV
+        ef = ReadFortranBin(fortfile, 'd', 1)[0]*PC.Rydberg2eV
         listh = []
         for ii in range(nou):
-            listh += list(ReadFortranBin(file, fortranLong, numhg[ii]))
+            listh += list(ReadFortranBin(fortfile, fortranLong, numhg[ii]))
         listh = N.array(listh)
         Ssparse, cnt = N.zeros(maxnh, N.float), 0
         for ii in range(nou):
-            Ssparse[cnt:cnt+numhg[ii]]=ReadFortranBin(file, 'd', numhg[ii])
+            Ssparse[cnt:cnt+numhg[ii]]=ReadFortranBin(fortfile, 'd', numhg[ii])
             cnt=cnt+numhg[ii]
         if not onlyS:
             Hsparse = N.zeros((nspin, maxnh), N.float, order='F')
             for ispin in range(nspin):
                 cnt=0
                 for ii in range(nou):
-                    Hsparse[ispin, cnt:cnt+numhg[ii]]=ReadFortranBin(file, 'd', numhg[ii])
+                    Hsparse[ispin, cnt:cnt+numhg[ii]]=ReadFortranBin(fortfile, 'd', numhg[ii])
                     cnt=cnt+numhg[ii]
             Hsparse = Hsparse.T*PC.Rydberg2eV
             Hsparse = N.require(Hsparse, requirements=['A', 'F'])
@@ -1701,7 +1701,7 @@ class HS:
             xij = N.zeros((maxnh, 3), N.float, order='F')
             cnt=0
             for ii in range(nou):
-                tmp=ReadFortranBin(file, 'd', numhg[ii]*3)
+                tmp=ReadFortranBin(fortfile, 'd', numhg[ii]*3)
                 tmp = N.reshape(tmp, (3, numhg[ii]))
                 xij[cnt:cnt+numhg[ii], :] = tmp.T
                 cnt=cnt+numhg[ii]
@@ -1710,7 +1710,7 @@ class HS:
 
         else:
             xij = N.zeros((3, maxnh), N.float, order='F')
-        file.close()
+        fortfile.close()
 
         general = [nau, nou, nos, nspin, maxnh, gamma, onlyS, istep, ia1, qtot, temp, ef]
         sparse = [lasto, numhg, listh, indxuo]
@@ -1723,7 +1723,7 @@ class HS:
     def makeDerivedQuant(self):
         """
         Create derived internal variables:
-        listhptr(1:nuo) : Start of row-1 in sparse matrix 
+        listhptr(1:nuo) : Start of row-1 in sparse matrix
         atomindx(1:nuo) : Atom index corresponding to orbital in unitcell
         rcell(1:3,1:3)  : Reciprocal lattice vectors (ivec,ixyz) (rcell . cell = I)
         """
@@ -1747,7 +1747,7 @@ class HS:
     def removeUnitCellXij(self, UseF90helpers=True):
         """
         Remove displacements within unitcell from xij
-        NOTE: We remove the in cell difference so xij corresponds to 
+        NOTE: We remove the in cell difference so xij corresponds to
               lattice vectors to the relevant part of the supercell.
         NOTE: xij = Rj-Ri where Ri,j corresponds to positions of the orbitals H_{i,j}
         TODO: Check why some orbitals in sparse matrix reported within cell but have xij!

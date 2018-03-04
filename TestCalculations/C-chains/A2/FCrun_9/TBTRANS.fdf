@@ -1,0 +1,10 @@
+%block TBT.Contours
+   line
+%endblock
+
+%block TBT.Contour.line
+ part line
+   from -6. eV to 2.0 eV
+    delta 0.01 eV
+     method mid-rule
+%endblock

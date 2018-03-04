@@ -1,0 +1,29 @@
+### Lines written Tue Feb 14 12:18:19 2017 
+TS.onlyS .true.
+SystemName STRUCT_3
+SystemLabel STRUCT_3
+
+%include ./STRUCT_3.fdf
+
+### Lines from RUN.fdf 
+SystemTitle device
+SystemLabel device
+
+SolutionMethod     transiesta
+
+%block kgrid_Monkhorst_Pack
+  5    0    0    0.0
+  0    1    0    0.0
+  0    0    1    0.0
+%endblock kgrid_Monkhorst_Pack
+
+%include ./PARAM.fdf
+%include STRUCT_3.fdf
+
+%include ./ELEC.fdf
+%include ./TBTRANS.fdf
+
+%block Geometry.Constraints
+atom from  1 to  5
+atom from 13 to 17
+%endblock
