@@ -503,8 +503,6 @@ class Symmetry:
         possible = N.concatenate((possible, self.pbc))
         # remove duplicates etc
         possible = myUnique(possible, self.accuracy)
-        # sort along the x component
-        possible.view('f8,f8,f8').sort(order=['f0'], axis=0)
 
         # Go through combinations and check if possible
         i1, i2, i3, done, NP = 0, 1, 2, False, len(possible)
@@ -902,6 +900,9 @@ def myUnique(myset, accuracy):
     dist = N.sum(myset*myset, 1) # Sort by length
     ipiv = dist.argsort()
     myset = myset[ipiv, :]
+
+    # sort along the x component
+    myset.view('f8,f8,f8').sort(order=['f0'], axis=0)
 
     # remove zero length
     if abs(distance(myset[0]))<accuracy:
