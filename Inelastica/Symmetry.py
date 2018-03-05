@@ -999,7 +999,10 @@ def findRadi(a1, a2, a3):
     dist = N.sort(distance(N.array(poss)))
     return dist[1]/2.0
 
-if __name__ == '__main__':
+def test():
+    """
+    Run a torture test of the symmetry analysis
+    """
     import numpy.linalg as LA
 
     # Tourture test FCC lattice
@@ -1040,3 +1043,4 @@ if __name__ == '__main__':
         if len(sym.pointU33)!=48 or sym.basis.NN!=NB or len(sym.U33)!=8:
             print(N1, N2, N3, NB)
             sys.exit('Failed in tourture test of symmetry')
+
