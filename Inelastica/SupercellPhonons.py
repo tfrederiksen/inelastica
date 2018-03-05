@@ -81,6 +81,10 @@ def GetOptions(argv, **kwargs):
                  help='Location of TranSIESTA calculation directory (will ignore FC and OnlyS directories) [default=%(default)s]')
     p.add_argument('--nbands', dest='nbands', type=int, default=None,
                  help='Number of electronic bands to be included in netCDF output (lower energy bands) [default=%(default)s]')
+    p.add_argument('--bandMin', dest='bandMin', type=int, default=0,
+                 help='Lowest electronic band index to be included in netCDF output (NOTE: --nbands has precence) [default=%(default)s]')
+    p.add_argument('--bandMax', dest='bandMax', type=int, default=None,
+                 help='Highest electronic band index to be included in netCDF output (NOTE: --nbands has precence) [default=%(default)s]')
 
     options = p.parse_args(argv)
 
@@ -548,6 +552,17 @@ def main(options):
                 ncf.createDimension('orbs', SCDM.rednao)
                 if options.nbands and options.nbands < SCDM.rednao:
                     nbands = options.nbands
+                    bandLow = 0
+                    bandHigh = nbands
+                elif options.bandMin and options.bandMin < SCDM.rednao:
+                    if options.bandMax and options.bandMax < SCDM.rednao:
+                        nbands = options.bandMax-options.bandMin
+                        bandLow = options.bandMin
+                        bandHigh = options.bandMax
+                    else:
+                        nbands = SCDM.rednao-options.bandMin
+                        bandLow = options.bandMin
+                        bandHigh = SCDM.rednao
                 else:
                     nbands = SCDM.rednao
                 ncf.createDimension('bands', nbands)
@@ -562,9 +577,9 @@ def main(options):
                     print ' ... spin %i: Allclose='%j, N.allclose(ev[j], ev2, atol=1e-5, rtol=1e-3)
                 ncf.sync()
             # Write to NetCDF
-            evals[i, :] = ev[:, :nbands]
-            evecsRe[i, :] = evec[:, :, :nbands].real
-            evecsIm[i, :] = evec[:, :, :nbands].imag
+            evals[i, :] = ev[:, bandLow:bandHigh]
+            evecsRe[i, :] = evec[:, :, bandLow:bandHigh].real
+            evecsIm[i, :] = evec[:, :, bandLow:bandHigh].imag
         ncf.sync()
         # Include basis orbitals in netcdf file
         if SCDM.Sym.basis.NN == len(SCDM.OrbIndx):
