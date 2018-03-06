@@ -524,8 +524,8 @@ class Symmetry:
                     i2=i1+2
                     incindx=0
             if incindx==0: i1+=1
-            i2 = max(i1+1, i2)
-            i3 = max(i2+1, i3)
+            i2 = min(max(i1+1, i2),NP-1)
+            i3 = min(max(i2+1, i3),NP-1)
             #if incindx<=1: print i1, i2, i3
             return i1, i2, i3
 
@@ -900,9 +900,6 @@ def myUnique(myset, accuracy):
     dist = N.sum(myset*myset, 1) # Sort by length
     ipiv = dist.argsort()
     myset = myset[ipiv, :]
-
-    # sort along the x component
-    myset.view('f8,f8,f8').sort(order=['f0'], axis=0)
 
     # remove zero length
     if abs(distance(myset[0]))<accuracy:
