@@ -37,7 +37,6 @@ These packages are required
    - numpy >= 1.8
    - scipy
    - netCDF4
-   - setuptools
 
 ## Citations ##
 If used to produce scientific contributions please include relevant citations to
