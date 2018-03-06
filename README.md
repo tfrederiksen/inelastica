@@ -26,12 +26,11 @@ while they worked in the group of Mads Brandbyge at the Technical University of 
 
 Manual installation is performed with the command
 
-       python setup.py install --prefix=<prefix>
+    python setup.py install --prefix=<prefix>
 
 or
 
-	python setup.py install --home=<prefix>
-
+    python setup.py install --home=<prefix>
 
 ### Dependencies ###
 These packages are required
