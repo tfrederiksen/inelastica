@@ -19,15 +19,26 @@ while they worked in the group of Mads Brandbyge at the Technical University of 
    - `pyTBT`: A Python version of tbtrans for elastic electron transport
    - `EigenChannels`: Eigenchannel analysis and generation of real-space scattering state wave functions
    - `Phonons`: Vibration modes/frequencies and electron-vibration couplings
-   - `Inelastica`: Inelastic transport (IETS)
+   - `Inelastica`: Inelastic transport characteristics (IETS spectroscopy)
+   - `STM`: Calculation of STM images using the Bardeen approximation
 
 ## Installation ##
 
+Manual installation is performed with the command
+
+   python setup.py install --prefix=<prefix>
+
+or
+
+   python setup.py install --home=<prefix>
+
+
 ### Dependencies ###
 These packages are required
-   - numpy
+   - numpy >= 1.8
    - scipy
    - netCDF4
+   - setuptools
 
 ## Citations ##
 If used to produce scientific contributions please include relevant citations to
