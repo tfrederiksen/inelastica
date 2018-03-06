@@ -86,9 +86,9 @@ def git_version():
     # Default Inelastica version info
     MAJOR = 1
     MINOR = 3
-    MICRO = 0
+    MICRO = 1
     VERSION = [MAJOR, MINOR, MICRO]
-    GIT_REVISION = "82ed6cb22d00597f8910930958f095c161757b79"
+    GIT_REVISION = "5daa0d366a2644799f1571d3a35cf1cd632682b2"
     GIT_LABEL = '.'.join(map(str,[MAJOR, MINOR, MICRO]))
 
     def _minimal_ext_cmd(cmd):

@@ -39,3 +39,13 @@ If `Inelastica <docs_>`_ is used to produce scientific contributions please incl
       Volume = {93},
       Doi = {10.1103/PhysRevB.93.115434},
     }
+
+    @Article{noise,
+      Title = {Inelastic shot noise characteristics of nanoscale junctions from first principles},
+      Author = {Avriller, R. and Frederiksen, T.},
+      Journal = {Phys. Rev. B},
+      Year = {2012},
+      Pages = {155411},
+      Volume = {86},
+      Doi = {10.1103/PhysRevB.86.155411},
+    }
