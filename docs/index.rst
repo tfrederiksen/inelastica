@@ -37,7 +37,8 @@ Inelastica contains a number of scripts such as:
  * **pyTBT**: A Python version of tbtrans for elastic electron transport
  * **EigenChannels**: Eigenchannel analysis and generation of real-space scattering state wave functions
  * **Phonons**: Vibration modes/frequencies and electron-vibration couplings
- * **Inelastica**: Inelastic transport (IETS)
+ * **Inelastica**: Inelastic transport characteristics (IETS spectroscopy, inelastic shot noise, local heating, etc.)
+ * **STM**: Calculation of STM images using the Bardeen approximation
 
 
 Contributions, issues and bugs
