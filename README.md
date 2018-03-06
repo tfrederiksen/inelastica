@@ -16,18 +16,29 @@ while they worked in the group of Mads Brandbyge at the Technical University of 
 
    - `geom2geom`: Geometry conversion between different file formats
    - `Bandstructures`: Computation of electron and phonon band structures
-   - `pyTBT`: A Python version of tbtrans for elastic electron transport
+   - `pyTBT`: A Python version of [tbtrans][siesta] for elastic electron transport
    - `EigenChannels`: Eigenchannel analysis and generation of real-space scattering state wave functions
    - `Phonons`: Vibration modes/frequencies and electron-vibration couplings
-   - `Inelastica`: Inelastic transport (IETS)
+   - `Inelastica`: Inelastic transport characteristics (IETS spectroscopy, inelastic shot noise, local heating, etc.)
+   - `STM`: Calculation of STM images using the Bardeen approximation
 
-## Installation ##
-
-### Dependencies ###
-These packages are required
-   - numpy
+## Dependencies ##
+Before installation of Inelastica the following packages are required
+   - numpy >= 1.8
    - scipy
    - netCDF4
+
+## Installation ##
+Manual installation of Inelastica is performed with the command
+
+    python setup.py install --prefix=<prefix>
+    # or
+    python setup.py install --home=<my-python-home>
+
+One may also wish to set the following environment variables
+
+    export PYTHONPATH=<my-python-home>/lib/python/
+    export PATH=$PATH:<my-python-home>/bin/
 
 ## Citations ##
 If used to produce scientific contributions please include relevant citations to
@@ -64,8 +75,18 @@ If used to produce scientific contributions please include relevant citations to
       Doi = {10.1103/PhysRevB.93.115434},
     }
 
+    @Article{noise,
+      Title = {Inelastic shot noise characteristics of nanoscale junctions from first principles},
+      Author = {Avriller, R. and Frederiksen, T.},
+      Journal = {Phys. Rev. B},
+      Year = {2012},
+      Pages = {155411},
+      Volume = {86},
+      Doi = {10.1103/PhysRevB.86.155411},
+    }
+
 ## Documentation ##
-Some documentation may be found at the [__Inelastica__][docs] page [here][docs].
+Some documentation may be found [here][docs].
 
 ## Contributions, issues and bugs ##
 Contributions are highly appreciated.

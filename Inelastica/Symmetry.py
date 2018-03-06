@@ -516,12 +516,12 @@ class Symmetry:
             if incindx==2:
                 i3=(i3+1)%NP
                 if i3==0:
-                    i3=i2+2
+                    i3=(i2+2)%NP
                     incindx=1
             if incindx==1:
-                i2=(i2+1)%NP
+                i2=(i2+1)%(NP-1)
                 if i2==0:
-                    i2=i1+2
+                    i2=(i1+2)%(NP-1)
                     incindx=0
             if incindx==0: i1+=1
             i2 = min(max(i1+1, i2),NP-1)
