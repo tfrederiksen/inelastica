@@ -1,0 +1,38 @@
+#!/bin/sh
+# requesting the number of cores needed on exclusive nodes
+#SBATCH -N 1
+#SBATCH --tasks-per-node=20
+#
+# job time, change for what your job requires
+#SBATCH -t 23:59:00
+#
+# job name
+#SBATCH -J C-CuCO3x3
+
+# write this script to stdout-file - useful for scripting errors
+cat $0
+# Example assumes we need the intel runtime and OpenMPI library
+# customise for the libraries your executable needs
+
+export LD_LIBRARY_PATH=/lunarc/nobackup/users/hikmpn/local/lib/:$LD_LIBRARY_PATH 
+
+# Copying the executable onto the local disks of the nodes
+# Copy the input file onto the headnode - if your MPI program
+# reads from all tasks, you need to do the above srun construct
+# again
+# change to local disk and start the mpi executable
+cd $SLURM_SUBMIT_DIR
+export OMP_NUM_THREADS=1
+
+module add GCCcore/6.3.0   
+module add GCC/6.3.0-2.27 
+module add OpenBLAS/0.2.19-LAPACK-3.7.0
+module add OpenMPI/2.0.2 
+module add ScaLAPACK/2.0.2-OpenBLAS-0.2.19-LAPACK-3.7.0
+module add FFTW
+
+mpirun /lunarc/nobackup/users/hikmpn/local/bin/transiesta < RUN.fdf > RUN.out
+
+# Copy result files back - example assumes only task zero writes
+# if in your application result files are written on all nodes
+# you need to initiate a copy on each node via srun

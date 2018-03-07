@@ -1,0 +1,44 @@
+SystemTitle BCABCA
+SystemLabel BCABCA
+
+SolutionMethod        diagon
+MullikenInSCF         false
+
+%block GeometryConstraints
+position from  1 to 6
+%endblock GeometryConstraints
+
+SlabDipoleCorrection true
+MeshCutoff          200. Ry
+
+MD.TypeOfRun        CG
+MD.NumCGsteps       0
+MD.UseSaveCG        true
+MD.UseSaveXV        true
+UseSaveData         true
+
+%block kgrid_Monkhorst_Pack
+ 12    0    0    0.0
+ 0    12    0    0.0
+ 0    0    20   0.0
+%endblock kgrid_Monkhorst_Pack
+
+%block ChemicalSpeciesLabel
+    1    6 C.mpn                   # Species index, atomic number, species label
+    2    8 O.mpn                   # Species index, atomic number, species label
+    3   29 Cu.mpn                  # Species index, atomic number, species label
+%endblock ChemicalSpeciesLabel
+
+%block  PAO.BasisSizes
+	Cu.mpn		SZP
+        C.mpn		DZP
+	O.mpn		DZP
+%endblock PAO.BasisSizes
+
+MaxSCFIterations      300           # Maximum number of SCF iter
+DM.Tolerance          1.d-5         # Tolerance in maximum difference
+                                    # between input and output DM
+DM.UseSaveDM          true          # to use continuation files
+
+%include ./STRUCT.fdf
+%include ./Default.fdf

@@ -1,0 +1,22 @@
+### Lines appended Tue Jan 30 21:26:02 2018 
+TS.TBT.PDOSFrom   55
+TS.TBT.PDOSTo     78
+
+TS.NumKxy_A1      1
+TS.NumKxy_A2      1
+pyTBT.K_A1        1
+pyTBT.K_A2        1
+
+TS.TBT.Emin       0.0000  eV
+TS.TBT.Emax       5.0000  eV
+TS.TBT.NPoints    1
+
+TS.HSFileLeft         ELEC/BCA.TSHS
+TS.BufferAtomsLeft    0
+TS.ReplicateA1Left    3
+TS.ReplicateA2Left    3
+
+TS.HSFileRight        ELEC/BCA.TSHS
+TS.BufferAtomsRight   0
+TS.ReplicateA1Right   3
+TS.ReplicateA2Right   3
