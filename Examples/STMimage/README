@@ -6,13 +6,18 @@ NOTE 1: STM calculations require a minimum vacuum gap of 5 Ang, i.e., the distan
 
 NOTE 2: A relatively large lateral surface plane is in general required, as well as a dense k grid, in order to obtain reliable results. The minimal example included here however qualitatively reproduces the expected conductance dip over the CO molecule. 
 
-NEEDS: TotalPotential.grid.nc and Rho.grid.nc. Add the following lines in RUN.fdf for the TranSiesta calculation:
+NOTE 3: The calculated images are displayed with the default tip position at its center.
+
+
+NEEDS: 	TotalPotential.grid.nc
+       	Rho.grid.nc. 
+Add the following lines in RUN.fdf for the TranSiesta calculation:
 SaveTotalPotential true
 SaveRho true
 
-Partial STM images are saved as FDcurr[0-999].nc in respective k-point library [0-999] in the destination directory. Wave functions and their derivatives, etc, are saved in the same way as FD[0-999].nc.
+Partial STM images are saved as FDcurr[0-999].nc in respective k-point library [0-999] in the ./DestDir/. Wave functions and their derivatives, etc, are saved in the same way as FD[0-999].nc.
  
-The k averaged STM image is saved in ./DestDir/STMimage.nc. This image shows the STM image with the default tip position at its center.
+The k averaged STM image is saved in ./DestDir/STMimage.nc.
 
--------------------------------------------------------------
+----------------------------------------------------------------------------------
 For Mathematica users, a Mathematica notebook (AnalyzeSTMimage.nb) is included to visualize the results saved in STMimage.nc.
