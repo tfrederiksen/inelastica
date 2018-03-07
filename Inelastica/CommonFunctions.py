@@ -109,7 +109,7 @@ def runParallel(function, argList, nCPU=None):
     except:
         OBLAS = None
 
-    os.environ['OMP_NUM_THREADS']='1'
+    os.environ['OMP_NUM_THREADS'] = '1'
     os.environ['OPENBLAS_NUM_THREADS']='1'
     if nCPU==None:
         nCPU=MP.cpu_count()
@@ -119,9 +119,9 @@ def runParallel(function, argList, nCPU=None):
     chunks = [argList[ii*nCPU:(ii+1)*nCPU] for ii, jj in enumerate(argList[::nCPU])]
     res = [None]*len(argList)
     for ii, chunk in enumerate(chunks):
-        threads=[]
+        threads = []
         for jj, args in enumerate(chunk):
-            t= MP.Process(target=function, args =(resQue, ii*nCPU+jj,)+args)
+            t = MP.Process(target=function, args =(resQue, ii*nCPU+jj,)+args)
             t.start()
             threads += [t]
         for jj in range(len(threads)):

@@ -671,7 +671,7 @@ class Geom:
         geom = copy.deepcopy(self)
         tmp = []
         anrnum = N.zeros(max(geom.anr)+1, N.int)
-        for i,xyz in enumerate(geom.xyz):
+        for i, xyz in enumerate(geom.xyz):
             if geom.anr[i]>0:
                 tmp += [[geom.anr[i], i]]
                 anrnum[geom.anr[i]] += 1 # count atoms of each element type
@@ -684,7 +684,7 @@ class Geom:
             cons += [list(geom.constrained[j])]
         speciesnumbers = []
         specieslabels = []
-        for i,nanr in enumerate(anrnum):
+        for i, nanr in enumerate(anrnum):
             if nanr!=0:
                 speciesnumbers += [nanr]
                 specieslabels += [PC.PeriodicTable[i]]

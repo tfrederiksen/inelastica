@@ -32,8 +32,8 @@ Units
 
 Always eV and Angstrom!
 
-k-values always given in range [0,1.0] (or [-0.5,0.5]). They are not 
-in reciprocal space. Instead they corresponds to the mathematical 
+k-values always given in range [0,1.0] (or [-0.5,0.5]). They are not
+in reciprocal space. Instead they corresponds to the mathematical
 orthogonal space that is fourier transformed.
 
 .. currentmodule:: Inelastica.pyTBT

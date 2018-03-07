@@ -136,11 +136,10 @@ def GetOptions(argv, **kwargs):
     return options
 
 
-
 def main(options):
     """
     Main routine to compute inelastic transport characteristics (dI/dV, d2I/dV2, IETS etc)
-    
+
     Parameters
     ----------
     options : an ``options`` instance

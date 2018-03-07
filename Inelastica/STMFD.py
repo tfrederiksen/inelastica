@@ -82,7 +82,7 @@ def main(options, kpoint, ikpoint):
 
 
 def LayersAndTipheight(options, kpoint, ikpoint):
-    tmp  = NC.Dataset('./'+options.DestDir+'/'+str(ikpoint)+'/'+options.systemlabel+'.AL0.nc', 'r')
+    tmp = NC.Dataset('./'+options.DestDir+'/'+str(ikpoint)+'/'+options.systemlabel+'.AL0.nc', 'r')
     xyzSupercell = N.array(tmp.variables['xyz'][:], N.float)
     xyz = xyzSupercell.copy()
     noAtoms = len(xyzSupercell[:, 0])
@@ -185,8 +185,8 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     a1, a2, a3 = SLA.norm(steps[0]), SLA.norm(steps[1]), SLA.norm(steps[2])
     avec = [a1, a2, a3]
     orig = N.array(ncfile.variables['origin'][:], N.float)[2]
-    Nzi  = N.int(orig/a3)
-    Nzf  = Nzi+Nz
+    Nzi = N.int(orig/a3)
+    Nzf = Nzi+Nz
     PotDevice = pot[Nzi:Nzf, :, :]
     SubPot = N.transpose(PotDevice, [2, 1, 0])
     TipPot = SubPot[:, :, ::-1].copy()
@@ -320,7 +320,7 @@ def Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint):
     #print 'd^2x:',mixX,',d2^y:',mixY,',dxdy:',mixXY
     bx = mixX/a1**2; by = mixY/a2**2; bz = 1./a3**2;
     bands = 23
-    D2    = N.zeros((bands, NN), N.complex)
+    D2 = N.zeros((bands, NN), N.complex)
 
     #tau z
     D2[0, Nx*Ny:NN] = [-bz for ii in range(Nx*Ny, NN)]

@@ -9,7 +9,7 @@ import Inelastica.iets as IETS
 import Inelastica.info as info
 
 # Loop over the three orientations of the carbon chain
-for d in ['A1','A2','A3']:
+for d in ['A1', 'A2', 'A3']:
     ver = info.label
     print 'Doing', ver
 

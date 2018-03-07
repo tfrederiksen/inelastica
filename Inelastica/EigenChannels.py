@@ -125,6 +125,7 @@ def GetOptions(argv, **kwargs):
 
     return options
 
+
 def main(options):
     """
     Main routine to compute eigenchannel scattering states
@@ -488,8 +489,8 @@ def writemacubin(fn, YY, nx, ny, nz, origo, dstep):
         mlklbin=struct.pack('i', nx*ny*4)
         for kk in range(ny):
             for jj in range(nx):
-                mlklbin+=struct.pack('f', YY[jj, kk, ii])
-        mlklbin+=struct.pack('i', nx*ny*4)
+                mlklbin += struct.pack('f', YY[jj, kk, ii])
+        mlklbin += struct.pack('i', nx*ny*4)
         fo.write(mlklbin)
 
     fo.close()

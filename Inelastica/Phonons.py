@@ -181,9 +181,9 @@ def GetOptions(argv, **kwargs):
     del options.FCfirst, options.FClast
 
     # PBCFirst/PBCLast
-    if options.PBCFirst<options.DeviceFirst:
+    if options.PBCFirst < options.DeviceFirst:
         options.PBCFirst = options.DeviceFirst
-    if options.PBCLast>options.DeviceLast:
+    if options.PBCLast > options.DeviceLast:
         options.PBCLast = options.DeviceLast
 
     # Isotopes specified in separate file?
@@ -844,7 +844,7 @@ def main(options):
     """
     Main routine to compute vibrational modes and frequencies (and optionally
     also the corresponding electron-vibration couplings)
-    
+
     Parameters
     ----------
     options : an ``options`` instance

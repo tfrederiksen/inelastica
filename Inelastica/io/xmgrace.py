@@ -636,7 +636,7 @@ class Graph:
         for i in range(len(ticklist)):
             y, lab = ticklist[i][0], ticklist[i][1]
             if lab in symbols:
-                # replace with xmgr code for symbol 
+                # replace with xmgr code for symbol
                 lab = symbols[lab]
             self.string += '@ yaxis tick major %i, %.8f \n'%(i, y)
             self.string += '@ yaxis ticklabel %i, \"%s\" \n'%(i, lab)
@@ -673,6 +673,7 @@ class Plot:
     """
     Class for a plot (containing graphs)
     """
+
     def __init__(self, filename='Default.agr', *graphs):
         "Returning instance of class."
         self.filename = filename
