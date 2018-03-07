@@ -40,6 +40,7 @@ import string
 import glob
 import os
 import ast
+import time
 import Inelastica.ValueCheck as VC
 import Inelastica.CommonFunctions as CF
 import Inelastica.io.netcdf as writeNC
@@ -252,10 +253,6 @@ def main(options):
     n.write(xyz, 'Geometry')
     n.write(TipHeight, 'TipHeight')
     n.close()
-
-    #Convert .nc file...
-    tmpstr = '/bionano2/netcdf/bin/ncdump ./'+options.DestDir+'/STMimage.nc | /bionano2/netcdf/bin/ncgen -o ./'+options.DestDir+'/STMimage.nc -k1'
-    os.system(tmpstr)
 
     CF.PrintMainFooter('STM')
 
