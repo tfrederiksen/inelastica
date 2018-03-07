@@ -839,7 +839,6 @@ def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, rtype = 'TS'):
             SubmitPBS(workingFolder, PBSfile)
     else:
         print "ERROR: Could not find PBS template file", PBStemplate
-        kuk
 
 
 def WritePBS(PBStemplate, PBSout, PBSsubs):
