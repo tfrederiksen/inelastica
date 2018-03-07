@@ -671,20 +671,20 @@ class Geom:
         geom = copy.deepcopy(self)
         tmp = []
         anrnum = N.zeros(max(geom.anr)+1, N.int)
-        for i in range(len(geom.xyz)):
+        for i,xyz in enumerate(geom.xyz):
             if geom.anr[i]>0:
                 tmp += [[geom.anr[i], i]]
-                anrnum[geom.anr[i]] += 1
-        tmp.sort()
+                anrnum[geom.anr[i]] += 1 # count atoms of each element type
+        tmp.sort() # sort according to increasing atom number
         xyz = []
         cons = []
-        for i in range(len(tmp)):
-            j = tmp[i][1]
+        for t in tmp:
+            j = t[1] # sorted index
             xyz += [geom.xyz[j]]
             cons += [list(geom.constrained[j])]
         speciesnumbers = []
         specieslabels = []
-        for nanr in anrnum:
+        for i,nanr in enumerate(anrnum):
             if nanr!=0:
                 speciesnumbers += [nanr]
                 specieslabels += [PC.PeriodicTable[i]]

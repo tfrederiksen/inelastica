@@ -838,7 +838,7 @@ def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, rtype = 'TS'):
             workingFolder, PBSfile = os.path.split(os.path.abspath(PBSout))
             SubmitPBS(workingFolder, PBSfile)
     else:
-        print "ERROR: Could not find PBS template file", PBStemplate
+        print "WARNING: Could not find PBS template file", PBStemplate
 
 
 def WritePBS(PBStemplate, PBSout, PBSsubs):
@@ -851,8 +851,8 @@ def WritePBS(PBStemplate, PBSout, PBSsubs):
     try: # Check for numbers at start ... not liked by PBS
         tmp=int(last2dir[0][0])+1
         last2dir[0]='a'+last2dir[0]
-    except:
-        pass
+    except Exception as e:
+        print e
     if not PBSsubs: PBSsubs = []
     newPBSsub = PBSsubs+[['$DEFJOBNAME$', last2dir[0]+'-'+last2dir[1]]]
     infile = open(PBStemplate)

@@ -624,8 +624,10 @@ class Graph:
         self.string += '@ xaxis tick spec type both\n@ xaxis tick spec 11\n'
         for i in range(len(ticklist)):
             x, lab = ticklist[i][0], ticklist[i][1]
-            try: lab = symbols[lab]
-            except: pass
+            try:
+                lab = symbols[lab]
+            except Exception as e:
+                print e
             self.string += '@ xaxis tick major %i, %.8f \n'%(i, x)
             self.string += '@ xaxis ticklabel %i, \"%s\" \n'%(i, lab)
 
@@ -634,8 +636,10 @@ class Graph:
         self.string += '@ yaxis tick spec type both\n@ yaxis tick spec 11\n'
         for i in range(len(ticklist)):
             y, lab = ticklist[i][0], ticklist[i][1]
-            try: lab = symbols[lab]
-            except: pass
+            try:
+                lab = symbols[lab]
+            except Exception as e:
+                print e
             self.string += '@ yaxis tick major %i, %.8f \n'%(i, y)
             self.string += '@ yaxis ticklabel %i, \"%s\" \n'%(i, lab)
 

@@ -212,8 +212,8 @@ class step:
         if (not self.done) and (not self.converged):
             try:
                 os.remove(self.dir+"/RUN.out")
-            except:
-                pass
+            except Exception as e:
+                print e
             fns=glob.glob(self.dir+'/*.XV')
             for fn in fns: os.remove(fn)
             fns=glob.glob(self.dir+'/*.ANI')
