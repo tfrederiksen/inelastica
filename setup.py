@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import os
+import os.path as osp
 import time
 import subprocess
 
@@ -61,7 +63,6 @@ from numpy.distutils.system_info import get_info, NotFoundError
 
 # Create list of all sub-directories with
 #   __init__.py files...
-import os
 packages = []
 for subdir, dirs, files in os.walk('Inelastica'):
     if '__init__.py' in files:
@@ -104,28 +105,32 @@ def git_version():
         env['LC_ALL'] = 'C'
         out = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, env=env).communicate()[0]
-        return out
+        return out.strip().decode('ascii')
+
+    current_path = osp.dirname(osp.realpath(__file__))
 
     try:
+        # Get top-level directory
+        git_dir = _minimal_ext_cmd(['git', 'rev-parse', '--show-toplevel'])
+        # Assert that the git-directory is consistent with this setup.py script
+        if git_dir != current_path:
+            raise ValueError('Not executing the top-setup.py script')
+
         # Get latest revision tag
-        out = _minimal_ext_cmd(['git', 'rev-parse', 'HEAD'])
-        rev = out.strip().decode('ascii')
+        rev = _minimal_ext_cmd(['git', 'rev-parse', 'HEAD'])
         if len(rev)>7:
             GIT_REVISION = rev
         # Get latest tag
-        out = _minimal_ext_cmd(['git', 'describe', '--abbrev=0', '--tags'])
-        tag = out.strip().decode('ascii')
+        tag = _minimal_ext_cmd(['git', 'describe', '--abbrev=0', '--tags'])
         tag = tag.replace('v', '')
         if len(tag)>4:
             VERSION = tag.split('.')
         # Get complete "git describe" string
-        out = _minimal_ext_cmd(['git', 'describe', '--tags'])
-        label = out.strip().decode('ascii')
+        label = _minimal_ext_cmd(['git', 'describe', '--tags'])
         if len(label)>7:
             GIT_LABEL = label
         # Get number of commits since tag
-        out = _minimal_ext_cmd(['git', 'rev-list', tag + '..', '--count'])
-        count = out.strip().decode('ascii')
+        count = _minimal_ext_cmd(['git', 'rev-list', tag + '..', '--count'])
         if len(count) == 0:
             count = '1'
     except Exception as e:
@@ -157,7 +162,6 @@ if git_count > 2:
     # If we are in git we try and fetch the
     # git version as well
     GIT_REV, GIT_VER, GIT_COUNT, GIT_LAB = git_version()
-    print(git_version())
     with open(filename, 'w') as fh:
         fh.write(version_str.format(version=GIT_VER,
                                     count=GIT_COUNT,
