@@ -101,7 +101,7 @@ def GetDihedral(r1, r2, r3, r4):
     return 360.0*angle/(2*N.pi)
 
 
-class Geom:
+class Geom(object):
 
     '''
     Geom class:

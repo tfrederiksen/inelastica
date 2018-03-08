@@ -272,7 +272,7 @@ For help use --help!
         print arg
         iofile.write(arg+'\n')
 
-    class myopen:
+    class myopen(object):
         # Double stdout to RUN.out and stdout
 
         def write(self, x):

@@ -24,7 +24,7 @@ import sys
 mm = MM.mm
 
 
-class Symmetry:
+class Symmetry(object):
 
     """
     Classify symmetry of lattice and basis.
@@ -580,7 +580,7 @@ class Symmetry:
         # Find basis
         xyz = moveIntoCell(self.xyz, a1, a2, a3, self.accuracy)
 
-        class basis:
+        class basis(object):
             pass
         basis.xyz, basis.snr, basis.anr = [], [], []
         for ii in range(len(xyz)):

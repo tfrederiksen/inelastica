@@ -38,12 +38,12 @@ import Inelastica.physics.constants as PC
 ##################### Global variabels #################
 
 
-class general:
+class general(object):
     pass
 steps=[]
 
 
-class savedData:
+class savedData(object):
     pass
 
 ########################################################
@@ -141,7 +141,7 @@ def runNEB():
 #################### Class for each step ###############
 
 
-class step:
+class step(object):
     global steps, general
 
     def __init__(self, dir, restart, iistep, initial=None, final=None):
@@ -345,7 +345,7 @@ For help use --help!
     general.initial = args[0]
     general.final = args[1]
 
-    class myopen:
+    class myopen(object):
         # Double stdout to RUN.out and stdout
 
         def write(self, x):

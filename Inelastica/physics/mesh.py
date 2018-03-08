@@ -31,7 +31,7 @@ def generatelinmesh(Nk):
     return N.array(kpts), N.array(wgts)
 
 
-class kmesh:
+class kmesh(object):
 
     """
     Create a k-mesh samling where each of the three components

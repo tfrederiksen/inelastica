@@ -77,7 +77,7 @@ def dec2hash(dec):
     return s
 
 
-class SigDir:
+class SigDir(object):
 
     def __init__(self, path):
         self.path, self.data = path, {}
@@ -159,7 +159,7 @@ class SigDir:
             f.close()
 
 
-class SavedSigClass:
+class SavedSigClass(object):
 
     """
     Saves calculated Sig in files in the directory of the TSHS file for the electrode.
@@ -189,7 +189,7 @@ global SavedSig
 SavedSig = SavedSigClass()
 
 
-class ElectrodeSelfEnergy:
+class ElectrodeSelfEnergy(object):
 
     """
     Calculate surface Greens function and self energy
@@ -520,7 +520,7 @@ class ElectrodeSelfEnergy:
 #############################################################################
 
 
-class GF:
+class GF(object):
 
     def __init__(self, TSHSfile, elecL, elecR, Bulk=True, DeviceAtoms=[0, 0], BufferAtoms=N.empty((0,))):
         """

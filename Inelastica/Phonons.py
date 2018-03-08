@@ -198,7 +198,7 @@ def GetOptions(argv, **kwargs):
     return options
 
 
-class FCrun():
+class FCrun(object):
 
     def __init__(self, runfdf):
         self.fdf = runfdf
@@ -308,7 +308,7 @@ class OTSrun(FCrun): # Only TranSiesta run
             sys.exit('Phonons.GetFileLists: No TSHS file found in %s'%self.directory)
 
 
-class OSrun:
+class OSrun(object):
 
     def __init__(self, onlySdir, kpoint, atype=N.complex):
         print 'Phonons.GetOnlyS: Reading from', onlySdir
@@ -357,7 +357,7 @@ class OSrun:
             self.Displ = Displ
 
 
-class DynamicalMatrix():
+class DynamicalMatrix(object):
 
     def __init__(self, fdfs, DynamicAtoms=None, TSrun=False):
         self.fdfs = fdfs

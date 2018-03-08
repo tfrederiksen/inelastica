@@ -121,7 +121,7 @@ def Datafile2XYsets(fn, Sort=False, **keywords):
     return Array2XYsets(A, **keywords)
 
 
-class Dataset:
+class Dataset(object):
 
     """
     Generic class for any XMGR dataset
@@ -381,7 +381,7 @@ class XYSIZEset(XYset):
         return string
 
 
-class Graph:
+class Graph(object):
 
     """
     Class for a graph (containing datasets)
@@ -676,7 +676,7 @@ class Graph:
         return string
 
 
-class Plot:
+class Plot(object):
 
     """
     Class for a plot (containing graphs)

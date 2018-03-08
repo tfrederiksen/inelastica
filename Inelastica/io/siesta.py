@@ -1330,7 +1330,7 @@ def ReadIonNCFile(filename, printnorm=False):
     """
     Reads a NetCDF file that describes the basis orbitals of a given species
     """
-    class ion:
+    class ion(object):
         pass
 
     file = NC4.Dataset(filename, 'r')
@@ -1369,7 +1369,7 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
     """
     Builds the information for each basis orbital in the Hamiltonian
     """
-    class basis:
+    class basis(object):
         pass
     CSL = GetFDFblock(FDFfile, 'ChemicalSpeciesLabel')
     systemlabel = GetFDFlineWithDefault(FDFfile, 'SystemLabel', str, 'siesta', 'io.siesta')
@@ -1521,7 +1521,7 @@ def CheckTermination(infile):
 #
 
 
-class HS:
+class HS(object):
     """
     Create full *HS* from *TSHS* file. Read fn and assemble for specified k-point
 
