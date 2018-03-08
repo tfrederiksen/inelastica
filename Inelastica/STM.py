@@ -183,19 +183,19 @@ def main(options):
         else:
             doK += [ii]
 
-    if noFDcalcs>nokpts-1:
+    if noFDcalcs > nokpts-1:
         print('\nAll ('+str(nokpts)+') k points are already finished!\n')
     elif noFDcalcs>0 and noFDcalcs<nokpts:
         print(str(nokpts-len(doK))+' ('+str(N.round(100.*((1.*nokpts-len(doK))/nokpts), 1))+'%) k points already done. Will proceed with the rest.')
         print('You should perhaps remove the loc-basis states in the most recent k folder ')
         print('since some of these may not have been calculated before interuption.\n')
     else:
-        if dd==1:
+        if dd == 1:
             print('No STM calculations found in existing directory '+str(options.DestDir)+'/. Starting from scratch.')
             print('(...by possibly using saved localized-basis states)\n')
         else:
             print('STM calculation starts.')
-    args=[(options, ik) for ik in doK]
+    args = [(options, ik) for ik in doK]
     tmp = CF.runParallel(calcTSWFPar, args, nCPU=options.nCPU)
 
     print('Calculating k-point averaged STM image')
@@ -234,7 +234,7 @@ def main(options):
         for jj in range(1, 5):
             tmp2 = tmp[ii].split()
             xyz[ii, jj-1] = ast.literal_eval(tmp2[jj])
-            if jj>1:
+            if jj > 1:
                 xyz[ii, jj-1] = xyz[ii, jj-1]*PC.Bohr2Ang
 
     drAtoms = N.zeros(len(xyz))
@@ -262,19 +262,20 @@ def calcTSWF(options, ikpoint):
     kpoint = options.kpoints.k[ikpoint]
     def calcandwrite(A, txt, kpoint, ikpoint):
         if isinstance(A, MM.SpectralMatrix):
-            A=A.full()
-        A=A*PC.Rydberg2eV # Change to 1/Ryd
+            A = A.full()
+        A = A*PC.Rydberg2eV # Change to 1/Ryd
         ev, U = LA.eigh(A)
         Utilde = N.empty(U.shape, U.dtype)
         for jj, val in enumerate(ev): # Problems with negative numbers
-            if val<0: val=0
+            if val < 0:
+                val = 0
             Utilde[:, jj]=N.sqrt(val/(2*N.pi))*U[:, jj]
         indx2 = N.where(abs(abs(ev)>1e-4))[0] # Pick non-zero states
 
-        ev=ev[indx2]
-        Utilde=Utilde[:, indx2]
-        indx=ev.real.argsort()[::-1]
-        fn=options.DestDir+'/%i/'%(ikpoint)+options.systemlabel+'.%s'%(txt)
+        ev = ev[indx2]
+        Utilde = Utilde[:, indx2]
+        indx = ev.real.argsort()[::-1]
+        fn = options.DestDir+'/%i/'%(ikpoint)+options.systemlabel+'.%s'%(txt)
 
         path = './'+options.DestDir+'/'
         #FermiEnergy = SIO.HS(options.systemlabel+'.TSHS').ef
@@ -282,14 +283,14 @@ def calcTSWF(options, ikpoint):
         def noWfs(side):
             tmp = len(glob.glob(path+str(ikpoint)+'/'+options.systemlabel+'.A'+side+'*'))
             return tmp
-        if noWfs('L')==0 or noWfs('R')==0 and len(glob.glob(path+str(ikpoint)+'/FD*'))==0:
+        if noWfs('L') == 0 or noWfs('R') == 0 and len(glob.glob(path+str(ikpoint)+'/FD*')) == 0:
             print('Calculating localized-basis states from spectral function %s ...'%(txt))
             tlb = time.clock()
             calcWF2(options, geom, options.DeviceAtoms, basis, Utilde[:, indx], [N1, N2, N3, minN3, maxN3], Fold=True, k=kpoint, fn=fn)
             times = N.round(time.clock()-tlb, 2); timem = N.round(times/60, 2)
             print('Finished in '+str(times)+' s = '+str(timem)+' min')
 
-        if noWfs('L')>0 and noWfs('R')>0 and len(glob.glob(path+str(ikpoint)+'/FD*'))==0 and str('%s'%(txt))==str('AR'):
+        if noWfs('L') > 0 and noWfs('R') > 0 and len(glob.glob(path+str(ikpoint)+'/FD*')) == 0 and str('%s'%(txt)) == str('AR'):
             print('\nLocalized-basis states are calculated in k point '+str(ikpoint)+'/.')
             print('------------------------------------------------------')
             print('Finite-difference calculation of vacuum states starts!')
@@ -381,7 +382,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
     RETURNS:
     YY : complex wavefunction as N1, N2, N3 matrix
     """
-    xyz=N.array(geom.xyz[DeviceAtoms[0]-1:DeviceAtoms[1]])
+    xyz = N.array(geom.xyz[DeviceAtoms[0]-1:DeviceAtoms[1]])
     N1, N2, N3, minN3, maxN3 = NN[0], NN[1], NN[2], NN[3], NN[4]
     NN3 = maxN3-minN3+1
     if Fold:
@@ -389,11 +390,11 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
     else:
         da1, da2, da3 = a[0]/N1, a[1]/N2, a[2]/N3
     try:
-        NNY=Y.shape[1]
+        NNY = Y.shape[1]
     except:
-        NNY=1
+        NNY = 1
     # Def cube
-    YY=[N.zeros((N1, N2, NN3), N.complex) for ii in range(NNY)]
+    YY = [N.zeros((N1, N2, NN3), N.complex) for ii in range(NNY)]
     # Help indices
     i1 = MM.outerAdd(N.arange(N1), N.zeros(N2), N.zeros(NN3))
     i2 = MM.outerAdd(N.zeros(N1), N.arange(N2), N.zeros(NN3))
@@ -413,7 +414,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
         pbcpairs = N.array([[pbc[1], pbc[2]], [pbc[0], pbc[2]], [pbc[0], pbc[1]]])
 
     for iiatom in range(DeviceAtoms[1]-DeviceAtoms[0]+1):
-        if iiatom>0:
+        if iiatom > 0:
             #Wavefunction percent done...
             SIO.printDone(iiatom, DeviceAtoms[1]-DeviceAtoms[0]+1, 'Wave function')
 
@@ -424,32 +425,32 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
             basisradius = N.max(basis.coff[basisindx])
             minshift, maxshift = [0, 0, 0], [0, 0, 0]
             for iithiso, thiso in enumerate(olist):
-                c=xyz[iiatom, :]-thiso
+                c = xyz[iiatom, :]-thiso
                 for ip in range(3):
                     n = N.cross(pbcpairs[ip, 0], pbcpairs[ip, 1])
                     n = n / LA.norm(n)
                     dist = N.abs(N.dot(n, N.dot(N.dot(pairs[ip], c), pbcpairs[ip])-c))
                     if dist < basisradius:
                         if iithiso==0:
-                            minshift[ip]=-1
+                            minshift[ip] = -1
                         else:
-                            maxshift[ip]=1
+                            maxshift[ip] = 1
             shiftvec = []
             for ix in range(minshift[0], maxshift[0]+1):
                 for iy in range(minshift[1], maxshift[1]+1):
                     for iz in range(minshift[2], maxshift[2]+1):
-                        shiftvec+=[[ix, iy, iz]]
+                        shiftvec += [[ix, iy, iz]]
 
         #print(shiftvec)
         for shift in shiftvec:
             # Atom position shifted
-            vec=-N.dot(N.array(shift), geom.pbc)
+            vec = -N.dot(N.array(shift), geom.pbc)
             phase = N.exp(-1.0j*(2*N.pi*N.dot(N.array(k), N.array(shift))))
 
             # Difference and polar, cylinder distances
-            dx, dy, dz=rx-xyz[iiatom, 0]-vec[0], ry-xyz[iiatom, 1]-vec[1], rz-xyz[iiatom, 2]-vec[2]
-            dr2=dx*dx+dy*dy+dz*dz
-            drho2=dx*dx+dy*dy
+            dx, dy, dz = rx-xyz[iiatom, 0]-vec[0], ry-xyz[iiatom, 1]-vec[1], rz-xyz[iiatom, 2]-vec[2]
+            dr2 = dx*dx+dy*dy+dz*dz
+            drho2 = dx*dx+dy*dy
 
             basisindx = N.where(basis.ii==iiatom+DeviceAtoms[0])[0]
             old_coff, old_delta = 0.0, 0.0
@@ -459,7 +460,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
                     indx = N.where(dr2<basis.coff[basisorb]**2) # Find points close to atom
 
                     idr, idrho=N.sqrt(dr2[indx]), N.sqrt(drho2[indx])
-                    iri=(idr/basis.delta[basisorb]).astype(N.int)
+                    iri = (idr/basis.delta[basisorb]).astype(N.int)
                     idx, idy, idz = dx[indx], dy[indx], dz[indx]
 
                     costh = idz/idr
@@ -473,14 +474,14 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
                     # Numpy has changed the choose function to crap!
                     RR=N.take(basis.orb[basisorb], iri)
                 # Calculate spherical harmonics
-                if len(idr)>0:
+                if len(idr) > 0:
                     l = basis.L[basisorb]
                     m = basis.M[basisorb]
-                    if l==3:
+                    if l == 3:
                         print('f-shell : l=%i, m=%i (NOT TESTED!!)'%(l, m))
                     thisSphHar = MM.sphericalHarmonics(l, m, costh, sinfi, cosfi)
                     for iy in range(NNY):
-                        YY[iy][indx]=YY[iy][indx]+RR*thisSphHar*Y[basisorb, iy]*phase
+                        YY[iy][indx] = YY[iy][indx]+RR*thisSphHar*Y[basisorb, iy]*phase
     N1, N2, N3, minN3, maxN3 = NN[0], NN[1], NN[2], NN[3], NN[4]
     for ii in range(NNY):
         writenetcdf2(geom, fn+'%i.nc'%ii, YY[ii], N1, N2, N3, minN3, maxN3, geom.pbc, options.DeviceAtoms)
@@ -493,7 +494,6 @@ def writenetcdf2(geom, fn, YY, nx, ny, nz, minnz, maxnz, pbc, DeviceAtoms):
     """
     MP: Write STM files to netcdf
     """
-    import time
     file = NC.Dataset(fn, 'w', 'Created '+time.ctime(time.time()))
     file.createDimension('nx', nx)
     file.createDimension('ny', ny)

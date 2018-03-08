@@ -175,7 +175,7 @@ def main(options):
     DevGF.calcEigChan(options.numchan)
 
     # Compute bond currents?
-    if options.kpoint[0]!=0.0 or options.kpoint[1]!=0.0:
+    if options.kpoint[0] != 0.0 or options.kpoint[1] != 0.0:
         print 'Warning: The current implementation of bond currents is only valid for the Gamma point (should be easy to fix)'
         BC = False
     else:
@@ -260,16 +260,16 @@ def calcWF(options, geom, basis, Y):
     origo = N.array([xmin, ymin, zmin], N.float)
 
     # Def cube
-    YY=N.zeros((nx, ny, nz), N.complex)
-    rx=N.array(range(nx), N.float)*dx+origo[0]
-    ry=N.array(range(ny), N.float)*dy+origo[1]
-    rz=N.array(range(nz), N.float)*dz+origo[2]
+    YY = N.zeros((nx, ny, nz), N.complex)
+    rx = N.array(range(nx), N.float)*dx+origo[0]
+    ry = N.array(range(ny), N.float)*dy+origo[1]
+    rz = N.array(range(nz), N.float)*dz+origo[2]
 
     for ii, Yval in enumerate(Y):
-        if ii>0:# and ii%(int(len(Y)/10))==0:
+        if ii > 0:# and ii%(int(len(Y)/10)) == 0:
             SIO.printDone(ii, len(Y), 'Wavefunction')
 
-        rax, ray, raz=basis.xyz[ii, 0], basis.xyz[ii, 1], basis.xyz[ii, 2]
+        rax, ray, raz = basis.xyz[ii, 0], basis.xyz[ii, 1], basis.xyz[ii, 2]
         # Only calulate in subset
         ixmin, ixmax = int((rax-origo[0]-basis.coff[ii])/dx), \
                        int((rax-origo[0]+basis.coff[ii])/dx)
@@ -296,7 +296,7 @@ def calcWF(options, geom, basis, Y):
         # Calculate spherical harmonics
         l = basis.L[ii]
         m = basis.M[ii]
-        if l==3:
+        if l == 3:
             print 'f-shell : l=%i, m=%i (NOT TESTED!!)'%(l, m)
         thisSphHar = MM.sphericalHarmonics(l, m, costh, sinfi, cosfi)
 
@@ -323,7 +323,7 @@ def calcCurrent(options, basis, H, Y):
     NN2=options.DeviceAtoms[1]-options.DeviceAtoms[0]+1
     Curr=N.zeros((NN2, NN2), N.float)
 
-    if len(Y.shape)==2:
+    if len(Y.shape) == 2:
         for ii in range(NN):
             a1=basis.ii[ii]-options.DeviceAtoms[0]
             for jj in range(NN):
@@ -370,7 +370,7 @@ def writeCurrent(options, geom, Curr):
     Curr2 = N.zeros(geom.xyz.shape)
     for i in range(len(Curr)):
         for j in range(len(Curr)):
-            if i!=j:
+            if i != j:
                 R = N.zeros(3, N.float)
                 for k in range(-1, 2): # Loop over neighbors
                     for l in range(-1, 2):
@@ -536,7 +536,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
             for jj in range(nx):
                 data.append(YY.real[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6==0):
+        if ((iii+1)%6 == 0):
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
@@ -554,7 +554,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
             for jj in range(nx):
                 data.append(YY.imag[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6==0):
+        if ((iii+1)%6 == 0):
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
@@ -573,7 +573,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
             for jj in range(nx):
                 data.append(YYA2[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6==0):
+        if ((iii+1)%6 == 0):
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
@@ -589,7 +589,8 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
     Y: vector for wavefunction
 
     """
-    if fn==None: fn = fileName(options)
+    if fn == None:
+        fn = fileName(options)
     print 'Eigenchannels.writeWavefunction: Writing', fn
     # Rotate in complex space
     max_amp=-1.0
@@ -632,14 +633,14 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
 def fileName(options):
     systemlabel = options.systemlabel
     # Generate filename '.EC.{1,Tot}{L,R,,In,Out}[UP][Ef=1.0].'
-    if options.iChan==0:
+    if options.iChan == 0:
         fn=systemlabel+'.EC.Tot%s'%(['L', 'R', '', 'In', 'Out'][options.iSide])
     else:
         fn=systemlabel+'.EC.%i%s'%(options.iChan, ['L', 'R', '', 'In', 'Out'][options.iSide])
-    if options.nspin==2:
+    if options.nspin == 2:
         fn += ['UP', 'DOWN'][options.iSpin]
-    if options.energy!=0.0:
+    if options.energy != 0.0:
         fn += '_E%.3f'%options.energy
-    if options.kpoint[0]!=0.0 or options.kpoint[1]!=0.0:
+    if options.kpoint[0] != 0.0 or options.kpoint[1] != 0.0:
         fn += '_kx%.3f_ky%.3f'%(options.kpoint[0], options.kpoint[1])
     return options.DestDir+'/'+fn
