@@ -747,7 +747,7 @@ class DynamicalMatrix():
                 ncdf.variables['grad.im'].info = 'Imaginary part of gradients'
             print 'Phonons.WriteOutput: Wrote gradients to', ncdffn
         except:
-            pass
+            print 'Phonons.WriteOutpot: Gradients not computed'
         ncdf.close()
         print 'Phonons.WriteOutput: Finished', ncdffn
 

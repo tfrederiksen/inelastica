@@ -168,10 +168,9 @@ def main(options):
     options.kpoints.mesh2file(options.DestDir+'/kpoints')
     doK = []
     for ikpoint in range(len(options.kpoints.k)):
-        try:
-            os.mkdir(options.DestDir+'/%i'%(ikpoint))
-        except:
-            pass
+        ikdir = options.DestDir+'/%i'%(ikpoint)
+        if not os.path.isdir(ikdir):
+            os.mkdir(ikdir)
         doK += [ikpoint]
 
     #Check if some k points are already done
@@ -289,8 +288,7 @@ def calcTSWF(options, ikpoint):
             calcWF2(options, geom, options.DeviceAtoms, basis, Utilde[:, indx], [N1, N2, N3, minN3, maxN3], Fold=True, k=kpoint, fn=fn)
             times = N.round(time.clock()-tlb, 2); timem = N.round(times/60, 2)
             print('Finished in '+str(times)+' s = '+str(timem)+' min')
-        else:
-            pass
+
         if noWfs('L')>0 and noWfs('R')>0 and len(glob.glob(path+str(ikpoint)+'/FD*'))==0 and str('%s'%(txt))==str('AR'):
             print('\nLocalized-basis states are calculated in k point '+str(ikpoint)+'/.')
             print('------------------------------------------------------')
@@ -301,8 +299,7 @@ def calcTSWF(options, ikpoint):
             print('------------------------------------------------------')
             if options.savelocwfs == False:
                 os.system('rm -f '+path+str(ikpoint)+'/'+options.systemlabel+'*')
-            else:
-                pass
+
     #Read geometry
     XV = '%s/%s.XV'%(options.head, options.systemlabel)
     geom = MG.Geom(XV, BufferAtoms=options.buffer)
