@@ -863,8 +863,8 @@ def ReadMullikenPop(infile, outfile, writeallblocks=False):
                 dpop = pop-round(pop, 0)
                 popsum += pop
                 mpop.append((nr, pop, dpop, 1.0*popsum))
-            except:
-                pass
+            except Exception as e:
+                print 'Exception in ReadMullikenPop:',e
     f.close()
 
 
@@ -1634,12 +1634,10 @@ class HS:
         The garbage collector cannot tell if H or S will be used subsequently
         """
         self.kpoint = N.array([1e10, 1e10, 1e10], N.float)
-        try:
+        if 'H' in dir(self):
             del self.H
-        except: pass
-        try:
+        if 'S' in dir(self):
             del self.S
-        except: pass
 
     def __ReadTSHSFile(self, filename):
         """
