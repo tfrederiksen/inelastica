@@ -25,6 +25,7 @@ mm = MM.mm
 
 
 class Symmetry:
+
     """
     Classify symmetry of lattice and basis.
     Class contain:
@@ -578,6 +579,7 @@ class Symmetry:
 
         # Find basis
         xyz = moveIntoCell(self.xyz, a1, a2, a3, self.accuracy)
+
         class basis:
             pass
         basis.xyz, basis.snr, basis.anr = [], [], []

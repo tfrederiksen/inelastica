@@ -102,6 +102,7 @@ def GetDihedral(r1, r2, r3, r4):
 
 
 class Geom:
+
     '''
     Geom class:
        pbc : repetition vectors

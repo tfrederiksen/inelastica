@@ -78,6 +78,7 @@ def dec2hash(dec):
 
 
 class SigDir:
+
     def __init__(self, path):
         self.path, self.data = path, {}
         self.files, self.newFile = [], None
@@ -159,6 +160,7 @@ class SigDir:
 
 
 class SavedSigClass:
+
     """
     Saves calculated Sig in files in the directory of the TSHS file for the electrode.
     1: Each process opens a new file if it needs to write Sigma
@@ -188,10 +190,11 @@ SavedSig = SavedSigClass()
 
 
 class ElectrodeSelfEnergy:
-    """ 
+
+    """
     Calculate surface Greens function and self energy
     (should probably be renamed selfEnergy ...)
-    For spinpolarized use the ispin given, for nonpolarized use 
+    For spinpolarized use the ispin given, for nonpolarized use
     the same self-energy for both spin
     """
     global SavedSig
@@ -211,9 +214,9 @@ class ElectrodeSelfEnergy:
 
     def getSig(self, ee, qp=N.array([0, 0], N.float), left=True, Bulk=False, ispin=0, UseF90helpers=True, etaLead=0.0, useSigNCfiles=False):
         """
-        Get self-energy for specified 2-D surface k-point 
-        Copy out g0 (surface greens function for smaller electrode calculation) 
-        onto NA1*NA2*nuo matrix with the idiotic (TS) orbital order 
+        Get self-energy for specified 2-D surface k-point
+        Copy out g0 (surface greens function for smaller electrode calculation)
+        onto NA1*NA2*nuo matrix with the idiotic (TS) orbital order
         a1(0,0) a1(1,0) .. a1(0,1) a1(1,1) ...... a2(0,0)
         Where a1, a2 ... are the atoms in the electrode calculation
         and (0,0) (1,0) indicate the replicating position.
@@ -391,7 +394,7 @@ class ElectrodeSelfEnergy:
 
     def F90calcg0(self, ee, ispin=0, left=True):
         """
-        Call the fortran equivalent routine of the Lopez-Sancho algorithm also 
+        Call the fortran equivalent routine of the Lopez-Sancho algorithm also
         utilised in tbtrans.
         Coded by Nick Papior Andersen
         """
@@ -424,7 +427,7 @@ class ElectrodeSelfEnergy:
         call E S - H for t ...
 
         t00 g01 + t01 g11 = 0  -> g01 = - t00^-1 t01 g11
-        t10 g01 + t11 g11 = I -> - t10 t00^-1 t01 g11 + t11 g11 = I -> 
+        t10 g01 + t11 g11 = I -> - t10 t00^-1 t01 g11 + t11 g11 = I ->
 
         And we get the surface Green's function:
 
@@ -518,10 +521,11 @@ class ElectrodeSelfEnergy:
 
 
 class GF:
+
     def __init__(self, TSHSfile, elecL, elecR, Bulk=True, DeviceAtoms=[0, 0], BufferAtoms=N.empty((0,))):
         """
-        Calculate Green's functions etc for TSHSfile connected to left/right 
-        electrode (class ElectrodeSelfEnergy). 
+        Calculate Green's functions etc for TSHSfile connected to left/right
+        electrode (class ElectrodeSelfEnergy).
         To speed up calculations folding to smaller device region suggested
         For spin-polarized calcGF has to be called for each ispin
         Variables:
@@ -529,7 +533,7 @@ class GF:
         H,S    : Hamiltonian, overlap, folded
         H0,S0  : Hamiltonian, overlap, not folded
         nuo    : Size of Gr
-        SigL, SigR, GamL, GamR : Self energy, Gamma NOTE, not same size as Gr! 
+        SigL, SigR, GamL, GamR : Self energy, Gamma NOTE, not same size as Gr!
         nuoL, nuoR : Size of Sig, Gam
         nuo0, nuoL0, nuoR0 : Non-folded sizes
         FoldedL, FoldedR : True/False

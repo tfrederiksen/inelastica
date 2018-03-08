@@ -36,12 +36,15 @@ def CreatePipeOutput(f):
         else: raise # forward error...
 
     class TeeLog(object):
+
         def __init__(self, f, term):
             self.term = term
             self.log = open(f, 'w') # Consider doing this optionally appending?
+
         def write(self, message):
             self.term.write(message)
             self.log.write(message)
+
         def flush(self):
             self.term.flush()
             self.log.flush()

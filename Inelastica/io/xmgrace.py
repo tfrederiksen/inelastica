@@ -122,6 +122,7 @@ def Datafile2XYsets(fn, Sort=False, **keywords):
 
 
 class Dataset:
+
     """
     Generic class for any XMGR dataset
     """
@@ -263,6 +264,7 @@ class Dataset:
 
 
 class XYset(Dataset):
+
     """
     Class for 2-dimensional (X,Y) datasets
     """
@@ -295,6 +297,7 @@ class XYset(Dataset):
 
 
 class XYDXset(XYset):
+
     """
     Class for 3-dimensional (X,Y,dX) datasets
     """
@@ -315,6 +318,7 @@ class XYDXset(XYset):
 
 
 class XYDYset(XYset):
+
     """
     Class for 3-dimensional (X,Y,dY) datasets
     """
@@ -335,6 +339,7 @@ class XYDYset(XYset):
 
 
 class XYDXDYset(XYset):
+
     """
     Class for 4-dimensional (X,Y,dX,dY) datasets
     """
@@ -356,6 +361,7 @@ class XYDXDYset(XYset):
 
 
 class XYSIZEset(XYset):
+
     """
     Class for 3-dimensional (X,Y,size) datasets
     """
@@ -376,6 +382,7 @@ class XYSIZEset(XYset):
 
 
 class Graph:
+
     """
     Class for a graph (containing datasets)
     """
@@ -670,6 +677,7 @@ class Graph:
 
 
 class Plot:
+
     """
     Class for a plot (containing graphs)
     """

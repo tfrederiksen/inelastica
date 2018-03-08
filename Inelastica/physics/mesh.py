@@ -32,6 +32,7 @@ def generatelinmesh(Nk):
 
 
 class kmesh:
+
     """
     Create a k-mesh samling where each of the three components
     sample the range [-0.5,0.5]). They are not in reciprocal space.
@@ -55,7 +56,7 @@ class kmesh:
         Returns an instance of a k-mesh with each of the k-vector axes
         sampled either linearly (LIN) or using a Gauss-Kronrod (GK) scheme.
 
-        An axis i sampled by (Nki,LIN) generates Nk points, while 
+        An axis i sampled by (Nki,LIN) generates Nk points, while
         (Nki,GK) returns 2*Nk+1 points.
 
         By applying inversion symmetry (k=-k) the number of points in the mesh

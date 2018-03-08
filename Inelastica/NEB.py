@@ -347,6 +347,7 @@ For help use --help!
 
     class myopen:
         # Double stdout to RUN.out and stdout
+
         def write(self, x):
             self.stdout.write(x)
             self.file.write(x)

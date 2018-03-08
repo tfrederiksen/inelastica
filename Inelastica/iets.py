@@ -49,7 +49,7 @@ def GetOptions(argv, **kwargs):
     Parameters
     ----------
     argv : string
-        For example `-n 10 test_dir`, which instructs to compute 10 eigenchannels 
+        For example `-n 10 test_dir`, which instructs to compute 10 eigenchannels
         and place the results in the output directory `test_dir`.
     """
     CF.PrintMainHeader('GetOptions', None)
