@@ -64,7 +64,7 @@ def readxv():
     geom.sym = SYM.Symmetry(fns[0], onlyLatticeSym=True)
     if geom.sym.NNbasis != geom.natoms:
         print "ERROR: Siesta cell does not contain one unit cell"
-        kuk
+        sys.exit(1)
 
 ########################################################
 
@@ -83,10 +83,10 @@ def readHS():
     fn = glob.glob('*.TSHS')
     if len(fn)>1:
         print "ERROR: BandStruct: More than one .TSHS file ... which to choose???"
-        kuk
+        sys.exit(1)
     if len(fn)<1:
         print "ERROR: BandStruct: No .TSHS file ???"
-        kuk
+        sys.exit(1)
     HS = SIO.HS(fn=fn[0])
 
 

@@ -84,7 +84,7 @@ class kmesh:
                     errorw.append(ew)
                 else:
                     print 'Kmesh.py: GK method requires Nk=%i>1'%(self.Nk[i])
-                    kuk
+                    sys.exit(1)
             elif self.type[i].upper() == 'LIN' or self.type[i].upper() == 'LINEAR':
                 self.type[i] = 'LIN'
                 kpts, wgts = generatelinmesh(self.Nk[i])

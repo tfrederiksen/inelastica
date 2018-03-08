@@ -1396,7 +1396,7 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
         print "Length of basis set build: %i"%nn
         print "Size of Hamiltonian: %i"%(lasto[LastAtom]-lasto[FirstAtom-1])
         print "Error: Could not build basis set. Check if all ion.nc files are there!"
-        kuk
+        sys.exit(1)
 
     # Initiate basis variables
     basis.ii = N.zeros((nn,), N.int)
