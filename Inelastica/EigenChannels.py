@@ -187,7 +187,7 @@ def main(options):
         options.iSide, options.iChan = 0, jj+1
         writeWavefunction(options, geom, basis, ECleft[jj])
         if BC:
-            Curr=calcCurrent(options, basis, DevGF.H, ECleft[jj])
+            Curr = calcCurrent(options, basis, DevGF.H, ECleft[jj])
             writeCurrent(options, geom, Curr)
 
     # Calculate eigenchannels from right
@@ -197,15 +197,15 @@ def main(options):
             options.iSide, options.iChan = 1, jj+1
             writeWavefunction(options, geom, basis, ECright[jj])
             if BC:
-                Curr=calcCurrent(options, basis, DevGF.H, ECright[jj])
+                Curr = calcCurrent(options, basis, DevGF.H, ECright[jj])
                 writeCurrent(options, geom, Curr)
 
     # Calculate total "bond currents"
     if BC:
-        Curr=-calcCurrent(options, basis, DevGF.H, DevGF.AL)
+        Curr = -calcCurrent(options, basis, DevGF.H, DevGF.AL)
         options.iChan, options.iSide = 0, 0
         writeCurrent(options, geom, Curr)
-        Curr=-calcCurrent(options, basis, DevGF.H, DevGF.AR)
+        Curr = -calcCurrent(options, basis, DevGF.H, DevGF.AR)
         options.iSide = 1
         writeCurrent(options, geom, Curr)
 
@@ -227,7 +227,7 @@ def main(options):
             # Compute selected eigenstates
             for ii, val in enumerate(ev):
                 if N.abs(val) < options.MolStates:
-                    fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii, val)
+                    fn = options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii, val)
                     writeWavefunction(options, geom, basis, es[:, ii], fn=fn)
         except:
             print 'You need to install scipy to solve the generalized eigenvalue problem'
@@ -235,7 +235,6 @@ def main(options):
 
     CF.PrintMainFooter('EigenChannels')
 
-########################################################
 
 
 def calcWF(options, geom, basis, Y):
@@ -247,7 +246,7 @@ def calcWF(options, geom, basis, Y):
     nx, ny, nz : number of grid points
     """
 
-    xyz=N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
+    xyz = N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
 
     # Size of cube
     xmin, xmax = min(xyz[:, 0])-5.0, max(xyz[:, 0])+5.0
@@ -341,8 +340,6 @@ def calcCurrent(options, basis, H, Y):
                 Curr[a1, a2] = Curr[a1, a2]+4*N.pi*tmp.imag
 
     return Curr
-
-########################################################
 
 
 def writeCurrent(options, geom, Curr):

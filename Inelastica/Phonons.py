@@ -157,7 +157,7 @@ def GetOptions(argv, **kwargs):
     del options.k1, options.k2, options.k3
 
     # Determine array type for H,S,dH,...
-    options.GammaPoint = N.dot(options.kpoint, options.kpoint)<1e-7
+    options.GammaPoint = N.dot(options.kpoint, options.kpoint) < 1e-7
     if options.GammaPoint:
         if options.SinglePrec:
             options.atype = N.float32
@@ -173,7 +173,7 @@ def GetOptions(argv, **kwargs):
     options.DynamicAtoms = range(options.FCfirst, options.FClast+1)
 
     # EPH atoms - set only different from options.DynamicAtoms if a subset is specified
-    if options.EPHfirst>=options.FCfirst and options.EPHlast<=options.FClast:
+    if options.EPHfirst >= options.FCfirst and options.EPHlast <= options.FClast:
         options.EPHAtoms = range(options.EPHfirst, options.EPHlast+1)
     else:
         options.EPHAtoms = options.DynamicAtoms
@@ -193,7 +193,7 @@ def GetOptions(argv, **kwargs):
         for line in f.readlines():
             s += line.replace('\n', '')
         options.Isotopes = s
-    options.Isotopes=ast.literal_eval(options.Isotopes)
+    options.Isotopes = ast.literal_eval(options.Isotopes)
 
     return options
 
@@ -208,9 +208,9 @@ class FCrun(object):
         FClast = SIO.GetFDFlineWithDefault(runfdf, 'MD.FClast', int, 0, 'Phonons')
         # Finite-displacement amplitude
         ampl, unit = SIO.GetFDFline(runfdf, KeyWord='MD.FCDispl')
-        if unit.upper()=='ANG':
+        if unit.upper() == 'ANG':
             self.Displ = float(ampl)
-        elif unit.upper()=='BOHR':
+        elif unit.upper() == 'BOHR':
             self.Displ = float(ampl)*PC.Bohr2Ang
         print 'Displacement = %.6f Ang'%self.Displ
         # Read geometry
@@ -314,9 +314,9 @@ class OSrun(object):
         print 'Phonons.GetOnlyS: Reading from', onlySdir
         onlySfiles = glob.glob(onlySdir+'/*.onlyS*')
         onlySfiles.sort()
-        if len(onlySfiles)<1:
+        if len(onlySfiles) < 1:
             sys.exit('Phonons.GetOnlyS: No .onlyS file found!')
-        if len(onlySfiles)!=6:
+        if len(onlySfiles) != 6:
             sys.exit('Phonons.GetOnlyS: Wrong number of onlyS files found!')
         else:
             onlyS = {}
@@ -392,7 +392,7 @@ class DynamicalMatrix(object):
                         self.TSHS[v, k, 1] = fcr.TSHS[v, k, 1]
                     break
             # Check that we really found the required atom
-            if len(self.Displ)<=i:
+            if len(self.Displ) <= i:
                 sys.exit('Error: Did not find FC data for a dynamic atom %i'%v)
         self.mean = (self.m+self.p)/2
 
@@ -460,13 +460,13 @@ class DynamicalMatrix(object):
             print 'Phonons.CalcPhonons: Frequencies in meV:'
             for i in range(3*dyn):
                 print string.rjust('%.3f'%(1000*hw[i]), 9),
-                if (i-5)%6==0: print
+                if (i-5)%6 == 0: print
             if (i-5)%6!=0: print
         #print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
         #for i in range(3*dyn):
         #    print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
-        #    if (i-5)%6==0: print
-        #if (i-5)%6!=0: print
+        #    if (i-5)%6 == 0: print
+        #if (i-5)%6 != 0: print
 
         # Compute real displacement vectors
         Udisp = U.copy()
@@ -479,7 +479,7 @@ class DynamicalMatrix(object):
         for j in range(3*dyn):
             for i in range(3*dyn):
                 # Eigenvectors after multiplication by characteristic length
-                if hw[j]>0:
+                if hw[j] > 0:
                     Ucl[j, i] = U[j, i]*(1./(self.Masses[i/3]*(hw[j]/(2*PC.Rydberg2eV)))**.5)
                 else:
                     # Characteristic length not defined for non-postive frequency
@@ -610,10 +610,10 @@ class DynamicalMatrix(object):
                     self.gradients.append(dh)
                 # Loop over modes and throw away the gradient (to save memory)
                 for m in range(len(self.hw)):
-                    if self.hw[m]>0:
+                    if self.hw[m] > 0:
                         # Eigenvectors should be real for GammaPoint phonons, hence we always take the real part
                         Heph[m] += const*dh*self.UU[m, v-1, j].real/(2*self.Masses[i]*self.hw[m])**.5
-                    elif i==0:
+                    elif i == 0:
                         # Print only first time
                         print 'Phonons.ComputeEPHcouplings: Mode %i has nonpositive frequency --> Zero-valued coupling matrix'%m
                         # already zero
@@ -773,10 +773,10 @@ def WriteVibDOSFile(filename, hw, type='Gaussian'):
     ETA = N.outer(0*erng+1, eta)
     spectrum = N.zeros((len(erng), len(eta)), N.float)
     for i in range(len(hw)):
-        if type=='Gaussian':
+        if type == 'Gaussian':
             spectrum += (2*N.pi)**(-.5)/ETA*N.exp(N.clip(-1.0*(hw[i]-ERNG)**2/(2*ETA**2), -300, 300))
             spectrum -= (2*N.pi)**(-.5)/ETA*N.exp(N.clip(-1.0*(-hw[i]-ERNG)**2/(2*ETA**2), -300, 300))
-        elif type=='Lorentzian':
+        elif type == 'Lorentzian':
             spectrum += 1/N.pi*ETA/((hw[i]-ERNG)**2+ETA**2)
             spectrum -= 1/N.pi*ETA/((-hw[i]-ERNG)**2+ETA**2)
     # Write data to file

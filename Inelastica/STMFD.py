@@ -44,7 +44,7 @@ def main(options, kpoint, ikpoint):
     if options.samplingscale != 1:
         print '\nReal-space sampling in xy plane coarser by factor', options.samplingscale, '...'
         tmp = sampling(options, Nx, Ny, Nz, Subwfs, Tipwfs, SubChans, TipChans, SubPot, TipPot, SubRho, TipRho)
-        Nx, Ny, Nz  = tmp[0], tmp[1], tmp[2]
+        Nx, Ny, Nz = tmp[0], tmp[1], tmp[2]
         NN = Nx*Ny*Nz
         a1, a2 = a1*options.samplingscale, a2*options.samplingscale
         ucSize = [a1, a2, a3]
@@ -92,7 +92,7 @@ def LayersAndTipheight(options, kpoint, ikpoint):
     #First substrate layer
     for ii in range(len(xyz)-1):
         atomlayer1[ii] += xyz[ii][2]
-        if N.abs(N.sum(atomlayer1)/(ii+1)-atomlayer1[ii])>.5:
+        if N.abs(N.sum(atomlayer1)/(ii+1)-atomlayer1[ii]) > 0.5:
             break
     Layer1 = ii
     print '\nThe atomic layers seem to consist of '+str(ii)+' atoms.'
@@ -101,14 +101,14 @@ def LayersAndTipheight(options, kpoint, ikpoint):
     atomlayer2 = N.zeros(len(xyz))
     for jj in range(ii, len(xyz)-1):
         atomlayer2[jj] += xyz[jj][2]
-        if N.abs(N.sum(atomlayer2[:])/(jj-ii+1)-atomlayer2[jj])>.5:
+        if N.abs(N.sum(atomlayer2[:])/(jj-ii+1)-atomlayer2[jj]) > 0.5:
             break
     Layer2 = jj
     #Third!?
     atomlayer3 = N.zeros(len(xyz))
     for kk in range(jj, len(xyz)-1):
         atomlayer3[kk] += xyz[kk][2]
-        if N.abs(N.sum(atomlayer3[:])/(kk-jj+1)-atomlayer3[kk])>.5:
+        if N.abs(N.sum(atomlayer3[:])/(kk-jj+1)-atomlayer3[kk]) > 0.5:
             break
     Layer3 = kk
     if Layer2-Layer1 < Layer1:
@@ -264,7 +264,7 @@ def sampling(options, Nx, Ny, Nz, Subwfs, Tipwfs, SubChans, TipChans, SubPot, Ti
             ImNewSubwfs[imode, :, :, iz] = f2(xnew, ynew).T
     NewSubwfs = ReNewSubwfs+1j*ImNewSubwfs
 
-    ReNewTipwfs, ImNewTipwfs  = N.zeros((TipChans, NX, NY, NZ)), N.zeros((TipChans, NX, NY, NZ))
+    ReNewTipwfs, ImNewTipwfs = N.zeros((TipChans, NX, NY, NZ)), N.zeros((TipChans, NX, NY, NZ))
     for imode in range(TipChans):
         for iz in range(NZ):
             tmp1 = N.real(Tipwfs[imode, :, :, iz]).T
@@ -300,8 +300,8 @@ def sampling(options, Nx, Ny, Nz, Subwfs, Tipwfs, SubChans, TipChans, SubPot, Ti
 
 def reindexing(options, Nx, Ny, Nz, NN, WFs, Chans, rho, ucSize, theta):
     rhoindx = N.array([rho[ii, jj, kk] for kk in range(Nz) for jj in range(Ny) for ii in range(Nx)])
-    inda = N.where(rhoindx>options.rhoiso)[0]
-    tmp  = set(inda)
+    inda = N.where(rhoindx > options.rhoiso)[0]
+    tmp = set(inda)
     indb = [ii for ii in N.arange(NN) if ii not in tmp]
     return inda, indb
 

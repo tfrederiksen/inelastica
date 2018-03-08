@@ -89,9 +89,9 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
     CopyInputFiles(templateCGrun, newCGrun, ['.fdf', '.vps', '.psf', 'pbs'])
     # Read relaxed geometry
     XVfiles = glob.glob(templateCGrun+'/*.XV*')
-    if len(XVfiles)==1:
+    if len(XVfiles) == 1:
         geom = MG.Geom(XVfiles[0])
-    elif len(XVfiles)>1:
+    elif len(XVfiles) > 1:
         print 'More than one XV file was found in folder %s:'%templateCGrun
         for i, xvfile in enumerate(XVfiles):
             print '   No. %i :'%i, xvfile
@@ -102,7 +102,7 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
         raw_input('   ... Continue reading geometry from RUN.fdf?')
         geom = MG.Geom(templateCGrun+'/RUN.fdf')
     # Rotate via indexshift?
-    if IndexShift>0:
+    if IndexShift > 0:
         print 'SetupRuns.SetupCGrun: Applying IndexShift =', IndexShift
         for ii in range(IndexShift):
             geom.xyz[0][2]+=geom.pbc[2][2]
@@ -171,9 +171,9 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
     CopyInputFiles(CGrun, newFCrun, ['.fdf', '.vps', '.psf', '.DM', '.XV', '.pbs', '.TSDE'])
     # Read relaxed geometry and overwrite STRUCT files
     XVfiles = glob.glob(CGrun+'/*.XV*')
-    if len(XVfiles)==1:
+    if len(XVfiles) == 1:
         geom = MG.Geom(XVfiles[0])
-    elif len(XVfiles)>1:
+    elif len(XVfiles) > 1:
         print 'More than one XV file was found in folder %s:'%CGrun
         for i, xvfile in enumerate(XVfiles):
             print '   No. %i :'%i, xvfile
@@ -247,9 +247,9 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
     f.close()
     # Read relaxed geometry
     XVfiles = glob.glob(CGrun+'/*.XV*')
-    if len(XVfiles)==1:
+    if len(XVfiles) == 1:
         infile = XVfiles[0]
-    elif len(XVfiles)>1:
+    elif len(XVfiles) > 1:
         print 'More than one XV file was found in folder %s:'%CGrun
         for i, xvfile in enumerate(XVfiles):
             print '   No. %i :'%i, xvfile
@@ -361,9 +361,9 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
     CopyInputFiles(templateTSrun, newTSrun, ['.fdf', '.vps', '.psf', '.pbs'])
     # Read relaxed geometry
     XVfiles = glob.glob(CGrun+'/*.XV*')
-    if len(XVfiles)==1:
+    if len(XVfiles) == 1:
         geom = MG.Geom(XVfiles[0])
-    elif len(XVfiles)>1:
+    elif len(XVfiles) > 1:
         print 'More than one XV file was found in folder %s:'%CGrun
         for i, xvfile in enumerate(XVfiles):
             print '   No. %i :'%i, xvfile
@@ -374,7 +374,7 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
         raw_input('   ... Continue reading geometry from RUN.fdf?')
         geom = MG.Geom(CGrun+'/RUN.fdf')
     # Rotate via indexshift?
-    if IndexShift>0:
+    if IndexShift > 0:
         print 'SetupRuns.SetupTSrun: Applying IndexShift =', IndexShift
         for ii in range(IndexShift):
             geom.xyz[0][2]+=geom.pbc[2][2]
@@ -398,27 +398,27 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
     if NewContactSeparation:
         geom.stretch2NewContactSeparation(NewContactSeparation, AtomsPerLayer, ListL=ListL, ListR=ListR)
     # Add electrode atoms to the left
-    if len(AddLeftList)>0:
-        dz=AddLeftList[AtomsPerLayer, 2]-AddLeftList[0, 2]
-        tmp=N.array(geom.xyz)
-        minz=min(tmp[:, 2])
-        maxz=max(AddLeftList[:, 2])
+    if len(AddLeftList) > 0:
+        dz = AddLeftList[AtomsPerLayer, 2]-AddLeftList[0, 2]
+        tmp = N.array(geom.xyz)
+        minz = min(tmp[:, 2])
+        maxz = max(AddLeftList[:, 2])
         for ii in reversed(range(len(AddLeftList))):
-            tmp=list(AddLeftList[ii, :]+(-maxz+minz-dz)*N.array([0.0, 0.0, 1.0], N.float))
+            tmp = list(AddLeftList[ii, :]+(-maxz+minz-dz)*N.array([0.0, 0.0, 1.0], N.float))
             geom.prependAtom(tmp,
                          geom.snr[0], geom.anr[0])
-        geom.pbc[2][2]+=len(AddLeftList)/AtomsPerLayer*dz
+        geom.pbc[2][2] += len(AddLeftList)/AtomsPerLayer*dz
     # Add electrode atoms to the right
-    if len(AddRightList)>0:
+    if len(AddRightList) > 0:
         dz=AddRightList[AtomsPerLayer, 2]-AddRightList[0, 2]
         tmp=N.array(geom.xyz)
         maxz=tmp[0, 2]-dz+geom.pbc[2][2]
         minz=min(AddRightList[:, 2])
         for ii in range(len(AddRightList)):
             geom.addAtom(list(AddRightList[ii, :]+
-                         (maxz-minz+dz)*N.array([0, 0, 1], N.float)),
+                              (maxz-minz+dz)*N.array([0, 0, 1], N.float)),
                          geom.snr[0], geom.anr[0])
-        geom.pbc[2][2]+=len(AddRightList)/AtomsPerLayer*dz
+        geom.pbc[2][2] += len(AddRightList)/AtomsPerLayer*dz
     # Write structure to files
     geom.writeFDF(newTSrun+'/STRUCT.fdf')
     geom.writeXYZ(newTSrun+'/STRUCT.xyz')
@@ -469,7 +469,7 @@ def RunTBT(TSrun, Emin, Emax, NPoints, NumKxy_A1=1, NumKxy_A2=1,
             print '   Deleting %s'%elm
             os.remove(elm)
     # Determine Device PDOS?
-    if AtomsPerLayer>0:
+    if AtomsPerLayer > 0:
         for elm in glob.glob(TSrun+'/*XV'):
             if os.path.isfile(elm):
                 geom = MG.Geom(elm)
@@ -485,13 +485,13 @@ def RunTBT(TSrun, Emin, Emax, NPoints, NumKxy_A1=1, NumKxy_A2=1,
     f.close()
     f = open(tbtfile, 'w')
     f.write('### Lines appended %s \n' %time.ctime())
-    if PDOSfirst>0 and PDOSlast>0:
+    if PDOSfirst > 0 and PDOSlast > 0:
         print 'SetupRuns.RunTBT: Prepending PDOS = [%i,%i] to %s' \
-              %(PDOSfirst, PDOSlast, tbtfile)
+            %(PDOSfirst, PDOSlast, tbtfile)
         f.write('TS.TBT.PDOSFrom   %i\n' %PDOSfirst)
         f.write('TS.TBT.PDOSTo     %i\n' %PDOSlast)
     print 'SetupRuns.RunTBT: Writing Emin=%f, Emax=%f, NPoints=%i to %s' \
-          %(Emin, Emax, NPoints, tbtfile)
+        %(Emin, Emax, NPoints, tbtfile)
     f.write('TS.TBT.Emin       %f  eV\n' %Emin)
     f.write('TS.TBT.Emax       %f  eV\n' %Emax)
     f.write('TS.TBT.NPoints    %i\n' %NPoints)
@@ -502,7 +502,7 @@ def RunTBT(TSrun, Emin, Emax, NPoints, NumKxy_A1=1, NumKxy_A2=1,
     for line in lines: f.write(line)
     f.close()
     # PBS files
-    MakePBS(PBStemplate, newTSrun+'/RUN.pyTBT.pbs', PBSsubs, submitJob, rtype = 'PY')
+    MakePBS(PBStemplate, newTSrun+'/RUN.pyTBT.pbs', PBSsubs, submitJob, rtype='PY')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -566,7 +566,7 @@ def SetupPHrun(newPHrun, wildcard, onlySdir='../OSrun',
     # write WritePythonPBS(...)
     # PBS files
     if PBSsubs == None:
-        PBSsubs=[]
+        PBSsubs = []
     PBSsubs = [['$PYTHONSCRIPT$', 'PHrun.py']] + PBSsubs
     MakePBS(PBStemplate, newPHrun+'/RUN.pbs', PBSsubs, submitJob, rtype = 'PY')
 
@@ -607,7 +607,7 @@ def SetupInelastica(templateInelastica, newInelastica, TSrun,
     name, ext = os.path.splitext(newInputFilename)
     cmmd = []
     for i in range(kPoints):
-        if kPoints ==1:
+        if kPoints == 1:
             inputfile = newInputFilename
             TBT_NCfile = '/HSSigmaLR.nc'
             Mod_NCfile = '/HSSigmaLR_mod.nc'
@@ -710,12 +710,10 @@ def CopyTree(templateFolder, newFolder, overwrite=False):
     # Make new directory
     if os.path.isdir(newFolder):
         if overwrite:
-            print 'SetupRuns.CopyTree: %s already exists. REMOVING EXISTING FOLDER!!!'\
-                  %newFolder
+            print 'SetupRuns.CopyTree: %s already exists. REMOVING EXISTING FOLDER!!!' %newFolder
             shutil.rmtree(newFolder, ignore_errors=True)
         else:
-            print 'SetupRuns.CopyTree: %s already exists. No further actions taken.'\
-                  %newFolder
+            print 'SetupRuns.CopyTree: %s already exists. No further actions taken.' %newFolder
             return
     # Copy tree
     print 'SetupRuns.CopyTree: Copying'
@@ -730,7 +728,7 @@ def UnitConvertTBOutput(TBncfile, newTBncfile):
     # Read TBncfile (infile)
     infile = NC4.Dataset(TBncfile, 'r')
     En = PC.Rydberg2eV*N.array(infile.variables['En'][:, 0]) \
-         + 1j*PC.Rydberg2eV*N.array(infile.variables['En'][:, 1])
+        + 1j*PC.Rydberg2eV*N.array(infile.variables['En'][:, 1])
     H = PC.Rydberg2eV*N.array(infile.variables['H'][:])
     S = N.array(infile.variables['S'][:])
     try:
@@ -773,22 +771,22 @@ def UnitConvertTBOutput(TBncfile, newTBncfile):
     ReSigmaL2 = outfile.createVariable('ReSigmaL', N.float, ('x', 'dim', 'dim'))
     ReSigmaL2[:, :, :] = ReSigmaL[:, :, :]
     ReSigmaL2.units = 'eV'
-    ReSigmaL=[]
+    ReSigmaL = []
     ImSigmaL = PC.Rydberg2eV*N.array(infile.variables['ImSigmaL'][:])
     ImSigmaL2 = outfile.createVariable('ImSigmaL', N.float, ('x', 'dim', 'dim'))
     ImSigmaL2[:, :, :] = ImSigmaL[:, :, :]
     ImSigmaL2.units = 'eV'
-    ImSigmaL=[]
+    ImSigmaL = []
     ReSigmaR = PC.Rydberg2eV*N.array(infile.variables['ReSigmaR'][:])
     ReSigmaR2 = outfile.createVariable('ReSigmaR', N.float, ('x', 'dim', 'dim'))
     ReSigmaR2[:, :, :] = ReSigmaR[:, :, :]
     ReSigmaR2.units = 'eV'
-    ReSigmaR=[]
+    ReSigmaR = []
     ImSigmaR = PC.Rydberg2eV*N.array(infile.variables['ImSigmaR'][:])
     ImSigmaR2 = outfile.createVariable('ImSigmaR', N.float, ('x', 'dim', 'dim'))
     ImSigmaR2[:, :, :] = ImSigmaR[:, :, :]
     ImSigmaR2.units = 'eV'
-    ImSigmaR=[]
+    ImSigmaR = []
     # Close files
     infile.close()
     outfile.close()
@@ -799,7 +797,7 @@ def CheckIfFinished(outfile):
     try:
         f = open(outfile, 'r')
         for line in f.readlines(): pass
-        if line[:6]=='>> End' or line[:6]=='======':
+        if line[:6] == '>> End' or line[:6] == '======':
             print 'CheckIfFinished: %s is done.'%outfile
             return True
         else:
@@ -818,11 +816,9 @@ def FindElectrodeSep(directory, AtomsPerLayer):
         DeviceFirst, DeviceLast = g.deviceList[0], g.deviceList[-1]
     return g.ContactSeparation, DeviceFirst, DeviceLast
 
-### PBS code
-
 
 def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, rtype = 'TS'):
-    if PBStemplate==None:
+    if PBStemplate == None:
         rtypes = {'TS': 'RUN.TS.pbs', 'OS': 'RUN.OS.pbs', 'PY': 'RUN.py.pbs'}
         PBStemplate = rtypes[rtype]
         if os.path.exists(os.path.expanduser('~/.Inelastica/'+PBStemplate)):
@@ -849,8 +845,8 @@ def WritePBS(PBStemplate, PBSout, PBSsubs):
     fullPath = os.path.split(os.path.abspath(PBSout))[0]
     last2dir = string.split(fullPath, '/')[-2:]
     try: # Check for numbers at start ... not liked by PBS
-        tmp=int(last2dir[0][0])+1
-        last2dir[0]='a'+last2dir[0]
+        tmp = int(last2dir[0][0])+1
+        last2dir[0] = 'a'+last2dir[0]
     except Exception as e:
         print e
     if not PBSsubs: PBSsubs = []

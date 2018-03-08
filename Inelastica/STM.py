@@ -146,11 +146,11 @@ def GetOptions(argv, **kwargs):
 
 def main(options):
     dd = len(glob.glob(options.DestDir))
-    if len(glob.glob('TotalPotential.grid.nc'))==0 and len(glob.glob('Rho.grid.nc'))==0:
+    if len(glob.glob('TotalPotential.grid.nc')) == 0 and len(glob.glob('Rho.grid.nc')) == 0:
         sys.exit('TotalPotential.nc and Rho.grid.nc not found! Add "SaveTotalPotential true" and "SaveRho true" to RUN.fdf')
-    if len(glob.glob('TotalPotential.grid.nc'))==0:
+    if len(glob.glob('TotalPotential.grid.nc')) == 0:
         sys.exit('TotalPotential.nc not found! Add "SaveTotalPotential true" to RUN.fdf')
-    if len(glob.glob('Rho.grid.nc'))==0:
+    if len(glob.glob('Rho.grid.nc')) == 0:
         sys.exit('Rho.grid.nc not found! Add "SaveRho true" to RUN.fdf')
 
     CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
@@ -185,7 +185,7 @@ def main(options):
 
     if noFDcalcs > nokpts-1:
         print('\nAll ('+str(nokpts)+') k points are already finished!\n')
-    elif noFDcalcs>0 and noFDcalcs<nokpts:
+    elif noFDcalcs > 0 and noFDcalcs < nokpts:
         print(str(nokpts-len(doK))+' ('+str(N.round(100.*((1.*nokpts-len(doK))/nokpts), 1))+'%) k points already done. Will proceed with the rest.')
         print('You should perhaps remove the loc-basis states in the most recent k folder ')
         print('since some of these may not have been calculated before interuption.\n')
@@ -272,7 +272,7 @@ def calcTSWF(options, ikpoint):
             if val < 0:
                 val = 0
             Utilde[:, jj]=N.sqrt(val/(2*N.pi))*U[:, jj]
-        indx2 = N.where(abs(abs(ev)>1e-4))[0] # Pick non-zero states
+        indx2 = N.where(abs(abs(ev) > 1e-4))[0] # Pick non-zero states
 
         ev = ev[indx2]
         Utilde = Utilde[:, indx2]
@@ -423,7 +423,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
         if not Fold:
             shiftvec = [0, 0, 0]
         else: # include shift vectors if sphere cuts planes of PBC
-            basisindx = N.where(basis.ii==iiatom+DeviceAtoms[0])[0]
+            basisindx = N.where(basis.ii == iiatom+DeviceAtoms[0])[0]
             basisradius = N.max(basis.coff[basisindx])
             minshift, maxshift = [0, 0, 0], [0, 0, 0]
             for iithiso, thiso in enumerate(olist):
@@ -433,7 +433,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
                     n = n / LA.norm(n)
                     dist = N.abs(N.dot(n, N.dot(N.dot(pairs[ip], c), pbcpairs[ip])-c))
                     if dist < basisradius:
-                        if iithiso==0:
+                        if iithiso == 0:
                             minshift[ip] = -1
                         else:
                             maxshift[ip] = 1
@@ -454,14 +454,14 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
             dr2 = dx*dx+dy*dy+dz*dz
             drho2 = dx*dx+dy*dy
 
-            basisindx = N.where(basis.ii==iiatom+DeviceAtoms[0])[0]
+            basisindx = N.where(basis.ii == iiatom+DeviceAtoms[0])[0]
             old_coff, old_delta = 0.0, 0.0
             for basisorb in basisindx:
-                if not (basis.coff[basisorb]==old_coff and basis.delta[basisorb]==old_delta):
+                if not (basis.coff[basisorb] == old_coff and basis.delta[basisorb] == old_delta):
                     old_coff, old_delta = basis.coff[basisorb], basis.delta[basisorb]
-                    indx = N.where(dr2<basis.coff[basisorb]**2) # Find points close to atom
+                    indx = N.where(dr2 < basis.coff[basisorb]**2) # Find points close to atom
 
-                    idr, idrho=N.sqrt(dr2[indx]), N.sqrt(drho2[indx])
+                    idr, idrho = N.sqrt(dr2[indx]), N.sqrt(drho2[indx])
                     iri = (idr/basis.delta[basisorb]).astype(N.int)
                     idx, idy, idz = dx[indx], dy[indx], dz[indx]
 
@@ -469,7 +469,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
                     cosfi, sinfi = idx/idrho, idy/idrho
 
                     # Fix divide by zeros
-                    indxRzero, indxRhozero = N.where(idr==0.0), N.where(idrho==0.0)
+                    indxRzero, indxRhozero = N.where(idr == 0.0), N.where(idrho == 0.0)
                     costh[indxRzero] = 1.0
                     cosfi[indxRhozero], sinfi[indxRhozero] = 1.0, 0.0
 
