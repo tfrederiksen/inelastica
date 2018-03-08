@@ -24,7 +24,8 @@ import sys
 mm = MM.mm
 
 
-class Symmetry:
+class Symmetry(object):
+
     """
     Classify symmetry of lattice and basis.
     Class contain:
@@ -578,7 +579,8 @@ class Symmetry:
 
         # Find basis
         xyz = moveIntoCell(self.xyz, a1, a2, a3, self.accuracy)
-        class basis:
+
+        class basis(object):
             pass
         basis.xyz, basis.snr, basis.anr = [], [], []
         for ii in range(len(xyz)):
@@ -996,6 +998,7 @@ def findRadi(a1, a2, a3):
     dist = N.sort(distance(N.array(poss)))
     return dist[1]/2.0
 
+
 def test():
     """
     Run a torture test of the symmetry analysis
@@ -1040,4 +1043,3 @@ def test():
         if len(sym.pointU33)!=48 or sym.basis.NN!=NB or len(sym.U33)!=8:
             print(N1, N2, N3, NB)
             sys.exit('Failed in tourture test of symmetry')
-

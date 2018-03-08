@@ -36,12 +36,15 @@ def CreatePipeOutput(f):
         else: raise # forward error...
 
     class TeeLog(object):
+
         def __init__(self, f, term):
             self.term = term
             self.log = open(f, 'w') # Consider doing this optionally appending?
+
         def write(self, message):
             self.term.write(message)
             self.log.write(message)
+
         def flush(self):
             self.term.flush()
             self.log.flush()
@@ -109,7 +112,7 @@ def runParallel(function, argList, nCPU=None):
     except:
         OBLAS = None
 
-    os.environ['OMP_NUM_THREADS']='1'
+    os.environ['OMP_NUM_THREADS'] = '1'
     os.environ['OPENBLAS_NUM_THREADS']='1'
     if nCPU==None:
         nCPU=MP.cpu_count()
@@ -119,9 +122,9 @@ def runParallel(function, argList, nCPU=None):
     chunks = [argList[ii*nCPU:(ii+1)*nCPU] for ii, jj in enumerate(argList[::nCPU])]
     res = [None]*len(argList)
     for ii, chunk in enumerate(chunks):
-        threads=[]
+        threads = []
         for jj, args in enumerate(chunk):
-            t= MP.Process(target=function, args =(resQue, ii*nCPU+jj,)+args)
+            t = MP.Process(target=function, args =(resQue, ii*nCPU+jj,)+args)
             t.start()
             threads += [t]
         for jj in range(len(threads)):

@@ -637,8 +637,9 @@ def GaussKronrod(NN):
 # TODO: adding two gives full matrix! Should be easy to fix.
 
 
-class SpectralMatrix:
+class SpectralMatrix(object):
     # self.L/R : Left / right matrices
+
     def __init__(self, A=None, cutoff=1e-8):
         if isinstance(A, N.ndarray):
             # Initialize ... only Hermitean matrices

@@ -30,7 +30,7 @@ def write(fn, array, label, vartype='d'):
     nc.close()
 
 
-class NCfile:
+class NCfile(object):
 
     def __init__(self, fn):
         "Returning instance of class."

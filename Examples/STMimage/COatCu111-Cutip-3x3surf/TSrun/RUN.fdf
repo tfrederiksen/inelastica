@@ -1,0 +1,60 @@
+AtomicCoordinatesFormat Ang
+%block AtomicCoordinatesOrigin
+        0.0000        0.0000       4.209945789
+%endblock AtomicCoordinatesOrigin
+
+SystemTitle CuCO
+SystemLabel CuCO
+
+TS.Elecs.Neglect.Principal true
+SaveTotalPotential true
+SaveRho true
+
+SolutionMethod        transiesta
+MullikenInSCF         false
+MD.TypeOfRun        CG
+MD.NumCGsteps       0
+
+MeshCutoff          200. Ry
+
+%block kgrid_Monkhorst_Pack
+ 4    0    0    0.0
+ 0    4    0    0.0
+ 0    0    1    0.0
+%endblock kgrid_Monkhorst_Pack
+
+MaxSCFIterations      300           # Maximum number of SCF iter
+DM.Tolerance          1.d-4         # Tolerance in maximum difference
+                                    # between input and output DM
+DM.UseSaveDM          true          # to use continuation files
+DM.NumberPulay        7
+DM.MixingWeight       0.02
+
+
+%block GeometryConstraints
+position from 1 to 48
+position from 84 to 99
+%endblock GeometryConstraints
+
+%block ChemicalSpeciesLabel
+    1    6 C.mpn                   # Species index, atomic number, species label
+    2    8 O.mpn                   # Species index, atomic number, species label
+    3   29 Cu.mpn                  # Species index, atomic number, species label
+%endblock ChemicalSpeciesLabel
+
+%block  PAO.BasisSizes
+	Cu.mpn		SZP
+        C.mpn		DZP
+	O.mpn		DZP
+%endblock PAO.BasisSizes
+
+
+MaxSCFIterations      300           # Maximum number of SCF iter
+DM.Tolerance          1.d-4         # Tolerance in maximum difference
+                                    # between input and output DM
+DM.UseSaveDM          true          # to use continuation files
+
+%include ./NewTS.fdf
+%include ./STRUCT.fdf
+%include ./TBTRANS.fdf
+%include ./Default.fdf

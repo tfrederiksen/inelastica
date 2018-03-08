@@ -33,7 +33,7 @@ def main(options, kpoint, ikpoint):
     posZMol, posZTip = LayersAndTipheight(options, kpoint, ikpoint)
 
     #Read total potential, loc-basis states, lattice constants etc.
-    tmp    = readDFT(options, kpoint, pathkpt, posZMol, posZTip)
+    tmp = readDFT(options, kpoint, pathkpt, posZMol, posZTip)
     Subwfs, Tipwfs, Vsub, Vtip = tmp[0], tmp[1], tmp[2], tmp[3]
     scSize, ucSize, Max, dS, theta = tmp[4], tmp[5], tmp[6], tmp[7], tmp[8]
     SubChans, TipChans, SubPot, TipPot, SubRho, TipRho, MeshCutoff = tmp[9], tmp[10], tmp[11], tmp[12], tmp[13], tmp[14], tmp[15]
@@ -45,9 +45,9 @@ def main(options, kpoint, ikpoint):
         print '\nReal-space sampling in xy plane coarser by factor', options.samplingscale, '...'
         tmp = sampling(options, Nx, Ny, Nz, Subwfs, Tipwfs, SubChans, TipChans, SubPot, TipPot, SubRho, TipRho)
         Nx, Ny, Nz  = tmp[0], tmp[1], tmp[2]
-        NN        = Nx*Ny*Nz
-        a1, a2     = a1*options.samplingscale, a2*options.samplingscale
-        ucSize    = [a1, a2, a3]
+        NN = Nx*Ny*Nz
+        a1, a2 = a1*options.samplingscale, a2*options.samplingscale
+        ucSize = [a1, a2, a3]
         Subwfs, Tipwfs, Vsub, Vtip, SubRho, TipRho = tmp[3], tmp[4], tmp[5], tmp[6], tmp[7], tmp[8]
         print 'New lattice in xy plane obtained (corresponding to '+str(MeshCutoff/options.samplingscale**2)+' Ry):'
         print '          [Nx Ny Nz] = ['+str(Nx), str(Ny), str(Nz)+']'
@@ -59,20 +59,20 @@ def main(options, kpoint, ikpoint):
     print '\nCalculation from substrate side:'
     WFs, Chans, rho = Subwfs, SubChans, SubRho
     inda, indb = reindexing(options, Nx, Ny, Nz, NN, WFs, Chans, rho, ucSize, theta)
-    Pot       = Vsub
-    Ham       = Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint)
-    Tau, Hb    = SplitHam(Ham, inda, indb)
-    ChansL    = Chans
+    Pot = Vsub
+    Ham = Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint)
+    Tau, Hb = SplitHam(Ham, inda, indb)
+    ChansL = Chans
     propSubModes = LinearSolve(options, WFs, inda, indb, Ef, Tau, Hb, NN, Nx, Ny, Nz, Chans)
 
     #Tip part
     print '\nCalculation from tip side:'
     WFs, Chans, rho = Tipwfs, TipChans, TipRho
     inda, indb = reindexing(options, Nx, Ny, Nz, NN, WFs, Chans, rho, ucSize, theta)
-    Pot       = Vtip
-    Ham       = Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint)
-    Tau, Hb    = SplitHam(Ham, inda, indb)
-    ChansR    = Chans
+    Pot = Vtip
+    Ham = Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint)
+    Tau, Hb = SplitHam(Ham, inda, indb)
+    ChansR = Chans
     propTipModes = LinearSolve(options, WFs, inda, indb, Ef, Tau, Hb, NN, Nx, Ny, Nz, Chans)
 
     #Combine sub and tip to find conductance
@@ -82,7 +82,7 @@ def main(options, kpoint, ikpoint):
 
 
 def LayersAndTipheight(options, kpoint, ikpoint):
-    tmp  = NC.Dataset('./'+options.DestDir+'/'+str(ikpoint)+'/'+options.systemlabel+'.AL0.nc', 'r')
+    tmp = NC.Dataset('./'+options.DestDir+'/'+str(ikpoint)+'/'+options.systemlabel+'.AL0.nc', 'r')
     xyzSupercell = N.array(tmp.variables['xyz'][:], N.float)
     xyz = xyzSupercell.copy()
     noAtoms = len(xyzSupercell[:, 0])
@@ -111,22 +111,22 @@ def LayersAndTipheight(options, kpoint, ikpoint):
         if N.abs(N.sum(atomlayer3[:])/(kk-jj+1)-atomlayer3[kk])>.5:
             break
     Layer3 = kk
-    if Layer2-Layer1<Layer1:
+    if Layer2-Layer1 < Layer1:
         print 'The substrate seems to consist a single atomic layer.'
-    elif Layer3-Layer2<Layer1:
+    elif Layer3-Layer2 < Layer1:
         print 'The substrate seems to consist of two atomic layers.'
     else:
         print 'The substrate seems to consist of at three (or more) atomic layers.'
         print '(One or two layers are enough. Check your -F and -L flags!)'
     for ii in range(len(xyz)-1):
-        if xyz[ii+1][2]-xyz[ii][2]>5/PC.Bohr2Ang: #Minimum gap: 5 Ang!
+        if xyz[ii+1][2]-xyz[ii][2] > 5/PC.Bohr2Ang: #Minimum gap: 5 Ang!
             TipHeightMol = N.round(N.abs(xyz[ii+1][2]-xyz[ii][2])*PC.Bohr2Ang, 3)
             print 'Vacuum gap along z appears to be '+str(TipHeightMol)+' Ang'
             break
     Molidx = ii; Tipidx = ii+1
     posZMol = xyz[Molidx][2]; posZTip = xyz[Tipidx][2]
     TipHeightLayer1 = N.round(N.abs(posZTip-zSurfLayer1)*PC.Bohr2Ang, 3)
-    if Layer2-Layer1<Layer1:
+    if Layer2-Layer1 < Layer1:
         print 'Substrate surface  --- tip-apex distance: '+str(TipHeightLayer1)+' Ang'
     if Layer2-Layer1 == Layer1:
         zSurfLayer2 = N.sum(atomlayer2[Layer1:Layer2])/(Layer2-Layer1)
@@ -150,9 +150,9 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     rho = N.array(ncfile.variables['gridfunc'][:], N.float)[0]
 
     #Import supercell grid from one localized-basis state
-    tmp  = NC.Dataset(pathkpt+options.systemlabel+'.AL0.nc', 'r')
+    tmp = NC.Dataset(pathkpt+options.systemlabel+'.AL0.nc', 'r')
     tmp2 = N.array(tmp.variables['Re-Psi'][:], N.float)
-    dim  = N.shape(tmp2)
+    dim = N.shape(tmp2)
     Nx, Ny, Nz = dim[0], dim[1], dim[2];
 
     SubChans = N.shape(glob.glob(pathkpt+options.systemlabel+'.AL*.nc'))[0]
@@ -185,8 +185,8 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     a1, a2, a3 = SLA.norm(steps[0]), SLA.norm(steps[1]), SLA.norm(steps[2])
     avec = [a1, a2, a3]
     orig = N.array(ncfile.variables['origin'][:], N.float)[2]
-    Nzi  = N.int(orig/a3)
-    Nzf  = Nzi+Nz
+    Nzi = N.int(orig/a3)
+    Nzf = Nzi+Nz
     PotDevice = pot[Nzi:Nzf, :, :]
     SubPot = N.transpose(PotDevice, [2, 1, 0])
     TipPot = SubPot[:, :, ::-1].copy()
@@ -312,15 +312,15 @@ def Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint):
     ky = -kpoint[1]*2.0*N.pi
     #Determine the coefficients of nabla^2, A dx^2 + B dy^2 + C dxdy: (C!=0 in skew system)
     mat = SLA.inv([[1, 0], [N.cos(theta), N.sin(theta)]])
-    mixX  = mat[0, 0]**2 + mat[1, 0]**2
-    mixY  = mat[0, 1]**2 + mat[1, 1]**2
+    mixX = mat[0, 0]**2 + mat[1, 0]**2
+    mixY = mat[0, 1]**2 + mat[1, 1]**2
     mixXY = 2*mat[0, 0]*mat[0, 1] + 2*mat[1, 0]*mat[1, 1]
     mixX, mixY, mixXY = N.round(mixX, 8), N.round(mixY, 8), N.round(mixXY, 8)
     print 'nabla^2_{xy} = '+str(mixX)+'d^2/dx^2+'+str(mixY)+'d^2/dy^2+'+str(mixXY)+'d^2/dxdy'
     #print 'd^2x:',mixX,',d2^y:',mixY,',dxdy:',mixXY
     bx = mixX/a1**2; by = mixY/a2**2; bz = 1./a3**2;
     bands = 23
-    D2    = N.zeros((bands, NN), N.complex)
+    D2 = N.zeros((bands, NN), N.complex)
 
     #tau z
     D2[0, Nx*Ny:NN] = [-bz for ii in range(Nx*Ny, NN)]
@@ -377,23 +377,22 @@ def Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint):
     for ii in range(N.int((bands-1)/2)):
         D2[12+ii, :] = D2[10-ii, ::-1]
     #Define Hamiltonian as sparse array
-    mtx = sparse.spdiags([D2[0],               D2[1],               D2[2],
-                          D2[3],               D2[4],               D2[5],
-                          D2[6],               D2[7],               D2[8],
-                          D2[9],               D2[10],              D2[11],
+    mtx = sparse.spdiags([D2[0], D2[1], D2[2],
+                          D2[3], D2[4], D2[5],
+                          D2[6], D2[7], D2[8],
+                          D2[9], D2[10], D2[11],
                           N.conjugate(D2[12]), N.conjugate(D2[13]), D2[14],
-                          D2[15],              N.conjugate(D2[16]), N.conjugate(D2[17]),
+                          D2[15], N.conjugate(D2[16]), N.conjugate(D2[17]),
                           N.conjugate(D2[18]), N.conjugate(D2[19]), N.conjugate(D2[20]),
                           N.conjugate(D2[21]), D2[22]],
-
-                         [Nx*Ny,               Nx*Ny-1,             Nx*Ny-Nx+1,
-                          Nx*Ny-Nx,            Nx*Ny-Nx-1,          Nx*Ny-2*Nx+1,
-                          2*Nx-1,              Nx+1,                Nx,
-                          Nx-1,                1,                   0,
-                          -1,                  -(Nx-1),             -Nx,
-                          -(Nx+1),             -(2*Nx-1),           -(Nx*Ny-2*Nx+1),
-                          -(Nx*Ny-Nx-1),       -(Nx*Ny-Nx),         -(Nx*Ny-Nx+1),
-                          -(Nx*Ny-1),          -Nx*Ny], NN, NN)
+                         [Nx*Ny, Nx*Ny-1, Nx*Ny-Nx+1,
+                          Nx*Ny-Nx, Nx*Ny-Nx-1, Nx*Ny-2*Nx+1,
+                          2*Nx-1, Nx+1, Nx,
+                          Nx-1, 1, 0,
+                          -1, -(Nx-1), -Nx,
+                          -(Nx+1), -(2*Nx-1), -(Nx*Ny-2*Nx+1),
+                          -(Nx*Ny-Nx-1), -(Nx*Ny-Nx), -(Nx*Ny-Nx+1),
+                          -(Nx*Ny-1), -Nx*Ny], NN, NN)
     #Convert Hamiltonian to sparse.csr format
     Ham = sparse.csr_matrix(mtx)
     return Ham
@@ -407,8 +406,8 @@ def SplitHam(Ham, inda, indb):
     print '     | tau^\dagger    Hb |'
     print '      -                 -'
     Na, Nb = len(inda), len(indb)
-    Tau   = Ham[indb[0:Nb]][:, inda[:Na]]
-    Hb    = Ham[indb[0:Nb]][:, indb[0:Nb]]
+    Tau = Ham[indb[0:Nb]][:, inda[:Na]]
+    Hb = Ham[indb[0:Nb]][:, indb[0:Nb]]
     print 'Linear system of equations: (E-Hb).phi = tau^{\dagger}.psi, where'
     print 'dim(Hb)  = ('+str(Nb)+'x'+str(Nb)+') lattice points'
     print 'dim(psi) = ('+str(Nb)+'x1) lattice points'
@@ -433,11 +432,11 @@ def LinearSolve(options, WFs, inda, indb, Ef, Tau, Hb, NN, Nx, Ny, Nz, Chans):
         print 'Mode %s found in:'%mode, N.round(time.clock()-timesolve, 2), 's'
         index = N.zeros(NN)
         index[0:Na] = inda
-        index[Na:NN]= indb
+        index[Na:NN] = indb
         invindex = N.argsort(index)
         phi = N.zeros(NN, N.complex)
         phi[0:Na] = psiA
-        phi[Na:NN]= sol[0]
+        phi[Na:NN] = sol[0]
         phi = phi[invindex]
         pmodes[mode, :] = phi
         times = N.round(time.clock()-timemodeprop, 2)
@@ -450,27 +449,27 @@ def Current(options, propSubModes, propTipModes, Nx, Ny, Nz, Max, ucSize, ChansL
     Ltmp, Rtmp = propSubModes, propTipModes
     a3 = ucSize[2]
     print '\nComputing wave functions and gradients at separation surface ...'
-    L  = N.zeros((ChansL, Nx, Ny), N.complex)
-    R  = N.zeros((ChansR, Nx, Ny), N.complex)
+    L = N.zeros((ChansL, Nx, Ny), N.complex)
+    R = N.zeros((ChansR, Nx, Ny), N.complex)
     dL = N.zeros((ChansL, Nx, Ny), N.complex)
     dR = N.zeros((ChansR, Nx, Ny), N.complex)
     L2, dL2 = N.zeros((ChansL, 2*Nx, 2*Ny), N.complex), N.zeros((ChansL, 2*Nx, 2*Ny), N.complex)
     R2, dR2 = N.zeros((ChansR, 2*Nx, 2*Ny), N.complex), N.zeros((ChansR, 2*Nx, 2*Ny), N.complex)
     for ii in range(ChansL):
-        L2[ii, :Nx, :Ny]  = Ltmp[ii, Max*Nx*Ny:(Max+1)*Nx*Ny].reshape(Ny, Nx).transpose()
-        L2[ii, Nx:, Ny:]  = L2[ii, :Nx, :Ny]*N.exp(2.0j*N.pi*(kpoint[0]+kpoint[1]))
-        L2[ii, Nx:, :Ny]  = L2[ii, :Nx, :Ny]*N.exp(2.0j*N.pi*kpoint[0])
-        L2[ii, :Nx, Ny:]  = L2[ii, :Nx, :Ny]*N.exp(2.0j*N.pi*kpoint[1])
+        L2[ii, :Nx, :Ny] = Ltmp[ii, Max*Nx*Ny:(Max+1)*Nx*Ny].reshape(Ny, Nx).transpose()
+        L2[ii, Nx:, Ny:] = L2[ii, :Nx, :Ny]*N.exp(2.0j*N.pi*(kpoint[0]+kpoint[1]))
+        L2[ii, Nx:, :Ny] = L2[ii, :Nx, :Ny]*N.exp(2.0j*N.pi*kpoint[0])
+        L2[ii, :Nx, Ny:] = L2[ii, :Nx, :Ny]*N.exp(2.0j*N.pi*kpoint[1])
         dL2[ii, :Nx, :Ny] = ((Ltmp[ii, (Max+1)*Nx*Ny:(Max+2)*Nx*Ny]\
-                        -Ltmp[ii, (Max-1)*Nx*Ny:Max*Nx*Ny])/2/a3).reshape(Ny, Nx).transpose()
+                              -Ltmp[ii, (Max-1)*Nx*Ny:Max*Nx*Ny])/2/a3).reshape(Ny, Nx).transpose()
         dL2[ii, Nx:, Ny:] = dL2[ii, :Nx, :Ny]*N.exp(2.0j*N.pi*(kpoint[0]+kpoint[1]))
         dL2[ii, Nx:, :Ny] = dL2[ii, :Nx, :Ny]*N.exp(2.0j*N.pi*kpoint[0])
         dL2[ii, :Nx, Ny:] = dL2[ii, :Nx, :Ny]*N.exp(2.0j*N.pi*kpoint[1])
     for ii in range(ChansR):
-        R2[ii, :Nx, :Ny]  = Rtmp[ii, (Nz-Max-1)*Nx*Ny:(Nz-Max)*Nx*Ny].reshape(Ny, Nx).transpose()[::-1, ::-1]
+        R2[ii, :Nx, :Ny] = Rtmp[ii, (Nz-Max-1)*Nx*Ny:(Nz-Max)*Nx*Ny].reshape(Ny, Nx).transpose()[::-1, ::-1]
         dR2[ii, :Nx, :Ny] = -((Rtmp[ii, (Nz-Max)*Nx*Ny:(Nz-Max+1)*Nx*Ny]\
-                             -Rtmp[ii, (Nz-Max-2)*Nx*Ny:(Nz-Max-1)*Nx*Ny])/2/a3).reshape(Ny, Nx).transpose()[::-1, ::-1]
-    n=wNC.NCfile(pathkpt+'FD'+N.str(ikpoint)+'.nc')
+                               -Rtmp[ii, (Nz-Max-2)*Nx*Ny:(Nz-Max-1)*Nx*Ny])/2/a3).reshape(Ny, Nx).transpose()[::-1, ::-1]
+    n = wNC.NCfile(pathkpt+'FD'+N.str(ikpoint)+'.nc')
     n.write(L2.real, 'reL')
     n.write(L2.imag, 'imL')
     n.write(R2.real, 'reR')
@@ -483,7 +482,7 @@ def Current(options, propSubModes, propTipModes, Nx, Ny, Nz, Max, ucSize, ChansL
     n.close()
     L, R, dL, dR = L2, R2, dL2, dR2
     Nx, Ny = 2*Nx, 2*Ny
-    scale    = 4*N.pi**2*7.748e-5*1e9*dS**2*options.samplingscale**4
+    scale = 4*N.pi**2*7.748e-5*1e9*dS**2*options.samplingscale**4
     print '\nSimulating tip scanning by fast Fourier transform ...'
     tot = N.zeros((Nx, Ny))
     currmat = N.zeros((ChansL, ChansR))
@@ -491,7 +490,7 @@ def Current(options, propSubModes, propTipModes, Nx, Ny, Nz, Max, ucSize, ChansL
         for jj in range(ChansR):
             tmp1 = N.fft.ifft2(N.fft.fft2(L[ii, ::-1, ::-1])*N.conjugate(N.fft.fft2(dR[jj, :, :])))
             tmp2 = N.fft.ifft2(N.fft.fft2(dL[ii, ::-1, ::-1])*N.conjugate(N.fft.fft2(R[jj, :, :])))
-            tot  = tot+N.abs(tmp1-tmp2)**2
+            tot = tot+N.abs(tmp1-tmp2)**2
             currmat[ii, jj] = N.sum(N.abs(tmp1-tmp2)**2)
     STMcurrent = scale*tot
     STMcurrent = STMcurrent[:Nx/2, :Ny/2]

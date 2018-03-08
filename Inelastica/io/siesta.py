@@ -863,8 +863,8 @@ def ReadMullikenPop(infile, outfile, writeallblocks=False):
                 dpop = pop-round(pop, 0)
                 popsum += pop
                 mpop.append((nr, pop, dpop, 1.0*popsum))
-            except:
-                pass
+            except Exception as e:
+                print 'Exception in ReadMullikenPop:', e
     f.close()
 
 
@@ -1330,7 +1330,7 @@ def ReadIonNCFile(filename, printnorm=False):
     """
     Reads a NetCDF file that describes the basis orbitals of a given species
     """
-    class ion:
+    class ion(object):
         pass
 
     file = NC4.Dataset(filename, 'r')
@@ -1369,7 +1369,7 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
     """
     Builds the information for each basis orbital in the Hamiltonian
     """
-    class basis:
+    class basis(object):
         pass
     CSL = GetFDFblock(FDFfile, 'ChemicalSpeciesLabel')
     systemlabel = GetFDFlineWithDefault(FDFfile, 'SystemLabel', str, 'siesta', 'io.siesta')
@@ -1396,7 +1396,7 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
         print "Length of basis set build: %i"%nn
         print "Size of Hamiltonian: %i"%(lasto[LastAtom]-lasto[FirstAtom-1])
         print "Error: Could not build basis set. Check if all ion.nc files are there!"
-        kuk
+        sys.exit(1)
 
     # Initiate basis variables
     basis.ii = N.zeros((nn,), N.int)
@@ -1421,10 +1421,10 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
                 basis.L[iorb] = ion.L[jj]
                 basis.M[iorb] = kk
                 basis.N[iorb] = ion.N[jj]
-                basis.xyz[iorb, :] = xyz[ii]
+                basis.xyz[iorb,:] = xyz[ii]
                 basis.delta[iorb] = ion.delta[jj]
-                basis.orb.append(ion.orb[jj, :])
-                basis.coff[iorb] = (len(ion.orb[jj, :])-1)*ion.delta[jj]
+                basis.orb.append(ion.orb[jj,:])
+                basis.coff[iorb] = (len(ion.orb[jj,:])-1)*ion.delta[jj]
                 basis.label.append(ion.label)
                 iorb = iorb+1
 
@@ -1521,7 +1521,7 @@ def CheckTermination(infile):
 #
 
 
-class HS:
+class HS(object):
     """
     Create full *HS* from *TSHS* file. Read fn and assemble for specified k-point
 
@@ -1634,12 +1634,10 @@ class HS:
         The garbage collector cannot tell if H or S will be used subsequently
         """
         self.kpoint = N.array([1e10, 1e10, 1e10], N.float)
-        try:
+        if 'H' in dir(self):
             del self.H
-        except: pass
-        try:
+        if 'S' in dir(self):
             del self.S
-        except: pass
 
     def __ReadTSHSFile(self, filename):
         """
@@ -1703,7 +1701,7 @@ class HS:
             for ii in range(nou):
                 tmp=ReadFortranBin(fortfile, 'd', numhg[ii]*3)
                 tmp = N.reshape(tmp, (3, numhg[ii]))
-                xij[cnt:cnt+numhg[ii], :] = tmp.T
+                xij[cnt:cnt+numhg[ii],:] = tmp.T
                 cnt=cnt+numhg[ii]
             xij = xij.T*PC.Bohr2Ang
             xij = N.require(xij, requirements=['A', 'F'])
@@ -1791,7 +1789,7 @@ class HS:
             if not self.onlyS:
                 self.H = N.empty((self.nspin, self.nuo, self.nuo), atype)
                 for ispin in range(self.nspin):
-                    self.H[ispin, :, :] = self.setkpointhelper(self.Hsparse[:, ispin], kpoint, UseF90helpers, atype=atype) \
+                    self.H[ispin,:,:] = self.setkpointhelper(self.Hsparse[:, ispin], kpoint, UseF90helpers, atype=atype) \
                         - self.ef * self.S
 
     def setkpointhelper(self, Sparse, kpoint, UseF90helpers=True, atype=N.complex):

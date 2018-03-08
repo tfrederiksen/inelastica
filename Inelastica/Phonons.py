@@ -181,9 +181,9 @@ def GetOptions(argv, **kwargs):
     del options.FCfirst, options.FClast
 
     # PBCFirst/PBCLast
-    if options.PBCFirst<options.DeviceFirst:
+    if options.PBCFirst < options.DeviceFirst:
         options.PBCFirst = options.DeviceFirst
-    if options.PBCLast>options.DeviceLast:
+    if options.PBCLast > options.DeviceLast:
         options.PBCLast = options.DeviceLast
 
     # Isotopes specified in separate file?
@@ -198,7 +198,7 @@ def GetOptions(argv, **kwargs):
     return options
 
 
-class FCrun():
+class FCrun(object):
 
     def __init__(self, runfdf):
         self.fdf = runfdf
@@ -310,7 +310,7 @@ class OTSrun(FCrun): # Only TranSiesta run
             sys.exit('Phonons.GetFileLists: No TSHS file found in %s'%self.directory)
 
 
-class OSrun:
+class OSrun(object):
 
     def __init__(self, onlySdir, kpoint, atype=N.complex):
         print 'Phonons.GetOnlyS: Reading from', onlySdir
@@ -359,7 +359,7 @@ class OSrun:
             self.Displ = Displ
 
 
-class DynamicalMatrix():
+class DynamicalMatrix(object):
 
     def __init__(self, fdfs, DynamicAtoms=None, TSrun=False):
         self.fdfs = fdfs
@@ -749,7 +749,7 @@ class DynamicalMatrix():
                 ncdf.variables['grad.im'].info = 'Imaginary part of gradients'
             print 'Phonons.WriteOutput: Wrote gradients to', ncdffn
         except:
-            pass
+            print 'Phonons.WriteOutpot: Gradients not computed'
         ncdf.close()
         print 'Phonons.WriteOutput: Finished', ncdffn
 
