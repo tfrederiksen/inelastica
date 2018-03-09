@@ -37,7 +37,7 @@ import string
 import struct
 import Inelastica.physics.constants as PC
 import Inelastica.ValueCheck as VC
-import Inelastica.CommonFunctions as CF
+import Inelastica.io.log as Log
 import Inelastica.NEGF as NEGF
 import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
@@ -54,7 +54,7 @@ def GetOptions(argv, **kwargs):
         For example `-n 2 test_dir`, which instructs to compute only the two most transmitting
         eigenchannel scattering states and place the results in the output directory `test_dir`.
     """
-    CF.PrintMainHeader('GetOptions', None)
+    Log.PrintMainHeader('GetOptions', None)
 
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
@@ -135,9 +135,9 @@ def main(options):
     options : an ``options`` instance
     """
 
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options, 'EigenChannels')
-    CF.PrintMainHeader('EigenChannels', options)
+    Log.PrintMainHeader('EigenChannels', options)
 
     # Read geometry
     XV = '%s/%s.XV'%(options.head, options.systemlabel)
@@ -233,7 +233,7 @@ def main(options):
             print 'You need to install scipy to solve the generalized eigenvalue problem'
             print 'for the molecular eigenstates in the nonorthogonal basis'
 
-    CF.PrintMainFooter('EigenChannels')
+    Log.PrintMainFooter('EigenChannels')
 
 
 def calcWF(options, geom, basis, Y):

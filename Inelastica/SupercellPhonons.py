@@ -40,7 +40,7 @@ import netCDF4 as NC4
 import ast
 import Inelastica.io.siesta as SIO
 import Inelastica.Symmetry as Symmetry
-import Inelastica.CommonFunctions as CF
+import Inelastica.io.log as Log
 import Inelastica.Phonons as PH
 import Inelastica.physics.constants as PC
 import Inelastica.MiscMath as MM
@@ -473,10 +473,10 @@ def WriteDOS(outfile, bands, emin, emax, pts, smear):
 
 
 def main(options):
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     #VC.OptionsCheck(options,'Phonons')
 
-    CF.PrintMainHeader('Bandstructures', options)
+    Log.PrintMainHeader('Bandstructures', options)
 
     try:
         fdf = glob.glob(options.onlyTSdir+'/RUN.fdf')

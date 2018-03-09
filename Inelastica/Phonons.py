@@ -77,7 +77,7 @@ import string
 import ast
 import Inelastica.io.siesta as SIO
 import Inelastica.Symmetry as Symmetry
-import Inelastica.CommonFunctions as CF
+import Inelastica.io.log as Log
 import Inelastica.MakeGeom as MG
 import Inelastica.physics.constants as PC
 import Inelastica.MiscMath as MM
@@ -849,8 +849,8 @@ def main(options):
     ----------
     options : an ``options`` instance
     """
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    CF.PrintMainHeader('Phonons', options)
+    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    Log.PrintMainHeader('Phonons', options)
 
     # Determine SIESTA input fdf files in FCruns
     fdf = glob.glob(options.FCwildcard+'/RUN.fdf')
@@ -878,9 +878,9 @@ def main(options):
                                WriteGradients=options.WriteGradients)
         # Write data to files
         DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        CF.PrintMainFooter('Phonons')
+        Log.PrintMainFooter('Phonons')
         return DM.h0, DM.s0, DM.hw, DM.heph
     else:
         DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        CF.PrintMainFooter('Phonons')
+        Log.PrintMainFooter('Phonons')
         return DM.hw

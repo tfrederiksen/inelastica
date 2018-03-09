@@ -46,7 +46,7 @@ import Inelastica.MiscMath as MM
 import Inelastica.NEGF as NEGF
 import Inelastica.physics.mesh as Kmesh
 import Inelastica.ValueCheck as VC
-import Inelastica.CommonFunctions as CF
+import Inelastica.io.log as Log
 import Inelastica.io.xmgrace as XMGR
 
 # For doing loops with pyTBT we encourage the usage of this function
@@ -64,7 +64,7 @@ def GetOptions(argv, **kwargs):
         For example `-N 5 test_dir`, which instructs to compute transmission on 5 energy points
         and place the results in the output directory `test_dir`.
     """
-    CF.PrintMainHeader('GetOptions', None)
+    Log.PrintMainHeader('GetOptions', None)
 
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
@@ -152,9 +152,9 @@ def main(options):
     ----------
     options : an ``options`` instance
     """
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options, 'pyTBT')
-    CF.PrintMainHeader('pyTBT', options)
+    Log.PrintMainHeader('pyTBT', options)
 
     # K-points
     if options.Gk1>1:
@@ -325,7 +325,7 @@ def main(options):
         WriteMPSH(outFile+'.MPSHL.gz', options, DevGF, MPSHL, ev0)
         WriteMPSH(outFile+'.MPSHR.gz', options, DevGF, MPSHR, ev0)
 
-    CF.PrintMainFooter('pyTBT')
+    Log.PrintMainFooter('pyTBT')
 
 
 def WritePDOS(fn, options, DevGF, DOS, basis):

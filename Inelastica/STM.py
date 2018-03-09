@@ -42,7 +42,7 @@ import os
 import ast
 import time
 import Inelastica.ValueCheck as VC
-import Inelastica.CommonFunctions as CF
+import Inelastica.io.log as Log
 import Inelastica.io.netcdf as writeNC
 import Inelastica.STMFD as STMFD
 import Inelastica.NEGF as NEGF
@@ -51,6 +51,7 @@ import Inelastica.MakeGeom as MG
 import Inelastica.MiscMath as MM
 import Inelastica.physics.constants as PC
 import Inelastica.physics.mesh as Kmesh
+import Inelastica.multiprocessing as multiprocessing
 
 #Units: Bohr and Rydberg!
 
@@ -153,9 +154,9 @@ def main(options):
     if len(glob.glob('Rho.grid.nc')) == 0:
         sys.exit('Rho.grid.nc not found! Add "SaveRho true" to RUN.fdf')
 
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options, 'STM')
-    CF.PrintMainHeader('STM', options)
+    Log.PrintMainHeader('STM', options)
 
     ## Step 1: Calculate scattering states from L/R on TranSiesta real space grid.
     if glob.glob(options.DestDir+'/kpoints') != []: # Check previous k-points
@@ -196,7 +197,7 @@ def main(options):
         else:
             print('STM calculation starts.')
     args = [(options, ik) for ik in doK]
-    tmp = CF.runParallel(calcTSWFPar, args, nCPU=options.nCPU)
+    tmp = multiprocessing.runParallel(calcTSWFPar, args, nCPU=options.nCPU)
 
     print('Calculating k-point averaged STM image')
 
@@ -257,7 +258,7 @@ def main(options):
     n.write(TipHeight, 'TipHeight')
     n.close()
 
-    CF.PrintMainFooter('STM')
+    Log.PrintMainFooter('STM')
 
 ########################################################
 
@@ -541,4 +542,4 @@ if __name__ == '__main__':
     main(options)
 
     dT = datetime.now()-start
-    CF.PrintScriptSummary(sys.argv, dT)
+    Log.PrintScriptSummary(sys.argv, dT)
