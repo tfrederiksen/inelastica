@@ -10,7 +10,6 @@
 from __future__ import print_function, absolute_import
 
 import sys
-import time
 import multiprocessing as MP
 import os
 
@@ -31,7 +30,7 @@ def runParallel(function, argList, nCPU=None):
         OBLAS = None
 
     os.environ['OMP_NUM_THREADS'] = '1'
-    os.environ['OPENBLAS_NUM_THREADS'] ='1'
+    os.environ['OPENBLAS_NUM_THREADS'] = '1'
     if nCPU == None:
         nCPU = MP.cpu_count()
     print("Running on %i CPUS"%(nCPU))
