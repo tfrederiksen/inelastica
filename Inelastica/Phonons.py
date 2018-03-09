@@ -202,7 +202,7 @@ class FCrun(object):
 
     def __init__(self, runfdf):
         self.fdf = runfdf
-        self.directory, self.tail =  os.path.split(runfdf)
+        self.directory, self.tail = os.path.split(runfdf)
         self.systemlabel = SIO.GetFDFlineWithDefault(runfdf, 'SystemLabel', str, 'siesta', 'Phonons')
         FCfirst = SIO.GetFDFlineWithDefault(runfdf, 'MD.FCfirst', int, 0, 'Phonons')
         FClast = SIO.GetFDFlineWithDefault(runfdf, 'MD.FClast', int, 0, 'Phonons')
@@ -256,7 +256,7 @@ class FCrun(object):
 
     def GetOrbitalIndices(self):
         # Determine snr (siesta number) for each label
-        csl = SIO.GetFDFblock(self.fdf, KeyWord = 'ChemicalSpeciesLabel')
+        csl = SIO.GetFDFblock(self.fdf, KeyWord='ChemicalSpeciesLabel')
         csl2snr = {}
         for set in csl:
             csl2snr[set[2]] = set[0]
@@ -279,7 +279,7 @@ class FCrun(object):
         for num in self.geom.snr:
             nao = snr2nao[num]
             orbitalIndices.append([tmpOrb, tmpOrb+int(nao)-1])
-            tmpOrb+=nao
+            tmpOrb += nao
         self.orbitalIndices = N.array(orbitalIndices)
         self.nao = tmpOrb # total number of orbitals
         self.snr2nao = snr2nao # orbitals per species
@@ -328,7 +328,7 @@ class OSrun(object):
                 del thisHS
                 nao = len(S)/2
                 S0 = S[0:nao, 0:nao].copy()
-                dmat=S[0:nao, nao:nao*2].copy()
+                dmat = S[0:nao, nao:nao*2].copy()
                 if file.endswith('_1.onlyS'):
                     onlyS[0, -1] = dmat
                 elif file.endswith('_2.onlyS'):
@@ -461,7 +461,7 @@ class DynamicalMatrix(object):
             for i in range(3*dyn):
                 print string.rjust('%.3f'%(1000*hw[i]), 9),
                 if (i-5)%6 == 0: print
-            if (i-5)%6!=0: print
+            if (i-5)%6 != 0: print
         #print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
         #for i in range(3*dyn):
         #    print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
@@ -592,7 +592,7 @@ class DynamicalMatrix(object):
                 # Remove Periodic Boundary terms
                 nuo = len(dH[0])
                 pbcf = self.OrbIndx[PBCFirst-1][0]
-                pbcl  = self.OrbIndx[PBCLast-1][1]
+                pbcl = self.OrbIndx[PBCLast-1][1]
                 if v < PBCFirst:
                     # we have something to remove...
                     print 'Warning: Setting certain elements in dH[%i,%i] to zero because %i<PBCFirst'%(v, j, v)

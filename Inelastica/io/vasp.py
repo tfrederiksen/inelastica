@@ -90,7 +90,7 @@ def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LA
     "Write POSCAR file"
     print 'io.vasp.WritePOSCAR: Writing', filename
     pcarfile = open(filename, 'w')
-    if label[:-2]!='\n':
+    if label[:-2] != '\n':
         pcarfile.write(label+'\n')
     else:
         pcarfile.write(label)
@@ -107,10 +107,10 @@ def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LA
     pcarfile.write('\n')
     pcarfile.write('Selective dynamics\nCartesian\n')
     for ii, xyzval in enumerate(xyz):
-        line  = string.rjust('%.9f'%xyzval[0], 16)+' '
+        line = string.rjust('%.9f'%xyzval[0], 16)+' '
         line += string.rjust('%.9f'%xyzval[1], 16)+' '
         line += string.rjust('%.9f'%xyzval[2], 16)+' '
-        if len(constrained)>0:
+        if len(constrained) > 0:
             for jj in range(3):
                 if constrained[ii, jj] > 0:
                     line += ' T'

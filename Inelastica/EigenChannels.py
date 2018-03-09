@@ -236,7 +236,6 @@ def main(options):
     CF.PrintMainFooter('EigenChannels')
 
 
-
 def calcWF(options, geom, basis, Y):
     """
     Calculate wavefunction, returns:
@@ -533,7 +532,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
             for jj in range(nx):
                 data.append(YY.real[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6 == 0):
+        if (iii+1)%6 == 0:
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
@@ -594,7 +593,7 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
     phase = 1.0+0.0j
 
     for Ykk in Y:
-        if abs(Ykk)>max_amp:
+        if abs(Ykk) > max_amp:
             max_amp = abs(Ykk)
             phase = Ykk/max_amp
     Y = Y/phase

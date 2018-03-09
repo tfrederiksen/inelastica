@@ -158,7 +158,7 @@ def main(options):
     CF.PrintMainHeader('STM', options)
 
     ## Step 1: Calculate scattering states from L/R on TranSiesta real space grid.
-    if glob.glob(options.DestDir+'/kpoints')!=[]: # Check previous k-points
+    if glob.glob(options.DestDir+'/kpoints') != []: # Check previous k-points
         f, oldk = open(options.DestDir+'/kpoints', 'r'), []
         f.readline()
         for ii in f.readlines():
@@ -178,7 +178,7 @@ def main(options):
     nokpts = len(options.kpoints.k)
     noFDcalcs = len(glob.glob('./'+options.DestDir+'/*/FDcurr*.nc'))
     for ii in range(nokpts):
-        if len(glob.glob('./'+options.DestDir+'/'+str(ii)+'/FDcurr'+str(ii)+'.nc'))==1:
+        if len(glob.glob('./'+options.DestDir+'/'+str(ii)+'/FDcurr'+str(ii)+'.nc')) == 1:
             pass
         else:
             doK += [ii]
@@ -227,7 +227,7 @@ def main(options):
     for ii in range(options.Nk1):
         for jj in range(options.Nk2):
             N1 = ii+1; N2 = options.Nk2-jj; kk = (ii+1)*options.Nk2-jj-1
-            STMimagekpt[(N1-1)*dim1:N1*dim1, (N2-1)*dim2:N2*dim2]=tmpSTM[kk*dim1:(kk+1)*dim1, ::-1]
+            STMimagekpt[(N1-1)*dim1:N1*dim1, (N2-1)*dim2:N2*dim2] = tmpSTM[kk*dim1:(kk+1)*dim1, ::-1]
 
     tmp = open(options.systemlabel+'.XV').readlines()[4+options.DeviceFirst-1:4+options.DeviceLast]
     xyz = N.zeros((len(tmp), 4))
@@ -243,7 +243,7 @@ def main(options):
         drAtoms[atomIdx] = N.round((xyz[atomIdx+1][3]-xyz[atomIdx][3]), 3)
     TipHeight = N.max(drAtoms)
 
-    n=writeNC.NCfile('./'+options.DestDir+'/STMimage.nc')
+    n = writeNC.NCfile('./'+options.DestDir+'/STMimage.nc')
     n.write(STMimage, 'STMimage')
     n.write(theta, 'theta')
     n.write(options.kpoints.k, 'kpoints')
@@ -271,7 +271,7 @@ def calcTSWF(options, ikpoint):
         for jj, val in enumerate(ev): # Problems with negative numbers
             if val < 0:
                 val = 0
-            Utilde[:, jj]=N.sqrt(val/(2*N.pi))*U[:, jj]
+            Utilde[:, jj] = N.sqrt(val/(2*N.pi))*U[:, jj]
         indx2 = N.where(abs(abs(ev) > 1e-4))[0] # Pick non-zero states
 
         ev = ev[indx2]
@@ -474,7 +474,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
                     cosfi[indxRhozero], sinfi[indxRhozero] = 1.0, 0.0
 
                     # Numpy has changed the choose function to crap!
-                    RR=N.take(basis.orb[basisorb], iri)
+                    RR = N.take(basis.orb[basisorb], iri)
                 # Calculate spherical harmonics
                 if len(idr) > 0:
                     l = basis.L[basisorb]
@@ -515,7 +515,7 @@ def writenetcdf2(geom, fn, YY, nx, ny, nz, minnz, maxnz, pbc, DeviceAtoms):
     varcell.units = 'Bohr'
     vardsteps = file.createVariable('steps', 'd', ('naxes', 'naxes'))
     steps = N.array([pbc[0]/nx, pbc[1]/ny, pbc[2]/nz])/PC.Bohr2Ang
-    vardsteps[:]  = steps
+    vardsteps[:] = steps
     vardsteps.units = 'Bohr'
     varorig = file.createVariable('origin', 'd', ('naxes',))
     varorig[:]  = pbc[2]/nz*minnz/PC.Bohr2Ang

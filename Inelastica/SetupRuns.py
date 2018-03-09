@@ -105,7 +105,7 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
     if IndexShift > 0:
         print 'SetupRuns.SetupCGrun: Applying IndexShift =', IndexShift
         for ii in range(IndexShift):
-            geom.xyz[0][2]+=geom.pbc[2][2]
+            geom.xyz[0][2] += geom.pbc[2][2]
             geom.addAtom(geom.xyz[0], geom.snr[0], geom.anr[0])
             geom.rmAtom(0)
     # Rotation?
@@ -130,7 +130,7 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
     geom.writeXYZ(newCGrun+'/STRUCT.xyz')
     geom.writeXYZ(newCGrun+'/STRUCT2.xyz', rep=[2, 2, 2])
     # PBS files
-    MakePBS(PBStemplate, newCGrun+'/RUN.pbs', PBSsubs, submitJob, rtype = 'TS')
+    MakePBS(PBStemplate, newCGrun+'/RUN.pbs', PBSsubs, submitJob, rtype='TS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
             for line in lines: f.write(line)
             f.close()
     # PBS files
-    MakePBS(PBStemplate, newFCrun+'/RUN.pbs', PBSsubs, submitJob, rtype = 'TS')
+    MakePBS(PBStemplate, newFCrun+'/RUN.pbs', PBSsubs, submitJob, rtype='TS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -288,7 +288,7 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
             else: f.write(line)
         f.close()
     # PBS files
-    MakePBS(PBStemplate, newOSrun+'/RUN.pbs', PBSsubs, submitJob, rtype = 'OS')
+    MakePBS(PBStemplate, newOSrun+'/RUN.pbs', PBSsubs, submitJob, rtype='OS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -377,7 +377,7 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
     if IndexShift > 0:
         print 'SetupRuns.SetupTSrun: Applying IndexShift =', IndexShift
         for ii in range(IndexShift):
-            geom.xyz[0][2]+=geom.pbc[2][2]
+            geom.xyz[0][2] += geom.pbc[2][2]
             geom.addAtom(geom.xyz[0], geom.snr[0], geom.anr[0])
             geom.rmAtom(0)
     # Overwrite STRUCT files
@@ -410,10 +410,10 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
         geom.pbc[2][2] += len(AddLeftList)/AtomsPerLayer*dz
     # Add electrode atoms to the right
     if len(AddRightList) > 0:
-        dz=AddRightList[AtomsPerLayer, 2]-AddRightList[0, 2]
-        tmp=N.array(geom.xyz)
-        maxz=tmp[0, 2]-dz+geom.pbc[2][2]
-        minz=min(AddRightList[:, 2])
+        dz = AddRightList[AtomsPerLayer, 2]-AddRightList[0, 2]
+        tmp = N.array(geom.xyz)
+        maxz = tmp[0, 2]-dz+geom.pbc[2][2]
+        minz = min(AddRightList[:, 2])
         for ii in range(len(AddRightList)):
             geom.addAtom(list(AddRightList[ii, :]+
                               (maxz-minz+dz)*N.array([0, 0, 1], N.float)),
@@ -442,7 +442,7 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
             for line in lines: f.write(line)
             f.close()
     # PBS files
-    MakePBS(PBStemplate, newTSrun+'/RUN.pbs', PBSsubs, submitJob, rtype = 'TS')
+    MakePBS(PBStemplate, newTSrun+'/RUN.pbs', PBSsubs, submitJob, rtype='TS')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -568,7 +568,7 @@ def SetupPHrun(newPHrun, wildcard, onlySdir='../OSrun',
     if PBSsubs == None:
         PBSsubs = []
     PBSsubs = [['$PYTHONSCRIPT$', 'PHrun.py']] + PBSsubs
-    MakePBS(PBStemplate, newPHrun+'/RUN.pbs', PBSsubs, submitJob, rtype = 'PY')
+    MakePBS(PBStemplate, newPHrun+'/RUN.pbs', PBSsubs, submitJob, rtype='PY')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -627,7 +627,7 @@ def SetupInelastica(templateInelastica, newInelastica, TSrun,
         infile.close()
         cmmd.append('inelastica.py '+inputfile+' -R')
     # PBS files
-    MakePBS(PBStemplate, newInelastica+'/RUN.pbs', PBSsubs, submitJob, rtype = 'PY')
+    MakePBS(PBStemplate, newInelastica+'/RUN.pbs', PBSsubs, submitJob, rtype='PY')
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -817,7 +817,7 @@ def FindElectrodeSep(directory, AtomsPerLayer):
     return g.ContactSeparation, DeviceFirst, DeviceLast
 
 
-def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, rtype = 'TS'):
+def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, rtype='TS'):
     if PBStemplate == None:
         rtypes = {'TS': 'RUN.TS.pbs', 'OS': 'RUN.OS.pbs', 'PY': 'RUN.py.pbs'}
         PBStemplate = rtypes[rtype]

@@ -114,8 +114,8 @@ def runParallel(function, argList, nCPU=None):
 
     os.environ['OMP_NUM_THREADS'] = '1'
     os.environ['OPENBLAS_NUM_THREADS']='1'
-    if nCPU==None:
-        nCPU=MP.cpu_count()
+    if nCPU == None:
+        nCPU = MP.cpu_count()
     print("Running on %i CPUS"%(nCPU))
 
     resQue = MP.Queue() # return que
@@ -124,24 +124,24 @@ def runParallel(function, argList, nCPU=None):
     for ii, chunk in enumerate(chunks):
         threads = []
         for jj, args in enumerate(chunk):
-            t = MP.Process(target=function, args =(resQue, ii*nCPU+jj,)+args)
+            t = MP.Process(target=function, args=(resQue, ii*nCPU+jj,)+args)
             t.start()
             threads += [t]
         for jj in range(len(threads)):
             #print('Joining')
             out = resQue.get()
             #print('Joined',out[0])
-            res[out[0]]=out[1]
+            res[out[0]] = out[1]
             threads[out[0]-ii*nCPU].join()
             if threads[out[0]-ii*nCPU].exitcode>0:
                 sys.exit('Something wrong inside process ....')
 
-    if OMP==None: # Reset threading
+    if OMP == None: # Reset threading
         del os.environ['OMP_NUM_THREADS']
     else:
-        os.environ['OMP_NUM_THREADS']=OMP
-    if OBLAS==None:
+        os.environ['OMP_NUM_THREADS'] = OMP
+    if OBLAS == None:
         del os.environ['OPENBLAS_NUM_THREADS']
     else:
-        os.environ['OPENBLAS_NUM_THREADS']=OBLAS
+        os.environ['OPENBLAS_NUM_THREADS'] = OBLAS
     return res

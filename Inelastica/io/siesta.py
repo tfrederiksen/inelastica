@@ -1421,10 +1421,10 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
                 basis.L[iorb] = ion.L[jj]
                 basis.M[iorb] = kk
                 basis.N[iorb] = ion.N[jj]
-                basis.xyz[iorb,:] = xyz[ii]
+                basis.xyz[iorb, :] = xyz[ii]
                 basis.delta[iorb] = ion.delta[jj]
-                basis.orb.append(ion.orb[jj,:])
-                basis.coff[iorb] = (len(ion.orb[jj,:])-1)*ion.delta[jj]
+                basis.orb.append(ion.orb[jj, :])
+                basis.coff[iorb] = (len(ion.orb[jj, :])-1)*ion.delta[jj]
                 basis.label.append(ion.label)
                 iorb = iorb+1
 
@@ -1701,7 +1701,7 @@ class HS(object):
             for ii in range(nou):
                 tmp=ReadFortranBin(fortfile, 'd', numhg[ii]*3)
                 tmp = N.reshape(tmp, (3, numhg[ii]))
-                xij[cnt:cnt+numhg[ii],:] = tmp.T
+                xij[cnt:cnt+numhg[ii], :] = tmp.T
                 cnt=cnt+numhg[ii]
             xij = xij.T*PC.Bohr2Ang
             xij = N.require(xij, requirements=['A', 'F'])
@@ -1789,7 +1789,7 @@ class HS(object):
             if not self.onlyS:
                 self.H = N.empty((self.nspin, self.nuo, self.nuo), atype)
                 for ispin in range(self.nspin):
-                    self.H[ispin,:,:] = self.setkpointhelper(self.Hsparse[:, ispin], kpoint, UseF90helpers, atype=atype) \
+                    self.H[ispin, :, :] = self.setkpointhelper(self.Hsparse[:, ispin], kpoint, UseF90helpers, atype=atype) \
                         - self.ef * self.S
 
     def setkpointhelper(self, Sparse, kpoint, UseF90helpers=True, atype=N.complex):

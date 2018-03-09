@@ -10,71 +10,71 @@ import shutil
 
 if __name__ == '__main__':
 
-    parser=argparse.ArgumentParser(description='electronic properties with VCA setup', fromfile_prefix_chars='@')
+    parser = argparse.ArgumentParser(description='electronic properties with VCA setup', fromfile_prefix_chars='@')
     parser.add_argument('fraction', metavar='occupation at C atom, setting of dope', action='store', type=float)
-    args=parser.parse_args()
+    args = parser.parse_args()
 
-    print (args)
+    print(args)
     '''
     optimize the lattice parameter for various VCA set up
     & obtain the band structure, DOS, phonon properties
     '''
 
-    fraction=float(args.fraction)
+    fraction = float(args.fraction)
     os.makedirs('./'+str(fraction))
     os.chdir('./'+str(fraction))
 
-    CpotentialFile="C"
-    NpotentialFile="N"
-    CpotentialFileName=CpotentialFile+".psf"
-    NpotentialFileName=NpotentialFile+".psf"
+    CpotentialFile = "C"
+    NpotentialFile = "N"
+    CpotentialFileName = CpotentialFile+".psf"
+    NpotentialFileName = NpotentialFile+".psf"
     shutil.copyfile('../'+CpotentialFileName, CpotentialFileName)
     shutil.copyfile('../'+NpotentialFileName, NpotentialFileName)
     shutil.copyfile('../Si.gga.psf', 'Si.gga.psf')
     shutil.copyfile('../postprocess.py', 'postprocess.py')
 
     #need to modify here
-    VCApath="/home/emi/siesta/siesta-4.1-b2/Util/VCA/mixps"
+    VCApath = "/home/emi/siesta/siesta-4.1-b2/Util/VCA/mixps"
         ######
 
-    VCAcommand=VCApath+" "+CpotentialFile+"  "+NpotentialFile+" "+str(fraction)
+    VCAcommand = VCApath+" "+CpotentialFile+"  "+NpotentialFile+" "+str(fraction)
     os.system(VCAcommand)
 
-    formatted="{0:.5f}".format(fraction)
+    formatted = "{0:.5f}".format(fraction)
     #print(formatted)
 
-    synthFile=CpotentialFile+NpotentialFile+"-"+str(formatted)+".synth"
-    psfFile=CpotentialFile+NpotentialFile+"-"+str(formatted)+".psf"
-    atomTypeinfo=CpotentialFile+NpotentialFile+"-"+str(formatted)
+    synthFile = CpotentialFile+NpotentialFile+"-"+str(formatted)+".synth"
+    psfFile = CpotentialFile+NpotentialFile+"-"+str(formatted)+".psf"
+    atomTypeinfo = CpotentialFile+NpotentialFile+"-"+str(formatted)
 
-    print ("synth filename:"+synthFile)
-    print ("psf filename:" + psfFile)
+    print("synth filename:"+synthFile)
+    print("psf filename:" + psfFile)
 
-    templete=open('../templete.fdf')
-    datas=templete.readlines()
+    templete = open('../templete.fdf')
+    datas = templete.readlines()
 
-    fdfFile=open('4HSiC.fdf', 'w')
-    pattern=re.compile(r'^\s*(\d*)\s+(\d*)\s+(C.mpn)')
+    fdfFile = open('4HSiC.fdf', 'w')
+    pattern = re.compile(r'^\s*(\d*)\s+(\d*)\s+(C.mpn)')
     for line in datas:
 
         #line of the C.mpn Chemical Species Label
-        match =re.match(pattern, line)
+        match = re.match(pattern, line)
         if match:
             print (match.group(0))
             fdfFile.write("  "+match.group(1)+"  201  "+ atomTypeinfo+"\n")
 
         else:
-            changed=line.replace("C.mpn", atomTypeinfo)
+            changed = line.replace("C.mpn", atomTypeinfo)
             fdfFile.write(changed)
 
     #append the data of chemical species and basis
 
-    synth=open(synthFile)
-    synthdata=synth.readlines()
+    synth = open(synthFile)
+    synthdata = synth.readlines()
 
     # change the atom index in synthdata to 2
     for i in range(len(synthdata)):
-        if (i==1):
+        if i == 1:
             fdfFile.write("2\n")
         else:
             fdfFile.write(synthdata[i])
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     fdfFile.close()
 
     #also need to modify here
-    runFile=open('run.sh', 'w')
+    runFile = open('run.sh', 'w')
     runFile.write("#!/bin/csh \n")
     runFile.write("#$ -cwd \n")
     runFile.write("#$ -V -S /bin/bash \n")

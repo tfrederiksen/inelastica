@@ -153,7 +153,7 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     tmp = NC.Dataset(pathkpt+options.systemlabel+'.AL0.nc', 'r')
     tmp2 = N.array(tmp.variables['Re-Psi'][:], N.float)
     dim = N.shape(tmp2)
-    Nx, Ny, Nz = dim[0], dim[1], dim[2];
+    Nx, Ny, Nz = dim[0], dim[1], dim[2]
 
     SubChans = N.shape(glob.glob(pathkpt+options.systemlabel+'.AL*.nc'))[0]
     TipChans = N.shape(glob.glob(pathkpt+options.systemlabel+'.AR*.nc'))[0]
@@ -253,7 +253,7 @@ def sampling(options, Nx, Ny, Nz, Subwfs, Tipwfs, SubChans, TipChans, SubPot, Ti
     x, y = N.arange(0, Nx), N.arange(0, Ny)
     xnew, ynew = N.arange(0, Nx, ssc), N.arange(0, Ny, ssc)
 
-    ReNewSubwfs, ImNewSubwfs  = N.zeros((SubChans, NX, NY, NZ)), N.zeros((SubChans, NX, NY, NZ))
+    ReNewSubwfs, ImNewSubwfs = N.zeros((SubChans, NX, NY, NZ)), N.zeros((SubChans, NX, NY, NZ))
     for imode in range(SubChans):
         for iz in range(NZ):
             tmp1 = N.real(Subwfs[imode, :, :, iz]).T
@@ -318,7 +318,7 @@ def Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint):
     mixX, mixY, mixXY = N.round(mixX, 8), N.round(mixY, 8), N.round(mixXY, 8)
     print 'nabla^2_{xy} = '+str(mixX)+'d^2/dx^2+'+str(mixY)+'d^2/dy^2+'+str(mixXY)+'d^2/dxdy'
     #print 'd^2x:',mixX,',d2^y:',mixY,',dxdy:',mixXY
-    bx = mixX/a1**2; by = mixY/a2**2; bz = 1./a3**2;
+    bx = mixX/a1**2; by = mixY/a2**2; bz = 1./a3**2
     bands = 23
     D2 = N.zeros((bands, NN), N.complex)
 
@@ -494,7 +494,7 @@ def Current(options, propSubModes, propTipModes, Nx, Ny, Nz, Max, ucSize, ChansL
             currmat[ii, jj] = N.sum(N.abs(tmp1-tmp2)**2)
     STMcurrent = scale*tot
     STMcurrent = STMcurrent[:Nx/2, :Ny/2]
-    n=wNC.NCfile(pathkpt+'FDcurr'+N.str(ikpoint)+'.nc')
+    n = wNC.NCfile(pathkpt+'FDcurr'+N.str(ikpoint)+'.nc')
     n.write(STMcurrent, 'Curr')
     n.write(kpoint, 'kpnt')
     n.close()
