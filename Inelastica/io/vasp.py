@@ -283,7 +283,7 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
                     extrablock = 1
             for i, sval in enumerate(s):
                 s[i] = float(sval)
-            if (j-extrablock) in atom_index:
+            if j-extrablock in atom_index:
                 dat[e, 0] = s[0]-eF
                 dat[e, 1:1+9*spin] += N.array(s[1:1+9*spin])
                 if e == 0:

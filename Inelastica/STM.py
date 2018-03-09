@@ -516,14 +516,14 @@ def writenetcdf2(geom, fn, YY, nx, ny, nz, minnz, maxnz, pbc, DeviceAtoms):
     varIm[:] = YY.imag*(PC.Bohr2Ang**(3.0/2.0))
     varIm.units = '1/[Ryd^(1/2) Bohr^(3/2)]'
     varcell = file.createVariable('cell', 'd', ('naxes', 'naxes'))
-    varcell[:]  = pbc/PC.Bohr2Ang
+    varcell[:] = pbc/PC.Bohr2Ang
     varcell.units = 'Bohr'
     vardsteps = file.createVariable('steps', 'd', ('naxes', 'naxes'))
     steps = N.array([pbc[0]/nx, pbc[1]/ny, pbc[2]/nz])/PC.Bohr2Ang
     vardsteps[:] = steps
     vardsteps.units = 'Bohr'
     varorig = file.createVariable('origin', 'd', ('naxes',))
-    varorig[:]  = pbc[2]/nz*minnz/PC.Bohr2Ang
+    varorig[:] = pbc[2]/nz*minnz/PC.Bohr2Ang
     varorig.units = 'Bohr'
     vargeom = file.createVariable('xyz', 'd', ('natoms', 'naxes'))
     vargeom[:] = geom.xyz[list(range(DeviceAtoms[0]-1, DeviceAtoms[1]))]/PC.Bohr2Ang

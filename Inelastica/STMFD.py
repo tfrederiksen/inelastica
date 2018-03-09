@@ -421,7 +421,7 @@ def SplitHam(Ham, inda, indb):
 
 
 def LinearSolve(options, WFs, inda, indb, Ef, Tau, Hb, NN, Nx, Ny, Nz, Chans):
-    Na, Nb  = len(inda), len(indb)
+    Na, Nb = len(inda), len(indb)
     pmodes = N.zeros((Chans, NN), N.complex)
     timemodeprop = time.clock()
     print '\nMode propagation starts'

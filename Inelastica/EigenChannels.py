@@ -283,7 +283,7 @@ def calcWF(options, geom, basis, Y):
 
         imax = (basis.coff[ii]-2*basis.delta[ii])/basis.delta[ii]
         ri = dr/basis.delta[ii]
-        ri = N.where(ri<imax, ri, imax)
+        ri = N.where(ri < imax, ri, imax)
         ri = ri.astype(N.int)
         costh = MM.outerAdd(0*ddx, 0*ddy, ddz)/dr
         cosfi, sinfi = MM.outerAdd(ddx, 0*ddy, 0*ddz)/drho, MM.outerAdd(0*ddx, ddy, 0*ddz)/drho
@@ -550,7 +550,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
             for jj in range(nx):
                 data.append(YY.imag[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6 == 0):
+        if (iii+1)%6 == 0:
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
