@@ -1,7 +1,9 @@
 """
 
-STMFD (:mod:`Inelastica.STMFD`)
-===============================
+:mod:`Inelastica.STMFD`
+=======================
+
+(a descriptive text is missing here)
 
 .. currentmodule:: Inelastica.STMFD
 

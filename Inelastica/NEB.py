@@ -1,13 +1,13 @@
 """
 
-NEB (:mod:`Inelastica.NEB`)
-===========================
+:mod:`Inelastica.NEB`
+=====================
 
 Nudged elastic band
 
 .. currentmodule:: Inelastica.NEB
 
-classes
+Classes
 -------
 
 .. autosummary::

@@ -18,7 +18,7 @@ In this example we describe how to obtain STM images of a CO molecule adsorbed o
    STM -F 64 -L 87 -n 1 -x 5 -y 5 STM5x5
 
 STM image
-~~~~~~
+~~~~~~~~~
 
 **Geometry**
 
@@ -49,7 +49,7 @@ STM images of individual k points along the surface plane:
 
 
 Convergence in k space
-~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 Cross-section profiles using different number of k points in the surface plane:
 

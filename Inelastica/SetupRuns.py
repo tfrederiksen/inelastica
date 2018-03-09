@@ -1,7 +1,7 @@
 """
 
-SetupRuns (:mod:`Inelastica.SetupRuns`)
-=======================================
+:mod:`Inelastica.SetupRuns`
+===========================
 
 Functions to setup (Tran)SIESTA calculation and submit pbs jobs.
 

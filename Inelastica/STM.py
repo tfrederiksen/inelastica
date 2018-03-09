@@ -1,7 +1,7 @@
 """
 
-STM (:mod:`Inelastica.STM`)
-===========================
+:mod:`Inelastica.STM`
+=====================
 
 Script that calculates STM images using the Bardeen approximation
 outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The

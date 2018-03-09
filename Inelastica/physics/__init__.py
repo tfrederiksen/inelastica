@@ -1,11 +1,11 @@
 """
-============================================
-Physical objects (:mod:`Inelastica.physics`)
-============================================
 
-.. module:: Inelastica.physics
+:mod:`Inelastica.physics`
+=========================
 
 Manipulation of k-sampling mesh and physical quantities.
+
+.. module:: Inelastica.physics
 
 """
 

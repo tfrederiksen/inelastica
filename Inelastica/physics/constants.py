@@ -1,7 +1,7 @@
 """
 
-Constantes (:mod:`Inelastica.physics.constants`)
-================================================
+:mod:`Inelastica.physics.constants`
+===================================
 
 Physical quantities and conversions.
 

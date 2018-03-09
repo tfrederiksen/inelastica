@@ -1,7 +1,7 @@
 """
 
-EigenChannels (:mod:`Inelastica.EigenChannels`)
-===============================================
+:mod:`Inelastica.EigenChannels`
+===============================
 
 1. Eigenchannels, method from Paulsson and Brandbyge PRB 2007
 2. Calculate "bond" currents

@@ -1,11 +1,11 @@
 """
-===================================
-Input/Output (:mod:`Inelastica.io`)
-===================================
+
+:mod:`Inelastica.io`
+====================
 
 .. module:: Inelastica.io
 
-Modules for reading/writing
+Modules for reading/writing in various file formats
 
 """
 

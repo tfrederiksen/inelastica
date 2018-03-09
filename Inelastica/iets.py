@@ -1,7 +1,7 @@
 """
 
-IETS (:mod:`Inelastica.iets`)
-=============================
+:mod:`Inelastica.iets`
+======================
 
 Inelastic transport module.
 

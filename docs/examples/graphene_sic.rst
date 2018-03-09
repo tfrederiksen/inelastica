@@ -21,7 +21,7 @@ reported in `this publication <https://link.aps.org/doi/10.1103/PhysRevB.96.1554
     }
 
 Virtual crystal approximation
-~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Example of an image:
 

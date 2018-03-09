@@ -1,19 +1,19 @@
 """
 
-Mesh (:mod:`Inelastica.physics.mesh`)
-=====================================
+:mod:`Inelastica.physics.mesh`
+==============================
 
-Written by Thomas Frederikse.
+Written by Thomas Frederiksen.
 
-.. currentmodule:: Inelastica.physics.mesh
-
-classes
+Classes
 -------
 
 .. autosummary::
    :toctree:
 
    kmesh
+
+.. currentmodule:: Inelastica.physics.mesh
 
 """
 

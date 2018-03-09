@@ -1,7 +1,7 @@
 """
 
-SupercellPhonons (:mod:`Inelastica.SupercellPhonons`)
-=====================================================
+:mod:`Inelastica.SupercellPhonons`
+==================================
 
 A simple interface to evaluate electron and phonon bands on
 a set of points in reciprocal space.
@@ -21,15 +21,15 @@ Phase factors defined as: `exp(i k.r)`
 
 Thomas Frederiksen, March 2015.
 
-.. currentmodule:: Inelastica.SupercellPhonons
-
-classes
+Classes
 -------
 
 .. autosummary::
    :toctree:
 
    Supercell_DynamicalMatrix
+
+.. currentmodule:: Inelastica.SupercellPhonons
 
 """
 

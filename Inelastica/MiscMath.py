@@ -1,19 +1,19 @@
 """
 
-Math Miscellaneous (:mod:`Inelastica.MiscMath`)
-===============================================
+:mod:`Inelastica.MiscMath`
+==========================
 
-Miscellaneous functions for mathematical operrations.
+Miscellaneous functions for mathematical operations.
 
-.. currentmodule:: Inelastica.MiscMath
-
-classes
+Classes
 -------
 
 .. autosummary::
    :toctree:
 
    SpectralMatrix
+
+.. currentmodule:: Inelastica.MiscMath
 
 """
 

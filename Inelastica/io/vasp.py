@@ -1,7 +1,7 @@
 """
 
-vasp (:mod:`Inelastica.io.vasp`)
-================================
+:mod:`Inelastica.io.vasp`
+=========================
 
 IO interface with VASP
 

@@ -1,7 +1,7 @@
 """
 
-siesta (:mod:`Inelastica.io.siesta`)
-====================================
+:mod:`Inelastica.io.siesta`
+===========================
 
 Routines for IO in different formats:
 
@@ -11,15 +11,16 @@ Routines for IO in different formats:
 4. Real space Gaussian cube files
 5. Obtain information of basis orbitals for calculation (*.ion.nc*)
 
-.. currentmodule:: Inelastica.io.siesta
-
-classes
+Classes
 -------
 
 .. autosummary::
    :toctree:
 
    HS
+
+.. currentmodule:: Inelastica.io.siesta
+
 
 """
 import numpy as N

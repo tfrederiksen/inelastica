@@ -1,9 +1,11 @@
 """
 
-xmgrace (:mod:`Inelastica.io.xmgrace`)
-======================================
+:mod:`Inelastica.io.xmgrace`
+============================
 
-This module provides a `Python`_ interface to write `XMGR/GRACE <xmgrace_>`_ files. Written by Thomas Frederiksen, July 2007.
+This module provides a `Python`_ interface to write `XMGR/GRACE <xmgrace_>`_ files.
+
+It is a renamed version of the code `WriteXMGR.py` written by Thomas Frederiksen, July 2007.
 
 Scripting
 ---------

@@ -1,13 +1,13 @@
 """
 
-Symmetry (:mod:`Inelastica.Symmetry`)
-=====================================
+:mod:`Inelastica.Symmetry`
+==========================
 
-Symmetry operations of lattice and basis.
+Module to determine symmetry operations of lattice and basis.
 
 .. currentmodule:: Inelastica.Symmetry
 
-classes
+Classes
 -------
 
 .. autosummary::

@@ -1,7 +1,7 @@
 """
 
-Phonons (:mod:`Inelastica.Phonons`)
-===================================
+:mod:`Inelastica.Phonons`
+=========================
 
 Overview
 --------

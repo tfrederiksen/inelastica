@@ -1,7 +1,7 @@
 """
 
-BandStruct (:mod:`Inelastica.BandStruct`)
-=========================================
+:mod:`Inelastica.BandStruct`
+============================
 
 Bandstructure and Fermi surface calculator
 

@@ -1,7 +1,7 @@
 """
 
-pyTBT (:mod:`Inelastica.pyTBT`)
-========================================
+:mod:`Inelastica.pyTBT`
+=======================
 
 ``pyTBT`` was initiated by Magnus Paulsson as a Python version
 of the `tbtrans` code originally developed in Fortran by Mads Brandbyge.

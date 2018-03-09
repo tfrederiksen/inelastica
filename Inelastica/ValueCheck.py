@@ -1,7 +1,7 @@
 """
 
-ValueCheck (:mod:`Inelastica.ValueCheck`)
-=========================================
+:mod:`Inelastica.ValueCheck`
+============================
 
 Contains general quantities that are used to do checks in the
 `Inelastica`_ package.
@@ -9,11 +9,10 @@ Contains general quantities that are used to do checks in the
 It allows users to edit the criterias of crashes without editing
 the code.
 
-Currently if this is to be used with `Inelastica`_ or `pyTBT`, it should
+Currently if this is to be used with `Inelastica`_ or `pyTBT`_, it should
 be in a wrapper call which emulates the options.
 
 .. currentmodule:: Inelastica.ValueCheck
-
 
 """
 

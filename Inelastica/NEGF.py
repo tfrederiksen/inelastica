@@ -1,13 +1,13 @@
 """
 
-NEGF (:mod:`Inelastica.NEGF`)
-=============================
+:mod:`Inelastica.NEGF`
+======================
 
 Non-Equilibrium Green's function
 
 .. currentmodule:: Inelastica.NEGF
 
-classes
+Classes
 -------
 
 .. autosummary::

@@ -1,13 +1,13 @@
 """
 
-Geometry (:mod:`Inelastica.MakeGeom`)
-=====================================
+:mod:`Inelastica.MakeGeom`
+==========================
 
 Routines to read, write and manipulate geometries.
 
 .. currentmodule:: Inelastica.MakeGeom
 
-classes
+Classes
 -------
 
 .. autosummary::

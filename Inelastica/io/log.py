@@ -1,7 +1,9 @@
 """
 
-:mod:`Inelastica.io.log`)
-===================================================
+:mod:`Inelastica.io.log`
+========================
+
+This module provides the functions to generate logfiles in the `Inelastica` package.
 
 .. currentmodule:: Inelastica.io.log
 
