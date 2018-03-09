@@ -123,8 +123,10 @@ def LayersAndTipheight(options, kpoint, ikpoint):
             TipHeightMol = N.round(N.abs(xyz[ii+1][2]-xyz[ii][2])*PC.Bohr2Ang, 3)
             print 'Vacuum gap along z appears to be '+str(TipHeightMol)+' Ang'
             break
-    Molidx = ii; Tipidx = ii+1
-    posZMol = xyz[Molidx][2]; posZTip = xyz[Tipidx][2]
+    Molidx = ii
+    Tipidx = ii+1
+    posZMol = xyz[Molidx][2]
+    posZTip = xyz[Tipidx][2]
     TipHeightLayer1 = N.round(N.abs(posZTip-zSurfLayer1)*PC.Bohr2Ang, 3)
     if Layer2-Layer1 < Layer1:
         print 'Substrate surface  --- tip-apex distance: '+str(TipHeightLayer1)+' Ang'
@@ -318,7 +320,9 @@ def Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint):
     mixX, mixY, mixXY = N.round(mixX, 8), N.round(mixY, 8), N.round(mixXY, 8)
     print 'nabla^2_{xy} = '+str(mixX)+'d^2/dx^2+'+str(mixY)+'d^2/dy^2+'+str(mixXY)+'d^2/dxdy'
     #print 'd^2x:',mixX,',d2^y:',mixY,',dxdy:',mixXY
-    bx = mixX/a1**2; by = mixY/a2**2; bz = 1./a3**2
+    bx = mixX/a1**2
+    by = mixY/a2**2
+    bz = 1./a3**2
     bands = 23
     D2 = N.zeros((bands, NN), N.complex)
 

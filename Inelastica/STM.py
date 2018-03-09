@@ -201,7 +201,8 @@ def main(options):
     print('Calculating k-point averaged STM image')
 
     def ShiftOrigin(mat, x, y):
-        Nx = N.shape(mat)[0]; Ny = N.shape(mat)[1]
+        Nx = N.shape(mat)[0]
+        Ny = N.shape(mat)[1]
         NewMat = N.zeros((Nx, Ny))
         for ii in range(Nx):
             for jj in range(Ny):
@@ -226,7 +227,9 @@ def main(options):
     STMimagekpt = N.zeros((dim1*options.Nk1, dim2*options.Nk2))
     for ii in range(options.Nk1):
         for jj in range(options.Nk2):
-            N1 = ii+1; N2 = options.Nk2-jj; kk = (ii+1)*options.Nk2-jj-1
+            N1 = ii+1
+            N2 = options.Nk2-jj
+            kk = (ii+1)*options.Nk2-jj-1
             STMimagekpt[(N1-1)*dim1:N1*dim1, (N2-1)*dim2:N2*dim2] = tmpSTM[kk*dim1:(kk+1)*dim1, ::-1]
 
     tmp = open(options.systemlabel+'.XV').readlines()[4+options.DeviceFirst-1:4+options.DeviceLast]
@@ -289,7 +292,8 @@ def calcTSWF(options, ikpoint):
             print('Calculating localized-basis states from spectral function %s ...'%(txt))
             tlb = time.clock()
             calcWF2(options, geom, options.DeviceAtoms, basis, Utilde[:, indx], [N1, N2, N3, minN3, maxN3], Fold=True, k=kpoint, fn=fn)
-            times = N.round(time.clock()-tlb, 2); timem = N.round(times/60, 2)
+            times = N.round(time.clock()-tlb, 2)
+            timem = N.round(times/60, 2)
             print('Finished in '+str(times)+' s = '+str(timem)+' min')
 
         if noWfs('L') > 0 and noWfs('R') > 0 and len(glob.glob(path+str(ikpoint)+'/FD*')) == 0 and str('%s'%(txt)) == str('AR'):
