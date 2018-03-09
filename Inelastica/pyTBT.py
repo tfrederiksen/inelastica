@@ -42,10 +42,10 @@ orthogonal space that is fourier transformed.
 
 import numpy as N
 import Inelastica.io.siesta as SIO
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 import Inelastica.NEGF as NEGF
 import Inelastica.physics.mesh as Kmesh
-import Inelastica.ValueCheck as VC
+import Inelastica.misc.valuecheck as VC
 import Inelastica.io.log as Log
 import Inelastica.io.xmgrace as XMGR
 

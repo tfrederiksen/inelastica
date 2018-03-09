@@ -32,7 +32,7 @@ import sys
 import gzip
 import netCDF4 as NC4
 import Inelastica.physics.constants as PC
-import Inelastica.ValueCheck as VC
+import Inelastica.misc.valuecheck as VC
 
 # For speed some routines can be linked as F90 code
 try:

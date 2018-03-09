@@ -43,8 +43,8 @@ import Inelastica.Symmetry as Symmetry
 import Inelastica.io.log as Log
 import Inelastica.Phonons as PH
 import Inelastica.physics.constants as PC
-import Inelastica.MiscMath as MM
-import Inelastica.ValueCheck as VC
+import Inelastica.math as MM
+import Inelastica.misc.valuecheck as VC
 import Inelastica.io.xmgrace as XMGR
 
 __all__ = ['Supercell_DynamicalMatrix']

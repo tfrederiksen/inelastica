@@ -27,9 +27,9 @@ import pickle
 import glob
 import os
 import netCDF4 as NC4
-import Inelastica.ValueCheck as VC
+import Inelastica.misc.valuecheck as VC
 import Inelastica.io.siesta as SIO
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 
 # For speed some routines can be linked as F90 code
 try:
@@ -603,7 +603,7 @@ class GF(object):
     def calcSigLR(self, ee, kpoint, ispin=0, etaLead=0.0, useSigNCfiles=False, SpectralCutoff=0.0):
         """
         Calculate (folded) self-energy at energy ee and 2d k-point
-        Uses SpectralMatrix format for the spectralfunction matrices, see MiscMath, if cutoff>0.0
+        Uses SpectralMatrix format for the spectralfunction matrices, see Inelastica.math, if cutoff>0.0
         """
 
         nuoL, nuoR = self.nuoL, self.nuoR

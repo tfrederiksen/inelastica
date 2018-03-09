@@ -17,7 +17,7 @@ Classes
 
 """
 
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 import numpy as N
 
 # This function is used in the class below for each of the

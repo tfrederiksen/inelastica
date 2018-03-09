@@ -1,9 +1,9 @@
 """
 
-:mod:`Inelastica.multiprocessing`
-===================================================
+:mod:`Inelastica.misc.multiprocessing`
+======================================
 
-.. currentmodule:: Inelastica.multiprocessing
+.. currentmodule:: Inelastica.misc.multiprocessing
 
 """
 

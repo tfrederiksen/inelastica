@@ -18,7 +18,7 @@ Classes
 """
 
 import Inelastica.io.siesta as SIO
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 import numpy as N
 import sys
 mm = MM.mm

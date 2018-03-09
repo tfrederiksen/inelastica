@@ -31,7 +31,7 @@ from optparse import OptionParser, OptionGroup
 import Inelastica.io.siesta as SIO
 import Inelastica.SetupRuns as SUR
 import Inelastica.MakeGeom as MG
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 import Inelastica.physics.constants as PC
 
 

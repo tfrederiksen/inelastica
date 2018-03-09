@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from Inelastica import ValueCheck as VC
+import Inelastica.misc.valuecheck as VC
 import Inelastica.iets as I
 from Inelastica import EigenChannels as E
 from Inelastica import pyTBT as T

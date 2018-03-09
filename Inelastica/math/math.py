@@ -1,7 +1,7 @@
 """
 
-:mod:`Inelastica.MiscMath`
-==========================
+:mod:`Inelastica.math`
+======================
 
 Miscellaneous functions for mathematical operations.
 
@@ -13,7 +13,7 @@ Classes
 
    SpectralMatrix
 
-.. currentmodule:: Inelastica.MiscMath
+.. currentmodule:: Inelastica.math
 
 """
 

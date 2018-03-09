@@ -1,7 +1,7 @@
 """
 
-:mod:`Inelastica.ValueCheck`
-============================
+:mod:`Inelastica.misc.valuecheck`
+=================================
 
 Contains general quantities that are used to do checks in the
 `Inelastica`_ package.
@@ -12,7 +12,7 @@ the code.
 Currently if this is to be used with `Inelastica`_ or `pyTBT`_, it should
 be in a wrapper call which emulates the options.
 
-.. currentmodule:: Inelastica.ValueCheck
+.. currentmodule:: Inelastica.misc.valuecheck
 
 """
 

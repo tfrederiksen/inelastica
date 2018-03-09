@@ -41,14 +41,14 @@ import glob
 import os
 import ast
 import time
-import Inelastica.ValueCheck as VC
+import Inelastica.misc.valuecheck as VC
 import Inelastica.io.log as Log
 import Inelastica.io.netcdf as writeNC
 import Inelastica.STMFD as STMFD
 import Inelastica.NEGF as NEGF
 import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 import Inelastica.physics.constants as PC
 import Inelastica.physics.mesh as Kmesh
 import Inelastica.multiprocessing as multiprocessing

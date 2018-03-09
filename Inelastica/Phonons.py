@@ -80,8 +80,8 @@ import Inelastica.Symmetry as Symmetry
 import Inelastica.io.log as Log
 import Inelastica.MakeGeom as MG
 import Inelastica.physics.constants as PC
-import Inelastica.MiscMath as MM
-import Inelastica.ValueCheck as VC
+import Inelastica.math as MM
+import Inelastica.misc.valuecheck as VC
 
 
 def GetOptions(argv, **kwargs):

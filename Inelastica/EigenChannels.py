@@ -36,12 +36,12 @@ import netCDF4 as NC4
 import string
 import struct
 import Inelastica.physics.constants as PC
-import Inelastica.ValueCheck as VC
+import Inelastica.misc.valuecheck as VC
 import Inelastica.io.log as Log
 import Inelastica.NEGF as NEGF
 import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 
 
 def GetOptions(argv, **kwargs):
