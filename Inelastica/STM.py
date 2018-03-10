@@ -51,7 +51,7 @@ import Inelastica.MakeGeom as MG
 import Inelastica.math as MM
 import Inelastica.physics.constants as PC
 import Inelastica.physics.mesh as Kmesh
-import Inelastica.multiprocessing as multiprocessing
+import Inelastica.misc.multiprocessing as multiprocessing
 
 #Units: Bohr and Rydberg!
 
