@@ -30,8 +30,8 @@ def mm(* args):
     args = list(args)
 
     # Look for SpectralMatrices
-    where=N.where(N.array([isinstance(ii, SpectralMatrix) for ii in args]))[0]
-    if len(where)>0:
+    where = N.where(N.array([isinstance(ii, SpectralMatrix) for ii in args]))[0]
+    if len(where) > 0:
         res = __mmSpectralMatrix(args, where)
     else:
         res= __mm(args)
@@ -42,30 +42,30 @@ def mm(* args):
 def __mmSpectralMatrix(args, where):
     # find smallest
     size = [args[where[ii]].L.shape[1] for ii in range(len(where))]
-    smallest = N.where(N.array(size)==N.min(size))[0][0]
+    smallest = N.where(N.array(size) == N.min(size))[0][0]
 
     # if more than one SpectralMatrix, expand others into normal matrices
     args = [[ii] for ii in args] # To get flatten to work
     for ii in where:
-        if ii!=where[smallest]:
-            args[ii]=[args[ii][0].L, args[ii][0].R]
-    args=sum(args, []) # Flatten list
+        if ii != where[smallest]:
+            args[ii] = [args[ii][0].L, args[ii][0].R]
+    args = sum(args, []) # Flatten list
 
     # Split at Spectral matrix
-    where=N.where(N.array([isinstance(ii, SpectralMatrix) for ii in args]))[0]
-    res=SpectralMatrix()
-    res.L=__mm(args[:where[0]]+[args[where[0]].L])
-    res.R=__mm([args[where[0]].R]+args[where[0]+1:])
+    where = N.where(N.array([isinstance(ii, SpectralMatrix) for ii in args]))[0]
+    res = SpectralMatrix()
+    res.L = __mm(args[:where[0]]+[args[where[0]].L])
+    res.R = __mm([args[where[0]].R]+args[where[0]+1:])
     return res
 
 
 def __mm(args):
     # Normal matrix mult, order important for speed if matrices has different sizes
-    if len(args)==1: return args[0]
+    if len(args) == 1: return args[0]
 
     # Find smallest matrix
     Lsize = N.array([ii.shape[0] for ii in args[:-1]])
-    if len(args[-1].shape)==1:
+    if len(args[-1].shape) == 1:
         # Most rightmost is vector
         Rsize = N.array([ii.shape[1] for ii in args[1:-1]]+[1])
     else:
@@ -74,25 +74,25 @@ def __mm(args):
     Lwhere = N.where(Lsize==N.min(Lsize))[0]
     Rwhere = N.where(Rsize==N.min(Rsize))[0]
 
-    if N.min(Lsize)>N.min(Rsize):
+    if N.min(Lsize) > N.min(Rsize):
         where = [ii+1 for ii in Rwhere]
         left = False
     else:
         where = Lwhere
         left = True
 
-    if len(where)==len(args)-1 or len(args)==2:
+    if len(where) == len(args)-1 or len(args) == 2:
         # Order does not matter
-        res=N.dot(args[0], args[1])
+        res = N.dot(args[0], args[1])
         for ii in range(len(args)-2):
-            res=N.dot(res, args[ii+2])
+            res = N.dot(res, args[ii+2])
     else:
         # Make sure the matrix mult is done in order of smaller
         # matrices first
         ii = where[0]
         if ii == 0:
             res = __mm([__mm([args[0], args[1]])]+args[2:])
-        elif ii==len(args)-1:
+        elif ii == len(args)-1:
             res = __mm(args[:ii-1]+[__mm([args[ii-1], args[ii]])])
         else:
             if left:
@@ -106,9 +106,9 @@ def __mm(args):
 
 def outerAdd(* args):
     # A_ijk=B_i+C_j+D_k
-    tmp=args[0].copy()
+    tmp = args[0].copy()
     for ii in range(1, len(args)):
-        tmp=N.add.outer(tmp, args[ii])
+        tmp = N.add.outer(tmp, args[ii])
     return tmp
 
 
@@ -121,9 +121,9 @@ def mysqrt(x):
     ev, U = LA.eig(x)
     U = N.transpose(U)
 
-    tmp=N.zeros((len(ev), len(ev)), N.complex)
+    tmp = N.zeros((len(ev), len(ev)), N.complex)
     for ii in range(len(ev)):
-        tmp[ii, ii]=N.sqrt(ev[ii])
+        tmp[ii, ii] = N.sqrt(ev[ii])
 
     return mm(LA.inv(U), tmp, U)
 
@@ -154,7 +154,7 @@ def trapez(x, f, equidistant=False):
         return N.dot(d, f)
     else:
         # 3rd degree polynomial except for 1st and last bins
-        sum=(x[1]-x[0])*(f[0]+f[1])/2+(x[-1]-x[-2])*(f[-1]+f[-2])/2
+        sum = (x[1]-x[0])*(f[0]+f[1])/2+(x[-1]-x[-2])*(f[-1]+f[-2])/2
         for ii in range(1, len(x)-2):
             x0, x1, x2, x3=x[ii-1], x[ii], x[ii+1], x[ii+2]
             y0, y1, y2, y3=f[ii-1], f[ii], f[ii+1], f[ii+2]
@@ -182,14 +182,14 @@ def interpolate(nx, x, y):
     Interpolate f(x)=y to find f(nx)
     Makes no checks for nx inside x region!!!
     """
-    ny=N.array([0.0]*len(nx))
-    Lpos=N.searchsorted(x, nx)
+    ny = N.array([0.0]*len(nx))
+    Lpos = N.searchsorted(x, nx)
     for ix, pos in enumerate(Lpos):
-        if pos<len(x):
-            ny[ix]=y[pos-1]+(y[pos]-y[pos-1])/(x[pos]-x[pos-1])*(nx[ix]-x[pos-1])
+        if pos < len(x):
+            ny[ix] = y[pos-1]+(y[pos]-y[pos-1])/(x[pos]-x[pos-1])*(nx[ix]-x[pos-1])
         else:
             #TF: NB EXTRAPOLATION condition added!
-            ny[ix]=y[-1]+(y[-1]-y[-2])/(x[-1]-x[-2])*(nx[ix]-x[-1])
+            ny[ix] = y[-1]+(y[-1]-y[-2])/(x[-1]-x[-2])*(nx[ix]-x[-1])
     return ny
 
 ##############################################################
@@ -202,15 +202,15 @@ def Hilbert(f, ker=None):
 
     def kernel(f):
         'Hilbert transform kernel'
-        nh  = len(f)
-        n   = 2 * nh
+        nh = len(f)
+        n = 2 * nh
         aux = N.empty(nh+1, N.float)
         aux[0] = 0
         tmp = N.arange(1, nh+1)
         aux[1:] = N.log(tmp) * tmp
         ker = N.empty(n, N.float)
         ker[0] = 0
-        ker[1:nh]  = aux[2:nh+1] - 2*aux[1:nh] + aux[:nh-1]
+        ker[1:nh] = aux[2:nh+1] - 2*aux[1:nh] + aux[:nh-1]
         ker[nh+1:] = -ker[1:nh][::-1]
         return -FFT.fft(ker)/N.pi
 
@@ -236,21 +236,21 @@ def sphericalHarmonics(l, m, costh, sinfi, cosfi):
     import scipy.special as SS
     # New faster Spherical Harmonics. Checked up to d-orbitals with the Siesta overlap matrix.
     norm = N.sqrt((2*l+1)/(4*N.pi))*N.sqrt(float(N.math.factorial(l-m))/float(N.math.factorial(l+m)))
-    if m==0:
-        ffi=norm
+    if m == 0:
+        ffi = norm
     else:
         expimfi = (cosfi+1.0j*sinfi)**m # Find sin(m fi) and cos(m fi) as im and re parts
         if m<0:
             norm = -(-1)**(-m)*N.sqrt(2)*norm
-            ffi  = norm * expimfi.imag
+            ffi = norm * expimfi.imag
         else:
             norm = N.sqrt(2)*norm
-            ffi  = norm * expimfi.real
+            ffi = norm * expimfi.real
     return SS.lpmv(m, l, costh)*ffi
 
 
 def OLD_sphericalHarmonics(sinth, costh, sinfi, cosfi):
-    pi=3.141592654
+    pi = 3.141592654
 
     # l=0 m=0
     Y00 = 1/(2.*N.sqrt(pi))
@@ -262,8 +262,8 @@ def OLD_sphericalHarmonics(sinth, costh, sinfi, cosfi):
     Y11 = -(cosfi*N.sqrt(3/pi)*sinth)/2.
     # l=2 m=-2
     Y2m2 = (cosfi*N.sqrt(15/pi)*sinfi)/4. - \
-        (cosfi*costh**2*N.sqrt(15/pi)*sinfi)/4. + \
-        (cosfi*N.sqrt(15/pi)*sinfi*sinth**2)/4.
+           (cosfi*costh**2*N.sqrt(15/pi)*sinfi)/4. + \
+           (cosfi*N.sqrt(15/pi)*sinfi*sinth**2)/4.
     # l=2 m=-1
     Y2m1 = -(costh*N.sqrt(15/pi)*sinfi*sinth)/2.
     # l=2 m=0
@@ -272,13 +272,13 @@ def OLD_sphericalHarmonics(sinth, costh, sinfi, cosfi):
     Y21 = -(cosfi*costh*N.sqrt(15/pi)*sinth)/2.
     # l=2 m=2
     Y22 = (cosfi**2*N.sqrt(15/pi))/8. - (cosfi**2*costh**2*N.sqrt(15/pi))/ \
-        8. - (N.sqrt(15/pi)*sinfi**2)/8. + (costh**2*N.sqrt(15/pi)*sinfi**2)/ \
-        8. + (cosfi**2*N.sqrt(15/pi)*sinth**2)/8. - (N.sqrt(15/pi)*sinfi**2*sinth**2)/    8.
+          8. - (N.sqrt(15/pi)*sinfi**2)/8. + (costh**2*N.sqrt(15/pi)*sinfi**2)/ \
+          8. + (cosfi**2*N.sqrt(15/pi)*sinth**2)/8. - (N.sqrt(15/pi)*sinfi**2*sinth**2)/    8.
     # l=3 m=-3
     Y3m3 = (-9*cosfi**2*N.sqrt(35/(2.*pi))*sinfi*sinth)/ \
-        16. + (9*cosfi**2*costh**2*N.sqrt(35/(2.*pi))*sinfi*sinth)/ \
-        16. + (3*N.sqrt(35/(2.*pi))*sinfi**3*sinth)/    16. - (3*costh**2*N.sqrt(35/(2.*pi))*sinfi**3*sinth)/  \
-        16. - (3*cosfi**2*N.sqrt(35/(2.*pi))*sinfi*sinth**3)/    16. + (N.sqrt(35/(2.*pi))*sinfi**3*sinth**3)/16.
+           16. + (9*cosfi**2*costh**2*N.sqrt(35/(2.*pi))*sinfi*sinth)/ \
+           16. + (3*N.sqrt(35/(2.*pi))*sinfi**3*sinth)/    16. - (3*costh**2*N.sqrt(35/(2.*pi))*sinfi**3*sinth)/  \
+           16. - (3*cosfi**2*N.sqrt(35/(2.*pi))*sinfi*sinth**3)/    16. + (N.sqrt(35/(2.*pi))*sinfi**3*sinth**3)/16.
     # l=3 m=-2
     Y3m2 = (cosfi*costh*N.sqrt(105/pi)*sinfi)/8. - (cosfi*costh**3*N.sqrt(105/pi)*sinfi)/    8. + (3*cosfi*costh*N.sqrt(105/pi)*sinfi*sinth**2)/8.
     # l=3 m=-1
@@ -289,12 +289,12 @@ def OLD_sphericalHarmonics(sinth, costh, sinfi, cosfi):
     Y31 = -(cosfi*N.sqrt(21/(2.*pi))*sinth)/    16. - (15*cosfi*costh**2*N.sqrt(21/(2.*pi))*sinth)/    16. + (5*cosfi*N.sqrt(21/(2.*pi))*sinth**3)/16.
     # l=3 m=2
     Y32 = (cosfi**2*costh*N.sqrt(105/pi))/16. - (cosfi**2*costh**3*N.sqrt(105/pi))/ \
-        16. - (costh*N.sqrt(105/pi)*sinfi**2)/    16. + (costh**3*N.sqrt(105/pi)*sinfi**2)/ \
-        16. + (3*cosfi**2*costh*N.sqrt(105/pi)*sinth**2)/    16. - (3*costh*N.sqrt(105/pi)*sinfi**2*sinth**2)/16.
+          16. - (costh*N.sqrt(105/pi)*sinfi**2)/    16. + (costh**3*N.sqrt(105/pi)*sinfi**2)/ \
+          16. + (3*cosfi**2*costh*N.sqrt(105/pi)*sinth**2)/    16. - (3*costh*N.sqrt(105/pi)*sinfi**2*sinth**2)/16.
     # l=3 m=3
     Y33 = (-3*cosfi**3*N.sqrt(35/(2.*pi))*sinth)/    16. + (3*cosfi**3*costh**2*N.sqrt(35/(2.*pi))*sinth)/ \
-        16. + (9*cosfi*N.sqrt(35/(2.*pi))*sinfi**2*sinth)/    16. - (9*cosfi*costh**2*N.sqrt(35/(2.*pi))*sinfi**2*sinth)/ \
-        16. - (cosfi**3*N.sqrt(35/(2.*pi))*sinth**3)/    16. + (3*cosfi*N.sqrt(35/(2.*pi))*sinfi**2*sinth**3)/16.
+          16. + (9*cosfi*N.sqrt(35/(2.*pi))*sinfi**2*sinth)/    16. - (9*cosfi*costh**2*N.sqrt(35/(2.*pi))*sinfi**2*sinth)/ \
+          16. - (cosfi**3*N.sqrt(35/(2.*pi))*sinth**3)/    16. + (3*cosfi*N.sqrt(35/(2.*pi))*sinfi**2*sinth**3)/16.
 
     return [[Y00],
             [Y1m1, Y10, Y11],
