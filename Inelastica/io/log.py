@@ -59,7 +59,9 @@ def CreatePipeOutput(f):
 def PrintMainHeader(name, options):
     import Inelastica.info as info
     print('=======================================================================')
-    print('INELASTICA VERSION : %s'%(info.label))
+    print('INELASTICA VERSION : %s'%(info.version))
+    if info.git_count>0:
+        print('               GIT : %s'%(info.git_revision))
     print('RUNNING %s : %s'%(name.upper(), time.ctime()))
     if options:
         print('\nOPTIONS :')
