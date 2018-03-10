@@ -84,11 +84,12 @@ def configuration(parent_package='', top_path=None):
 
 
 def git_version():
-    # Default Inelastica version info
+    # Default release info
     MAJOR = 1
     MINOR = 3
     MICRO = 1
     VERSION = [MAJOR, MINOR, MICRO]
+    # Git revision tag prior to release
     GIT_REVISION = "5daa0d366a2644799f1571d3a35cf1cd632682b2"
     GIT_LABEL = '.'.join(map(str, [MAJOR, MINOR, MICRO]))
 
@@ -122,17 +123,15 @@ def git_version():
             GIT_REVISION = rev
         # Get latest tag
         tag = _minimal_ext_cmd(['git', 'describe', '--abbrev=0', '--tags'])
-        tag = tag.replace('v', '')
         if len(tag)>4:
-            VERSION = tag.split('.')
+            VERSION = tag[1:].split('.')
         # Get complete "git describe" string
         label = _minimal_ext_cmd(['git', 'describe', '--tags'])
         if len(label)>7:
             GIT_LABEL = label
         # Get number of commits since tag
         count = _minimal_ext_cmd(['git', 'rev-list', tag + '..', '--count'])
-        if len(count) == 0:
-            count = '1'
+
     except Exception as e:
         print(e)
         count = '0'
@@ -151,13 +150,18 @@ git_count = {count}
 major   = {version[0]}
 minor   = {version[1]}
 micro   = {version[2]}
-version = '.'.join(map(str,[major, minor, micro]))
-release = version
-label   = '{description}'
 
-if git_count > 2:
+# Release tag
+release = 'v'+'.'.join(map(str,[major, minor, micro]))
+
+# Version (release + count)
+version = release
+if git_count > 0:
     # Add git-revision to the version string
     version += '+' + str(git_count)
+
+# Extensive version description
+label   = '{description}'
 """
     # If we are in git we try and fetch the
     # git version as well
