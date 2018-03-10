@@ -60,7 +60,7 @@ if __name__ == '__main__':
         #line of the C.mpn Chemical Species Label
         match = re.match(pattern, line)
         if match:
-            print (match.group(0))
+            print(match.group(0))
             fdfFile.write("  "+match.group(1)+"  201  "+ atomTypeinfo+"\n")
 
         else:
@@ -73,11 +73,11 @@ if __name__ == '__main__':
     synthdata = synth.readlines()
 
     # change the atom index in synthdata to 2
-    for i in range(len(synthdata)):
+    for i, sdata in enumerate(synthdata):
         if i == 1:
             fdfFile.write("2\n")
         else:
-            fdfFile.write(synthdata[i])
+            fdfFile.write(sdata)
 
     fdfFile.close()
 

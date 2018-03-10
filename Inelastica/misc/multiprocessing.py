@@ -13,6 +13,7 @@ import sys
 import multiprocessing as MP
 import os
 
+
 def runParallel(function, argList, nCPU=None):
     # Run in parallel the function with arguments given in the list
     # return list of results. You have to wrap the normal function with:

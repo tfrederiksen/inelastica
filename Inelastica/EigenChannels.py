@@ -569,7 +569,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
             for jj in range(nx):
                 data.append(YYA2[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6 == 0):
+        if (iii+1)%6 == 0:
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
