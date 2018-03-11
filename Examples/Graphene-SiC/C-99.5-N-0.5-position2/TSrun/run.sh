@@ -4,5 +4,5 @@
 #$ -N TSrun-VCA 
 #$ -o stdout 
 #$ -e stdout 
-#$ -pe smp 24  
+#$ -pe x24 24  
 mpirun  /home/emi/siesta/siesta-4.1-b2/Obj_Transiesta/transiesta   < ./RUN.fdf > ./RUN.out  
