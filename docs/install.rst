@@ -21,5 +21,11 @@ With the above packages ready, installation of Inelastica is derformed with the 
 
     python setup.py install --prefix=<prefix>
     # or
-    python setup.py install --home=<prefix>
+    python setup.py install --home=<my-python-home>
 
+One may also wish to set the following environment variables
+
+.. code-block:: bash
+
+    export PYTHONPATH=<my-python-home>/lib/python/
+    export PATH=$PATH:<my-python-home>/bin/

@@ -1,7 +1,7 @@
 """
 
-Constantes (:mod:`Inelastica.physics.constants`)
-================================================
+:mod:`Inelastica.physics.constants`
+===================================
 
 Physical quantities and conversions.
 
@@ -20,12 +20,12 @@ eV2Joule = 1.60219e-19
 hbar2SI = 1.05459e-34
 
 # From http://physics.nist.gov/constants
-invm2eV =  1.239841875e-6
+invm2eV = 1.239841875e-6
 invcm2eV = 1.239841875e-4
 
 # Current conversion factor
-unitConv=1.602177e-19/N.pi/1.054572e-34
-#unitConv=eV2Joule/N.pi/hbar2SI
+unitConv = 1.602177e-19/N.pi/1.054572e-34
+#unitConv = eV2Joule/N.pi/hbar2SI
 
 # from http://physics.nist.gov/PhysRefData/Elements/
 AtomicMass = {1: 1.007947,    # H

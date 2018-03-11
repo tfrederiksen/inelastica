@@ -1,7 +1,7 @@
 """
 
-Phonons (:mod:`Inelastica.Phonons`)
-===================================
+:mod:`Inelastica.Phonons`
+=========================
 
 Overview
 --------
@@ -51,7 +51,7 @@ To run phonon calculations as a script one can execute:
 
 
 Classes and methods
--------
+-------------------
 
 .. autosummary::
    :toctree:
@@ -77,11 +77,11 @@ import string
 import ast
 import Inelastica.io.siesta as SIO
 import Inelastica.Symmetry as Symmetry
-import Inelastica.CommonFunctions as CF
+import Inelastica.io.log as Log
 import Inelastica.MakeGeom as MG
 import Inelastica.physics.constants as PC
-import Inelastica.MiscMath as MM
-import Inelastica.ValueCheck as VC
+import Inelastica.math as MM
+import Inelastica.misc.valuecheck as VC
 
 
 def GetOptions(argv, **kwargs):
@@ -157,7 +157,7 @@ def GetOptions(argv, **kwargs):
     del options.k1, options.k2, options.k3
 
     # Determine array type for H,S,dH,...
-    options.GammaPoint = N.dot(options.kpoint, options.kpoint)<1e-7
+    options.GammaPoint = N.dot(options.kpoint, options.kpoint) < 1e-7
     if options.GammaPoint:
         if options.SinglePrec:
             options.atype = N.float32
@@ -173,7 +173,7 @@ def GetOptions(argv, **kwargs):
     options.DynamicAtoms = range(options.FCfirst, options.FClast+1)
 
     # EPH atoms - set only different from options.DynamicAtoms if a subset is specified
-    if options.EPHfirst>=options.FCfirst and options.EPHlast<=options.FClast:
+    if options.EPHfirst >= options.FCfirst and options.EPHlast <= options.FClast:
         options.EPHAtoms = range(options.EPHfirst, options.EPHlast+1)
     else:
         options.EPHAtoms = options.DynamicAtoms
@@ -181,9 +181,9 @@ def GetOptions(argv, **kwargs):
     del options.FCfirst, options.FClast
 
     # PBCFirst/PBCLast
-    if options.PBCFirst<options.DeviceFirst:
+    if options.PBCFirst < options.DeviceFirst:
         options.PBCFirst = options.DeviceFirst
-    if options.PBCLast>options.DeviceLast:
+    if options.PBCLast > options.DeviceLast:
         options.PBCLast = options.DeviceLast
 
     # Isotopes specified in separate file?
@@ -193,24 +193,24 @@ def GetOptions(argv, **kwargs):
         for line in f.readlines():
             s += line.replace('\n', '')
         options.Isotopes = s
-    options.Isotopes=ast.literal_eval(options.Isotopes)
+    options.Isotopes = ast.literal_eval(options.Isotopes)
 
     return options
 
 
-class FCrun():
+class FCrun(object):
 
     def __init__(self, runfdf):
         self.fdf = runfdf
-        self.directory, self.tail =  os.path.split(runfdf)
+        self.directory, self.tail = os.path.split(runfdf)
         self.systemlabel = SIO.GetFDFlineWithDefault(runfdf, 'SystemLabel', str, 'siesta', 'Phonons')
         FCfirst = SIO.GetFDFlineWithDefault(runfdf, 'MD.FCfirst', int, 0, 'Phonons')
         FClast = SIO.GetFDFlineWithDefault(runfdf, 'MD.FClast', int, 0, 'Phonons')
         # Finite-displacement amplitude
         ampl, unit = SIO.GetFDFline(runfdf, KeyWord='MD.FCDispl')
-        if unit.upper()=='ANG':
+        if unit.upper() == 'ANG':
             self.Displ = float(ampl)
-        elif unit.upper()=='BOHR':
+        elif unit.upper() == 'BOHR':
             self.Displ = float(ampl)*PC.Bohr2Ang
         print 'Displacement = %.6f Ang'%self.Displ
         # Read geometry
@@ -256,7 +256,7 @@ class FCrun():
 
     def GetOrbitalIndices(self):
         # Determine snr (siesta number) for each label
-        csl = SIO.GetFDFblock(self.fdf, KeyWord = 'ChemicalSpeciesLabel')
+        csl = SIO.GetFDFblock(self.fdf, KeyWord='ChemicalSpeciesLabel')
         csl2snr = {}
         for set in csl:
             csl2snr[set[2]] = set[0]
@@ -279,7 +279,7 @@ class FCrun():
         for num in self.geom.snr:
             nao = snr2nao[num]
             orbitalIndices.append([tmpOrb, tmpOrb+int(nao)-1])
-            tmpOrb+=nao
+            tmpOrb += nao
         self.orbitalIndices = N.array(orbitalIndices)
         self.nao = tmpOrb # total number of orbitals
         self.snr2nao = snr2nao # orbitals per species
@@ -308,15 +308,15 @@ class OTSrun(FCrun): # Only TranSiesta run
             sys.exit('Phonons.GetFileLists: No TSHS file found in %s'%self.directory)
 
 
-class OSrun:
+class OSrun(object):
 
     def __init__(self, onlySdir, kpoint, atype=N.complex):
         print 'Phonons.GetOnlyS: Reading from', onlySdir
         onlySfiles = glob.glob(onlySdir+'/*.onlyS*')
         onlySfiles.sort()
-        if len(onlySfiles)<1:
+        if len(onlySfiles) < 1:
             sys.exit('Phonons.GetOnlyS: No .onlyS file found!')
-        if len(onlySfiles)!=6:
+        if len(onlySfiles) != 6:
             sys.exit('Phonons.GetOnlyS: Wrong number of onlyS files found!')
         else:
             onlyS = {}
@@ -328,7 +328,7 @@ class OSrun:
                 del thisHS
                 nao = len(S)/2
                 S0 = S[0:nao, 0:nao].copy()
-                dmat=S[0:nao, nao:nao*2].copy()
+                dmat = S[0:nao, nao:nao*2].copy()
                 if file.endswith('_1.onlyS'):
                     onlyS[0, -1] = dmat
                 elif file.endswith('_2.onlyS'):
@@ -357,7 +357,7 @@ class OSrun:
             self.Displ = Displ
 
 
-class DynamicalMatrix():
+class DynamicalMatrix(object):
 
     def __init__(self, fdfs, DynamicAtoms=None, TSrun=False):
         self.fdfs = fdfs
@@ -392,7 +392,7 @@ class DynamicalMatrix():
                         self.TSHS[v, k, 1] = fcr.TSHS[v, k, 1]
                     break
             # Check that we really found the required atom
-            if len(self.Displ)<=i:
+            if len(self.Displ) <= i:
                 sys.exit('Error: Did not find FC data for a dynamic atom %i'%v)
         self.mean = (self.m+self.p)/2
 
@@ -460,13 +460,13 @@ class DynamicalMatrix():
             print 'Phonons.CalcPhonons: Frequencies in meV:'
             for i in range(3*dyn):
                 print string.rjust('%.3f'%(1000*hw[i]), 9),
-                if (i-5)%6==0: print
-            if (i-5)%6!=0: print
+                if (i-5)%6 == 0: print
+            if (i-5)%6 != 0: print
         #print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
         #for i in range(3*dyn):
         #    print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
-        #    if (i-5)%6==0: print
-        #if (i-5)%6!=0: print
+        #    if (i-5)%6 == 0: print
+        #if (i-5)%6 != 0: print
 
         # Compute real displacement vectors
         Udisp = U.copy()
@@ -479,7 +479,7 @@ class DynamicalMatrix():
         for j in range(3*dyn):
             for i in range(3*dyn):
                 # Eigenvectors after multiplication by characteristic length
-                if hw[j]>0:
+                if hw[j] > 0:
                     Ucl[j, i] = U[j, i]*(1./(self.Masses[i/3]*(hw[j]/(2*PC.Rydberg2eV)))**.5)
                 else:
                     # Characteristic length not defined for non-postive frequency
@@ -592,7 +592,7 @@ class DynamicalMatrix():
                 # Remove Periodic Boundary terms
                 nuo = len(dH[0])
                 pbcf = self.OrbIndx[PBCFirst-1][0]
-                pbcl  = self.OrbIndx[PBCLast-1][1]
+                pbcl = self.OrbIndx[PBCLast-1][1]
                 if v < PBCFirst:
                     # we have something to remove...
                     print 'Warning: Setting certain elements in dH[%i,%i] to zero because %i<PBCFirst'%(v, j, v)
@@ -610,10 +610,10 @@ class DynamicalMatrix():
                     self.gradients.append(dh)
                 # Loop over modes and throw away the gradient (to save memory)
                 for m in range(len(self.hw)):
-                    if self.hw[m]>0:
+                    if self.hw[m] > 0:
                         # Eigenvectors should be real for GammaPoint phonons, hence we always take the real part
                         Heph[m] += const*dh*self.UU[m, v-1, j].real/(2*self.Masses[i]*self.hw[m])**.5
-                    elif i==0:
+                    elif i == 0:
                         # Print only first time
                         print 'Phonons.ComputeEPHcouplings: Mode %i has nonpositive frequency --> Zero-valued coupling matrix'%m
                         # already zero
@@ -747,7 +747,7 @@ class DynamicalMatrix():
                 ncdf.variables['grad.im'].info = 'Imaginary part of gradients'
             print 'Phonons.WriteOutput: Wrote gradients to', ncdffn
         except:
-            pass
+            print 'Phonons.WriteOutpot: Gradients not computed'
         ncdf.close()
         print 'Phonons.WriteOutput: Finished', ncdffn
 
@@ -773,10 +773,10 @@ def WriteVibDOSFile(filename, hw, type='Gaussian'):
     ETA = N.outer(0*erng+1, eta)
     spectrum = N.zeros((len(erng), len(eta)), N.float)
     for i in range(len(hw)):
-        if type=='Gaussian':
+        if type == 'Gaussian':
             spectrum += (2*N.pi)**(-.5)/ETA*N.exp(N.clip(-1.0*(hw[i]-ERNG)**2/(2*ETA**2), -300, 300))
             spectrum -= (2*N.pi)**(-.5)/ETA*N.exp(N.clip(-1.0*(-hw[i]-ERNG)**2/(2*ETA**2), -300, 300))
-        elif type=='Lorentzian':
+        elif type == 'Lorentzian':
             spectrum += 1/N.pi*ETA/((hw[i]-ERNG)**2+ETA**2)
             spectrum -= 1/N.pi*ETA/((-hw[i]-ERNG)**2+ETA**2)
     # Write data to file
@@ -844,13 +844,13 @@ def main(options):
     """
     Main routine to compute vibrational modes and frequencies (and optionally
     also the corresponding electron-vibration couplings)
-    
+
     Parameters
     ----------
     options : an ``options`` instance
     """
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    CF.PrintMainHeader('Phonons', options)
+    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    Log.PrintMainHeader('Phonons', options)
 
     # Determine SIESTA input fdf files in FCruns
     fdf = glob.glob(options.FCwildcard+'/RUN.fdf')
@@ -878,9 +878,9 @@ def main(options):
                                WriteGradients=options.WriteGradients)
         # Write data to files
         DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        CF.PrintMainFooter('Phonons')
+        Log.PrintMainFooter('Phonons')
         return DM.h0, DM.s0, DM.hw, DM.heph
     else:
         DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        CF.PrintMainFooter('Phonons')
+        Log.PrintMainFooter('Phonons')
         return DM.hw

@@ -1,9 +1,11 @@
 """
 
-CommonFunctions (:mod:`Inelastica.CommonFunctions`)
-===================================================
+:mod:`Inelastica.io.log`
+========================
 
-.. currentmodule:: Inelastica.CommonFunctions
+This module provides the functions to generate logfiles in the `Inelastica` package.
+
+.. currentmodule:: Inelastica.io.log
 
 """
 
@@ -36,12 +38,15 @@ def CreatePipeOutput(f):
         else: raise # forward error...
 
     class TeeLog(object):
+
         def __init__(self, f, term):
             self.term = term
             self.log = open(f, 'w') # Consider doing this optionally appending?
+
         def write(self, message):
             self.term.write(message)
             self.log.write(message)
+
         def flush(self):
             self.term.flush()
             self.log.flush()
@@ -54,7 +59,9 @@ def CreatePipeOutput(f):
 def PrintMainHeader(name, options):
     import Inelastica.info as info
     print('=======================================================================')
-    print('INELASTICA VERSION : %s'%(info.label))
+    print('INELASTICA VERSION : %s'%(info.version))
+    if info.git_count > 0:
+        print('               GIT : %s'%(info.git_revision))
     print('RUNNING %s : %s'%(name.upper(), time.ctime()))
     if options:
         print('\nOPTIONS :')
@@ -84,61 +91,3 @@ def PrintScriptSummary(argv, dT):
     print('Program finished:  %s '%time.ctime())
     print('Walltime: %.2f hrs = %.2f min = %.2f sec'%(hours, minutes, seconds))
     print('=======================================================================')
-
-######################################################################
-#
-# Multiprocessing
-
-
-def runParallel(function, argList, nCPU=None):
-    # Run in parallel the function with arguments given in the list
-    # return list of results. You have to wrap the normal function with:
-    # def myFuncPar(resQue, ii, *args):
-    #     resQue.put( (ii,)+(myFunc(*args),))
-    # Which returns the results of the arguments
-
-    import multiprocessing as MP
-    import os
-
-    try: # Remove interfering OMP threading
-        OMP = os.environ['OMP_NUM_THREADS']
-    except:
-        OMP = None
-    try:
-        OBLAS = os.environ['OPENBLAS_NUM_THREADS']
-    except:
-        OBLAS = None
-
-    os.environ['OMP_NUM_THREADS']='1'
-    os.environ['OPENBLAS_NUM_THREADS']='1'
-    if nCPU==None:
-        nCPU=MP.cpu_count()
-    print("Running on %i CPUS"%(nCPU))
-
-    resQue = MP.Queue() # return que
-    chunks = [argList[ii*nCPU:(ii+1)*nCPU] for ii, jj in enumerate(argList[::nCPU])]
-    res = [None]*len(argList)
-    for ii, chunk in enumerate(chunks):
-        threads=[]
-        for jj, args in enumerate(chunk):
-            t= MP.Process(target=function, args =(resQue, ii*nCPU+jj,)+args)
-            t.start()
-            threads += [t]
-        for jj in range(len(threads)):
-            #print('Joining')
-            out = resQue.get()
-            #print('Joined',out[0])
-            res[out[0]]=out[1]
-            threads[out[0]-ii*nCPU].join()
-            if threads[out[0]-ii*nCPU].exitcode>0:
-                sys.exit('Something wrong inside process ....')
-
-    if OMP==None: # Reset threading
-        del os.environ['OMP_NUM_THREADS']
-    else:
-        os.environ['OMP_NUM_THREADS']=OMP
-    if OBLAS==None:
-        del os.environ['OPENBLAS_NUM_THREADS']
-    else:
-        os.environ['OPENBLAS_NUM_THREADS']=OBLAS
-    return res

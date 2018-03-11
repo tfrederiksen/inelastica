@@ -1,7 +1,7 @@
 """
 
-vasp (:mod:`Inelastica.io.vasp`)
-================================
+:mod:`Inelastica.io.vasp`
+=========================
 
 IO interface with VASP
 
@@ -17,7 +17,7 @@ import gzip
 def VIO_open(filename, mode='r'):
     "A io.vasp redefinition of the function open() to handle gzip format"
     try:
-        if filename[-3:]=='.gz':
+        if filename[-3:] == '.gz':
             # filename is explicitly a gzip file
             vfile = gzip.open(filename, mode)
         else:
@@ -58,9 +58,9 @@ def ReadCONTCAR(filename):
     natoms = N.sum(speciesnumbers)
     # Read 'Selective Dynamics' and 'Direct' lines
     dircoor = True # Default is reading direct coordinates
-    while line[0].upper()!='DIRECT' and line[0].upper()!='CARTESIAN':
+    while line[0].upper() != 'DIRECT' and line[0].upper() != 'CARTESIAN':
         line = ccarfile.readline().split()
-        if line[0].upper()=='CARTESIAN':
+        if line[0].upper() == 'CARTESIAN':
             dircoor = False
     # Read coordinates and degrees of freedom
     xyz = N.zeros((natoms, 6), N.float)
@@ -90,7 +90,7 @@ def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LA
     "Write POSCAR file"
     print 'io.vasp.WritePOSCAR: Writing', filename
     pcarfile = open(filename, 'w')
-    if label[:-2]!='\n':
+    if label[:-2] != '\n':
         pcarfile.write(label+'\n')
     else:
         pcarfile.write(label)
@@ -107,10 +107,10 @@ def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LA
     pcarfile.write('\n')
     pcarfile.write('Selective dynamics\nCartesian\n')
     for ii, xyzval in enumerate(xyz):
-        line  = string.rjust('%.9f'%xyzval[0], 16)+' '
+        line = string.rjust('%.9f'%xyzval[0], 16)+' '
         line += string.rjust('%.9f'%xyzval[1], 16)+' '
         line += string.rjust('%.9f'%xyzval[2], 16)+' '
-        if len(constrained)>0:
+        if len(constrained) > 0:
             for jj in range(3):
                 if constrained[ii, jj] > 0:
                     line += ' T'
@@ -205,7 +205,7 @@ def GetVibModesNoScaling(OUTCAR):
                 # begin vector array
             if len(l) == 6 and l[0] != 'X':
                 v.append([float(l[3]), float(l[4]), float(l[5])])
-            if len(l)==0 and len(v)>0:
+            if len(l) == 0 and len(v) > 0:
                 modes.append(N.array(v))
                 v = []
     return N.array(freq), N.array(modes)
@@ -233,7 +233,7 @@ def GetVibModesMassScaled(OUTCAR):
                 # begin vector array
             if len(l) == 6 and l[0] != 'X':
                 v.append([float(l[3]), float(l[4]), float(l[5])])
-            if len(l)==0 and len(v)>0:
+            if len(l) == 0 and len(v) > 0:
                 modes.append(N.array(v))
                 v = []
         if 'Eigenvectors after division by SQRT(mass)' in line:
@@ -263,7 +263,7 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
     print 'Emin,Emax,pts =', Emin, Emax, pts
     print 'eF = ', eF
     # If atom_index not specified take all:
-    if atom_index==[]:
+    if atom_index == []:
         atom_index = range(atoms)
     # Loop over atom PDOS
     dat = N.zeros((pts, 19), N.float)
@@ -273,51 +273,51 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
             s = f.readline()
             s = s.split()
             # determine spin deg. freedom
-            if e==0:
-                if len(s)==19:
+            if e == 0:
+                if len(s) == 19:
                     spin = 2
-                elif len(s)==10:
+                elif len(s) == 10:
                     spin = 1
                 else:
                     # VASP wrote 3-column data...
                     extrablock = 1
             for i, sval in enumerate(s):
                 s[i] = float(sval)
-            if (j-extrablock) in atom_index:
+            if j-extrablock in atom_index:
                 dat[e, 0] = s[0]-eF
                 dat[e, 1:1+9*spin] += N.array(s[1:1+9*spin])
-                if e==0:
+                if e == 0:
                     print '  adding %i'%(j-extrablock),
-            elif e==0:
+            elif e == 0:
                 print '  skipping %i'%(j-extrablock),
         # skip header line
         f.readline()
-    if extrablock==1:
+    if extrablock == 1:
         # Need to read one more block
         j += 1
         for e in range(pts):
             s = f.readline()
             s = s.split()
             # determine spin deg. freedom
-            if e==0:
-                if len(s)==19:
+            if e == 0:
+                if len(s) == 19:
                     spin = 2
-                elif len(s)==10:
+                elif len(s) == 10:
                     spin = 1
             for i, sval in enumerate(s):
                 s[i] = float(sval)
-            if (j-extrablock) in atom_index:
+            if j-extrablock in atom_index:
                 dat[e, 0] = s[0]-eF
                 dat[e, 1:1+9*spin] += N.array(s[1:1+9*spin])
-                if e==0:
+                if e == 0:
                     print '  adding %i'%(j-extrablock),
-            elif e==0:
+            elif e == 0:
                 print '  skipping %i'%(j-extrablock),
         # skip header line
         f.readline()
         print
     # Make spin=2 negative
-    if spin==2:
+    if spin == 2:
         sgn = N.ones(1+9*spin)
         for i in range(9):
             sgn[2+2*i] = -1.0

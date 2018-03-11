@@ -1,7 +1,7 @@
 """
 
-EigenChannels (:mod:`Inelastica.EigenChannels`)
-===============================================
+:mod:`Inelastica.EigenChannels`
+===============================
 
 1. Eigenchannels, method from Paulsson and Brandbyge PRB 2007
 2. Calculate "bond" currents
@@ -36,12 +36,12 @@ import netCDF4 as NC4
 import string
 import struct
 import Inelastica.physics.constants as PC
-import Inelastica.ValueCheck as VC
-import Inelastica.CommonFunctions as CF
+import Inelastica.misc.valuecheck as VC
+import Inelastica.io.log as Log
 import Inelastica.NEGF as NEGF
 import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 
 
 def GetOptions(argv, **kwargs):
@@ -54,7 +54,7 @@ def GetOptions(argv, **kwargs):
         For example `-n 2 test_dir`, which instructs to compute only the two most transmitting
         eigenchannel scattering states and place the results in the output directory `test_dir`.
     """
-    CF.PrintMainHeader('GetOptions', None)
+    Log.PrintMainHeader('GetOptions', None)
 
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
@@ -125,6 +125,7 @@ def GetOptions(argv, **kwargs):
 
     return options
 
+
 def main(options):
     """
     Main routine to compute eigenchannel scattering states
@@ -134,9 +135,9 @@ def main(options):
     options : an ``options`` instance
     """
 
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options, 'EigenChannels')
-    CF.PrintMainHeader('EigenChannels', options)
+    Log.PrintMainHeader('EigenChannels', options)
 
     # Read geometry
     XV = '%s/%s.XV'%(options.head, options.systemlabel)
@@ -174,7 +175,7 @@ def main(options):
     DevGF.calcEigChan(options.numchan)
 
     # Compute bond currents?
-    if options.kpoint[0]!=0.0 or options.kpoint[1]!=0.0:
+    if options.kpoint[0] != 0.0 or options.kpoint[1] != 0.0:
         print 'Warning: The current implementation of bond currents is only valid for the Gamma point (should be easy to fix)'
         BC = False
     else:
@@ -186,7 +187,7 @@ def main(options):
         options.iSide, options.iChan = 0, jj+1
         writeWavefunction(options, geom, basis, ECleft[jj])
         if BC:
-            Curr=calcCurrent(options, basis, DevGF.H, ECleft[jj])
+            Curr = calcCurrent(options, basis, DevGF.H, ECleft[jj])
             writeCurrent(options, geom, Curr)
 
     # Calculate eigenchannels from right
@@ -196,20 +197,20 @@ def main(options):
             options.iSide, options.iChan = 1, jj+1
             writeWavefunction(options, geom, basis, ECright[jj])
             if BC:
-                Curr=calcCurrent(options, basis, DevGF.H, ECright[jj])
+                Curr = calcCurrent(options, basis, DevGF.H, ECright[jj])
                 writeCurrent(options, geom, Curr)
 
     # Calculate total "bond currents"
     if BC:
-        Curr=-calcCurrent(options, basis, DevGF.H, DevGF.AL)
+        Curr = -calcCurrent(options, basis, DevGF.H, DevGF.AL)
         options.iChan, options.iSide = 0, 0
         writeCurrent(options, geom, Curr)
-        Curr=-calcCurrent(options, basis, DevGF.H, DevGF.AR)
+        Curr = -calcCurrent(options, basis, DevGF.H, DevGF.AR)
         options.iSide = 1
         writeCurrent(options, geom, Curr)
 
     # Calculate eigenstates of device Hamiltonian (MPSH)
-    if options.MolStates>0.0:
+    if options.MolStates > 0.0:
         try:
             import scipy.linalg as SLA
             ev, es = SLA.eigh(DevGF.H, DevGF.S)
@@ -225,16 +226,14 @@ def main(options):
             fnfile.close()
             # Compute selected eigenstates
             for ii, val in enumerate(ev):
-                if N.abs(val)<options.MolStates:
-                    fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii, val)
+                if N.abs(val) < options.MolStates:
+                    fn = options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii, val)
                     writeWavefunction(options, geom, basis, es[:, ii], fn=fn)
         except:
             print 'You need to install scipy to solve the generalized eigenvalue problem'
             print 'for the molecular eigenstates in the nonorthogonal basis'
 
-    CF.PrintMainFooter('EigenChannels')
-
-########################################################
+    Log.PrintMainFooter('EigenChannels')
 
 
 def calcWF(options, geom, basis, Y):
@@ -246,7 +245,7 @@ def calcWF(options, geom, basis, Y):
     nx, ny, nz : number of grid points
     """
 
-    xyz=N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
+    xyz = N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
 
     # Size of cube
     xmin, xmax = min(xyz[:, 0])-5.0, max(xyz[:, 0])+5.0
@@ -259,16 +258,16 @@ def calcWF(options, geom, basis, Y):
     origo = N.array([xmin, ymin, zmin], N.float)
 
     # Def cube
-    YY=N.zeros((nx, ny, nz), N.complex)
-    rx=N.array(range(nx), N.float)*dx+origo[0]
-    ry=N.array(range(ny), N.float)*dy+origo[1]
-    rz=N.array(range(nz), N.float)*dz+origo[2]
+    YY = N.zeros((nx, ny, nz), N.complex)
+    rx = N.array(range(nx), N.float)*dx+origo[0]
+    ry = N.array(range(ny), N.float)*dy+origo[1]
+    rz = N.array(range(nz), N.float)*dz+origo[2]
 
     for ii, Yval in enumerate(Y):
-        if ii>0:# and ii%(int(len(Y)/10))==0:
+        if ii > 0:# and ii%(int(len(Y)/10)) == 0:
             SIO.printDone(ii, len(Y), 'Wavefunction')
 
-        rax, ray, raz=basis.xyz[ii, 0], basis.xyz[ii, 1], basis.xyz[ii, 2]
+        rax, ray, raz = basis.xyz[ii, 0], basis.xyz[ii, 1], basis.xyz[ii, 2]
         # Only calulate in subset
         ixmin, ixmax = int((rax-origo[0]-basis.coff[ii])/dx), \
                        int((rax-origo[0]+basis.coff[ii])/dx)
@@ -277,30 +276,30 @@ def calcWF(options, geom, basis, Y):
         izmin, izmax = int((raz-origo[2]-basis.coff[ii])/dz), \
                        int((raz-origo[2]+basis.coff[ii])/dz)
 
-        ddx, ddy, ddz=rx[ixmin:ixmax]-rax, ry[iymin:iymax]-ray, rz[izmin:izmax]-raz
+        ddx, ddy, ddz = rx[ixmin:ixmax]-rax, ry[iymin:iymax]-ray, rz[izmin:izmax]-raz
 
-        dr=N.sqrt(MM.outerAdd(ddx*ddx, ddy*ddy, ddz*ddz))
-        drho=N.sqrt(MM.outerAdd(ddx*ddx, ddy*ddy, 0*ddz))
+        dr = N.sqrt(MM.outerAdd(ddx*ddx, ddy*ddy, ddz*ddz))
+        drho = N.sqrt(MM.outerAdd(ddx*ddx, ddy*ddy, 0*ddz))
 
-        imax=(basis.coff[ii]-2*basis.delta[ii])/basis.delta[ii]
-        ri=dr/basis.delta[ii]
-        ri=N.where(ri<imax, ri, imax)
-        ri=ri.astype(N.int)
+        imax = (basis.coff[ii]-2*basis.delta[ii])/basis.delta[ii]
+        ri = dr/basis.delta[ii]
+        ri = N.where(ri < imax, ri, imax)
+        ri = ri.astype(N.int)
         costh = MM.outerAdd(0*ddx, 0*ddy, ddz)/dr
         cosfi, sinfi = MM.outerAdd(ddx, 0*ddy, 0*ddz)/drho, MM.outerAdd(0*ddx, ddy, 0*ddz)/drho
 
         # Numpy has changed the choose function to crap!
-        RR=N.take(basis.orb[ii], ri)
+        RR = N.take(basis.orb[ii], ri)
 
         # Calculate spherical harmonics
         l = basis.L[ii]
         m = basis.M[ii]
-        if l==3:
+        if l == 3:
             print 'f-shell : l=%i, m=%i (NOT TESTED!!)'%(l, m)
         thisSphHar = MM.sphericalHarmonics(l, m, costh, sinfi, cosfi)
 
-        YY[ixmin:ixmax, iymin:iymax, izmin:izmax]=YY[ixmin:ixmax, iymin:iymax, izmin:izmax]+\
-                                                 RR*thisSphHar*Yval
+        YY[ixmin:ixmax, iymin:iymax, izmin:izmax] = YY[ixmin:ixmax, iymin:iymax, izmin:izmax]+\
+                                                    RR*thisSphHar*Yval
 
     print "Wave function norm on real space grid:", N.sum(YY.conjugate()*YY)*dx*dy*dz
 
@@ -318,30 +317,28 @@ def calcCurrent(options, basis, H, Y):
 
     if isinstance(Y, MM.SpectralMatrix):
         Y = MM.mm(Y.L, Y.R)
-    NN=len(H)
-    NN2=options.DeviceAtoms[1]-options.DeviceAtoms[0]+1
-    Curr=N.zeros((NN2, NN2), N.float)
+    NN = len(H)
+    NN2 = options.DeviceAtoms[1]-options.DeviceAtoms[0]+1
+    Curr = N.zeros((NN2, NN2), N.float)
 
-    if len(Y.shape)==2:
+    if len(Y.shape) == 2:
         for ii in range(NN):
-            a1=basis.ii[ii]-options.DeviceAtoms[0]
+            a1 = basis.ii[ii]-options.DeviceAtoms[0]
             for jj in range(NN):
-                a2=basis.ii[jj]-options.DeviceAtoms[0]
-                tmp=H[jj, ii]*Y[ii, jj]/2/N.pi
+                a2 = basis.ii[jj]-options.DeviceAtoms[0]
+                tmp = H[jj, ii]*Y[ii, jj]/2/N.pi
                 # Note that taking the imaginary part is only the valid
                 # expression for Gamma point calculations
-                Curr[a1, a2]=Curr[a1, a2]+4*N.pi*tmp.imag
+                Curr[a1, a2] = Curr[a1, a2]+4*N.pi*tmp.imag
     else:
         for ii in range(NN):
-            a1=basis.ii[ii]-options.DeviceAtoms[0]
+            a1 = basis.ii[ii]-options.DeviceAtoms[0]
             for jj in range(NN):
-                a2=basis.ii[jj]-options.DeviceAtoms[0]
-                tmp=H[ii, jj]*N.conjugate(Y[ii])*Y[jj]
-                Curr[a1, a2]=Curr[a1, a2]+4*N.pi*tmp.imag
+                a2 = basis.ii[jj]-options.DeviceAtoms[0]
+                tmp = H[ii, jj]*N.conjugate(Y[ii])*Y[jj]
+                Curr[a1, a2] = Curr[a1, a2]+4*N.pi*tmp.imag
 
     return Curr
-
-########################################################
 
 
 def writeCurrent(options, geom, Curr):
@@ -350,11 +347,11 @@ def writeCurrent(options, geom, Curr):
     fn : Filename
     Curr : Bond current matrix
     """
-    fn=fileName(options)
-    xyz=N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
-    atomnum=geom.anr[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]]
+    fn = fileName(options)
+    xyz = N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
+    atomnum = geom.anr[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]]
 
-    foC=file(fn+'.curr', 'w')
+    foC = file(fn+'.curr', 'w')
     foC.write('%i\n'%(options.DeviceAtoms[1]-options.DeviceAtoms[0]+1))
 
     for ii in range(len(xyz)):
@@ -369,7 +366,7 @@ def writeCurrent(options, geom, Curr):
     Curr2 = N.zeros(geom.xyz.shape)
     for i in range(len(Curr)):
         for j in range(len(Curr)):
-            if i!=j:
+            if i != j:
                 R = N.zeros(3, N.float)
                 for k in range(-1, 2): # Loop over neighbors
                     for l in range(-1, 2):
@@ -412,7 +409,7 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
     varAbsSq[:] = N.absolute(N.square(YY))
 
     vardstep = ncfile.createVariable('dstep', 'd', ('number',))
-    vardstep[:]  = dstep
+    vardstep[:] = dstep
 
     vargeom = ncfile.createVariable('xyz', 'f', ('natoms', 'naxes'))
     # OpenDX needs float for positions
@@ -446,10 +443,10 @@ def writecube(geom, fn, YY, nx, ny, nz, origo, dstep):
     """
     Write wavefunction to cube file.
     """
-    xyz=N.array(geom.xyz)
-    anr=geom.anr
+    xyz = N.array(geom.xyz)
+    anr = geom.anr
 
-    foR=file(fn, 'w')
+    foR = file(fn, 'w')
     foR.write('Eigenchannel wavefunction\n%s\n'%fn)
     foR.write('%i %f %f %f\n'% (len(xyz), origo[0]/PC.Bohr2Ang, origo[1]/PC.Bohr2Ang, origo[2]/PC.Bohr2Ang))
     foR.write('%i %f %f %f\n'% (nx, dstep/PC.Bohr2Ang, 0.0, 0.0))
@@ -458,7 +455,7 @@ def writecube(geom, fn, YY, nx, ny, nz, origo, dstep):
     # Write atom coordinates
     for ii in range(len(xyz)):
         foR.write('%i %f '% (anr[ii], 0.0))
-        tmp=xyz[ii, :]/PC.Bohr2Ang
+        tmp = xyz[ii, :]/PC.Bohr2Ang
         foR.write('%f %f %f\n'% (tmp[0], tmp[1], tmp[2]))
     # Write wavefunction
     YYY = YY.real*(PC.Bohr2Ang**(3.0/2.0))
@@ -476,7 +473,7 @@ def writemacubin(fn, YY, nx, ny, nz, origo, dstep):
     Write molekel binary format
     """
 
-    fo=file(fn, 'w')
+    fo = file(fn, 'w')
     fo.write(struct.pack('i', 36))
     xmin, xmax = origo[0], origo[0]+dstep*(nx-1)
     ymin, ymax = origo[1], origo[1]+dstep*(ny-1)
@@ -485,11 +482,11 @@ def writemacubin(fn, YY, nx, ny, nz, origo, dstep):
                          xmin, xmax, ymin, ymax, zmin, zmax, nx, ny, nz, nx*ny*nz))
 
     for ii in range(nz):
-        mlklbin=struct.pack('i', nx*ny*4)
+        mlklbin = struct.pack('i', nx*ny*4)
         for kk in range(ny):
             for jj in range(nx):
-                mlklbin+=struct.pack('f', YY[jj, kk, ii])
-        mlklbin+=struct.pack('i', nx*ny*4)
+                mlklbin += struct.pack('f', YY[jj, kk, ii])
+        mlklbin += struct.pack('i', nx*ny*4)
         fo.write(mlklbin)
 
     fo.close()
@@ -501,10 +498,10 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     """
     Write XSF datagrid for XCrysden
     """
-    fo=file(fn, 'w')
-    speciesnumber=geom.snr
-    atomnumber=geom.anr
-    xyz=geom.xyz
+    fo = file(fn, 'w')
+    speciesnumber = geom.snr
+    atomnumber = geom.anr
+    xyz = geom.xyz
     xmin, xmax = origo[0], origo[0]+dstep*(nx-1)
     ymin, ymax = origo[1], origo[1]+dstep*(ny-1)
     zmin, zmax = origo[2], origo[2]+dstep*(nz-1)
@@ -529,13 +526,13 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin, 0.0000, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, ymax-ymin, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, 0.0000, zmax-zmin))
-    data=[]
+    data = []
     for ii in range(nz):
         for kk in range(ny):
             for jj in range(nx):
                 data.append(YY.real[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6==0):
+        if (iii+1)%6 == 0:
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
@@ -547,13 +544,13 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin, 0.0000, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, ymax-ymin, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, 0.0000, zmax-zmin))
-    data=[]
+    data = []
     for ii in range(nz):
         for kk in range(ny):
             for jj in range(nx):
                 data.append(YY.imag[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6==0):
+        if (iii+1)%6 == 0:
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
@@ -565,14 +562,14 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (xmax-xmin, 0.0000, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, ymax-ymin, 0.0000))
     fo.write('  %1.7E  %1.7E  %1.7E\n'% (0.0000, 0.0000, zmax-zmin))
-    data=[]
+    data = []
     YYA2 = N.absolute(N.square(YY))
     for ii in range(nz):
         for kk in range(ny):
             for jj in range(nx):
                 data.append(YYA2[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6==0):
+        if (iii+1)%6 == 0:
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
@@ -588,19 +585,20 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
     Y: vector for wavefunction
 
     """
-    if fn==None: fn = fileName(options)
+    if fn == None:
+        fn = fileName(options)
     print 'Eigenchannels.writeWavefunction: Writing', fn
     # Rotate in complex space
-    max_amp=-1.0
-    phase=1.0+0.0j
+    max_amp = -1.0
+    phase = 1.0+0.0j
 
     for Ykk in Y:
-        if abs(Ykk)>max_amp:
-            max_amp=abs(Ykk)
-            phase=Ykk/max_amp
-    Y=Y/phase
+        if abs(Ykk) > max_amp:
+            max_amp = abs(Ykk)
+            phase = Ykk/max_amp
+    Y = Y/phase
 
-    foT=file(fn+'.abs.txt', 'w')
+    foT = file(fn+'.abs.txt', 'w')
     foT.write('Atom nr M L abs(Y)\n')
     for ii, Yval in enumerate(Y):
         foT.write('%3.0i %3.0i %3.1i %3.1i %1.8f \n'%
@@ -631,14 +629,14 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
 def fileName(options):
     systemlabel = options.systemlabel
     # Generate filename '.EC.{1,Tot}{L,R,,In,Out}[UP][Ef=1.0].'
-    if options.iChan==0:
-        fn=systemlabel+'.EC.Tot%s'%(['L', 'R', '', 'In', 'Out'][options.iSide])
+    if options.iChan == 0:
+        fn = systemlabel+'.EC.Tot%s'%(['L', 'R', '', 'In', 'Out'][options.iSide])
     else:
-        fn=systemlabel+'.EC.%i%s'%(options.iChan, ['L', 'R', '', 'In', 'Out'][options.iSide])
-    if options.nspin==2:
+        fn = systemlabel+'.EC.%i%s'%(options.iChan, ['L', 'R', '', 'In', 'Out'][options.iSide])
+    if options.nspin == 2:
         fn += ['UP', 'DOWN'][options.iSpin]
-    if options.energy!=0.0:
+    if options.energy != 0.0:
         fn += '_E%.3f'%options.energy
-    if options.kpoint[0]!=0.0 or options.kpoint[1]!=0.0:
+    if options.kpoint[0] != 0.0 or options.kpoint[1] != 0.0:
         fn += '_kx%.3f_ky%.3f'%(options.kpoint[0], options.kpoint[1])
     return options.DestDir+'/'+fn

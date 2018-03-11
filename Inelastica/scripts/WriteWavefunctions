@@ -6,7 +6,7 @@ import numpy as N
 import Inelastica.EigenChannels as EC
 import Inelastica.MakeGeom as MG
 import Inelastica.io.siesta as SIO
-import Inelastica.CommonFunctions as CF
+import Inelastica.io.log as Log
 
 # Usage: WriteWavefunctions <firstorb> <lastorb> <DestDir> [<optional EC options>]
 
@@ -20,7 +20,7 @@ if len(sys.argv)>3:
 
 # "Borrow" options object from EigenChannels
 options = EC.GetOptions(opts)
-CF.CreatePipeOutput(options.DestDir+'/WriteWavefunctions.log')
+Log.CreatePipeOutput(options.DestDir+'/WriteWavefunctions.log')
 label = SIO.GetFDFlineWithDefault(options.fn, 'SystemLabel', str, 'siesta', 'WriteWavefunctions')
 
 # Read Hamiltonian

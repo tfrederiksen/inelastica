@@ -5,20 +5,24 @@ STM
 
 Script that calculates STM images using the Bardeen approximation outlined in
 PRB 93 115434 (2016) and PRB 96 085415 (2017). The script is divided into 3
-parts: 1) Calculation of the scattering states at the Fermi-energy on the same
+parts:
+
+1. Calculation of the scattering states at the Fermi-energy on the same
 real space grid as TranSiesta (real-space cutoff). These are saved in
 DestDir/SystemLabel.A[LR][0-99].nc files and are reused if found. NEEDS:
-TranSiesta calculation.  2) Propagation of the scattering states from a
+TranSiesta calculation.
+
+2. Propagation of the scattering states from a
 surface (defined by a constant charge density) out into the vacuum region.
 After the x-y plane, where the average potential of the slice is maximum (the
 separation plane), is found, the potential is ascribed a constant value at
 this average. Saves the propagated wavefunctions at the separation plane in
-DestDir/[kpoint]/FD[kpoint].nc. NEEDS: TotalPotential.grid.nc and Rho.grid.nc. 3)
-Conductance calculation where the tip/substrate wavefunctions are displaced
+DestDir/[kpoint]/FD[kpoint].nc. NEEDS: TotalPotential.grid.nc and Rho.grid.nc.
+
+3. Conductance calculation where the tip/substrate wavefunctions are displaced
 to simulate the conductance at different tip-positions. The k averaged STM
 image and the STM images of individual k points are saved in
 DestDir/STMimage.nc.
-
 
 Usage:
   STM [options] DestinationDirectory

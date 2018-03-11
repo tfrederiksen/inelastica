@@ -1,7 +1,7 @@
 """
 
-STM (:mod:`Inelastica.STM`)
-===========================
+:mod:`Inelastica.STM`
+=====================
 
 Script that calculates STM images using the Bardeen approximation
 outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The
@@ -40,16 +40,18 @@ import string
 import glob
 import os
 import ast
-import Inelastica.ValueCheck as VC
-import Inelastica.CommonFunctions as CF
+import time
+import Inelastica.misc.valuecheck as VC
+import Inelastica.io.log as Log
 import Inelastica.io.netcdf as writeNC
 import Inelastica.STMFD as STMFD
 import Inelastica.NEGF as NEGF
 import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 import Inelastica.physics.constants as PC
 import Inelastica.physics.mesh as Kmesh
+import Inelastica.misc.multiprocessing as multiprocessing
 
 #Units: Bohr and Rydberg!
 
@@ -66,8 +68,8 @@ def GetOptions(argv, **kwargs):
     import optparse as o
 
     d = """Script that calculates STM images using the Bardeen approximation outlined in PRB 93 115434 (2016) and PRB 96 085415 (2017). The script is divided into 3 parts:
-1) Calculation of the scattering states at the Fermi-energy on the same real space grid as TranSiesta (real-space cutoff). These are saved in DestDir/SystemLabel.A[LR][0-99].nc files and are reused if found. NEEDS: TranSiesta calculation. 
-2) Propagation of the scattering states from a surface (defined by a constant charge density) out into the vacuum region. After the x-y plane, where the average potential of the slice is maximum (the separation plane), is found, the potential is ascribed a constant value at this average. Saves the propagated wavefunctions at the separation plane in DestDir/[kpoint]/FD[kpoint].nc. NEEDS: TotalPotential.grid.nc and Rho.grid.nc. 
+1) Calculation of the scattering states at the Fermi-energy on the same real space grid as TranSiesta (real-space cutoff). These are saved in DestDir/SystemLabel.A[LR][0-99].nc files and are reused if found. NEEDS: TranSiesta calculation.
+2) Propagation of the scattering states from a surface (defined by a constant charge density) out into the vacuum region. After the x-y plane, where the average potential of the slice is maximum (the separation plane), is found, the potential is ascribed a constant value at this average. Saves the propagated wavefunctions at the separation plane in DestDir/[kpoint]/FD[kpoint].nc. NEEDS: TotalPotential.grid.nc and Rho.grid.nc.
 3) Conductance calculation where the tip/substrate wavefunctions are displaced to simulate the conductance at different tip-positions. The k averaged STM image and the STM images of individual k points are saved in DestDir/STMimage.nc.
 """
 
@@ -145,19 +147,19 @@ def GetOptions(argv, **kwargs):
 
 def main(options):
     dd = len(glob.glob(options.DestDir))
-    if len(glob.glob('TotalPotential.grid.nc'))==0 and len(glob.glob('Rho.grid.nc'))==0:
+    if len(glob.glob('TotalPotential.grid.nc')) == 0 and len(glob.glob('Rho.grid.nc')) == 0:
         sys.exit('TotalPotential.nc and Rho.grid.nc not found! Add "SaveTotalPotential true" and "SaveRho true" to RUN.fdf')
-    if len(glob.glob('TotalPotential.grid.nc'))==0:
+    if len(glob.glob('TotalPotential.grid.nc')) == 0:
         sys.exit('TotalPotential.nc not found! Add "SaveTotalPotential true" to RUN.fdf')
-    if len(glob.glob('Rho.grid.nc'))==0:
+    if len(glob.glob('Rho.grid.nc')) == 0:
         sys.exit('Rho.grid.nc not found! Add "SaveRho true" to RUN.fdf')
 
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     VC.OptionsCheck(options, 'STM')
-    CF.PrintMainHeader('STM', options)
+    Log.PrintMainHeader('STM', options)
 
     ## Step 1: Calculate scattering states from L/R on TranSiesta real space grid.
-    if glob.glob(options.DestDir+'/kpoints')!=[]: # Check previous k-points
+    if glob.glob(options.DestDir+'/kpoints') != []: # Check previous k-points
         f, oldk = open(options.DestDir+'/kpoints', 'r'), []
         f.readline()
         for ii in f.readlines():
@@ -167,10 +169,9 @@ def main(options):
     options.kpoints.mesh2file(options.DestDir+'/kpoints')
     doK = []
     for ikpoint in range(len(options.kpoints.k)):
-        try:
-            os.mkdir(options.DestDir+'/%i'%(ikpoint))
-        except:
-            pass
+        ikdir = options.DestDir+'/%i'%(ikpoint)
+        if not os.path.isdir(ikdir):
+            os.mkdir(ikdir)
         doK += [ikpoint]
 
     #Check if some k points are already done
@@ -178,29 +179,31 @@ def main(options):
     nokpts = len(options.kpoints.k)
     noFDcalcs = len(glob.glob('./'+options.DestDir+'/*/FDcurr*.nc'))
     for ii in range(nokpts):
-        if len(glob.glob('./'+options.DestDir+'/'+str(ii)+'/FDcurr'+str(ii)+'.nc'))==1:
+        if len(glob.glob('./'+options.DestDir+'/'+str(ii)+'/FDcurr'+str(ii)+'.nc')) == 1:
             pass
         else:
             doK += [ii]
 
-    if noFDcalcs>nokpts-1:
+    if noFDcalcs > nokpts-1:
         print('\nAll ('+str(nokpts)+') k points are already finished!\n')
-    elif noFDcalcs>0 and noFDcalcs<nokpts:
+    elif noFDcalcs > 0 and noFDcalcs < nokpts:
         print(str(nokpts-len(doK))+' ('+str(N.round(100.*((1.*nokpts-len(doK))/nokpts), 1))+'%) k points already done. Will proceed with the rest.')
         print('You should perhaps remove the loc-basis states in the most recent k folder ')
         print('since some of these may not have been calculated before interuption.\n')
     else:
-        if dd==1:
+        if dd == 1:
             print('No STM calculations found in existing directory '+str(options.DestDir)+'/. Starting from scratch.')
             print('(...by possibly using saved localized-basis states)\n')
         else:
             print('STM calculation starts.')
-    args=[(options, ik) for ik in doK]
-    tmp = CF.runParallel(calcTSWFPar, args, nCPU=options.nCPU)
+    args = [(options, ik) for ik in doK]
+    tmp = multiprocessing.runParallel(calcTSWFPar, args, nCPU=options.nCPU)
 
     print('Calculating k-point averaged STM image')
+
     def ShiftOrigin(mat, x, y):
-        Nx = N.shape(mat)[0]; Ny = N.shape(mat)[1]
+        Nx = N.shape(mat)[0]
+        Ny = N.shape(mat)[1]
         NewMat = N.zeros((Nx, Ny))
         for ii in range(Nx):
             for jj in range(Ny):
@@ -225,8 +228,10 @@ def main(options):
     STMimagekpt = N.zeros((dim1*options.Nk1, dim2*options.Nk2))
     for ii in range(options.Nk1):
         for jj in range(options.Nk2):
-            N1 = ii+1; N2 = options.Nk2-jj; kk = (ii+1)*options.Nk2-jj-1
-            STMimagekpt[(N1-1)*dim1:N1*dim1, (N2-1)*dim2:N2*dim2]=tmpSTM[kk*dim1:(kk+1)*dim1, ::-1]
+            N1 = ii+1
+            N2 = options.Nk2-jj
+            kk = (ii+1)*options.Nk2-jj-1
+            STMimagekpt[(N1-1)*dim1:N1*dim1, (N2-1)*dim2:N2*dim2] = tmpSTM[kk*dim1:(kk+1)*dim1, ::-1]
 
     tmp = open(options.systemlabel+'.XV').readlines()[4+options.DeviceFirst-1:4+options.DeviceLast]
     xyz = N.zeros((len(tmp), 4))
@@ -234,7 +239,7 @@ def main(options):
         for jj in range(1, 5):
             tmp2 = tmp[ii].split()
             xyz[ii, jj-1] = ast.literal_eval(tmp2[jj])
-            if jj>1:
+            if jj > 1:
                 xyz[ii, jj-1] = xyz[ii, jj-1]*PC.Bohr2Ang
 
     drAtoms = N.zeros(len(xyz))
@@ -242,7 +247,7 @@ def main(options):
         drAtoms[atomIdx] = N.round((xyz[atomIdx+1][3]-xyz[atomIdx][3]), 3)
     TipHeight = N.max(drAtoms)
 
-    n=writeNC.NCfile('./'+options.DestDir+'/STMimage.nc')
+    n = writeNC.NCfile('./'+options.DestDir+'/STMimage.nc')
     n.write(STMimage, 'STMimage')
     n.write(theta, 'theta')
     n.write(options.kpoints.k, 'kpoints')
@@ -253,32 +258,30 @@ def main(options):
     n.write(TipHeight, 'TipHeight')
     n.close()
 
-    #Convert .nc file...
-    tmpstr = '/bionano2/netcdf/bin/ncdump ./'+options.DestDir+'/STMimage.nc | /bionano2/netcdf/bin/ncgen -o ./'+options.DestDir+'/STMimage.nc -k1'
-    os.system(tmpstr)
-
-    CF.PrintMainFooter('STM')
+    Log.PrintMainFooter('STM')
 
 ########################################################
 
 
 def calcTSWF(options, ikpoint):
     kpoint = options.kpoints.k[ikpoint]
+
     def calcandwrite(A, txt, kpoint, ikpoint):
         if isinstance(A, MM.SpectralMatrix):
-            A=A.full()
-        A=A*PC.Rydberg2eV # Change to 1/Ryd
+            A = A.full()
+        A = A*PC.Rydberg2eV # Change to 1/Ryd
         ev, U = LA.eigh(A)
         Utilde = N.empty(U.shape, U.dtype)
         for jj, val in enumerate(ev): # Problems with negative numbers
-            if val<0: val=0
-            Utilde[:, jj]=N.sqrt(val/(2*N.pi))*U[:, jj]
-        indx2 = N.where(abs(abs(ev)>1e-4))[0] # Pick non-zero states
+            if val < 0:
+                val = 0
+            Utilde[:, jj] = N.sqrt(val/(2*N.pi))*U[:, jj]
+        indx2 = N.where(abs(abs(ev) > 1e-4))[0] # Pick non-zero states
 
-        ev=ev[indx2]
-        Utilde=Utilde[:, indx2]
-        indx=ev.real.argsort()[::-1]
-        fn=options.DestDir+'/%i/'%(ikpoint)+options.systemlabel+'.%s'%(txt)
+        ev = ev[indx2]
+        Utilde = Utilde[:, indx2]
+        indx = ev.real.argsort()[::-1]
+        fn = options.DestDir+'/%i/'%(ikpoint)+options.systemlabel+'.%s'%(txt)
 
         path = './'+options.DestDir+'/'
         #FermiEnergy = SIO.HS(options.systemlabel+'.TSHS').ef
@@ -286,15 +289,15 @@ def calcTSWF(options, ikpoint):
         def noWfs(side):
             tmp = len(glob.glob(path+str(ikpoint)+'/'+options.systemlabel+'.A'+side+'*'))
             return tmp
-        if noWfs('L')==0 or noWfs('R')==0 and len(glob.glob(path+str(ikpoint)+'/FD*'))==0:
+        if noWfs('L') == 0 or noWfs('R') == 0 and len(glob.glob(path+str(ikpoint)+'/FD*')) == 0:
             print('Calculating localized-basis states from spectral function %s ...'%(txt))
             tlb = time.clock()
             calcWF2(options, geom, options.DeviceAtoms, basis, Utilde[:, indx], [N1, N2, N3, minN3, maxN3], Fold=True, k=kpoint, fn=fn)
-            times = N.round(time.clock()-tlb, 2); timem = N.round(times/60, 2)
+            times = N.round(time.clock()-tlb, 2)
+            timem = N.round(times/60, 2)
             print('Finished in '+str(times)+' s = '+str(timem)+' min')
-        else:
-            pass
-        if noWfs('L')>0 and noWfs('R')>0 and len(glob.glob(path+str(ikpoint)+'/FD*'))==0 and str('%s'%(txt))==str('AR'):
+
+        if noWfs('L') > 0 and noWfs('R') > 0 and len(glob.glob(path+str(ikpoint)+'/FD*')) == 0 and str('%s'%(txt)) == str('AR'):
             print('\nLocalized-basis states are calculated in k point '+str(ikpoint)+'/.')
             print('------------------------------------------------------')
             print('Finite-difference calculation of vacuum states starts!')
@@ -304,8 +307,7 @@ def calcTSWF(options, ikpoint):
             print('------------------------------------------------------')
             if options.savelocwfs == False:
                 os.system('rm -f '+path+str(ikpoint)+'/'+options.systemlabel+'*')
-            else:
-                pass
+
     #Read geometry
     XV = '%s/%s.XV'%(options.head, options.systemlabel)
     geom = MG.Geom(XV, BufferAtoms=options.buffer)
@@ -387,7 +389,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
     RETURNS:
     YY : complex wavefunction as N1, N2, N3 matrix
     """
-    xyz=N.array(geom.xyz[DeviceAtoms[0]-1:DeviceAtoms[1]])
+    xyz = N.array(geom.xyz[DeviceAtoms[0]-1:DeviceAtoms[1]])
     N1, N2, N3, minN3, maxN3 = NN[0], NN[1], NN[2], NN[3], NN[4]
     NN3 = maxN3-minN3+1
     if Fold:
@@ -395,11 +397,11 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
     else:
         da1, da2, da3 = a[0]/N1, a[1]/N2, a[2]/N3
     try:
-        NNY=Y.shape[1]
+        NNY = Y.shape[1]
     except:
-        NNY=1
+        NNY = 1
     # Def cube
-    YY=[N.zeros((N1, N2, NN3), N.complex) for ii in range(NNY)]
+    YY = [N.zeros((N1, N2, NN3), N.complex) for ii in range(NNY)]
     # Help indices
     i1 = MM.outerAdd(N.arange(N1), N.zeros(N2), N.zeros(NN3))
     i2 = MM.outerAdd(N.zeros(N1), N.arange(N2), N.zeros(NN3))
@@ -419,74 +421,74 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
         pbcpairs = N.array([[pbc[1], pbc[2]], [pbc[0], pbc[2]], [pbc[0], pbc[1]]])
 
     for iiatom in range(DeviceAtoms[1]-DeviceAtoms[0]+1):
-        if iiatom>0:
+        if iiatom > 0:
             #Wavefunction percent done...
             SIO.printDone(iiatom, DeviceAtoms[1]-DeviceAtoms[0]+1, 'Wave function')
 
         if not Fold:
             shiftvec = [0, 0, 0]
         else: # include shift vectors if sphere cuts planes of PBC
-            basisindx = N.where(basis.ii==iiatom+DeviceAtoms[0])[0]
+            basisindx = N.where(basis.ii == iiatom+DeviceAtoms[0])[0]
             basisradius = N.max(basis.coff[basisindx])
             minshift, maxshift = [0, 0, 0], [0, 0, 0]
             for iithiso, thiso in enumerate(olist):
-                c=xyz[iiatom, :]-thiso
+                c = xyz[iiatom, :]-thiso
                 for ip in range(3):
                     n = N.cross(pbcpairs[ip, 0], pbcpairs[ip, 1])
                     n = n / LA.norm(n)
                     dist = N.abs(N.dot(n, N.dot(N.dot(pairs[ip], c), pbcpairs[ip])-c))
                     if dist < basisradius:
-                        if iithiso==0:
-                            minshift[ip]=-1
+                        if iithiso == 0:
+                            minshift[ip] = -1
                         else:
-                            maxshift[ip]=1
+                            maxshift[ip] = 1
             shiftvec = []
             for ix in range(minshift[0], maxshift[0]+1):
                 for iy in range(minshift[1], maxshift[1]+1):
                     for iz in range(minshift[2], maxshift[2]+1):
-                        shiftvec+=[[ix, iy, iz]]
+                        shiftvec += [[ix, iy, iz]]
 
         #print(shiftvec)
         for shift in shiftvec:
             # Atom position shifted
-            vec=-N.dot(N.array(shift), geom.pbc)
+            vec = -N.dot(N.array(shift), geom.pbc)
             phase = N.exp(-1.0j*(2*N.pi*N.dot(N.array(k), N.array(shift))))
 
             # Difference and polar, cylinder distances
-            dx, dy, dz=rx-xyz[iiatom, 0]-vec[0], ry-xyz[iiatom, 1]-vec[1], rz-xyz[iiatom, 2]-vec[2]
-            dr2=dx*dx+dy*dy+dz*dz
-            drho2=dx*dx+dy*dy
+            dx, dy, dz = rx-xyz[iiatom, 0]-vec[0], ry-xyz[iiatom, 1]-vec[1], rz-xyz[iiatom, 2]-vec[2]
+            dr2 = dx*dx+dy*dy+dz*dz
+            drho2 = dx*dx+dy*dy
 
-            basisindx = N.where(basis.ii==iiatom+DeviceAtoms[0])[0]
+            basisindx = N.where(basis.ii == iiatom+DeviceAtoms[0])[0]
             old_coff, old_delta = 0.0, 0.0
             for basisorb in basisindx:
-                if not (basis.coff[basisorb]==old_coff and basis.delta[basisorb]==old_delta):
+                if not (basis.coff[basisorb] == old_coff and basis.delta[basisorb] == old_delta):
                     old_coff, old_delta = basis.coff[basisorb], basis.delta[basisorb]
-                    indx = N.where(dr2<basis.coff[basisorb]**2) # Find points close to atom
+                    indx = N.where(dr2 < basis.coff[basisorb]**2) # Find points close to atom
 
-                    idr, idrho=N.sqrt(dr2[indx]), N.sqrt(drho2[indx])
-                    iri=(idr/basis.delta[basisorb]).astype(N.int)
+                    idr, idrho = N.sqrt(dr2[indx]), N.sqrt(drho2[indx])
+                    iri = (idr/basis.delta[basisorb]).astype(N.int)
                     idx, idy, idz = dx[indx], dy[indx], dz[indx]
 
                     costh = idz/idr
                     cosfi, sinfi = idx/idrho, idy/idrho
 
                     # Fix divide by zeros
-                    indxRzero, indxRhozero = N.where(idr==0.0), N.where(idrho==0.0)
+                    indxRzero, indxRhozero = N.where(idr == 0.0), N.where(idrho == 0.0)
                     costh[indxRzero] = 1.0
                     cosfi[indxRhozero], sinfi[indxRhozero] = 1.0, 0.0
 
                     # Numpy has changed the choose function to crap!
-                    RR=N.take(basis.orb[basisorb], iri)
+                    RR = N.take(basis.orb[basisorb], iri)
                 # Calculate spherical harmonics
-                if len(idr)>0:
+                if len(idr) > 0:
                     l = basis.L[basisorb]
                     m = basis.M[basisorb]
-                    if l==3:
+                    if l == 3:
                         print('f-shell : l=%i, m=%i (NOT TESTED!!)'%(l, m))
                     thisSphHar = MM.sphericalHarmonics(l, m, costh, sinfi, cosfi)
                     for iy in range(NNY):
-                        YY[iy][indx]=YY[iy][indx]+RR*thisSphHar*Y[basisorb, iy]*phase
+                        YY[iy][indx] = YY[iy][indx]+RR*thisSphHar*Y[basisorb, iy]*phase
     N1, N2, N3, minN3, maxN3 = NN[0], NN[1], NN[2], NN[3], NN[4]
     for ii in range(NNY):
         writenetcdf2(geom, fn+'%i.nc'%ii, YY[ii], N1, N2, N3, minN3, maxN3, geom.pbc, options.DeviceAtoms)
@@ -499,7 +501,6 @@ def writenetcdf2(geom, fn, YY, nx, ny, nz, minnz, maxnz, pbc, DeviceAtoms):
     """
     MP: Write STM files to netcdf
     """
-    import time
     file = NC.Dataset(fn, 'w', 'Created '+time.ctime(time.time()))
     file.createDimension('nx', nx)
     file.createDimension('ny', ny)
@@ -515,14 +516,14 @@ def writenetcdf2(geom, fn, YY, nx, ny, nz, minnz, maxnz, pbc, DeviceAtoms):
     varIm[:] = YY.imag*(PC.Bohr2Ang**(3.0/2.0))
     varIm.units = '1/[Ryd^(1/2) Bohr^(3/2)]'
     varcell = file.createVariable('cell', 'd', ('naxes', 'naxes'))
-    varcell[:]  = pbc/PC.Bohr2Ang
+    varcell[:] = pbc/PC.Bohr2Ang
     varcell.units = 'Bohr'
     vardsteps = file.createVariable('steps', 'd', ('naxes', 'naxes'))
     steps = N.array([pbc[0]/nx, pbc[1]/ny, pbc[2]/nz])/PC.Bohr2Ang
-    vardsteps[:]  = steps
+    vardsteps[:] = steps
     vardsteps.units = 'Bohr'
     varorig = file.createVariable('origin', 'd', ('naxes',))
-    varorig[:]  = pbc[2]/nz*minnz/PC.Bohr2Ang
+    varorig[:] = pbc[2]/nz*minnz/PC.Bohr2Ang
     varorig.units = 'Bohr'
     vargeom = file.createVariable('xyz', 'd', ('natoms', 'naxes'))
     vargeom[:] = geom.xyz[list(range(DeviceAtoms[0]-1, DeviceAtoms[1]))]/PC.Bohr2Ang
@@ -541,4 +542,4 @@ if __name__ == '__main__':
     main(options)
 
     dT = datetime.now()-start
-    CF.PrintScriptSummary(sys.argv, dT)
+    Log.PrintScriptSummary(sys.argv, dT)

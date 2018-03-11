@@ -1,13 +1,13 @@
 """
 
-netcdf (:mod:`Inelastica.io.netcdf`)
-====================================
+:mod:`Inelastica.io.netcdf`
+===========================
 
-IO interface for handling NetCDF files
+IO interface for handling netCDF4 files
 
 .. currentmodule:: Inelastica.io.netcdf
 
-classes
+Classes
 -------
 
 .. autosummary::
@@ -30,7 +30,7 @@ def write(fn, array, label, vartype='d'):
     nc.close()
 
 
-class NCfile:
+class NCfile(object):
 
     def __init__(self, fn):
         "Returning instance of class."

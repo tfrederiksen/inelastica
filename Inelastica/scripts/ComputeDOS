@@ -4,7 +4,7 @@ import sys
 from datetime import datetime
 import argparse
 import Inelastica.SupercellPhonons as SP
-import Inelastica.CommonFunctions as CF
+import Inelastica.io.log as Log
 
 start = datetime.now()
 
@@ -28,4 +28,4 @@ SP.ComputeDOS(args.NC, args.XMG,
 
 dT = datetime.now()-start
 
-CF.PrintScriptSummary(sys.argv, dT)
+Log.PrintScriptSummary(sys.argv, dT)

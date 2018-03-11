@@ -1,7 +1,7 @@
 """
 
-SupercellPhonons (:mod:`Inelastica.SupercellPhonons`)
-=====================================================
+:mod:`Inelastica.SupercellPhonons`
+==================================
 
 A simple interface to evaluate electron and phonon bands on
 a set of points in reciprocal space.
@@ -21,15 +21,15 @@ Phase factors defined as: `exp(i k.r)`
 
 Thomas Frederiksen, March 2015.
 
-.. currentmodule:: Inelastica.SupercellPhonons
-
-classes
+Classes
 -------
 
 .. autosummary::
    :toctree:
 
    Supercell_DynamicalMatrix
+
+.. currentmodule:: Inelastica.SupercellPhonons
 
 """
 
@@ -40,11 +40,11 @@ import netCDF4 as NC4
 import ast
 import Inelastica.io.siesta as SIO
 import Inelastica.Symmetry as Symmetry
-import Inelastica.CommonFunctions as CF
+import Inelastica.io.log as Log
 import Inelastica.Phonons as PH
 import Inelastica.physics.constants as PC
-import Inelastica.MiscMath as MM
-import Inelastica.ValueCheck as VC
+import Inelastica.math as MM
+import Inelastica.misc.valuecheck as VC
 import Inelastica.io.xmgrace as XMGR
 
 __all__ = ['Supercell_DynamicalMatrix']
@@ -473,10 +473,10 @@ def WriteDOS(outfile, bands, emin, emax, pts, smear):
 
 
 def main(options):
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
+    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
     #VC.OptionsCheck(options,'Phonons')
 
-    CF.PrintMainHeader('Bandstructures', options)
+    Log.PrintMainHeader('Bandstructures', options)
 
     try:
         fdf = glob.glob(options.onlyTSdir+'/RUN.fdf')

@@ -1,7 +1,7 @@
 """
 
-ValueCheck (:mod:`Inelastica.ValueCheck`)
-=========================================
+:mod:`Inelastica.misc.valuecheck`
+=================================
 
 Contains general quantities that are used to do checks in the
 `Inelastica`_ package.
@@ -9,11 +9,10 @@ Contains general quantities that are used to do checks in the
 It allows users to edit the criterias of crashes without editing
 the code.
 
-Currently if this is to be used with `Inelastica`_ or `pyTBT`, it should
+Currently if this is to be used with `Inelastica`_ or `pyTBT`_, it should
 be in a wrapper call which emulates the options.
 
-.. currentmodule:: Inelastica.ValueCheck
-
+.. currentmodule:: Inelastica.misc.valuecheck
 
 """
 
@@ -160,7 +159,7 @@ def OptionsCheck(opts, exe):
         NA3 = SIO.GetFDFlineWithDefault(opts.fn, belec+'.Bloch.A3', int, 1, exe)
 
         # Overwrite block
-        block = SIO.GetFDFblock(opts.fn, KeyWord = belec)
+        block = SIO.GetFDFblock(opts.fn, KeyWord=belec)
 
         for line in block:
             print(line)
@@ -200,12 +199,12 @@ def OptionsCheck(opts, exe):
         return TSHS, NA1, NA2, semiinf
 
     # Look up electrode block
-    block = SIO.GetFDFblock(opts.fn, KeyWord = 'TS.Elecs')
-    if len(block)==0:
+    block = SIO.GetFDFblock(opts.fn, KeyWord='TS.Elecs')
+    if len(block) == 0:
         # Did not find the electrode block, defaults to old naming scheme
         opts.fnL, opts.NA1L, opts.NA2L, opts.semiinfL = get_elec_vars('Left')
         opts.fnR, opts.NA1R, opts.NA2R, opts.semiinfR = get_elec_vars('Right')
-    elif len(block)==2:
+    elif len(block) == 2:
         # NB: The following assumes that the left electrode is the first in the block!
         opts.fnL, opts.NA1L, opts.NA2L, opts.semiinfL = get_elec_vars(block[0][0])
         opts.fnR, opts.NA1R, opts.NA2R, opts.semiinfR = get_elec_vars(block[1][0])
@@ -224,15 +223,15 @@ def OptionsCheck(opts, exe):
         opts.minBias = -abs(opts.maxBias)
 
     # Device region
-    if opts.DeviceFirst<=0:
+    if opts.DeviceFirst <= 0:
         opts.DeviceFirst = SIO.GetFDFlineWithDefault(opts.fn, 'TS.TBT.PDOSFrom', int, 1, exe)
     opts.DeviceFirst -= L
-    if opts.DeviceLast<=0:
+    if opts.DeviceLast <= 0:
         opts.DeviceLast = SIO.GetFDFlineWithDefault(opts.fn, 'TS.TBT.PDOSTo', int, 1e10, exe)
     opts.DeviceLast -= L
     opts.NumberOfAtoms = SIO.GetFDFlineWithDefault(opts.fn, 'NumberOfAtoms', int, 1e10, exe)
     opts.NumberOfAtoms -= L + R
-    if opts.DeviceLast<opts.DeviceFirst:
+    if opts.DeviceLast < opts.DeviceFirst:
         print(exe+' error: DeviceLast<DeviceFirst not allowed. Setting DeviceLast=DeviceFirst')
         opts.DeviceLast = opts.DeviceFirst
     opts.DeviceAtoms = [max(opts.DeviceFirst, 1), min(opts.DeviceLast, opts.NumberOfAtoms)]

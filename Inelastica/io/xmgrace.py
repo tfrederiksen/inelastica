@@ -1,9 +1,11 @@
 """
 
-xmgrace (:mod:`Inelastica.io.xmgrace`)
-======================================
+:mod:`Inelastica.io.xmgrace`
+============================
 
-This module provides a `Python`_ interface to write `XMGR/GRACE <xmgrace_>`_ files. Written by Thomas Frederiksen, July 2007.
+This module provides a `Python`_ interface to write `XMGR/GRACE <xmgrace_>`_ files.
+
+It is a renamed version of the code `WriteXMGR.py` written by Thomas Frederiksen, July 2007.
 
 Scripting
 ---------
@@ -121,7 +123,8 @@ def Datafile2XYsets(fn, Sort=False, **keywords):
     return Array2XYsets(A, **keywords)
 
 
-class Dataset:
+class Dataset(object):
+
     """
     Generic class for any XMGR dataset
     """
@@ -263,6 +266,7 @@ class Dataset:
 
 
 class XYset(Dataset):
+
     """
     Class for 2-dimensional (X,Y) datasets
     """
@@ -295,6 +299,7 @@ class XYset(Dataset):
 
 
 class XYDXset(XYset):
+
     """
     Class for 3-dimensional (X,Y,dX) datasets
     """
@@ -315,6 +320,7 @@ class XYDXset(XYset):
 
 
 class XYDYset(XYset):
+
     """
     Class for 3-dimensional (X,Y,dY) datasets
     """
@@ -335,6 +341,7 @@ class XYDYset(XYset):
 
 
 class XYDXDYset(XYset):
+
     """
     Class for 4-dimensional (X,Y,dX,dY) datasets
     """
@@ -356,6 +363,7 @@ class XYDXDYset(XYset):
 
 
 class XYSIZEset(XYset):
+
     """
     Class for 3-dimensional (X,Y,size) datasets
     """
@@ -375,7 +383,8 @@ class XYSIZEset(XYset):
         return string
 
 
-class Graph:
+class Graph(object):
+
     """
     Class for a graph (containing datasets)
     """
@@ -624,8 +633,9 @@ class Graph:
         self.string += '@ xaxis tick spec type both\n@ xaxis tick spec 11\n'
         for i in range(len(ticklist)):
             x, lab = ticklist[i][0], ticklist[i][1]
-            try: lab = symbols[lab]
-            except: pass
+            if lab in symbols:
+                # replace with xmgr code for symbol
+                lab = symbols[lab]
             self.string += '@ xaxis tick major %i, %.8f \n'%(i, x)
             self.string += '@ xaxis ticklabel %i, \"%s\" \n'%(i, lab)
 
@@ -634,8 +644,9 @@ class Graph:
         self.string += '@ yaxis tick spec type both\n@ yaxis tick spec 11\n'
         for i in range(len(ticklist)):
             y, lab = ticklist[i][0], ticklist[i][1]
-            try: lab = symbols[lab]
-            except: pass
+            if lab in symbols:
+                # replace with xmgr code for symbol
+                lab = symbols[lab]
             self.string += '@ yaxis tick major %i, %.8f \n'%(i, y)
             self.string += '@ yaxis ticklabel %i, \"%s\" \n'%(i, lab)
 
@@ -667,10 +678,12 @@ class Graph:
         return string
 
 
-class Plot:
+class Plot(object):
+
     """
     Class for a plot (containing graphs)
     """
+
     def __init__(self, filename='Default.agr', *graphs):
         "Returning instance of class."
         self.filename = filename

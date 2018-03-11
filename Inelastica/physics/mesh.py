@@ -1,13 +1,11 @@
 """
 
-Mesh (:mod:`Inelastica.physics.mesh`)
-=====================================
+:mod:`Inelastica.physics.mesh`
+==============================
 
-Written by Thomas Frederikse.
+Written by Thomas Frederiksen.
 
-.. currentmodule:: Inelastica.physics.mesh
-
-classes
+Classes
 -------
 
 .. autosummary::
@@ -15,9 +13,11 @@ classes
 
    kmesh
 
+.. currentmodule:: Inelastica.physics.mesh
+
 """
 
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 import numpy as N
 
 # This function is used in the class below for each of the
@@ -31,7 +31,7 @@ def generatelinmesh(Nk):
     return N.array(kpts), N.array(wgts)
 
 
-class kmesh:
+class kmesh(object):
     """
     Create a k-mesh samling where each of the three components
     sample the range [-0.5,0.5]). They are not in reciprocal space.
@@ -55,7 +55,7 @@ class kmesh:
         Returns an instance of a k-mesh with each of the k-vector axes
         sampled either linearly (LIN) or using a Gauss-Kronrod (GK) scheme.
 
-        An axis i sampled by (Nki,LIN) generates Nk points, while 
+        An axis i sampled by (Nki,LIN) generates Nk points, while
         (Nki,GK) returns 2*Nk+1 points.
 
         By applying inversion symmetry (k=-k) the number of points in the mesh
@@ -77,14 +77,14 @@ class kmesh:
         for i in range(3): # loop over the three k-components
             if self.type[i].upper() == 'GK' or self.type[i].upper() == 'GAUSSKRONROD':
                 self.type[i] = 'GK'
-                if self.Nk[i]>1: # GK-method fails with fewer points
+                if self.Nk[i] > 1: # GK-method fails with fewer points
                     kpts, wgts, ew = MM.GaussKronrod(self.Nk[i])
                     self.k.append(kpts)
                     self.w.append(wgts)
                     errorw.append(ew)
                 else:
                     print 'Kmesh.py: GK method requires Nk=%i>1'%(self.Nk[i])
-                    kuk
+                    sys.exit(1)
             elif self.type[i].upper() == 'LIN' or self.type[i].upper() == 'LINEAR':
                 self.type[i] = 'LIN'
                 kpts, wgts = generatelinmesh(self.Nk[i])
@@ -159,17 +159,34 @@ class kmesh:
 
 
 def test():
-    mesh = kmesh(4, 3, 1, meshtype=['LIN', 'GK', 'LIN'])
+    """
+    Test function
+    """
+    mesh = kmesh(4, 3, 3, meshtype=['LIN', 'GK', 'LIN'],invsymmetry=False)
     keys = mesh.__dict__.keys()
     print keys
     print mesh.Nk
     print mesh.NNk
     print mesh.type
     print mesh.invsymmetry
-    print 'ki wi'
-    for i in range(len(mesh.k)):
-        print mesh.k[i], mesh.w[0, i]
+    #print 'ki wi'
+    #for i in range(len(mesh.k)):
+    #    print mesh.k[i], mesh.w[0, i]
     mesh.mesh2file('mesh-test.dat')
+
+    print 'Integrate some simple functions over [-0.5,0.5]:'
+    print '   f(x,y,z)=1 => \int f dxdydz =',N.sum(mesh.w[0])
+    for i,s in enumerate(['x','y','z']):
+        f = mesh.k[:,i]
+        print '   f(x,y,z)=%s => \int f dxdydz ='%s, N.sum(f*mesh.w[0])
+    f = mesh.k[:,0]*mesh.k[:,1]*mesh.k[:,2]
+    print '   f(x,y,z)=x*y*z => \int f dxdydz =',N.sum(f*mesh.w[0])
+    f = (mesh.k[:,0]+1)*(mesh.k[:,1]+1)*(mesh.k[:,2]+1)
+    print '   f(x,y,z)=(x+1)*(y+1)*(z+1) => \int f dxdydz =',N.sum(f*mesh.w[0])
+    import math
+    for i,s in enumerate(['x','y','z']):
+        f = N.cos(2*mesh.k[:,i])
+        print '   f(x,y,z)=cos(2%s) => \int f dxdydz ='%s, N.sum(f*mesh.w[0]), '[exact: sin(1) ~ 0.841470984807897]'
 
 if __name__ == '__main__':
     test()
