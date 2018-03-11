@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.SupercellPhonons &mdash; Inelastica |release| documentation</title>
+  <title>Inelastica.SupercellPhonons &mdash; Inelastica v1.3.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Inelastica |release| documentation" href="../../index.html"/>
+    <link rel="top" title="Inelastica v1.3.2 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.1-22
+                v1.3.2
               </div>
             
           
@@ -174,8 +174,8 @@
   <h1>Source code for Inelastica.SupercellPhonons</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">SupercellPhonons (:mod:`Inelastica.SupercellPhonons`)</span>
-<span class="sd">=====================================================</span>
+<span class="sd">:mod:`Inelastica.SupercellPhonons`</span>
+<span class="sd">==================================</span>
 
 <span class="sd">A simple interface to evaluate electron and phonon bands on</span>
 <span class="sd">a set of points in reciprocal space.</span>
@@ -195,15 +195,15 @@
 
 <span class="sd">Thomas Frederiksen, March 2015.</span>
 
-<span class="sd">.. currentmodule:: Inelastica.SupercellPhonons</span>
-
-<span class="sd">classes</span>
+<span class="sd">Classes</span>
 <span class="sd">-------</span>
 
 <span class="sd">.. autosummary::</span>
 <span class="sd">   :toctree:</span>
 
 <span class="sd">   Supercell_DynamicalMatrix</span>
+
+<span class="sd">.. currentmodule:: Inelastica.SupercellPhonons</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -214,11 +214,11 @@
 <span class="kn">import</span> <span class="nn">ast</span>
 <span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
 <span class="kn">import</span> <span class="nn">Inelastica.Symmetry</span> <span class="kn">as</span> <span class="nn">Symmetry</span>
-<span class="kn">import</span> <span class="nn">Inelastica.CommonFunctions</span> <span class="kn">as</span> <span class="nn">CF</span>
+<span class="kn">import</span> <span class="nn">Inelastica.io.log</span> <span class="kn">as</span> <span class="nn">Log</span>
 <span class="kn">import</span> <span class="nn">Inelastica.Phonons</span> <span class="kn">as</span> <span class="nn">PH</span>
 <span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
-<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
-<span class="kn">import</span> <span class="nn">Inelastica.ValueCheck</span> <span class="kn">as</span> <span class="nn">VC</span>
+<span class="kn">import</span> <span class="nn">Inelastica.math</span> <span class="kn">as</span> <span class="nn">MM</span>
+<span class="kn">import</span> <span class="nn">Inelastica.misc.valuecheck</span> <span class="kn">as</span> <span class="nn">VC</span>
 <span class="kn">import</span> <span class="nn">Inelastica.io.xmgrace</span> <span class="kn">as</span> <span class="nn">XMGR</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Supercell_DynamicalMatrix&#39;</span><span class="p">]</span>
@@ -647,10 +647,10 @@
 
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
-    <span class="n">CF</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
+    <span class="n">Log</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
     <span class="c1">#VC.OptionsCheck(options,&#39;Phonons&#39;)</span>
 
-    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;Bandstructures&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+    <span class="n">Log</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;Bandstructures&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">fdf</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">onlyTSdir</span><span class="o">+</span><span class="s1">&#39;/RUN.fdf&#39;</span><span class="p">)</span>
@@ -938,7 +938,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.1-22',
+            VERSION:'v1.3.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.Phonons &mdash; Inelastica |release| documentation</title>
+  <title>Inelastica.Phonons &mdash; Inelastica v1.3.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Inelastica |release| documentation" href="../../index.html"/>
+    <link rel="top" title="Inelastica v1.3.2 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.1-22
+                v1.3.2
               </div>
             
           
@@ -174,8 +174,8 @@
   <h1>Source code for Inelastica.Phonons</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">Phonons (:mod:`Inelastica.Phonons`)</span>
-<span class="sd">===================================</span>
+<span class="sd">:mod:`Inelastica.Phonons`</span>
+<span class="sd">=========================</span>
 
 <span class="sd">Overview</span>
 <span class="sd">--------</span>
@@ -225,7 +225,7 @@
 
 
 <span class="sd">Classes and methods</span>
-<span class="sd">-------</span>
+<span class="sd">-------------------</span>
 
 <span class="sd">.. autosummary::</span>
 <span class="sd">   :toctree:</span>
@@ -251,11 +251,11 @@
 <span class="kn">import</span> <span class="nn">ast</span>
 <span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
 <span class="kn">import</span> <span class="nn">Inelastica.Symmetry</span> <span class="kn">as</span> <span class="nn">Symmetry</span>
-<span class="kn">import</span> <span class="nn">Inelastica.CommonFunctions</span> <span class="kn">as</span> <span class="nn">CF</span>
+<span class="kn">import</span> <span class="nn">Inelastica.io.log</span> <span class="kn">as</span> <span class="nn">Log</span>
 <span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
 <span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
-<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
-<span class="kn">import</span> <span class="nn">Inelastica.ValueCheck</span> <span class="kn">as</span> <span class="nn">VC</span>
+<span class="kn">import</span> <span class="nn">Inelastica.math</span> <span class="kn">as</span> <span class="nn">MM</span>
+<span class="kn">import</span> <span class="nn">Inelastica.misc.valuecheck</span> <span class="kn">as</span> <span class="nn">VC</span>
 
 
 <div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -331,7 +331,7 @@
     <span class="k">del</span> <span class="n">options</span><span class="o">.</span><span class="n">k1</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">k2</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">k3</span>
 
     <span class="c1"># Determine array type for H,S,dH,...</span>
-    <span class="n">options</span><span class="o">.</span><span class="n">GammaPoint</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">kpoint</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">kpoint</span><span class="p">)</span><span class="o">&lt;</span><span class="mf">1e-7</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">GammaPoint</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">kpoint</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">kpoint</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-7</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">GammaPoint</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">SinglePrec</span><span class="p">:</span>
             <span class="n">options</span><span class="o">.</span><span class="n">atype</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">float32</span>
@@ -347,7 +347,7 @@
     <span class="n">options</span><span class="o">.</span><span class="n">DynamicAtoms</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FCfirst</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">FClast</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># EPH atoms - set only different from options.DynamicAtoms if a subset is specified</span>
-    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">EPHfirst</span><span class="o">&gt;=</span><span class="n">options</span><span class="o">.</span><span class="n">FCfirst</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">EPHlast</span><span class="o">&lt;=</span><span class="n">options</span><span class="o">.</span><span class="n">FClast</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">EPHfirst</span> <span class="o">&gt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">FCfirst</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">EPHlast</span> <span class="o">&lt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">FClast</span><span class="p">:</span>
         <span class="n">options</span><span class="o">.</span><span class="n">EPHAtoms</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">EPHfirst</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">EPHlast</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">options</span><span class="o">.</span><span class="n">EPHAtoms</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">DynamicAtoms</span>
@@ -355,9 +355,9 @@
     <span class="k">del</span> <span class="n">options</span><span class="o">.</span><span class="n">FCfirst</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">FClast</span>
 
     <span class="c1"># PBCFirst/PBCLast</span>
-    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">PBCFirst</span><span class="o">&lt;</span><span class="n">options</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">PBCFirst</span> <span class="o">&lt;</span> <span class="n">options</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="p">:</span>
         <span class="n">options</span><span class="o">.</span><span class="n">PBCFirst</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">DeviceFirst</span>
-    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">PBCLast</span><span class="o">&gt;</span><span class="n">options</span><span class="o">.</span><span class="n">DeviceLast</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">PBCLast</span> <span class="o">&gt;</span> <span class="n">options</span><span class="o">.</span><span class="n">DeviceLast</span><span class="p">:</span>
         <span class="n">options</span><span class="o">.</span><span class="n">PBCLast</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">DeviceLast</span>
 
     <span class="c1"># Isotopes specified in separate file?</span>
@@ -367,24 +367,24 @@
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
             <span class="n">s</span> <span class="o">+=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="n">options</span><span class="o">.</span><span class="n">Isotopes</span> <span class="o">=</span> <span class="n">s</span>
-    <span class="n">options</span><span class="o">.</span><span class="n">Isotopes</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">Isotopes</span><span class="p">)</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">Isotopes</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">Isotopes</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">options</span></div>
 
 
-<div class="viewcode-block" id="FCrun"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.FCrun">[docs]</a><span class="k">class</span> <span class="nc">FCrun</span><span class="p">():</span>
+<div class="viewcode-block" id="FCrun"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.FCrun">[docs]</a><span class="k">class</span> <span class="nc">FCrun</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runfdf</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fdf</span> <span class="o">=</span> <span class="n">runfdf</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">runfdf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">runfdf</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">systemlabel</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">runfdf</span><span class="p">,</span> <span class="s1">&#39;SystemLabel&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;siesta&#39;</span><span class="p">,</span> <span class="s1">&#39;Phonons&#39;</span><span class="p">)</span>
         <span class="n">FCfirst</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">runfdf</span><span class="p">,</span> <span class="s1">&#39;MD.FCfirst&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Phonons&#39;</span><span class="p">)</span>
         <span class="n">FClast</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">runfdf</span><span class="p">,</span> <span class="s1">&#39;MD.FClast&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Phonons&#39;</span><span class="p">)</span>
         <span class="c1"># Finite-displacement amplitude</span>
         <span class="n">ampl</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFline</span><span class="p">(</span><span class="n">runfdf</span><span class="p">,</span> <span class="n">KeyWord</span><span class="o">=</span><span class="s1">&#39;MD.FCDispl&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">unit</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;ANG&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">unit</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;ANG&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Displ</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ampl</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">unit</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;BOHR&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">unit</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;BOHR&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Displ</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ampl</span><span class="p">)</span><span class="o">*</span><span class="n">PC</span><span class="o">.</span><span class="n">Bohr2Ang</span>
         <span class="k">print</span> <span class="s1">&#39;Displacement = </span><span class="si">%.6f</span><span class="s1"> Ang&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">Displ</span>
         <span class="c1"># Read geometry</span>
@@ -430,7 +430,7 @@
 
 <div class="viewcode-block" id="FCrun.GetOrbitalIndices"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.FCrun.GetOrbitalIndices">[docs]</a>    <span class="k">def</span> <span class="nf">GetOrbitalIndices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Determine snr (siesta number) for each label</span>
-        <span class="n">csl</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFblock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fdf</span><span class="p">,</span> <span class="n">KeyWord</span> <span class="o">=</span> <span class="s1">&#39;ChemicalSpeciesLabel&#39;</span><span class="p">)</span>
+        <span class="n">csl</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFblock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fdf</span><span class="p">,</span> <span class="n">KeyWord</span><span class="o">=</span><span class="s1">&#39;ChemicalSpeciesLabel&#39;</span><span class="p">)</span>
         <span class="n">csl2snr</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="nb">set</span> <span class="ow">in</span> <span class="n">csl</span><span class="p">:</span>
             <span class="n">csl2snr</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -453,7 +453,7 @@
         <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">snr</span><span class="p">:</span>
             <span class="n">nao</span> <span class="o">=</span> <span class="n">snr2nao</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
             <span class="n">orbitalIndices</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">tmpOrb</span><span class="p">,</span> <span class="n">tmpOrb</span><span class="o">+</span><span class="nb">int</span><span class="p">(</span><span class="n">nao</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">tmpOrb</span><span class="o">+=</span><span class="n">nao</span>
+            <span class="n">tmpOrb</span> <span class="o">+=</span> <span class="n">nao</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orbitalIndices</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orbitalIndices</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nao</span> <span class="o">=</span> <span class="n">tmpOrb</span> <span class="c1"># total number of orbitals</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">snr2nao</span> <span class="o">=</span> <span class="n">snr2nao</span> <span class="c1"># orbitals per species</span>
@@ -482,15 +482,15 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Phonons.GetFileLists: No TSHS file found in </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="OSrun"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.OSrun">[docs]</a><span class="k">class</span> <span class="nc">OSrun</span><span class="p">:</span>
+<div class="viewcode-block" id="OSrun"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.OSrun">[docs]</a><span class="k">class</span> <span class="nc">OSrun</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">onlySdir</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">,</span> <span class="n">atype</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">):</span>
         <span class="k">print</span> <span class="s1">&#39;Phonons.GetOnlyS: Reading from&#39;</span><span class="p">,</span> <span class="n">onlySdir</span>
         <span class="n">onlySfiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">onlySdir</span><span class="o">+</span><span class="s1">&#39;/*.onlyS*&#39;</span><span class="p">)</span>
         <span class="n">onlySfiles</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">onlySfiles</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">onlySfiles</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Phonons.GetOnlyS: No .onlyS file found!&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">onlySfiles</span><span class="p">)</span><span class="o">!=</span><span class="mi">6</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">onlySfiles</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">6</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Phonons.GetOnlyS: Wrong number of onlyS files found!&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">onlyS</span> <span class="o">=</span> <span class="p">{}</span>
@@ -502,7 +502,7 @@
                 <span class="k">del</span> <span class="n">thisHS</span>
                 <span class="n">nao</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
                 <span class="n">S0</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">nao</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">nao</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="n">dmat</span><span class="o">=</span><span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">nao</span><span class="p">,</span> <span class="n">nao</span><span class="p">:</span><span class="n">nao</span><span class="o">*</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">dmat</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">nao</span><span class="p">,</span> <span class="n">nao</span><span class="p">:</span><span class="n">nao</span><span class="o">*</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
                 <span class="k">if</span> <span class="nb">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_1.onlyS&#39;</span><span class="p">):</span>
                     <span class="n">onlyS</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">dmat</span>
                 <span class="k">elif</span> <span class="nb">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_2.onlyS&#39;</span><span class="p">):</span>
@@ -531,7 +531,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">Displ</span> <span class="o">=</span> <span class="n">Displ</span></div>
 
 
-<div class="viewcode-block" id="DynamicalMatrix"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix">[docs]</a><span class="k">class</span> <span class="nc">DynamicalMatrix</span><span class="p">():</span>
+<div class="viewcode-block" id="DynamicalMatrix"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.DynamicalMatrix">[docs]</a><span class="k">class</span> <span class="nc">DynamicalMatrix</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fdfs</span><span class="p">,</span> <span class="n">DynamicAtoms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">TSrun</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fdfs</span> <span class="o">=</span> <span class="n">fdfs</span>
@@ -566,7 +566,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">TSHS</span><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">fcr</span><span class="o">.</span><span class="n">TSHS</span><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
                     <span class="k">break</span>
             <span class="c1"># Check that we really found the required atom</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Displ</span><span class="p">)</span><span class="o">&lt;=</span><span class="n">i</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Displ</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">i</span><span class="p">:</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Error: Did not find FC data for a dynamic atom </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">v</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span></div>
 
@@ -634,13 +634,13 @@
             <span class="k">print</span> <span class="s1">&#39;Phonons.CalcPhonons: Frequencies in meV:&#39;</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">dyn</span><span class="p">):</span>
                 <span class="k">print</span> <span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.3f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="n">hw</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="mi">9</span><span class="p">),</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span><span class="o">%</span><span class="mi">6</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="k">print</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span><span class="o">%</span><span class="mi">6</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span> <span class="k">print</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span><span class="o">%</span><span class="mi">6</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">print</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span><span class="o">%</span><span class="mi">6</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">print</span>
         <span class="c1">#print &#39;Phonons.CalcPhonons: Frequencies in cm^-1:&#39;</span>
         <span class="c1">#for i in range(3*dyn):</span>
         <span class="c1">#    print string.rjust(&#39;%.3f&#39;%(hw[i]/PC.invcm2eV),9),</span>
-        <span class="c1">#    if (i-5)%6==0: print</span>
-        <span class="c1">#if (i-5)%6!=0: print</span>
+        <span class="c1">#    if (i-5)%6 == 0: print</span>
+        <span class="c1">#if (i-5)%6 != 0: print</span>
 
         <span class="c1"># Compute real displacement vectors</span>
         <span class="n">Udisp</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -653,7 +653,7 @@
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">dyn</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">dyn</span><span class="p">):</span>
                 <span class="c1"># Eigenvectors after multiplication by characteristic length</span>
-                <span class="k">if</span> <span class="n">hw</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">hw</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">Ucl</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Masses</span><span class="p">[</span><span class="n">i</span><span class="o">/</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">hw</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">PC</span><span class="o">.</span><span class="n">Rydberg2eV</span><span class="p">)))</span><span class="o">**.</span><span class="mi">5</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># Characteristic length not defined for non-postive frequency</span>
@@ -766,7 +766,7 @@
                 <span class="c1"># Remove Periodic Boundary terms</span>
                 <span class="n">nuo</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dH</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">pbcf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="n">PBCFirst</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">pbcl</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="n">PBCLast</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">pbcl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OrbIndx</span><span class="p">[</span><span class="n">PBCLast</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">PBCFirst</span><span class="p">:</span>
                     <span class="c1"># we have something to remove...</span>
                     <span class="k">print</span> <span class="s1">&#39;Warning: Setting certain elements in dH[</span><span class="si">%i</span><span class="s1">,</span><span class="si">%i</span><span class="s1">] to zero because </span><span class="si">%i</span><span class="s1">&lt;PBCFirst&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
@@ -784,10 +784,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dh</span><span class="p">)</span>
                 <span class="c1"># Loop over modes and throw away the gradient (to save memory)</span>
                 <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hw</span><span class="p">)):</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hw</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hw</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="c1"># Eigenvectors should be real for GammaPoint phonons, hence we always take the real part</span>
                         <span class="n">Heph</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">+=</span> <span class="n">const</span><span class="o">*</span><span class="n">dh</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">UU</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Masses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">hw</span><span class="p">[</span><span class="n">m</span><span class="p">])</span><span class="o">**.</span><span class="mi">5</span>
-                    <span class="k">elif</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="c1"># Print only first time</span>
                         <span class="k">print</span> <span class="s1">&#39;Phonons.ComputeEPHcouplings: Mode </span><span class="si">%i</span><span class="s1"> has nonpositive frequency --&gt; Zero-valued coupling matrix&#39;</span><span class="o">%</span><span class="n">m</span>
                         <span class="c1"># already zero</span>
@@ -921,7 +921,7 @@
                 <span class="n">ncdf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;grad.im&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="s1">&#39;Imaginary part of gradients&#39;</span>
             <span class="k">print</span> <span class="s1">&#39;Phonons.WriteOutput: Wrote gradients to&#39;</span><span class="p">,</span> <span class="n">ncdffn</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">pass</span>
+            <span class="k">print</span> <span class="s1">&#39;Phonons.WriteOutpot: Gradients not computed&#39;</span>
         <span class="n">ncdf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">print</span> <span class="s1">&#39;Phonons.WriteOutput: Finished&#39;</span><span class="p">,</span> <span class="n">ncdffn</span></div></div>
 
@@ -947,10 +947,10 @@
     <span class="n">ETA</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="mi">0</span><span class="o">*</span><span class="n">erng</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span>
     <span class="n">spectrum</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">erng</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">eta</span><span class="p">)),</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hw</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="o">==</span><span class="s1">&#39;Gaussian&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;Gaussian&#39;</span><span class="p">:</span>
             <span class="n">spectrum</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-.</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="n">ETA</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="o">*</span><span class="p">(</span><span class="n">hw</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">ERNG</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">ETA</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span> <span class="o">-</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">))</span>
             <span class="n">spectrum</span> <span class="o">-=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-.</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="n">ETA</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">hw</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">ERNG</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">ETA</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span> <span class="o">-</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="nb">type</span><span class="o">==</span><span class="s1">&#39;Lorentzian&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;Lorentzian&#39;</span><span class="p">:</span>
             <span class="n">spectrum</span> <span class="o">+=</span> <span class="mi">1</span><span class="o">/</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">ETA</span><span class="o">/</span><span class="p">((</span><span class="n">hw</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">ERNG</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">ETA</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
             <span class="n">spectrum</span> <span class="o">-=</span> <span class="mi">1</span><span class="o">/</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">ETA</span><span class="o">/</span><span class="p">((</span><span class="o">-</span><span class="n">hw</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">ERNG</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">ETA</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="c1"># Write data to file</span>
@@ -1018,13 +1018,13 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main routine to compute vibrational modes and frequencies (and optionally</span>
 <span class="sd">    also the corresponding electron-vibration couplings)</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    options : an ``options`` instance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">CF</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
-    <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+    <span class="n">Log</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
+    <span class="n">Log</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
 
     <span class="c1"># Determine SIESTA input fdf files in FCruns</span>
     <span class="n">fdf</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FCwildcard</span><span class="o">+</span><span class="s1">&#39;/RUN.fdf&#39;</span><span class="p">)</span>
@@ -1052,11 +1052,11 @@
                                <span class="n">WriteGradients</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">WriteGradients</span><span class="p">)</span>
         <span class="c1"># Write data to files</span>
         <span class="n">DM</span><span class="o">.</span><span class="n">WriteOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Output&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">SinglePrec</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">GammaPoint</span><span class="p">)</span>
-        <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">)</span>
+        <span class="n">Log</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">DM</span><span class="o">.</span><span class="n">h0</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">s0</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">hw</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">heph</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">DM</span><span class="o">.</span><span class="n">WriteOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Output&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">SinglePrec</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">GammaPoint</span><span class="p">)</span>
-        <span class="n">CF</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">)</span>
+        <span class="n">Log</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">DM</span><span class="o">.</span><span class="n">hw</span></div>
 </pre></div>
 
@@ -1094,7 +1094,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.1-22',
+            VERSION:'v1.3.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

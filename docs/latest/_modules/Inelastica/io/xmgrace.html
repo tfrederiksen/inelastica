@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.io.xmgrace &mdash; Inelastica |release| documentation</title>
+  <title>Inelastica.io.xmgrace &mdash; Inelastica v1.3.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Inelastica |release| documentation" href="../../../index.html"/>
+    <link rel="top" title="Inelastica v1.3.2 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.1-22
+                v1.3.2
               </div>
             
           
@@ -174,10 +174,12 @@
   <h1>Source code for Inelastica.io.xmgrace</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">xmgrace (:mod:`Inelastica.io.xmgrace`)</span>
-<span class="sd">======================================</span>
+<span class="sd">:mod:`Inelastica.io.xmgrace`</span>
+<span class="sd">============================</span>
 
-<span class="sd">This module provides a `Python`_ interface to write `XMGR/GRACE &lt;xmgrace_&gt;`_ files. Written by Thomas Frederiksen, July 2007.</span>
+<span class="sd">This module provides a `Python`_ interface to write `XMGR/GRACE &lt;xmgrace_&gt;`_ files.</span>
+
+<span class="sd">It is a renamed version of the code `WriteXMGR.py` written by Thomas Frederiksen, July 2007.</span>
 
 <span class="sd">Scripting</span>
 <span class="sd">---------</span>
@@ -295,7 +297,8 @@
     <span class="k">return</span> <span class="n">Array2XYsets</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="o">**</span><span class="n">keywords</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">:</span>
+<div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic class for any XMGR dataset</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -437,6 +440,7 @@
 
 
 <div class="viewcode-block" id="XYset"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.XYset">[docs]</a><span class="k">class</span> <span class="nc">XYset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for 2-dimensional (X,Y) datasets</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -469,6 +473,7 @@
 
 
 <div class="viewcode-block" id="XYDXset"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.XYDXset">[docs]</a><span class="k">class</span> <span class="nc">XYDXset</span><span class="p">(</span><span class="n">XYset</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for 3-dimensional (X,Y,dX) datasets</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -489,6 +494,7 @@
 
 
 <div class="viewcode-block" id="XYDYset"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.XYDYset">[docs]</a><span class="k">class</span> <span class="nc">XYDYset</span><span class="p">(</span><span class="n">XYset</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for 3-dimensional (X,Y,dY) datasets</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -509,6 +515,7 @@
 
 
 <div class="viewcode-block" id="XYDXDYset"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.XYDXDYset">[docs]</a><span class="k">class</span> <span class="nc">XYDXDYset</span><span class="p">(</span><span class="n">XYset</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for 4-dimensional (X,Y,dX,dY) datasets</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -530,6 +537,7 @@
 
 
 <div class="viewcode-block" id="XYSIZEset"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.XYSIZEset">[docs]</a><span class="k">class</span> <span class="nc">XYSIZEset</span><span class="p">(</span><span class="n">XYset</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for 3-dimensional (X,Y,size) datasets</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -549,7 +557,8 @@
         <span class="k">return</span> <span class="n">string</span></div></div>
 
 
-<div class="viewcode-block" id="Graph"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Graph">[docs]</a><span class="k">class</span> <span class="nc">Graph</span><span class="p">:</span>
+<div class="viewcode-block" id="Graph"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Graph">[docs]</a><span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for a graph (containing datasets)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -798,8 +807,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;@ xaxis tick spec type both</span><span class="se">\n</span><span class="s1">@ xaxis tick spec 11</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ticklist</span><span class="p">)):</span>
             <span class="n">x</span><span class="p">,</span> <span class="n">lab</span> <span class="o">=</span> <span class="n">ticklist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">ticklist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">try</span><span class="p">:</span> <span class="n">lab</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">[</span><span class="n">lab</span><span class="p">]</span>
-            <span class="k">except</span><span class="p">:</span> <span class="k">pass</span>
+            <span class="k">if</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">symbols</span><span class="p">:</span>
+                <span class="c1"># replace with xmgr code for symbol</span>
+                <span class="n">lab</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">[</span><span class="n">lab</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;@ xaxis tick major </span><span class="si">%i</span><span class="s1">, </span><span class="si">%.8f</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;@ xaxis ticklabel </span><span class="si">%i</span><span class="s1">, </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">lab</span><span class="p">)</span></div>
 
@@ -808,8 +818,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;@ yaxis tick spec type both</span><span class="se">\n</span><span class="s1">@ yaxis tick spec 11</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ticklist</span><span class="p">)):</span>
             <span class="n">y</span><span class="p">,</span> <span class="n">lab</span> <span class="o">=</span> <span class="n">ticklist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">ticklist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">try</span><span class="p">:</span> <span class="n">lab</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">[</span><span class="n">lab</span><span class="p">]</span>
-            <span class="k">except</span><span class="p">:</span> <span class="k">pass</span>
+            <span class="k">if</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">symbols</span><span class="p">:</span>
+                <span class="c1"># replace with xmgr code for symbol</span>
+                <span class="n">lab</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">[</span><span class="n">lab</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;@ yaxis tick major </span><span class="si">%i</span><span class="s1">, </span><span class="si">%.8f</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;@ yaxis ticklabel </span><span class="si">%i</span><span class="s1">, </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">lab</span><span class="p">)</span></div>
 
@@ -841,10 +852,12 @@
         <span class="k">return</span> <span class="n">string</span></div></div>
 
 
-<div class="viewcode-block" id="Plot"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Plot">[docs]</a><span class="k">class</span> <span class="nc">Plot</span><span class="p">:</span>
+<div class="viewcode-block" id="Plot"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.xmgrace.html#Inelastica.io.xmgrace.Plot">[docs]</a><span class="k">class</span> <span class="nc">Plot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for a plot (containing graphs)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;Default.agr&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">graphs</span><span class="p">):</span>
         <span class="s2">&quot;Returning instance of class.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
@@ -1112,7 +1125,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.3.1-22',
+            VERSION:'v1.3.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

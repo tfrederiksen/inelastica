@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Graphene/SiC &mdash; Inelastica v1.3.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Inelastica v1.3.2 documentation" href="../index.html"/>
+        <link rel="up" title="Examples" href="../examples.html"/>
+        <link rel="next" title="CO/Cu(111)" href="co_cu111.html"/>
+        <link rel="prev" title="NaCl" href="nacl.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v1.3.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="au_fcc.html">Au FCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auh2.html">AuH2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="na_bcc.html">Na BCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nacl.html">NaCl</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Graphene/SiC</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#virtual-crystal-approximation">Virtual crystal approximation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2">Step 2</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="co_cu111.html">CO/Cu(111)</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../scripts.html">Scripts</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../examples.html">Examples</a> &raquo;</li>
+        
+      <li>Graphene/SiC</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/examples/graphene_sic.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="graphene-sic">
+<span id="id1"></span><h1>Graphene/SiC<a class="headerlink" href="#graphene-sic" title="Permalink to this headline">¶</a></h1>
+<p>In this example we describe how to obtain the IETS signatures
+of the interfacial phonon observed in epitaxial graphene on SiC
+reported in <a class="reference external" href="https://link.aps.org/doi/10.1103/PhysRevB.96.155431">this publication</a>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>@Article<span class="o">{</span>minamitani,
+  <span class="nv">author</span> <span class="o">=</span> <span class="o">{</span>Minamitani, E. and Arafune, R. and Frederiksen, T. and Suzuki, T. and Shahed, S. M. F. and Kobayashi, T. and Endo, N. and Fukidome, H. and Watanabe, S. and Komeda, T.<span class="o">}</span>,
+  <span class="nv">title</span> <span class="o">=</span> <span class="o">{</span>Atomic-scale characterization of the interfacial phonon in graphene/SiC<span class="o">}</span>,
+  <span class="nv">journal</span> <span class="o">=</span> <span class="o">{</span>Phys. Rev. B<span class="o">}</span>,
+  <span class="nv">year</span> <span class="o">=</span> <span class="o">{</span><span class="m">2017</span><span class="o">}</span>,
+  <span class="nv">volume</span> <span class="o">=</span> <span class="o">{</span><span class="m">96</span><span class="o">}</span>,
+  <span class="nv">pages</span> <span class="o">=</span> <span class="o">{</span><span class="m">155431</span><span class="o">}</span>,
+  <span class="nv">Doi</span> <span class="o">=</span> <span class="o">{</span><span class="m">10</span>.1103/PhysRevB.96.155431<span class="o">}</span>,
+  <span class="nv">url</span> <span class="o">=</span> <span class="o">{</span>https://link.aps.org/doi/10.1103/PhysRevB.96.155431<span class="o">}</span>,
+<span class="o">}</span>
+</pre></div>
+</div>
+<div class="section" id="virtual-crystal-approximation">
+<h2>Virtual crystal approximation<a class="headerlink" href="#virtual-crystal-approximation" title="Permalink to this headline">¶</a></h2>
+<p>Example of an image:</p>
+<a class="reference internal image-reference" href="../_images/AuFCC_r5.0_Phonons.png"><img alt="phonon band structure with force cutoff radii of 5.0 angstroms" class="align-center" src="../_images/AuFCC_r5.0_Phonons.png" style="width: 529.6px; height: 361.6px;" /></a>
+</div>
+<div class="section" id="step-2">
+<h2>Step 2<a class="headerlink" href="#step-2" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="co_cu111.html" class="btn btn-neutral float-right" title="CO/Cu(111)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="nacl.html" class="btn btn-neutral" title="NaCl" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'v1.3.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

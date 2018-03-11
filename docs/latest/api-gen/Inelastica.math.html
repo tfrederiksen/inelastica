@@ -1,0 +1,500 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Inelastica.math package &mdash; Inelastica v1.3.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Inelastica v1.3.2 documentation" href="../index.html"/>
+        <link rel="up" title="Inelastica package" href="Inelastica.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v1.3.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../scripts.html">Scripts</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="Inelastica.html">Inelastica package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.html#inelastica"><code class="docutils literal"><span class="pre">Inelastica</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="Inelastica.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="Inelastica.fortran.html">Inelastica.fortran package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Inelastica.io.html">Inelastica.io package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Inelastica.math package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Inelastica.misc.html">Inelastica.misc package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Inelastica.physics.html">Inelastica.physics package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="Inelastica.html">Inelastica package</a> &raquo;</li>
+        
+      <li>Inelastica.math package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-gen/Inelastica.math.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-Inelastica.math">
+<span id="inelastica-math-package"></span><h1>Inelastica.math package<a class="headerlink" href="#module-Inelastica.math" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="inelastica-math">
+<h2><a class="reference internal" href="#module-Inelastica.math" title="Inelastica.math"><code class="xref py py-mod docutils literal"><span class="pre">Inelastica.math</span></code></a><a class="headerlink" href="#inelastica-math" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.math.SpectralMatrix" title="Inelastica.math.SpectralMatrix"><code class="xref py py-obj docutils literal"><span class="pre">SpectralMatrix</span></code></a>([A,&nbsp;cutoff])</td>
+<td>New matrixclass for spectral matrix</td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-Inelastica.math"></span><dl class="function">
+<dt id="Inelastica.math.GaussKronrod">
+<code class="descclassname">Inelastica.math.</code><code class="descname">GaussKronrod</code><span class="sig-paren">(</span><em>n</em>, <em>tol=1e-10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/gausskronrod.html#GaussKronrod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.GaussKronrod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the (<span class="math">\(2n+1\)</span>)-point Gauss-Kronrod quadrature abscissa <span class="math">\(\{x_i\}\)</span>
+and weights <span class="math">\(\{w_{1,i}\}\)</span>, <span class="math">\(\{w_{2,i}\}\)</span>.
+Kronrod adds <span class="math">\(n+1\)</span> points to an <span class="math">\(n\)</span>-point Gaussian rule.</p>
+<p>Definition:</p>
+<p><span class="math">\(\int_{-1/2}^{1/2} f(x) dx \sim \sum_i w_{1,i} f(x_i)\)</span>.</p>
+<p>The weights <span class="math">\(\{w_{2,i}\}\)</span> are used for error estimation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>n</strong> : int</p>
+<blockquote>
+<div><p>Points for the Gaussian rule.</p>
+</div></blockquote>
+<p><strong>tol</strong> : float</p>
+<blockquote>
+<div><p>The requested absolute accuracy of the abscissas.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>x</strong> : ndarray</p>
+<blockquote>
+<div><p>Abscissa for which the function is to be evaluated.</p>
+</div></blockquote>
+<p><strong>w1</strong> : ndarray</p>
+<blockquote>
+<div><p>Integration weights.</p>
+</div></blockquote>
+<p><strong>w2</strong> : ndarray</p>
+<blockquote class="last">
+<div><p>Weights for error estimation.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.Hilbert">
+<code class="descclassname">Inelastica.math.</code><code class="descname">Hilbert</code><span class="sig-paren">(</span><em>f</em>, <em>ker=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/hilbert.html#Hilbert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.Hilbert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hilbert transform <span class="math">\(\mathcal{H}[f](y)\)</span> of a function <span class="math">\(f(x)\)</span> 
+with finite support, sampled on an equidistant grid <span class="math">\(\{x_1,x_2,x_{nh}\}\)</span>.</p>
+<p>Definition:</p>
+<p><span class="math">\(\mathcal{H}[f](y)= \frac{1}{\pi} p.v.\int_{-\infty}^{\infty} dx \frac{f(x)}{x-y}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>f</strong> : ndarray</p>
+<blockquote>
+<div><p>List of function values <span class="math">\(f(x)\)</span>.</p>
+</div></blockquote>
+<p><strong>ker</strong> : ndarray (optional)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Hf</strong> : ndarray</p>
+<blockquote>
+<div><p>Hilbert transform of <span class="math">\(f(x)\)</span>.</p>
+</div></blockquote>
+<p><strong>ker</strong> : ndarray</p>
+<blockquote class="last">
+<div><p>Kernel function, can be reused for other transformations with the same number of grid points.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="Inelastica.math.SpectralMatrix">
+<em class="property">class </em><code class="descclassname">Inelastica.math.</code><code class="descname">SpectralMatrix</code><span class="sig-paren">(</span><em>A=None</em>, <em>cutoff=1e-08</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#SpectralMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.SpectralMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>New matrixclass for spectral matrix
+Idea : Split A into two smaller matrices
+A(mxm) = U(mxn)*U^t where U=sqrt(lambda_i) [v_1 v_2 ...]
+labda, v are eigvalues, vectors</p>
+<p>The magic takes place in Matrix multiply function</p>
+<p>TODO: adding two gives full matrix! Should be easy to fix.</p>
+<dl class="method">
+<dt id="Inelastica.math.SpectralMatrix.full">
+<code class="descname">full</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#SpectralMatrix.full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.SpectralMatrix.full" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.box">
+<code class="descclassname">Inelastica.math.</code><code class="descname">box</code><span class="sig-paren">(</span><em>mu1</em>, <em>mu2</em>, <em>grid</em>, <em>kT</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#box"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.box" title="Permalink to this definition">¶</a></dt>
+<dd><p>Window (box) function defined as
+<span class="math">\(n_F(\mu_2)-n_F(\mu_1)\)</span></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.dagger">
+<code class="descclassname">Inelastica.math.</code><code class="descname">dagger</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#dagger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.dagger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.dist">
+<code class="descclassname">Inelastica.math.</code><code class="descname">dist</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Euclidian norm <span class="math">\(||x||\)</span> of a vector <span class="math">\(x\)</span>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.fermi">
+<code class="descclassname">Inelastica.math.</code><code class="descname">fermi</code><span class="sig-paren">(</span><em>mu</em>, <em>E</em>, <em>kT</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#fermi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.fermi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fermi function <span class="math">\(n_F(\mu) = 1/[exp((E-\mu)/k_BT)+1]\)</span>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.interpolate">
+<code class="descclassname">Inelastica.math.</code><code class="descname">interpolate</code><span class="sig-paren">(</span><em>nx</em>, <em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.interpolate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate <span class="math">\(f(x)=y\)</span> to find <span class="math">\(f(nx)\)</span>. Extrapolation allowed.</p>
+<p>NB: Makes no checks for nx inside x region!!!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>nx</strong> : ndarray</p>
+<blockquote>
+<div><p>Abscissa values to interpolate the function.</p>
+</div></blockquote>
+<p><strong>x</strong> : ndarray</p>
+<blockquote>
+<div><p>Known abscissa values.</p>
+</div></blockquote>
+<p><strong>y</strong> : ndarray</p>
+<blockquote>
+<div><p>Known function values.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ny</strong> : ndarray</p>
+<blockquote class="last">
+<div><p>Interpolated function values on nx.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.mm">
+<code class="descclassname">Inelastica.math.</code><code class="descname">mm</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#mm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.mm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.mysqrt">
+<code class="descclassname">Inelastica.math.</code><code class="descname">mysqrt</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#mysqrt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.mysqrt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Square root of matrix.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.outerAdd">
+<code class="descclassname">Inelastica.math.</code><code class="descname">outerAdd</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#outerAdd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.outerAdd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <span class="math">\(A_{ijk}=B_i+C_j+D_k\)</span>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.sphericalHarmonics">
+<code class="descclassname">Inelastica.math.</code><code class="descname">sphericalHarmonics</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>costh</em>, <em>sinfi</em>, <em>cosfi</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/sphericalharmonics.html#sphericalHarmonics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.sphericalHarmonics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spherical harmonics <span class="math">\(Y_\ell^m(\Theta,\phi)\)</span> derived from <code class="docutils literal"><span class="pre">scipy.special</span></code>.</p>
+<p>Note: This function has been checked up to d-orbitals with the Siesta overlap matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>l</strong> : int</p>
+<p><strong>m</strong> : int</p>
+<p><strong>costh</strong> : float</p>
+<p><strong>sinfi</strong> : float</p>
+<p><strong>cosfi</strong> : float</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Ylm</strong> : complex</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.trace">
+<code class="descclassname">Inelastica.math.</code><code class="descname">trace</code><span class="sig-paren">(</span><em>a</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.trace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.trapez">
+<code class="descclassname">Inelastica.math.</code><code class="descname">trapez</code><span class="sig-paren">(</span><em>x</em>, <em>f</em>, <em>equidistant=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#trapez"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.trapez" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integration of vector f on grid x using the 3rd degree polynomial.
+The grid x does not have to be equidistant.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : ndarray</p>
+<p><strong>f</strong> : ndarray</p>
+<p><strong>equidistant</strong> : bool</p>
+<blockquote>
+<div><p><cite>False</cite> = 3rd degree polynomial method.
+<cite>True</cite> = Linear trapez method.</p>
+</div></blockquote>
+<p><strong>Returns</strong></p>
+<p><strong>&#8212;&#8212;-</strong></p>
+<p><strong>res</strong> : complex number</p>
+<blockquote class="last">
+<div><p>Result of the integration</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'v1.3.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

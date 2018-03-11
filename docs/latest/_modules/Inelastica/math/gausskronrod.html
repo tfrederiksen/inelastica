@@ -1,0 +1,589 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Inelastica.math.gausskronrod &mdash; Inelastica v1.3.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Inelastica v1.3.2 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../../../_static/82px-Inelastica-logo-mini.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v1.3.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scripts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../scripts.html">Scripts</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>Inelastica.math.gausskronrod</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Inelastica.math.gausskronrod</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+
+
+<div class="viewcode-block" id="GaussKronrod"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.gausskronrod.html#Inelastica.math.GaussKronrod">[docs]</a><span class="k">def</span> <span class="nf">GaussKronrod</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the (:math:`2n+1`)-point Gauss-Kronrod quadrature abscissa :math:`\{x_i\}`</span>
+<span class="sd">    and weights :math:`\{w_{1,i}\}`, :math:`\{w_{2,i}\}`.</span>
+<span class="sd">    Kronrod adds :math:`n+1` points to an :math:`n`-point Gaussian rule.</span>
+
+<span class="sd">    Definition:</span>
+
+<span class="sd">    :math:`\int_{-1/2}^{1/2} f(x) dx \sim \sum_i w_{1,i} f(x_i)`.</span>
+
+<span class="sd">    The weights :math:`\{w_{2,i}\}` are used for error estimation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Points for the Gaussian rule.</span>
+<span class="sd">    tol : float</span>
+<span class="sd">        The requested absolute accuracy of the abscissas.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    x : ndarray</span>
+<span class="sd">        Abscissa for which the function is to be evaluated.</span>
+<span class="sd">    w1 : ndarray</span>
+<span class="sd">        Integration weights.</span>
+<span class="sd">    w2 : ndarray</span>
+<span class="sd">        Weights for error estimation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Rescale to [-0.5,0.5] and expand to get all points.</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span> <span class="o">=</span> <span class="n">_kronrod</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
+    <span class="n">indx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">indx</span><span class="p">],</span> <span class="n">w1</span><span class="p">[</span><span class="n">indx</span><span class="p">],</span> <span class="n">w2</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1e-7</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:])),</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">w1</span><span class="p">,</span> <span class="n">w1</span><span class="p">[</span><span class="mi">1</span><span class="p">:])),</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">w2</span><span class="p">,</span> <span class="n">w2</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)),</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">w1</span><span class="p">,</span> <span class="n">w1</span><span class="p">)),</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">w2</span><span class="p">,</span> <span class="n">w2</span><span class="p">))</span>
+    <span class="n">indx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">indx</span><span class="p">],</span> <span class="n">w1</span><span class="p">[</span><span class="n">indx</span><span class="p">],</span> <span class="n">w2</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w2</span><span class="o">/</span><span class="mi">2</span></div>
+
+
+<span class="k">def</span> <span class="nf">_abwe1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="c1">#*****************************************************************************80</span>
+<span class="c1">## ABWE1 calculates a Kronrod abscissa and weight.</span>
+<span class="c1">#  Licensing:</span>
+<span class="c1">#    This code is distributed under the GNU LGPL license.</span>
+<span class="c1">#  Modified:</span>
+<span class="c1">#    30 April 2013</span>
+<span class="c1">#  Author:</span>
+<span class="c1">#    Original FORTRAN77 version by Robert Piessens, Maria Branders.</span>
+<span class="c1">#    Python version by John Burkardt.</span>
+<span class="c1">#  Reference:</span>
+<span class="c1">#    Robert Piessens, Maria Branders,</span>
+<span class="c1">#    A Note on the Optimal Addition of Abscissas to Quadrature Formulas</span>
+<span class="c1">#    of Gauss and Lobatto,</span>
+<span class="c1">#    Mathematics of Computation,</span>
+<span class="c1">#    Volume 28, Number 125, January 1974, pages 135-139.</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">):</span>    <span class="n">ka</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>    <span class="n">ka</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">51</span><span class="p">):</span>
+        <span class="n">b1</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">b2</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">2.0</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">even</span><span class="p">):</span>
+            <span class="n">ai</span> <span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">d2</span> <span class="o">=</span> <span class="n">ai</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">dif</span> <span class="o">=</span> <span class="mf">2.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ai</span> <span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">d2</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">dif</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">ai</span> <span class="o">=</span> <span class="n">ai</span> <span class="o">-</span> <span class="n">dif</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">b0</span> <span class="o">=</span> <span class="n">b1</span>
+            <span class="n">b1</span> <span class="o">=</span> <span class="n">b2</span>
+            <span class="n">d0</span> <span class="o">=</span> <span class="n">d1</span>
+            <span class="n">d1</span> <span class="o">=</span> <span class="n">d2</span>
+            <span class="n">b2</span> <span class="o">=</span> <span class="n">yy</span> <span class="o">*</span> <span class="n">b1</span> <span class="o">-</span> <span class="n">b0</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">even</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">d2</span> <span class="o">=</span> <span class="n">yy</span> <span class="o">*</span> <span class="n">d1</span> <span class="o">-</span> <span class="n">d0</span> <span class="o">+</span> <span class="n">ai</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">even</span><span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">b2</span> <span class="o">-</span> <span class="n">b1</span><span class="p">)</span>
+            <span class="n">fd</span> <span class="o">=</span> <span class="n">d2</span> <span class="o">+</span> <span class="n">d1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">b2</span> <span class="o">-</span> <span class="n">b0</span><span class="p">)</span>
+            <span class="n">fd</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">d2</span>
+<span class="c1">#</span>
+<span class="c1">#  Newton correction.</span>
+<span class="c1">#</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">f</span> <span class="o">/</span> <span class="n">fd</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">delta</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ka</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">):</span>
+            <span class="n">ka</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1">#</span>
+<span class="c1">#  Catch non-convergence.</span>
+<span class="c1">#</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ka</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">print</span> <span class="s1">&#39;ABWE1 - Fatal error!&#39;</span>
+        <span class="k">print</span> <span class="s1">&#39;  Iteration limit reached.&#39;</span>
+        <span class="k">print</span> <span class="s1">&#39;  Last DELTA was </span><span class="si">%e</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ABWE1 - Fatal error!&#39;</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="c1">#  Computation of the weight.</span>
+<span class="c1">#</span>
+    <span class="n">d0</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">d1</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">ai</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">ai</span> <span class="o">=</span> <span class="n">ai</span> <span class="o">+</span> <span class="mf">1.0</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="p">((</span><span class="n">ai</span> <span class="o">+</span> <span class="n">ai</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">d1</span> <span class="o">-</span> <span class="n">ai</span> <span class="o">*</span> <span class="n">d0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ai</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">d0</span> <span class="o">=</span> <span class="n">d1</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">d2</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">coef2</span> <span class="o">/</span> <span class="p">(</span><span class="n">fd</span> <span class="o">*</span> <span class="n">d2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span>
+
+
+<span class="k">def</span> <span class="nf">_abwe2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="c1">#*****************************************************************************80</span>
+<span class="c1">## ABWE2 calculates a Gaussian abscissa and two weights.</span>
+<span class="c1">#  Licensing:</span>
+<span class="c1">#    This code is distributed under the GNU LGPL license.</span>
+<span class="c1">#  Modified:</span>
+<span class="c1">#    30 April 2013</span>
+<span class="c1">#  Author:</span>
+<span class="c1">#    Original FORTRAN77 version by Robert Piessens, Maria Branders.</span>
+<span class="c1">#    PYTHON version by John Burkardt.</span>
+<span class="c1">#  Reference:</span>
+<span class="c1">#    Robert Piessens, Maria Branders,</span>
+<span class="c1">#    A Note on the Optimal Addition of Abscissas to Quadrature Formulas</span>
+<span class="c1">#    of Gauss and Lobatto,</span>
+<span class="c1">#    Mathematics of Computation,</span>
+<span class="c1">#    Volume 28, Number 125, January 1974, pages 135-139.</span>
+    <span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="nb">exit</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">):</span>    <span class="n">ka</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>    <span class="n">ka</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">51</span><span class="p">):</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">pd0</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">pd1</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">):</span>
+                <span class="n">p2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">3.0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+                <span class="n">pd2</span> <span class="o">=</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">x</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">p2</span> <span class="o">=</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">x</span>
+                <span class="n">pd2</span> <span class="o">=</span> <span class="mf">3.0</span>
+
+        <span class="n">ai</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">ai</span> <span class="o">=</span> <span class="n">ai</span> <span class="o">+</span> <span class="mf">1.0</span>
+            <span class="n">p2</span> <span class="o">=</span> <span class="p">((</span><span class="n">ai</span> <span class="o">+</span> <span class="n">ai</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">-</span> <span class="n">ai</span> <span class="o">*</span> <span class="n">p0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ai</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">pd2</span> <span class="o">=</span> <span class="p">((</span><span class="n">ai</span> <span class="o">+</span> <span class="n">ai</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">p1</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">pd1</span><span class="p">)</span> <span class="o">-</span> <span class="n">ai</span> <span class="o">*</span> <span class="n">pd0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ai</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">p0</span> <span class="o">=</span> <span class="n">p1</span>
+            <span class="n">p1</span> <span class="o">=</span> <span class="n">p2</span>
+            <span class="n">pd0</span> <span class="o">=</span> <span class="n">pd1</span>
+            <span class="n">pd1</span> <span class="o">=</span> <span class="n">pd2</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">p2</span> <span class="o">/</span> <span class="n">pd2</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">delta</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ka</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">):</span>
+            <span class="n">ka</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ka</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">print</span> <span class="s1">&#39;ABWE2 - Fatal error!&#39;</span>
+        <span class="k">print</span> <span class="s1">&#39;  Iteration limit reached.&#39;</span>
+        <span class="k">print</span> <span class="s1">&#39;  Last DELTA was </span><span class="si">%e</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ABWE2 - Fatal error!&#39;</span><span class="p">)</span>
+    <span class="n">an</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="n">w2</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">an</span> <span class="o">*</span> <span class="n">pd2</span> <span class="o">*</span> <span class="n">p0</span><span class="p">)</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">2.0</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="n">p1</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">p2</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="n">yy</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">-</span> <span class="n">p0</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">even</span><span class="p">):</span>
+        <span class="n">w1</span> <span class="o">=</span> <span class="n">w2</span> <span class="o">+</span> <span class="n">coef2</span> <span class="o">/</span> <span class="p">(</span><span class="n">pd2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">p2</span> <span class="o">-</span> <span class="n">p1</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">w1</span> <span class="o">=</span> <span class="n">w2</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">coef2</span> <span class="o">/</span> <span class="p">(</span><span class="n">pd2</span> <span class="o">*</span> <span class="p">(</span><span class="n">p2</span> <span class="o">-</span> <span class="n">p0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span>
+
+
+<span class="k">def</span> <span class="nf">_kronrod</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
+<span class="c1">#*****************************************************************************80</span>
+<span class="c1">#</span>
+<span class="c1">## KRONROD adds N+1 points to an N-point Gaussian rule.</span>
+<span class="c1">#</span>
+<span class="c1">#  Discussion:</span>
+<span class="c1">#</span>
+<span class="c1">#    This subroutine calculates the abscissas and weights of the 2N+1</span>
+<span class="c1">#    point Gauss Kronrod quadrature formula which is obtained from the</span>
+<span class="c1">#    N point Gauss quadrature formula by the optimal addition of N+1 points.</span>
+<span class="c1">#</span>
+<span class="c1">#    The optimally added points are called Kronrod abscissas.  The</span>
+<span class="c1">#    abscissas and weights for both the Gauss and Gauss Kronrod rules</span>
+<span class="c1">#    are calculated for integration over the interval [-1,+1].</span>
+<span class="c1">#</span>
+<span class="c1">#    Since the quadrature formula is symmetric with respect to the origin,</span>
+<span class="c1">#    only the nonnegative abscissas are calculated.</span>
+<span class="c1">#</span>
+<span class="c1">#    Note that the code published in Mathematics of Computation</span>
+<span class="c1">#    omitted the definition of the variable which is here called COEF2.</span>
+<span class="c1">#</span>
+<span class="c1">#  Storage:</span>
+<span class="c1">#</span>
+<span class="c1">#    Given N, let M = ( N + 1 ) / 2.</span>
+<span class="c1">#</span>
+<span class="c1">#    The Gauss-Kronrod rule will include 2*N+1 points.  However, by symmetry,</span>
+<span class="c1">#    only N + 1 of them need to be listed.</span>
+<span class="c1">#</span>
+<span class="c1">#    The arrays X, W1 and W2 contain the nonnegative abscissas in decreasing</span>
+<span class="c1">#    order, and the weights of each abscissa in the Gauss-Kronrod and</span>
+<span class="c1">#    Gauss rules respectively.  This means that about half the entries</span>
+<span class="c1">#    in W2 are zero.</span>
+<span class="c1">#</span>
+<span class="c1">#    For instance, if N = 3, the output is:</span>
+<span class="c1">#</span>
+<span class="c1">#    I      X               W1              W2</span>
+<span class="c1">#</span>
+<span class="c1">#    1    0.960491        0.104656         0.000000</span>
+<span class="c1">#    2    0.774597        0.268488         0.555556</span>
+<span class="c1">#    3    0.434244        0.401397         0.000000</span>
+<span class="c1">#    4    0.000000        0.450917         0.888889</span>
+<span class="c1">#</span>
+<span class="c1">#    and if N = 4, (notice that 0 is now a Kronrod abscissa)</span>
+<span class="c1">#    the output is</span>
+<span class="c1">#</span>
+<span class="c1">#    I      X               W1              W2</span>
+<span class="c1">#</span>
+<span class="c1">#    1    0.976560        0.062977        0.000000</span>
+<span class="c1">#    2    0.861136        0.170054        0.347855</span>
+<span class="c1">#    3    0.640286        0.266798        0.000000</span>
+<span class="c1">#    4    0.339981        0.326949        0.652145</span>
+<span class="c1">#    5    0.000000        0.346443        0.000000</span>
+<span class="c1">#</span>
+<span class="c1">#  Licensing:</span>
+<span class="c1">#</span>
+<span class="c1">#    This code is distributed under the GNU LGPL license.</span>
+<span class="c1">#</span>
+<span class="c1">#  Modified:</span>
+<span class="c1">#</span>
+<span class="c1">#    30 April 2013</span>
+<span class="c1">#</span>
+<span class="c1">#  Author:</span>
+<span class="c1">#</span>
+<span class="c1">#    Original FORTRAN77 version by Robert Piessens, Maria Branders.</span>
+<span class="c1">#    PYTHON version by John Burkardt.</span>
+<span class="c1">#</span>
+<span class="c1">#  Reference:</span>
+<span class="c1">#</span>
+<span class="c1">#    Robert Piessens, Maria Branders,</span>
+<span class="c1">#    A Note on the Optimal Addition of Abscissas to Quadrature Formulas</span>
+<span class="c1">#    of Gauss and Lobatto,</span>
+<span class="c1">#    Mathematics of Computation,</span>
+<span class="c1">#    Volume 28, Number 125, January 1974, pages 135-139.</span>
+<span class="c1">#</span>
+<span class="c1">#  Parameters:</span>
+<span class="c1">#</span>
+<span class="c1">#    Input, integer N, the order of the Gauss rule.</span>
+<span class="c1">#</span>
+<span class="c1">#    Input, real TOL, the requested absolute accuracy of the</span>
+<span class="c1">#    abscissas.</span>
+<span class="c1">#</span>
+<span class="c1">#    Output, real X(N+1), the abscissas.</span>
+<span class="c1">#</span>
+<span class="c1">#    Output, real W1(N+1), the weights for the Gauss-Kronrod rule.</span>
+<span class="c1">#</span>
+<span class="c1">#    Output, real W2(N+1), the weights for the Gauss rule.</span>
+<span class="c1">#</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span>
+    <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">floor</span>
+    <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sin</span>
+    <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+
+    <span class="n">tau_dim</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">tau_dim</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">floor</span><span class="p">(</span><span class="n">tau_dim</span><span class="p">))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(((</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">tau_dim</span><span class="p">)</span>
+    <span class="n">w1</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">w2</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">floor</span><span class="p">((</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">even</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">m</span> <span class="o">==</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="n">an</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">an</span> <span class="o">=</span> <span class="n">an</span> <span class="o">+</span> <span class="mf">1.0</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="n">an</span> <span class="o">/</span> <span class="p">(</span><span class="n">an</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">tau</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">an</span> <span class="o">+</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">an</span> <span class="o">+</span> <span class="n">an</span> <span class="o">+</span> <span class="mf">3.0</span><span class="p">)</span>
+    <span class="n">b</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tau</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.0</span>
+    <span class="n">ak</span> <span class="o">=</span> <span class="n">an</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+        <span class="n">ak</span> <span class="o">=</span> <span class="n">ak</span> <span class="o">+</span> <span class="mf">2.0</span>
+        <span class="n">tau</span><span class="p">[</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">ak</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">ak</span> \
+          <span class="o">-</span> <span class="n">an</span> <span class="o">*</span> <span class="p">(</span><span class="n">an</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">ak</span> <span class="o">+</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">tau</span><span class="p">[</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> \
+          <span class="o">/</span> <span class="p">(</span><span class="n">ak</span> <span class="o">*</span> <span class="p">((</span><span class="n">ak</span> <span class="o">+</span> <span class="mf">3.0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ak</span> <span class="o">+</span> <span class="mf">2.0</span><span class="p">)</span> \
+          <span class="o">-</span> <span class="n">an</span> <span class="o">*</span> <span class="p">(</span><span class="n">an</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)))</span>
+        <span class="n">b</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tau</span><span class="p">[</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">ll</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">b</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">tau</span><span class="p">[</span><span class="n">ll</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="n">l</span><span class="o">+</span><span class="n">ll</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">b</span><span class="p">[</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">bb</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="n">an</span> <span class="o">+</span> <span class="n">an</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">))</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">bb</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">x1</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">s</span> <span class="o">*</span> <span class="n">s</span><span class="p">)</span>
+    <span class="n">coef</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">an</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">8.0</span> <span class="o">*</span> <span class="n">an</span> <span class="o">*</span> <span class="n">an</span><span class="p">)</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">coef</span> <span class="o">*</span> <span class="n">x1</span>
+    <span class="n">coef2</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">coef2</span> <span class="o">=</span> <span class="n">coef2</span> <span class="o">*</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="p">[</span><span class="n">xx</span><span class="p">,</span> <span class="n">w1</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_abwe1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">xx</span><span class="p">)</span>
+        <span class="n">w2</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xx</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x1</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">c</span> <span class="o">-</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">s</span>
+        <span class="n">bb</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">s</span> <span class="o">+</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">c</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">xx</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xx</span> <span class="o">=</span> <span class="n">coef</span> <span class="o">*</span> <span class="n">x1</span>
+        <span class="p">[</span><span class="n">xx</span><span class="p">,</span> <span class="n">w1</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">w2</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_abwe2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">xx</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xx</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x1</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">c</span> <span class="o">-</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">s</span>
+        <span class="n">bb</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">s</span> <span class="o">+</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">c</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="n">coef</span> <span class="o">*</span> <span class="n">x1</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">even</span><span class="p">):</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="p">[</span><span class="n">xx</span><span class="p">,</span> <span class="n">w1</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_abwe1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">xx</span><span class="p">)</span>
+        <span class="n">w2</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xx</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'v1.3.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

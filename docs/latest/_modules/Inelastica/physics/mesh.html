@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.physics.mesh &mdash; Inelastica |release| documentation</title>
+  <title>Inelastica.physics.mesh &mdash; Inelastica v1.3.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Inelastica |release| documentation" href="../../../index.html"/>
+    <link rel="top" title="Inelastica v1.3.2 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.1-22
+                v1.3.2
               </div>
             
           
@@ -174,14 +174,12 @@
   <h1>Source code for Inelastica.physics.mesh</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">Mesh (:mod:`Inelastica.physics.mesh`)</span>
-<span class="sd">=====================================</span>
+<span class="sd">:mod:`Inelastica.physics.mesh`</span>
+<span class="sd">==============================</span>
 
-<span class="sd">Written by Thomas Frederikse.</span>
+<span class="sd">Written by Thomas Frederiksen.</span>
 
-<span class="sd">.. currentmodule:: Inelastica.physics.mesh</span>
-
-<span class="sd">classes</span>
+<span class="sd">Classes</span>
 <span class="sd">-------</span>
 
 <span class="sd">.. autosummary::</span>
@@ -189,9 +187,11 @@
 
 <span class="sd">   kmesh</span>
 
+<span class="sd">.. currentmodule:: Inelastica.physics.mesh</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
+<span class="kn">import</span> <span class="nn">Inelastica.math</span> <span class="kn">as</span> <span class="nn">MM</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 
 <span class="c1"># This function is used in the class below for each of the</span>
@@ -205,7 +205,7 @@
     <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kpts</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wgts</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="kmesh"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.mesh.kmesh">[docs]</a><span class="k">class</span> <span class="nc">kmesh</span><span class="p">:</span>
+<div class="viewcode-block" id="kmesh"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.mesh.kmesh">[docs]</a><span class="k">class</span> <span class="nc">kmesh</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a k-mesh samling where each of the three components</span>
 <span class="sd">    sample the range [-0.5,0.5]). They are not in reciprocal space.</span>
@@ -229,7 +229,7 @@
 <span class="sd">        Returns an instance of a k-mesh with each of the k-vector axes</span>
 <span class="sd">        sampled either linearly (LIN) or using a Gauss-Kronrod (GK) scheme.</span>
 
-<span class="sd">        An axis i sampled by (Nki,LIN) generates Nk points, while </span>
+<span class="sd">        An axis i sampled by (Nki,LIN) generates Nk points, while</span>
 <span class="sd">        (Nki,GK) returns 2*Nk+1 points.</span>
 
 <span class="sd">        By applying inversion symmetry (k=-k) the number of points in the mesh</span>
@@ -251,14 +251,14 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span> <span class="c1"># loop over the three k-components</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;GK&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;GAUSSKRONROD&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GK&#39;</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nk</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span> <span class="c1"># GK-method fails with fewer points</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nk</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span> <span class="c1"># GK-method fails with fewer points</span>
                     <span class="n">kpts</span><span class="p">,</span> <span class="n">wgts</span><span class="p">,</span> <span class="n">ew</span> <span class="o">=</span> <span class="n">MM</span><span class="o">.</span><span class="n">GaussKronrod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nk</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kpts</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wgts</span><span class="p">)</span>
                     <span class="n">errorw</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ew</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">print</span> <span class="s1">&#39;Kmesh.py: GK method requires Nk=</span><span class="si">%i</span><span class="s1">&gt;1&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nk</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                    <span class="n">kuk</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;LIN&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;LINEAR&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;LIN&#39;</span>
                 <span class="n">kpts</span><span class="p">,</span> <span class="n">wgts</span> <span class="o">=</span> <span class="n">generatelinmesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nk</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -333,17 +333,34 @@
 
 
 <div class="viewcode-block" id="test"><a class="viewcode-back" href="../../../api-gen/Inelastica.physics.mesh.html#Inelastica.physics.mesh.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
-    <span class="n">mesh</span> <span class="o">=</span> <span class="n">kmesh</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">meshtype</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;LIN&#39;</span><span class="p">,</span> <span class="s1">&#39;GK&#39;</span><span class="p">,</span> <span class="s1">&#39;LIN&#39;</span><span class="p">])</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">kmesh</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">meshtype</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;LIN&#39;</span><span class="p">,</span> <span class="s1">&#39;GK&#39;</span><span class="p">,</span> <span class="s1">&#39;LIN&#39;</span><span class="p">],</span><span class="n">invsymmetry</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">keys</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="k">print</span> <span class="n">keys</span>
     <span class="k">print</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Nk</span>
     <span class="k">print</span> <span class="n">mesh</span><span class="o">.</span><span class="n">NNk</span>
     <span class="k">print</span> <span class="n">mesh</span><span class="o">.</span><span class="n">type</span>
     <span class="k">print</span> <span class="n">mesh</span><span class="o">.</span><span class="n">invsymmetry</span>
-    <span class="k">print</span> <span class="s1">&#39;ki wi&#39;</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">)):</span>
-        <span class="k">print</span> <span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
-    <span class="n">mesh</span><span class="o">.</span><span class="n">mesh2file</span><span class="p">(</span><span class="s1">&#39;mesh-test.dat&#39;</span><span class="p">)</span></div>
+    <span class="c1">#print &#39;ki wi&#39;</span>
+    <span class="c1">#for i in range(len(mesh.k)):</span>
+    <span class="c1">#    print mesh.k[i], mesh.w[0, i]</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">mesh2file</span><span class="p">(</span><span class="s1">&#39;mesh-test.dat&#39;</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s1">&#39;Integrate some simple functions over [-0.5,0.5]:&#39;</span>
+    <span class="k">print</span> <span class="s1">&#39;   f(x,y,z)=1 =&gt; \int f dxdydz =&#39;</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="p">]):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s1">&#39;   f(x,y,z)=</span><span class="si">%s</span><span class="s1"> =&gt; \int f dxdydz =&#39;</span><span class="o">%</span><span class="n">s</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">f</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">print</span> <span class="s1">&#39;   f(x,y,z)=x*y*z =&gt; \int f dxdydz =&#39;</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">f</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s1">&#39;   f(x,y,z)=(x+1)*(y+1)*(z+1) =&gt; \int f dxdydz =&#39;</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">f</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="kn">import</span> <span class="nn">math</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="p">]):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">print</span> <span class="s1">&#39;   f(x,y,z)=cos(2</span><span class="si">%s</span><span class="s1">) =&gt; \int f dxdydz =&#39;</span><span class="o">%</span><span class="n">s</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">f</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;[exact: sin(1) ~ 0.841470984807897]&#39;</span></div>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">test</span><span class="p">()</span>
@@ -383,7 +400,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.3.1-22',
+            VERSION:'v1.3.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

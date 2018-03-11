@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.ValueCheck &mdash; Inelastica |release| documentation</title>
+  <title>Inelastica.misc.valuecheck &mdash; Inelastica v1.3.2 documentation</title>
   
 
   
@@ -26,20 +26,20 @@
 
   
   
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   
 
   
 
   
         <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Inelastica |release| documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Inelastica v1.3.2 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
 
   
-  <script src="../../_static/js/modernizr.min.js"></script>
+  <script src="../../../_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -55,12 +55,12 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> Inelastica
+            <a href="../../../index.html" class="icon icon-home"> Inelastica
           
 
           
             
-            <img src="../../_static/82px-Inelastica-logo-mini.png" class="logo" />
+            <img src="../../../_static/82px-Inelastica-logo-mini.png" class="logo" />
           
           </a>
 
@@ -68,14 +68,14 @@
             
             
               <div class="version">
-                1.3.1-22
+                v1.3.2
               </div>
             
           
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -93,21 +93,21 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Scripts</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../cite.html">Citing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using Inelastica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications.html">Publications using Inelastica</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Reference documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API documentation</a></li>
 </ul>
 
             
@@ -122,7 +122,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Inelastica</a>
+          <a href="../../../index.html">Inelastica</a>
         
       </nav>
 
@@ -150,11 +150,11 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>Inelastica.ValueCheck</li>
+      <li>Inelastica.misc.valuecheck</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -171,11 +171,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for Inelastica.ValueCheck</h1><div class="highlight"><pre>
+  <h1>Source code for Inelastica.misc.valuecheck</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">ValueCheck (:mod:`Inelastica.ValueCheck`)</span>
-<span class="sd">=========================================</span>
+<span class="sd">:mod:`Inelastica.misc.valuecheck`</span>
+<span class="sd">=================================</span>
 
 <span class="sd">Contains general quantities that are used to do checks in the</span>
 <span class="sd">`Inelastica`_ package.</span>
@@ -183,11 +183,10 @@
 <span class="sd">It allows users to edit the criterias of crashes without editing</span>
 <span class="sd">the code.</span>
 
-<span class="sd">Currently if this is to be used with `Inelastica`_ or `pyTBT`, it should</span>
+<span class="sd">Currently if this is to be used with `Inelastica`_ or `pyTBT`_, it should</span>
 <span class="sd">be in a wrapper call which emulates the options.</span>
 
-<span class="sd">.. currentmodule:: Inelastica.ValueCheck</span>
-
+<span class="sd">.. currentmodule:: Inelastica.misc.valuecheck</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -232,12 +231,12 @@
 <span class="k">del</span> <span class="n">_s</span>
 
 
-<div class="viewcode-block" id="GetCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.GetCheck">[docs]</a><span class="k">def</span> <span class="nf">GetCheck</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="GetCheck"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.GetCheck">[docs]</a><span class="k">def</span> <span class="nf">GetCheck</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">_check</span>
     <span class="k">return</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="EditCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.EditCheck">[docs]</a><span class="k">def</span> <span class="nf">EditCheck</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="EditCheck"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.EditCheck">[docs]</a><span class="k">def</span> <span class="nf">EditCheck</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets the check of &quot;name&quot; to the value &quot;value&quot;.</span>
 <span class="sd">    It will notify the user so that any log files will retain</span>
@@ -253,7 +252,7 @@
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         New value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Check"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.Check">[docs]</a><span class="k">def</span> <span class="nf">Check</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">msgs</span><span class="p">):</span>
+<div class="viewcode-block" id="Check"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.Check">[docs]</a><span class="k">def</span> <span class="nf">Check</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">msgs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks the value and exits if the value &quot;val&quot; is</span>
 <span class="sd">    above the one specified</span>
@@ -277,7 +276,7 @@
         <span class="k">raise</span> <span class="ne">ArithmeticError</span><span class="p">(</span><span class="s2">&quot;Criteria not met. Please check output...&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="OptionsCheck"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.OptionsCheck">[docs]</a><span class="k">def</span> <span class="nf">OptionsCheck</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">exe</span><span class="p">):</span>
+<div class="viewcode-block" id="OptionsCheck"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.OptionsCheck">[docs]</a><span class="k">def</span> <span class="nf">OptionsCheck</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">exe</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic routine for adjusting most used options for routines.</span>
 <span class="sd">    I.e. Inelastica/EigenChannels/pyTBT.</span>
@@ -334,7 +333,7 @@
         <span class="n">NA3</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">belec</span><span class="o">+</span><span class="s1">&#39;.Bloch.A3&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
 
         <span class="c1"># Overwrite block</span>
-        <span class="n">block</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFblock</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">KeyWord</span> <span class="o">=</span> <span class="n">belec</span><span class="p">)</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFblock</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">KeyWord</span><span class="o">=</span><span class="n">belec</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
@@ -374,12 +373,12 @@
         <span class="k">return</span> <span class="n">TSHS</span><span class="p">,</span> <span class="n">NA1</span><span class="p">,</span> <span class="n">NA2</span><span class="p">,</span> <span class="n">semiinf</span>
 
     <span class="c1"># Look up electrode block</span>
-    <span class="n">block</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFblock</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">KeyWord</span> <span class="o">=</span> <span class="s1">&#39;TS.Elecs&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">block</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFblock</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">KeyWord</span><span class="o">=</span><span class="s1">&#39;TS.Elecs&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">block</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># Did not find the electrode block, defaults to old naming scheme</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">fnL</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA1L</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA2L</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">semiinfL</span> <span class="o">=</span> <span class="n">get_elec_vars</span><span class="p">(</span><span class="s1">&#39;Left&#39;</span><span class="p">)</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">fnR</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA1R</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA2R</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">semiinfR</span> <span class="o">=</span> <span class="n">get_elec_vars</span><span class="p">(</span><span class="s1">&#39;Right&#39;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">block</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">block</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="c1"># NB: The following assumes that the left electrode is the first in the block!</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">fnL</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA1L</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA2L</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">semiinfL</span> <span class="o">=</span> <span class="n">get_elec_vars</span><span class="p">(</span><span class="n">block</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">fnR</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA1R</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA2R</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">semiinfR</span> <span class="o">=</span> <span class="n">get_elec_vars</span><span class="p">(</span><span class="n">block</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
@@ -398,15 +397,15 @@
         <span class="n">opts</span><span class="o">.</span><span class="n">minBias</span> <span class="o">=</span> <span class="o">-</span><span class="nb">abs</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">maxBias</span><span class="p">)</span>
 
     <span class="c1"># Device region</span>
-    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.TBT.PDOSFrom&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span> <span class="o">-=</span> <span class="n">L</span>
-    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.TBT.PDOSTo&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mf">1e10</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">-=</span> <span class="n">L</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">NumberOfAtoms</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;NumberOfAtoms&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mf">1e10</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">NumberOfAtoms</span> <span class="o">-=</span> <span class="n">L</span> <span class="o">+</span> <span class="n">R</span>
-    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span><span class="o">&lt;</span><span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">&lt;</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="n">exe</span><span class="o">+</span><span class="s1">&#39; error: DeviceLast&lt;DeviceFirst not allowed. Setting DeviceLast=DeviceFirst&#39;</span><span class="p">)</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">DeviceAtoms</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NumberOfAtoms</span><span class="p">)]</span>
@@ -463,7 +462,7 @@
                 <span class="n">opts</span><span class="o">.</span><span class="n">Elist</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">Emin</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">Emax</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GetPositional"><a class="viewcode-back" href="../../api-gen/Inelastica.ValueCheck.html#Inelastica.ValueCheck.GetPositional">[docs]</a><span class="k">def</span> <span class="nf">GetPositional</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;You have not specified any positional argument&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="GetPositional"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.GetPositional">[docs]</a><span class="k">def</span> <span class="nf">GetPositional</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;You have not specified any positional argument&quot;</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="n">pos</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -503,24 +502,24 @@
 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'1.3.1-22',
+            URL_ROOT:'../../../',
+            VERSION:'v1.3.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
   
   
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
   
 
   

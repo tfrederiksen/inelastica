@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.Symmetry &mdash; Inelastica |release| documentation</title>
+  <title>Inelastica.Symmetry &mdash; Inelastica v1.3.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Inelastica |release| documentation" href="../../index.html"/>
+    <link rel="top" title="Inelastica v1.3.2 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                1.3.1-22
+                v1.3.2
               </div>
             
           
@@ -174,14 +174,14 @@
   <h1>Source code for Inelastica.Symmetry</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">Symmetry (:mod:`Inelastica.Symmetry`)</span>
-<span class="sd">=====================================</span>
+<span class="sd">:mod:`Inelastica.Symmetry`</span>
+<span class="sd">==========================</span>
 
-<span class="sd">Symmetry operations of lattice and basis.</span>
+<span class="sd">Module to determine symmetry operations of lattice and basis.</span>
 
 <span class="sd">.. currentmodule:: Inelastica.Symmetry</span>
 
-<span class="sd">classes</span>
+<span class="sd">Classes</span>
 <span class="sd">-------</span>
 
 <span class="sd">.. autosummary::</span>
@@ -192,13 +192,14 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
-<span class="kn">import</span> <span class="nn">Inelastica.MiscMath</span> <span class="kn">as</span> <span class="nn">MM</span>
+<span class="kn">import</span> <span class="nn">Inelastica.math</span> <span class="kn">as</span> <span class="nn">MM</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">mm</span> <span class="o">=</span> <span class="n">MM</span><span class="o">.</span><span class="n">mm</span>
 
 
-<div class="viewcode-block" id="Symmetry"><a class="viewcode-back" href="../../api-gen/Inelastica.Symmetry.html#Inelastica.Symmetry.Symmetry">[docs]</a><span class="k">class</span> <span class="nc">Symmetry</span><span class="p">:</span>
+<div class="viewcode-block" id="Symmetry"><a class="viewcode-back" href="../../api-gen/Inelastica.Symmetry.html#Inelastica.Symmetry.Symmetry">[docs]</a><span class="k">class</span> <span class="nc">Symmetry</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Classify symmetry of lattice and basis.</span>
 <span class="sd">    Class contain:</span>
@@ -690,12 +691,12 @@
             <span class="k">if</span> <span class="n">incindx</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
                 <span class="n">i3</span><span class="o">=</span><span class="p">(</span><span class="n">i3</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="n">NP</span>
                 <span class="k">if</span> <span class="n">i3</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                    <span class="n">i3</span><span class="o">=</span><span class="n">i2</span><span class="o">+</span><span class="mi">2</span>
+                    <span class="n">i3</span><span class="o">=</span><span class="p">(</span><span class="n">i2</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">%</span><span class="n">NP</span>
                     <span class="n">incindx</span><span class="o">=</span><span class="mi">1</span>
             <span class="k">if</span> <span class="n">incindx</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-                <span class="n">i2</span><span class="o">=</span><span class="p">(</span><span class="n">i2</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="n">NP</span>
+                <span class="n">i2</span><span class="o">=</span><span class="p">(</span><span class="n">i2</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="n">NP</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">i2</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                    <span class="n">i2</span><span class="o">=</span><span class="n">i1</span><span class="o">+</span><span class="mi">2</span>
+                    <span class="n">i2</span><span class="o">=</span><span class="p">(</span><span class="n">i1</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="n">NP</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
                     <span class="n">incindx</span><span class="o">=</span><span class="mi">0</span>
             <span class="k">if</span> <span class="n">incindx</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="n">i1</span><span class="o">+=</span><span class="mi">1</span>
             <span class="n">i2</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i2</span><span class="p">)</span>
@@ -752,7 +753,8 @@
 
         <span class="c1"># Find basis</span>
         <span class="n">xyz</span> <span class="o">=</span> <span class="n">moveIntoCell</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">accuracy</span><span class="p">)</span>
-        <span class="k">class</span> <span class="nc">basis</span><span class="p">:</span>
+
+        <span class="k">class</span> <span class="nc">basis</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="n">basis</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="n">basis</span><span class="o">.</span><span class="n">snr</span><span class="p">,</span> <span class="n">basis</span><span class="o">.</span><span class="n">anr</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xyz</span><span class="p">)):</span>
@@ -1170,6 +1172,7 @@
     <span class="n">dist</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">distance</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">poss</span><span class="p">)))</span>
     <span class="k">return</span> <span class="n">dist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span></div>
 
+
 <div class="viewcode-block" id="test"><a class="viewcode-back" href="../../api-gen/Inelastica.Symmetry.html#Inelastica.Symmetry.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run a torture test of the symmetry analysis</span>
@@ -1214,7 +1217,6 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">pointU33</span><span class="p">)</span><span class="o">!=</span><span class="mi">48</span> <span class="ow">or</span> <span class="n">sym</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">NN</span><span class="o">!=</span><span class="n">NB</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">U33</span><span class="p">)</span><span class="o">!=</span><span class="mi">8</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="n">N1</span><span class="p">,</span> <span class="n">N2</span><span class="p">,</span> <span class="n">N3</span><span class="p">,</span> <span class="n">NB</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Failed in tourture test of symmetry&#39;</span><span class="p">)</span></div>
-
 </pre></div>
 
            </div>
@@ -1251,7 +1253,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.3.1-22',
+            VERSION:'v1.3.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
