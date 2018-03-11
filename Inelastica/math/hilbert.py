@@ -3,11 +3,26 @@ import numpy.fft as FFT
 
 
 def Hilbert(f, ker=None):
-    """
-    Hilbert transform of a function f(x) represented on a discrete grid x.
+    r"""
+    Hilbert transform :math:`\mathcal{H}[f](y)` of a function :math:`f(x)` 
+    with finite support, sampled on an equidistant grid :math:`\{x_1,x_2,x_{nh}\}`.
 
     Definition:
-    H[f](y) = 1/\pi p.v.\int^{\infty}_{\infty} dx { f(x)/(x-y) }
+
+    :math:`\mathcal{H}[f](y)= \frac{1}{\pi} p.v.\int_{-\infty}^{\infty} dx \frac{f(x)}{x-y}`.
+
+    Parameters
+    ----------
+    f : ndarray
+        List of function values :math:`f(x)`.
+    ker : ndarray (optional)
+
+    Returns
+    -------
+    Hf : ndarray
+        Hilbert transform of :math:`f(x)`.
+    ker : ndarray
+        Kernel function, can be reused for other transformations with the same number of grid points.
     """
 
     def kernel(f):
@@ -31,7 +46,7 @@ def Hilbert(f, ker=None):
         r = FFT.ifft(fpad*ker)
         return r[0:n]
 
-    if ker!=None:
+    if ker != None:
         # A kernel was specified at the function call
         return transform(f, ker), ker
     else:

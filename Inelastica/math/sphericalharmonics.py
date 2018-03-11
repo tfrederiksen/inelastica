@@ -1,15 +1,32 @@
 import numpy as N
+import scipy.special as SS
 
 
 def sphericalHarmonics(l, m, costh, sinfi, cosfi):
-    import scipy.special as SS
+    """
+    Spherical harmonics :math:`Y_\ell^m(\Theta,\phi)` derived from ``scipy.special``.
+
+    Note: This function has been checked up to d-orbitals with the Siesta overlap matrix.
+
+    Parameters
+    ----------
+    l : int
+    m : int
+    costh : float
+    sinfi : float
+    cosfi : float
+
+    Returns
+    -------
+    Ylm : complex
+    """
     # New faster Spherical Harmonics. Checked up to d-orbitals with the Siesta overlap matrix.
     norm = N.sqrt((2*l+1)/(4*N.pi))*N.sqrt(float(N.math.factorial(l-m))/float(N.math.factorial(l+m)))
     if m == 0:
         ffi = norm
     else:
         expimfi = (cosfi+1.0j*sinfi)**m # Find sin(m fi) and cos(m fi) as im and re parts
-        if m<0:
+        if m < 0:
             norm = -(-1)**(-m)*N.sqrt(2)*norm
             ffi = norm * expimfi.imag
         else:
@@ -18,7 +35,7 @@ def sphericalHarmonics(l, m, costh, sinfi, cosfi):
     return SS.lpmv(m, l, costh)*ffi
 
 
-def OLD_sphericalHarmonics(sinth, costh, sinfi, cosfi):
+def _OLD_sphericalHarmonics(sinth, costh, sinfi, cosfi):
     pi = 3.141592654
 
     # l=0 m=0

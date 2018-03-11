@@ -1,7 +1,48 @@
 import numpy as N
 
 
-def abwe1(n, m, tol, coef2, even, b, x):
+def GaussKronrod(n, tol=1e-10):
+    """
+    Computes the (:math:`2n+1`)-point Gauss-Kronrod quadrature abscissa :math:`\{x_i\}`
+    and weights :math:`\{w_{1,i}\}`, :math:`\{w_{2,i}\}`.
+    Kronrod adds :math:`n+1` points to an :math:`n`-point Gaussian rule.
+
+    Definition:
+
+    :math:`\int_{-1/2}^{1/2} f(x) dx \sim \sum_i w_{1,i} f(x_i)`.
+
+    The weights :math:`\{w_{2,i}\}` are used for error estimation.
+
+    Parameters
+    ----------
+    n : int
+        Points for the Gaussian rule.
+    tol : float
+        The requested absolute accuracy of the abscissas.
+
+    Returns
+    -------
+    x : ndarray
+        Abscissa for which the function is to be evaluated.
+    w1 : ndarray
+        Integration weights.
+    w2 : ndarray
+        Weights for error estimation.
+    """
+    # Rescale to [-0.5,0.5] and expand to get all points.
+    x, w1, w2 = _kronrod(n, tol)
+    indx = N.argsort(x)
+    x, w1, w2 = x[indx], w1[indx], w2[indx]
+    if N.abs(x[0]) < 1e-7:
+        x, w1, w2 = N.concatenate((-x, x[1:])), N.concatenate((w1, w1[1:])), N.concatenate((w2, w2[1:]))
+    else:
+        x, w1, w2 = N.concatenate((-x, x)), N.concatenate((w1, w1)), N.concatenate((w2, w2))
+    indx = N.argsort(x)
+    x, w1, w2 = x[indx], w1[indx], w2[indx]
+    return x/2, w1/2, w2/2
+
+
+def _abwe1(n, m, tol, coef2, even, b, x):
 #*****************************************************************************80
 ## ABWE1 calculates a Kronrod abscissa and weight.
 #  Licensing:
@@ -84,7 +125,7 @@ def abwe1(n, m, tol, coef2, even, b, x):
     return x, w
 
 
-def abwe2(n, m, tol, coef2, even, b, x):
+def _abwe2(n, m, tol, coef2, even, b, x):
 #*****************************************************************************80
 ## ABWE2 calculates a Gaussian abscissa and two weights.
 #  Licensing:
@@ -154,7 +195,7 @@ def abwe2(n, m, tol, coef2, even, b, x):
     return x, w1, w2
 
 
-def kronrod(n, tol):
+def _kronrod(n, tol):
 #*****************************************************************************80
 #
 ## KRONROD adds N+1 points to an N-point Gaussian rule.
@@ -284,7 +325,7 @@ def kronrod(n, tol):
     for i in range(1, n + 1):
         coef2 = coef2 * 4.0 * i / (n + i)
     for k in range(1, n + 1, 2):
-        [xx, w1[k-1]] = abwe1(n, m, tol, coef2, even, b, xx)
+        [xx, w1[k-1]] = _abwe1(n, m, tol, coef2, even, b, xx)
         w2[k-1] = 0.0
         x[k-1] = xx
         y = x1
@@ -294,7 +335,7 @@ def kronrod(n, tol):
             xx = 0.0
         else:
             xx = coef * x1
-        [xx, w1[k+1-1], w2[k+1-1]] = abwe2(n, m, tol, coef2, even, b, xx)
+        [xx, w1[k+1-1], w2[k+1-1]] = _abwe2(n, m, tol, coef2, even, b, xx)
         x[k+1-1] = xx
         y = x1
         x1 = y * c - bb * s
@@ -302,22 +343,7 @@ def kronrod(n, tol):
         xx = coef * x1
     if (even):
         xx = 0.0
-        [xx, w1[n+1-1]] = abwe1(n, m, tol, coef2, even, b, xx)
+        [xx, w1[n+1-1]] = _abwe1(n, m, tol, coef2, even, b, xx)
         w2[n+1-1] = 0.0
         x[n+1-1] = xx
     return x, w1, w2
-
-
-def GaussKronrod(NN):
-        # Rescale to [-0.5,0.5] and expand to get all points.
-    x, w1, w2 = kronrod(NN, 1e-10)
-    indx = N.argsort(x)
-    x, w1, w2 = x[indx], w1[indx], w2[indx]
-    if N.abs(x[0])<1e-7:
-        x, w1, w2 = N.concatenate((-x, x[1:])), N.concatenate((w1, w1[1:])), N.concatenate((w2, w2[1:]))
-    else:
-        x, w1, w2 = N.concatenate((-x, x)), N.concatenate((w1, w1)), N.concatenate((w2, w2))
-    indx = N.argsort(x)
-    x, w1, w2 = x[indx], w1[indx], w2[indx]
-    return x/2, w1/2, w2/2
-
