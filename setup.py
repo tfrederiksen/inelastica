@@ -131,6 +131,8 @@ def git_version():
             GIT_LABEL = label
         # Get number of commits since tag
         count = _minimal_ext_cmd(['git', 'rev-list', tag + '..', '--count'])
+        if len(count) == 0:
+            count = '1'
 
     except Exception as e:
         print(e)
