@@ -1,14 +1,14 @@
 import numpy as N
-import numpy.linalg as LA
 import numpy.fft as FFT
 
 
-# DEFINITION OF THE HILBERT TRANSFORM:
-# H[f](y) = 1/\pi p.v.\int^{\infty}_{\infty} dx { f(x)/(x-y) }
-
-
 def Hilbert(f, ker=None):
-    'Hilbert transform'
+    """
+    Hilbert transform of a function f(x) represented on a discrete grid x.
+
+    Definition:
+    H[f](y) = 1/\pi p.v.\int^{\infty}_{\infty} dx { f(x)/(x-y) }
+    """
 
     def kernel(f):
         'Hilbert transform kernel'

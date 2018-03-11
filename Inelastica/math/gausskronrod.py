@@ -1,6 +1,4 @@
 import numpy as N
-import numpy.linalg as LA
-import numpy.fft as FFT
 
 
 def abwe1(n, m, tol, coef2, even, b, x):
