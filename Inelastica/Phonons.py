@@ -51,7 +51,7 @@ To run phonon calculations as a script one can execute:
 
 
 Classes and methods
--------
+-------------------
 
 .. autosummary::
    :toctree:

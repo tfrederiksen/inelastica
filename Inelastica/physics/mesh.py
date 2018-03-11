@@ -32,7 +32,6 @@ def generatelinmesh(Nk):
 
 
 class kmesh(object):
-
     """
     Create a k-mesh samling where each of the three components
     sample the range [-0.5,0.5]). They are not in reciprocal space.
@@ -78,7 +77,7 @@ class kmesh(object):
         for i in range(3): # loop over the three k-components
             if self.type[i].upper() == 'GK' or self.type[i].upper() == 'GAUSSKRONROD':
                 self.type[i] = 'GK'
-                if self.Nk[i]>1: # GK-method fails with fewer points
+                if self.Nk[i] > 1: # GK-method fails with fewer points
                     kpts, wgts, ew = MM.GaussKronrod(self.Nk[i])
                     self.k.append(kpts)
                     self.w.append(wgts)
