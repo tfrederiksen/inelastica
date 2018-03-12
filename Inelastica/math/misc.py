@@ -26,7 +26,7 @@ def mysqrt(x):
     U = N.transpose(U)
 
     tmp = N.zeros((len(ev), len(ev)), N.complex)
-    for ii,evi in enumerate(ev):
+    for ii, evi in enumerate(ev):
         tmp[ii, ii] = N.sqrt(evi)
 
     return mm(LA.inv(U), tmp, U)
@@ -60,10 +60,11 @@ def trapez(x, f, equidistant=False):
     equidistant : bool
         `False` = 3rd degree polynomial method.
         `True` = Linear trapez method.
+
     Returns
     -------
     res : complex number
-        Result of the integration
+        Result of the integration.
     """
     if equidistant:
         # Trapez method!
