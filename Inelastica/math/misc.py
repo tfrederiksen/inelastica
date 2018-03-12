@@ -3,7 +3,7 @@ import numpy.linalg as LA
 
 
 def outerAdd(* args):
-    """
+    r"""
     Returns :math:`A_{ijk}=B_i+C_j+D_k`.
     """
     # A_ijk=B_i+C_j+D_k
@@ -14,7 +14,7 @@ def outerAdd(* args):
 
 
 def dist(x):
-    """
+    r"""
     Euclidian norm :math:`||x||` of a vector :math:`x`.
     """
     return N.sqrt(N.dot(x, x))
@@ -33,14 +33,14 @@ def mysqrt(x):
 
 
 def fermi(mu, E, kT):
-    """
+    r"""
     Fermi function :math:`n_F(\mu) = 1/[exp((E-\mu)/k_BT)+1]`.
     """
     return 1/(N.exp(N.clip((E-mu)/kT, -70.0, 70.0))+1)
 
 
 def box(mu1, mu2, grid, kT):
-    """
+    r"""
     Window (box) function defined as
     :math:`n_F(\mu_2)-n_F(\mu_1)`
     """
@@ -97,7 +97,7 @@ def trapez(x, f, equidistant=False):
 
 
 def interpolate(nx, x, y):
-    """
+    r"""
     Interpolate :math:`f(x)=y` to find :math:`f(nx)`. Extrapolation allowed.
 
     NB: Makes no checks for nx inside x region!!!

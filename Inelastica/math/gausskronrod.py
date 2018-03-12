@@ -2,7 +2,7 @@ import numpy as N
 
 
 def GaussKronrod(n, tol=1e-10):
-    """
+    r"""
     Computes the (:math:`2n+1`)-point Gauss-Kronrod quadrature abscissa :math:`\{x_i\}`
     and weights :math:`\{w_{1,i}\}`, :math:`\{w_{2,i}\}`.
     Kronrod adds :math:`n+1` points to an :math:`n`-point Gaussian rule.
@@ -10,6 +10,8 @@ def GaussKronrod(n, tol=1e-10):
     Definition:
 
     :math:`\int_{-1/2}^{1/2} f(x) dx \sim \sum_i w_{1,i} f(x_i)`.
+
+    The integration range corresponds to the first Brillouin zone in Inelastica.
 
     The weights :math:`\{w_{2,i}\}` are used for error estimation.
 

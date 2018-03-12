@@ -83,7 +83,7 @@ def __mm(args):
 
 
 class SpectralMatrix(object):
-    """
+    r"""
     Matrix class for spectral matrices.
 
     Idea: Split a spectral matrix :math:`\mathbf{A}^{(mxm)}` into two smaller matrices
@@ -96,6 +96,15 @@ class SpectralMatrix(object):
     The magic takes place in Matrix multiply function.
 
     Todo: Adding two gives full matrix! Should be easy to fix.
+
+    Attributes
+    ----------
+    L : ndarray
+    R : ndarray
+
+    Parameters
+    ----------
+    A : ndarray
     """
     # self.L/R : Left / right matrices
 
@@ -113,8 +122,8 @@ class SpectralMatrix(object):
                 print N.allclose(A, N.dot(self.L, self.R))
 
     def full(self):
-        """
-        Returns the dense ndarray via matrix multiplication math:`\mathbf{A}^{(mxm)} = \mathbf{L}.\mathbf{R}`.
+        r"""
+        Returns the dense ndarray via matrix multiplication :math:`\mathbf{A}^{(mxm)} = \mathbf{L}.\mathbf{R}`.
         """
         return mm(self.L, self.R)
 
