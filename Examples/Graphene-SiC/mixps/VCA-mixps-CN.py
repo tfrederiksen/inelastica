@@ -50,8 +50,8 @@ if __name__ == '__main__':
     print("synth filename:"+synthFile)
     print("psf filename:" + psfFile)
 
-    templete = open('../templete.fdf')
-    datas = templete.readlines()
+    template = open('../template.fdf')
+    datas = template.readlines()
 
     fdfFile = open('4HSiC.fdf', 'w')
     pattern = re.compile(r'^\s*(\d*)\s+(\d*)\s+(C.mpn)')

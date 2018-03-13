@@ -17,10 +17,10 @@ appropriately to your environment.
 
 If you want to create C 99.5% and N 0.5% pseudo potential, using the following command:
 
-   $ python VCA-mixps-CN.py 0.995
+        $ python VCA-mixps-CN.py 0.995
 
-This script generate the pseudopotential named as "CN-0.99500.psf", and running the calculation for 4H-SiC bulk. 
-"templete.fdf" is the template file for 4H-SiC structure and calculation setups for siesta calculation.
+This script generate the pseudopotential named as `CN-0.99500.psf`, and running the calculation for 4H-SiC bulk. 
+`template.fdf`is the template file for 4H-SiC structure and calculation setups for siesta calculation.
 
 After the calculation finished, you can get the band structure as included in `ref-0.995` directory. 
 The band structure is plotted along Gamma-M-K-Gamma line, and you can see that the conduction band crosses
