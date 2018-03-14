@@ -1,0 +1,92 @@
+### Lines appended Wed Feb 15 16:43:24 2017 
+MD.TypeOfRun  FC
+MD.FCfirst   46
+MD.FClast    51
+TS.SaveHS    True
+MD.FCDispl   0.02000000 Ang
+SystemName=Root3Gr 
+SystemLabel=Root3Gr 
+%block ChemicalSpeciesLabel 
+4  1  H.mpn  
+1  6  C.mpn  
+2  14  Si.gga  
+3  201 CNmix
+5  79  Au_pbr  
+%endblock ChemicalSpeciesLabel 
+XC.functional GGA 
+XC.authors PBE 
+PAO.BasisType split 
+%block PAO.Basis                 # Define Basis set
+Si.gga                2                    # Species label, number of l-shells
+ n=3   0   2                         # n, l, Nzeta 
+   5.007      4.419   
+   1.000      1.000   
+ n=3   1   2 P   1                   # n, l, Nzeta, Polarization, NzetaPol
+   6.271      5.007   
+   1.000      1.000   
+C.mpn                 2                    # Species label, number of l-shells
+ n=2   0   2                         # n, l, Nzeta 
+   4.088      3.347   
+   1.000      1.000   
+ n=2   1   2 P   1                   # n, l, Nzeta, Polarization, NzetaPol
+   4.870      3.475   
+   1.000      1.000   
+CNmix             2                    # Species label, number of l-shells
+ n=2   0   2                         # n, l, Nzeta 
+   4.088      3.347   
+   1.000      1.000   
+ n=2   1   2 P   1                   # n, l, Nzeta, Polarization, NzetaPol
+   4.870      3.475   
+   1.000      1.000   
+H.mpn                 1                    # Species label, number of l-shells
+ n=1   0   2 P   1                   # n, l, Nzeta, Polarization, NzetaPol
+   4.709      3.760   
+   1.000      1.000   
+Au_pbr                2                    # Species label, number of l-shells
+ n=6   0   2 P   1                   # n, l, Nzeta, Polarization, NzetaPol
+   6.083      5.715   
+   1.000      1.000   
+ n=5   2   2                         # n, l, Nzeta 
+   4.287      2.803   
+   1.000      1.000   
+%endblock PAO.Basis
+%block SyntheticAtoms
+3
+  2  2  3  4
+    2.000000    2.005000    0.000000    0.000000
+%endblock SyntheticAtoms
+%block kgrid_Monkhorst_Pack 
+9  0  0      0.00 
+0  9   0       0.00 
+0  0  1      0.00 
+%endblock kgrid_Monkhorst_Pack 
+MeshCutoff  400.0 Ry 
+MaxSCFIterations  200 
+SCF.Mix DM
+SCF.Mixer.Weight 0.01
+SCF.Mixer.History 10
+DM.Tolerance   1.d-5 
+DM.UseSaveDM   true 
+SolutionMethod diagon 
+DivideAndConquer true 
+MD.TypeOfRun   Broyden 
+MD.Broyden.History.Steps 15 
+MD.NumCGSteps   30 
+MD.MAXCGDispl   0.2 Bohr  
+MD.MaxForceTol   0.02  eV/Ang 
+WriteCoorInitial true 
+WriteCoorStep true 
+WriteForces true 
+WriteCoorXmol true 
+WriteCoorCerius false 
+WriteMDXmol true 
+WriteMDhistory true 
+SaveElectrostaticPotential true 
+SaveRho true 
+UseSaveData true 
+MD.USeSaveCG true 
+%block GeometryConstraints 
+position from 1 to  45 
+position from 74  to  83 
+%endblock GeometryConstraints 
+%include STRUCT.fdf 

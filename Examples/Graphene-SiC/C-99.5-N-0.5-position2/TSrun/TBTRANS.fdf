@@ -1,0 +1,23 @@
+%block TBT.Contours
+  window
+%endblock
+
+%block TBT.Contour.window
+ part line
+   from -5.0 eV to 5.0 eV
+    delta 0.01 eV
+     method mid-rule
+%endblock
+
+TBT.DOS.Gf     .true.
+TBT.DOS.A      .true.
+
+%block tbt_kgrid_Monkhorst_Pack
+20    0    0    0.0
+ 0   20    0    0.0
+ 0    0    1    0.0
+%endblock tbt_kgrid_Monkhorst_Pack
+
+%block TBT.Atoms.Device
+atom from 46 to 74
+%endblock TBT.Atoms.Device

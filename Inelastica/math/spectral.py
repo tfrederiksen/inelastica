@@ -3,8 +3,10 @@ import numpy.linalg as LA
 
 
 def mm(* args):
-    # Matrix multiplication with arbitrary number of arguments
-    # and the SpectralMatrix type
+    """
+    Matrix multiplication with arbitrary number of arguments
+    and the SpectralMatrix type.
+    """
     args = list(args)
 
     # Look for SpectralMatrices
@@ -12,7 +14,7 @@ def mm(* args):
     if len(where) > 0:
         res = __mmSpectralMatrix(args, where)
     else:
-        res= __mm(args)
+        res = __mm(args)
 
     return res
 
@@ -81,21 +83,34 @@ def __mm(args):
 
 
 class SpectralMatrix(object):
-    """
-    New matrixclass for spectral matrix
-    Idea : Split A into two smaller matrices
-    A(mxm) = U(mxn)*U^t where U=sqrt(lambda_i) [v_1 v_2 ...]
-    labda, v are eigvalues, vectors
+    r"""
+    Matrix class for spectral matrices.
 
-    The magic takes place in Matrix multiply function
+    Idea: Split a spectral matrix :math:`\mathbf{A}^{(mxm)}` into two smaller matrices
+    :math:`\mathbf{A} = \mathbf{L}.\mathbf{R}`
+    where :math:`\mathbf{L}^{(mxn)} = [\lambda_1 \mathbf{v}_1, ..., \lambda_n \mathbf{v}_n]`
+    and :math:`\mathbf{R}^{(nxm)} = [\mathbf{v}_1, ..., \mathbf{v}_n]^\dagger`
+    are constructed from a call to ``LA.eigh(A)`` keeping only
+    :math:`n` eigensolutions with eigenvalues above the specified cutoff.
 
-    TODO: adding two gives full matrix! Should be easy to fix.
+    The magic takes place in Matrix multiply function.
+
+    Todo: Adding two gives full matrix! Should be easy to fix.
+
+    Attributes
+    ----------
+    L : ndarray
+    R : ndarray
+
+    Parameters
+    ----------
+    A : ndarray
     """
     # self.L/R : Left / right matrices
 
     def __init__(self, A=None, cutoff=1e-8):
         if isinstance(A, N.ndarray):
-            # Initialize ... only Hermitean matrices
+            # Initialize ... only Hermitian matrices
             ev, evec = LA.eigh(A)
             # Drop eigenvalues
             indx = N.where(N.abs(ev)>cutoff)[0]
@@ -107,6 +122,9 @@ class SpectralMatrix(object):
                 print N.allclose(A, N.dot(self.L, self.R))
 
     def full(self):
+        r"""
+        Returns the dense ndarray via matrix multiplication :math:`\mathbf{A}^{(mxm)} = \mathbf{L}.\mathbf{R}`.
+        """
         return mm(self.L, self.R)
 
     def __add__(self, b, subtract=False):
@@ -165,6 +183,9 @@ class SpectralMatrix(object):
 
 
 def trace(a):
+    """
+    Returns the trace of a normal or spectral matrix.
+    """
     if isinstance(a, SpectralMatrix):
         return N.trace(mm(a.R, a.L)) # Switch sum around to make faster!
     else:
@@ -172,7 +193,9 @@ def trace(a):
 
 
 def dagger(x):
-    # Hermitian conjugation
+    """
+    Returns the hermitian conjugation of a normal or spectral matrix.
+    """
     if isinstance(x, SpectralMatrix):
         return x.__dagger__()
     else:
