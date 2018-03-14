@@ -36,8 +36,8 @@ TS.Elecs.DM.Update none
   chem-pot Left
   semi-inf-dir -a3
   elec-pos begin 1
-  rep-a1 3
-  rep-a2 3
+  bloch-a1 3
+  bloch-a2 3
 %endblock TS.Elec.Left
  
 %block TS.Elec.Right
@@ -45,8 +45,8 @@ TS.Elecs.DM.Update none
   chem-pot Right
   semi-inf-dir +a3
   elec-pos end -1
-  rep-a1 3
-  rep-a2 3
+  bloch-a1 3
+  bloch-a2 3
 %endblock TS.Elec.Right
  
 TS.Contours.Eq.Pole.N 6
