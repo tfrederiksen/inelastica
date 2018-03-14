@@ -25,9 +25,10 @@ The release cycle should be performed like this:
         git rev-parse HEAD
         GIT_REVISION = <git rev-parse HEAD>
 
-3. Add `setup.py` to the commit:
+3. Commit changes:
 
-        git commit [-s] -m "Inelastica release: [VERSION]"
+        git add setup.py
+        git commit -m "Release [VERSION]"
 
    with the corresponding version number.
 

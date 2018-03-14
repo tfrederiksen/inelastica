@@ -87,10 +87,10 @@ def git_version():
     # Default release info
     MAJOR = 1
     MINOR = 3
-    MICRO = 2
+    MICRO = 3
     VERSION = [MAJOR, MINOR, MICRO]
-    # Git revision
-    GIT_REVISION = "81934f329358ef28baeaa46f231532bc6696e986"
+    # Git revision prior to release:
+    GIT_REVISION = "182656f480955c08539208bec4227c1fc67993ba"
     GIT_LABEL = '.'.join(map(str, [MAJOR, MINOR, MICRO]))
 
     def _minimal_ext_cmd(cmd):
