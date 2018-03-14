@@ -23,16 +23,23 @@ reported in `this publication <https://link.aps.org/doi/10.1103/PhysRevB.96.1554
 Virtual crystal approximation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Example of an image:
 
-.. image:: results/AuFCC_r5.0_Phonons.png
-   :scale: 80 %
-   :alt: phonon band structure with force cutoff radii of 5.0 angstroms
+
+IETS
+~~~~
+
+Reference results:
+
+.. image:: ../../Examples/Graphene-SiC/dIdV-results/position1dIdV.png
+   :scale: 100 %
+   :alt: alttext here
    :align: center
 
 
+.. image:: ../../Examples/Graphene-SiC/dIdV-results/position2dIdV.png
+   :scale: 100 %
+   :alt: alttext here
+   :align: center
 
-Step 2
-~~~~~~
 
 	  
