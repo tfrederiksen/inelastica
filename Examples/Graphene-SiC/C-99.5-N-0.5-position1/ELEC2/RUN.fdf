@@ -1,5 +1,7 @@
-SystemName=ELEC2 
-SystemLabel=ELEC2 
+SystemName ELEC2 
+SystemLabel ELEC2 
+TS.HS.Save T
+TS.DE.Save T
 %block ChemicalSpeciesLabel 
 1  79  Au_pbr  
 %endblock ChemicalSpeciesLabel 
@@ -26,7 +28,6 @@ WriteCoorInitial true
 WriteCoorStep true 
 WriteForces true 
 WriteCoorXmol true 
-WriteCoorCerius false 
 WriteMDXmol true 
 WriteMDhistory true 
 UseSaveData true 
