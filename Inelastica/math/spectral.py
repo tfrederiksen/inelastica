@@ -51,8 +51,8 @@ def __mm(args):
     else:
         Rsize = N.array([ii.shape[1] for ii in args[1:]])
 
-    Lwhere = N.where(Lsize==N.min(Lsize))[0]
-    Rwhere = N.where(Rsize==N.min(Rsize))[0]
+    Lwhere = N.where(Lsize == N.min(Lsize))[0]
+    Rwhere = N.where(Rsize == N.min(Rsize))[0]
 
     if N.min(Lsize) > N.min(Rsize):
         where = [ii+1 for ii in Rwhere]
@@ -113,7 +113,7 @@ class SpectralMatrix(object):
             # Initialize ... only Hermitian matrices
             ev, evec = LA.eigh(A)
             # Drop eigenvalues
-            indx = N.where(N.abs(ev)>cutoff)[0]
+            indx = N.where(N.abs(ev) > cutoff)[0]
             ev, evec = ev[indx], evec[:, indx]
             print "SpectralMatrix: Fraction of eigenvalues above cutoff (%.1e) is %i/%i"%(cutoff, len(indx), len(A))
             self.L = N.dot(evec, N.diag(ev))
@@ -134,7 +134,7 @@ class SpectralMatrix(object):
         else:
             NN = self.L.shape[0]
             Na, Nb = self.L.shape[1], b.L.shape[1]
-            if Na+Nb>0.3*NN:
+            if Na+Nb > 0.3*NN:
                 # Too many eigenvalues
                 print "Too many eigenvalues"
                 if not subtract:

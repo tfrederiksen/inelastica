@@ -119,15 +119,15 @@ def git_version():
 
         # Get latest revision tag
         rev = _minimal_ext_cmd(['git', 'rev-parse', 'HEAD'])
-        if len(rev)>7:
+        if len(rev) > 7:
             GIT_REVISION = rev
         # Get latest tag
         tag = _minimal_ext_cmd(['git', 'describe', '--abbrev=0', '--tags'])
-        if len(tag)>4:
+        if len(tag) > 4:
             VERSION = tag[1:].split('.')
         # Get complete "git describe" string
         label = _minimal_ext_cmd(['git', 'describe', '--tags'])
-        if len(label)>7:
+        if len(label) > 7:
             GIT_LABEL = label
         # Get number of commits since tag
         count = _minimal_ext_cmd(['git', 'rev-list', tag + '..', '--count'])
@@ -135,7 +135,6 @@ def git_version():
             count = '1'
 
     except Exception as e:
-        print(e)
         count = '0'
 
     return GIT_REVISION, VERSION, int(count), GIT_LABEL
@@ -178,34 +177,32 @@ write_version()
 
 # Main setup of python modules
 setup(name='Inelastica',
-      requires = ['python (>=2.7)', 'numpy (>=1.8)', 'scipy (>=0.17)', 'netCDF4 (>=1.2.7)'],
+      requires=['python (>=2.7)', 'numpy (>=1.8)', 'scipy (>=0.17)', 'netCDF4 (>=1.2.7)'],
       description='Python tools for SIESTA/TranSIESTA',
       author='Magnus Paulsson and Thomas Frederiksen',
       author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',
       url='https://github.com/tfrederiksen/inelastica',
       license='GPL',
-      scripts= ['Inelastica/scripts/Inelastica',
-                'Inelastica/scripts/EigenChannels',
-                'Inelastica/scripts/pyTBT',
-                'Inelastica/scripts/geom2geom',
-                'Inelastica/scripts/geom2zmat',
-                'Inelastica/scripts/Bandstructures',
-                'Inelastica/scripts/ComputeDOS',
-                'Inelastica/scripts/Vasp2Siesta',
-                'Inelastica/scripts/Phonons',
-                'Inelastica/scripts/NEB',
-                'Inelastica/scripts/grid2grid',
-                'Inelastica/scripts/setupFCrun',
-                'Inelastica/scripts/setupOSrun',
-                'Inelastica/scripts/kaverage-TBT',
-                'Inelastica/scripts/STM',
-                'Inelastica/scripts/kaverage-IETS',
-                'Inelastica/scripts/average-gridfunc',
-                'Inelastica/scripts/WriteWavefunctions',
-                'Inelastica/utils/agr2pdf',
-                'Inelastica/utils/bands2xmgr',
-                'Inelastica/utils/siesta_cleanup'
-      ],
+      scripts=['Inelastica/scripts/Inelastica',
+               'Inelastica/scripts/EigenChannels',
+               'Inelastica/scripts/pyTBT',
+               'Inelastica/scripts/geom2geom',
+               'Inelastica/scripts/geom2zmat',
+               'Inelastica/scripts/Bandstructures',
+               'Inelastica/scripts/ComputeDOS',
+               'Inelastica/scripts/Vasp2Siesta',
+               'Inelastica/scripts/Phonons',
+               'Inelastica/scripts/NEB',
+               'Inelastica/scripts/grid2grid',
+               'Inelastica/scripts/setupFCrun',
+               'Inelastica/scripts/setupOSrun',
+               'Inelastica/scripts/kaverage-TBT',
+               'Inelastica/scripts/STM',
+               'Inelastica/scripts/kaverage-IETS',
+               'Inelastica/scripts/average-gridfunc',
+               'Inelastica/scripts/WriteWavefunctions',
+               'Inelastica/utils/agr2pdf',
+               'Inelastica/utils/bands2xmgr',
+               'Inelastica/utils/siesta_cleanup'],
       packages=packages,
-      configuration=configuration,
-      )
+      configuration=configuration)
