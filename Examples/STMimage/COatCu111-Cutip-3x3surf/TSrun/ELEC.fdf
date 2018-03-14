@@ -24,7 +24,8 @@ TS.Voltage      0.000000000     Ry
  
 TS.Elecs.Bulk true
 TS.Elecs.DM.Update none
-TS.Elecs.GF.ReUse false
+#TS.Elecs.GF.ReUse false
+
 %block TS.Elecs
   Left
   Right

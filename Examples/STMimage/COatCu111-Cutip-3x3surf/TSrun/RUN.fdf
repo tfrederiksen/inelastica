@@ -10,10 +10,23 @@ TS.Elecs.Neglect.Principal true
 SaveTotalPotential true
 SaveRho true
 
-SolutionMethod        transiesta
-MullikenInSCF         false
+SolutionMethod      transiesta
+MullikenInSCF       false
+
+###SlabDipoleCorrection true
+
 MD.TypeOfRun        CG
 MD.NumCGsteps       0
+MD.UseSaveCG        true
+MD.UseSaveXV        true
+MD.MaxForceTol	    0.04 eV/Ang
+UseSaveData         true
+
+DM.UseSaveDM        true
+DM.NumberPulay      7
+DM.MixingWeight     0.02
+DM.Tolerance        1e-5
+MaxSCFIterations    1000
 
 MeshCutoff          200. Ry
 
@@ -22,14 +35,6 @@ MeshCutoff          200. Ry
  0    4    0    0.0
  0    0    1    0.0
 %endblock kgrid_Monkhorst_Pack
-
-MaxSCFIterations      300           # Maximum number of SCF iter
-DM.Tolerance          1.d-4         # Tolerance in maximum difference
-                                    # between input and output DM
-DM.UseSaveDM          true          # to use continuation files
-DM.NumberPulay        7
-DM.MixingWeight       0.02
-
 
 %block GeometryConstraints
 position from 1 to 48
@@ -42,19 +47,16 @@ position from 84 to 99
     3   29 Cu.mpn                  # Species index, atomic number, species label
 %endblock ChemicalSpeciesLabel
 
+PAO.BasisType   split
+PAO.EnergyShift 0.001 Ry
 %block  PAO.BasisSizes
 	Cu.mpn		SZP
         C.mpn		DZP
 	O.mpn		DZP
 %endblock PAO.BasisSizes
 
+XC.functional   GGA
+XC.authors      PBE
 
-MaxSCFIterations      300           # Maximum number of SCF iter
-DM.Tolerance          1.d-4         # Tolerance in maximum difference
-                                    # between input and output DM
-DM.UseSaveDM          true          # to use continuation files
-
-%include ./NewTS.fdf
+%include ./ELEC.fdf
 %include ./STRUCT.fdf
-%include ./TBTRANS.fdf
-%include ./Default.fdf
