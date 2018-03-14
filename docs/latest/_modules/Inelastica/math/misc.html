@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.math.misc &mdash; Inelastica v1.3.2 documentation</title>
+  <title>Inelastica.math.misc &mdash; Inelastica v1.3.3 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Inelastica v1.3.2 documentation" href="../../../index.html"/>
+    <link rel="top" title="Inelastica v1.3.3 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                v1.3.2
+                v1.3.3
               </div>
             
           
@@ -177,7 +177,7 @@
 
 
 <div class="viewcode-block" id="outerAdd"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.misc.html#Inelastica.math.outerAdd">[docs]</a><span class="k">def</span> <span class="nf">outerAdd</span><span class="p">(</span><span class="o">*</span> <span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns :math:`A_{ijk}=B_i+C_j+D_k`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># A_ijk=B_i+C_j+D_k</span>
@@ -188,7 +188,7 @@
 
 
 <div class="viewcode-block" id="dist"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.misc.html#Inelastica.math.dist">[docs]</a><span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Euclidian norm :math:`||x||` of a vector :math:`x`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span></div>
@@ -200,21 +200,21 @@
     <span class="n">U</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">U</span><span class="p">)</span>
 
     <span class="n">tmp</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="p">)),</span> <span class="n">N</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">ii</span><span class="p">,</span><span class="n">evi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ev</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">evi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ev</span><span class="p">):</span>
         <span class="n">tmp</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">evi</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">mm</span><span class="p">(</span><span class="n">LA</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">U</span><span class="p">),</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">U</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="fermi"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.misc.html#Inelastica.math.fermi">[docs]</a><span class="k">def</span> <span class="nf">fermi</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">kT</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fermi function :math:`n_F(\mu) = 1/[exp((E-\mu)/k_BT)+1]`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">E</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">/</span><span class="n">kT</span><span class="p">,</span> <span class="o">-</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="box"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.misc.html#Inelastica.math.box">[docs]</a><span class="k">def</span> <span class="nf">box</span><span class="p">(</span><span class="n">mu1</span><span class="p">,</span> <span class="n">mu2</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">kT</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Window (box) function defined as</span>
 <span class="sd">    :math:`n_F(\mu_2)-n_F(\mu_1)`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -234,10 +234,11 @@
 <span class="sd">    equidistant : bool</span>
 <span class="sd">        `False` = 3rd degree polynomial method.</span>
 <span class="sd">        `True` = Linear trapez method.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    res : complex number</span>
-<span class="sd">        Result of the integration</span>
+<span class="sd">        Result of the integration.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">equidistant</span><span class="p">:</span>
         <span class="c1"># Trapez method!</span>
@@ -270,7 +271,7 @@
 
 
 <div class="viewcode-block" id="interpolate"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.misc.html#Inelastica.math.interpolate">[docs]</a><span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpolate :math:`f(x)=y` to find :math:`f(nx)`. Extrapolation allowed.</span>
 
 <span class="sd">    NB: Makes no checks for nx inside x region!!!</span>
@@ -334,7 +335,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v1.3.2',
+            VERSION:'v1.3.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

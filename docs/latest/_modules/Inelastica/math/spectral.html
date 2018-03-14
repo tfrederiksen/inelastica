@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.math.spectral &mdash; Inelastica v1.3.2 documentation</title>
+  <title>Inelastica.math.spectral &mdash; Inelastica v1.3.3 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Inelastica v1.3.2 documentation" href="../../../index.html"/>
+    <link rel="top" title="Inelastica v1.3.3 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                v1.3.2
+                v1.3.3
               </div>
             
           
@@ -177,8 +177,10 @@
 
 
 <div class="viewcode-block" id="mm"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.spectral.html#Inelastica.math.mm">[docs]</a><span class="k">def</span> <span class="nf">mm</span><span class="p">(</span><span class="o">*</span> <span class="n">args</span><span class="p">):</span>
-    <span class="c1"># Matrix multiplication with arbitrary number of arguments</span>
-    <span class="c1"># and the SpectralMatrix type</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Matrix multiplication with arbitrary number of arguments</span>
+<span class="sd">    and the SpectralMatrix type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
     <span class="c1"># Look for SpectralMatrices</span>
@@ -186,7 +188,7 @@
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">where</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">__mmSpectralMatrix</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">res</span><span class="o">=</span> <span class="n">__mm</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">__mm</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">res</span></div>
 
@@ -255,21 +257,34 @@
 
 
 <div class="viewcode-block" id="SpectralMatrix"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.spectral.html#Inelastica.math.SpectralMatrix">[docs]</a><span class="k">class</span> <span class="nc">SpectralMatrix</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    New matrixclass for spectral matrix</span>
-<span class="sd">    Idea : Split A into two smaller matrices</span>
-<span class="sd">    A(mxm) = U(mxn)*U^t where U=sqrt(lambda_i) [v_1 v_2 ...]</span>
-<span class="sd">    labda, v are eigvalues, vectors</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Matrix class for spectral matrices.</span>
 
-<span class="sd">    The magic takes place in Matrix multiply function</span>
+<span class="sd">    Idea: Split a spectral matrix :math:`\mathbf{A}^{(mxm)}` into two smaller matrices</span>
+<span class="sd">    :math:`\mathbf{A} = \mathbf{L}.\mathbf{R}`</span>
+<span class="sd">    where :math:`\mathbf{L}^{(mxn)} = [\lambda_1 \mathbf{v}_1, ..., \lambda_n \mathbf{v}_n]`</span>
+<span class="sd">    and :math:`\mathbf{R}^{(nxm)} = [\mathbf{v}_1, ..., \mathbf{v}_n]^\dagger`</span>
+<span class="sd">    are constructed from a call to ``LA.eigh(A)`` keeping only</span>
+<span class="sd">    :math:`n` eigensolutions with eigenvalues above the specified cutoff.</span>
 
-<span class="sd">    TODO: adding two gives full matrix! Should be easy to fix.</span>
+<span class="sd">    The magic takes place in Matrix multiply function.</span>
+
+<span class="sd">    Todo: Adding two gives full matrix! Should be easy to fix.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : ndarray</span>
+<span class="sd">    R : ndarray</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : ndarray</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># self.L/R : Left / right matrices</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="c1"># Initialize ... only Hermitean matrices</span>
+            <span class="c1"># Initialize ... only Hermitian matrices</span>
             <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
             <span class="c1"># Drop eigenvalues</span>
             <span class="n">indx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span><span class="o">&gt;</span><span class="n">cutoff</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -281,6 +296,9 @@
                 <span class="k">print</span> <span class="n">N</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">))</span>
 
 <div class="viewcode-block" id="SpectralMatrix.full"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.spectral.html#Inelastica.math.SpectralMatrix.full">[docs]</a>    <span class="k">def</span> <span class="nf">full</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the dense ndarray via matrix multiplication :math:`\mathbf{A}^{(mxm)} = \mathbf{L}.\mathbf{R}`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">mm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">subtract</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
@@ -339,6 +357,9 @@
 
 
 <div class="viewcode-block" id="trace"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.spectral.html#Inelastica.math.trace">[docs]</a><span class="k">def</span> <span class="nf">trace</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the trace of a normal or spectral matrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">SpectralMatrix</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">L</span><span class="p">))</span> <span class="c1"># Switch sum around to make faster!</span>
     <span class="k">else</span><span class="p">:</span>
@@ -346,7 +367,9 @@
 
 
 <div class="viewcode-block" id="dagger"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.spectral.html#Inelastica.math.dagger">[docs]</a><span class="k">def</span> <span class="nf">dagger</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="c1"># Hermitian conjugation</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the hermitian conjugation of a normal or spectral matrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SpectralMatrix</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">__dagger__</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
@@ -387,7 +410,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'v1.3.2',
+            VERSION:'v1.3.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

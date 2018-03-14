@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>&lt;no title&gt; &mdash; Inelastica v1.3.2 documentation</title>
+  <title>&lt;no title&gt; &mdash; Inelastica v1.3.3 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Inelastica v1.3.2 documentation" href="../index.html"/>
+    <link rel="top" title="Inelastica v1.3.3 documentation" href="../index.html"/>
         <link rel="up" title="Inelastica.math package" href="Inelastica.math.html"/>
         <link rel="next" title="&lt;no title&gt;" href="Inelastica.math.sphericalharmonics.html"/>
         <link rel="prev" title="&lt;no title&gt;" href="Inelastica.math.misc.html"/> 
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                v1.3.2
+                v1.3.3
               </div>
             
           
@@ -183,33 +183,64 @@
 <dt id="Inelastica.math.spectral.SpectralMatrix">
 <em class="property">class </em><code class="descclassname">Inelastica.math.spectral.</code><code class="descname">SpectralMatrix</code><span class="sig-paren">(</span><em>A=None</em>, <em>cutoff=1e-08</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#SpectralMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.spectral.SpectralMatrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>New matrixclass for spectral matrix
-Idea : Split A into two smaller matrices
-A(mxm) = U(mxn)*U^t where U=sqrt(lambda_i) [v_1 v_2 ...]
-labda, v are eigvalues, vectors</p>
-<p>The magic takes place in Matrix multiply function</p>
-<p>TODO: adding two gives full matrix! Should be easy to fix.</p>
+<p>Matrix class for spectral matrices.</p>
+<p>Idea: Split a spectral matrix <span class="math">\(\mathbf{A}^{(mxm)}\)</span> into two smaller matrices
+<span class="math">\(\mathbf{A} = \mathbf{L}.\mathbf{R}\)</span>
+where <span class="math">\(\mathbf{L}^{(mxn)} = [\lambda_1 \mathbf{v}_1, ..., \lambda_n \mathbf{v}_n]\)</span>
+and <span class="math">\(\mathbf{R}^{(nxm)} = [\mathbf{v}_1, ..., \mathbf{v}_n]^\dagger\)</span>
+are constructed from a call to <code class="docutils literal"><span class="pre">LA.eigh(A)</span></code> keeping only
+<span class="math">\(n\)</span> eigensolutions with eigenvalues above the specified cutoff.</p>
+<p>The magic takes place in Matrix multiply function.</p>
+<p>Todo: Adding two gives full matrix! Should be easy to fix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>A</strong> : ndarray</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>L</strong></td>
+<td>(ndarray)</td>
+</tr>
+<tr class="row-even"><td><strong>R</strong></td>
+<td>(ndarray)</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="Inelastica.math.spectral.SpectralMatrix.full">
 <code class="descname">full</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#SpectralMatrix.full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.spectral.SpectralMatrix.full" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the dense ndarray via matrix multiplication <span class="math">\(\mathbf{A}^{(mxm)} = \mathbf{L}.\mathbf{R}\)</span>.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.spectral.dagger">
 <code class="descclassname">Inelastica.math.spectral.</code><code class="descname">dagger</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#dagger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.spectral.dagger" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the hermitian conjugation of a normal or spectral matrix.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.spectral.mm">
 <code class="descclassname">Inelastica.math.spectral.</code><code class="descname">mm</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#mm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.spectral.mm" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Matrix multiplication with arbitrary number of arguments
+and the SpectralMatrix type.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.spectral.trace">
 <code class="descclassname">Inelastica.math.spectral.</code><code class="descname">trace</code><span class="sig-paren">(</span><em>a</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.spectral.trace" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the trace of a normal or spectral matrix.</p>
+</dd></dl>
 
 
 
@@ -256,7 +287,7 @@ labda, v are eigvalues, vectors</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'v1.3.2',
+            VERSION:'v1.3.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
