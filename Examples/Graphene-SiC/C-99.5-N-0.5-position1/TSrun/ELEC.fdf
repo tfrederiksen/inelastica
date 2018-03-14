@@ -41,8 +41,8 @@ TS.Elecs.GF.ReUse true
   chem-pot Left
   semi-inf-dir -a3
   elec-pos begin 22
-  rep-A1 1 
-  rep-A2 1 
+  bloch-A1 1 
+  bloch-A2 1 
 %endblock TS.Elec.Left
  
 %block TS.Elec.Right
@@ -50,8 +50,8 @@ TS.Elecs.GF.ReUse true
   chem-pot Right
   semi-inf-dir +a3
   elec-pos end -4
-  rep-A1 1 
-  rep-A2 1 
+  bloch-A1 1 
+  bloch-A2 1 
 %endblock TS.Elec.Right
 
 TS.Contours.Eq.Pole 3 eV
