@@ -35,7 +35,7 @@ def test_prereq():
     # For release 600!
     a = N.ones((600, 600), N.complex)
     b = N.dot(a, a)
-    c, d = LA.eigh(b)
+    LA.eigh(b)
     en = time.time()
     if en - st > 4.0:
         print "#### Warning ####"
@@ -59,7 +59,6 @@ def test_prereq():
 test_prereq()
 
 from numpy.distutils.core import setup
-from numpy.distutils.system_info import get_info, NotFoundError
 
 # Create list of all sub-directories with
 #   __init__.py files...

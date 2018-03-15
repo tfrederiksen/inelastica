@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import sys
-import os
 import Inelastica.EigenChannels as EC
 import Inelastica.pyTBT as TBT
 import Inelastica.Phonons as P

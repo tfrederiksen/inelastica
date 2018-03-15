@@ -134,7 +134,7 @@ class kmesh(object):
         # No brute force (and therefore terribly slow) pairing here
         indx = [[ii, 2] for ii in range(self.NNk/2, self.NNk)] # Keep the last half of the k-points with double weight
         k0 = self.k[self.NNk/2]
-        if N.dot(k0, k0)==0: # gamma in the kptsist
+        if N.dot(k0, k0) == 0: # Gamma in the kptlist
             indx[0] = [self.NNk/2, 1] # lower weight to one
         indx, weight = N.array([ii[0] for ii in indx]), N.array([ii[1] for ii in indx])
         kpts, wgts = self.k[indx], self.w[:, indx]*weight

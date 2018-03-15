@@ -142,7 +142,7 @@ class SpectralMatrix(object):
                 else:
                     return self.full()-b.full()
             else:
-                res=SpectralMatrix()
+                res = SpectralMatrix()
                 res.L = N.zeros((NN, Na+Nb), N.complex) # Always assume complex !?
                 res.R = N.zeros((Na+Nb, NN), N.complex) # Always assume complex !?
                 res.L[:, 0:Na], res.R[0:Na, :] = self.L, self.R

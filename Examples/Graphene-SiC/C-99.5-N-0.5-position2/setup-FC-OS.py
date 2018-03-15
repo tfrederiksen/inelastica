@@ -1,4 +1,4 @@
-from Inelastica.SetupRuns import *                     
+from Inelastica.SetupRuns import *
 
 # After finishing the CGrun calculation we can
 # generate FCrun and OSrun directoris with this script:
