@@ -1,6 +1,7 @@
 MD.TypeOfRun  FC
 MD.FCfirst    2
 MD.FClast     2
+TS.HS.Save   true
 TS.SaveHS    True
 MD.FCDispl   0.02 Ang
 
