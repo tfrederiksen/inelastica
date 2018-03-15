@@ -6,14 +6,11 @@ AtomicCoordinatesFormat Ang
 SystemTitle CuCO
 SystemLabel CuCO
 
-TS.Elecs.Neglect.Principal true
 SaveTotalPotential true
 SaveRho true
 
 SolutionMethod      transiesta
 MullikenInSCF       false
-
-###SlabDipoleCorrection true
 
 MD.TypeOfRun        CG
 MD.NumCGsteps       0
