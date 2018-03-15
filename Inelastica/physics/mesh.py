@@ -162,7 +162,7 @@ def test():
     """
     Test function
     """
-    mesh = kmesh(4, 3, 3, meshtype=['LIN', 'GK', 'LIN'],invsymmetry=False)
+    mesh = kmesh(4, 3, 3, meshtype=['LIN', 'GK', 'LIN'], invsymmetry=False)
     keys = mesh.__dict__.keys()
     print keys
     print mesh.Nk
@@ -176,7 +176,7 @@ def test():
 
     print 'Integrate some simple functions over [-0.5,0.5]:'
     print '   f(x,y,z)=1 => \int f dxdydz =', N.sum(mesh.w[0])
-    for i,s in enumerate(['x','y','z']):
+    for i, s in enumerate(['x', 'y', 'z']):
         f = mesh.k[:, i]
         print '   f(x,y,z)=%s => \int f dxdydz ='%s, N.sum(f*mesh.w[0])
     f = mesh.k[:, 0]*mesh.k[:, 1]*mesh.k[:, 2]
@@ -184,7 +184,7 @@ def test():
     f = (mesh.k[:, 0]+1)*(mesh.k[:, 1]+1)*(mesh.k[:, 2]+1)
     print '   f(x,y,z)=(x+1)*(y+1)*(z+1) => \int f dxdydz =', N.sum(f*mesh.w[0])
     import math
-    for i,s in enumerate(['x','y','z']):
+    for i, s in enumerate(['x', 'y', 'z']):
         f = N.cos(2*mesh.k[:, i])
         print '   f(x,y,z)=cos(2%s) => \int f dxdydz ='%s, N.sum(f*mesh.w[0]), '[exact: sin(1) ~ 0.841470984807897]'
 
