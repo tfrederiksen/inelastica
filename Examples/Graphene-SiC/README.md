@@ -31,11 +31,15 @@ The following procedure should be executed in both `C-99.5-N-0.5-position1` and 
 
 1. Structure optimization in `CGrun`
 
-1. Obtain force constant by using `FCrun_XX_XX` (Here we split the FCrun calculation to reduce the computational time), e.g.,
-
 1. Calculate the bulk electronic state of electrode in `ELEC1` (SiC) and `ELEC2` (1D gold chain)
 
-1. Calculate the overlap of wavefunction with respect to the small translational motion for
+1. Prepare `FCrun_XX_XX` and `OSrun` directories, e.g., via the script
+
+       $ python setup-FC-OS.py
+
+1. Obtain force constants from `FCrun_XX_XX` (we parallelize the FCrun calculations in separate runs).
+
+1. Calculate the basis overlaps with respect to the small translational motion for
    `+x`, `-x`, `+y`, `-y`, `+z`, `-z` direction in `OSrun`. 
 
 1. Calculate the phonon and electron-phonon interaction by using Phonons script.
