@@ -118,8 +118,7 @@ class SpectralMatrix(object):
             print "SpectralMatrix: Fraction of eigenvalues above cutoff (%.1e) is %i/%i"%(cutoff, len(indx), len(A))
             self.L = N.dot(evec, N.diag(ev))
             self.R = dagger(evec)
-            if False:
-                print N.allclose(A, N.dot(self.L, self.R))
+            # print N.allclose(A, N.dot(self.L, self.R))
 
     def full(self):
         r"""

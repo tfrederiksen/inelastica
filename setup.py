@@ -15,24 +15,8 @@ def test_prereq():
         print "Inelastica needs the package 'numpy' to run."
         raise NameError('numpy package not found')
 
-    try:
-        import numpy.distutils
-        import numpy.distutils.extension
-    except:
-        print "Inelastica requires the f2py extension of numpy."
-        raise NameError('numpy f2py package not found')
-
-    try:
-        import netCDF4 as NC4
-    except:
-        print "Inelastica requires netCDF4 (1.2.7 or newer recommended)"
-        print "See https://pypi.python.org/pypi/netCDF4"
-        raise NameError('netCDF4 package not found')
-
     # Make sure that numpy is compiled with optimized LAPACK/BLAS
     st = time.time()
-
-    # For release 600!
     a = N.ones((600, 600), N.complex)
     b = N.dot(a, a)
     LA.eigh(b)
@@ -46,15 +30,30 @@ def test_prereq():
         print "#### Warning ####"
 
     try:
+        import numpy.distutils
+        import numpy.distutils.extension
+    except:
+        print "Inelastica requires the f2py extension of numpy."
+        raise NameError('numpy f2py package not found')
+
+    try:
+        import netCDF4
+    except:
+        print "Inelastica requires netCDF4 (1.2.7 or newer recommended)"
+        print "See https://pypi.python.org/pypi/netCDF4"
+        raise NameError('netCDF4 package not found')
+
+    try:
         import scipy
-        import scipy.linalg as SLA
-        import scipy.special as SS
+        import scipy.linalg
+        import scipy.special
     except:
         print "#### Warning ####"
         print 'Some modules will not work without the scipy package'
         print '(needed for solving generalized eigenvalue problems'
         print 'and spherical harmonics)'
         print "#### Warning ####"
+
 
 test_prereq()
 
