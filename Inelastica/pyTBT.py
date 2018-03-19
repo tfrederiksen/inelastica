@@ -54,7 +54,7 @@ import Inelastica.io.xmgrace as XMGR
 # DIRECTLY in python
 
 
-def GetOptions(argv, **kwargs):
+def GetOptions(argv):
     """
     Returns an instance of ``options`` for the ``pyTBT`` module
 

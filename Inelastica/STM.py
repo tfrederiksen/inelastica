@@ -61,7 +61,7 @@ DEBUG = False
 DEBUGPDE = False
 
 
-def GetOptions(argv, **kwargs):
+def GetOptions(argv):
     # if text string is specified, convert to list
     if isinstance(argv, basestring): argv = argv.split()
 

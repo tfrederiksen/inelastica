@@ -84,7 +84,7 @@ import Inelastica.math as MM
 import Inelastica.misc.valuecheck as VC
 
 
-def GetOptions(argv, **kwargs):
+def GetOptions(argv):
     """
     Returns an instance of ``options`` for the ``Phonons`` module
 
