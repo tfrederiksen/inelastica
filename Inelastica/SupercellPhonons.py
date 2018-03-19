@@ -84,11 +84,8 @@ def GetOptions(argv, **kwargs):
 
     options = p.parse_args(argv)
 
-    # With this one can overwrite the logging information
-    if "log" in kwargs:
-        options.Logfile = kwargs["log"]
-    else:
-        options.Logfile = 'Bandstructures.log'
+    # Set module name
+    options.module = 'Bandstructures'
 
     # Check if AtomicMasses are specified
     if options.AtomicMass!='[]':
@@ -473,10 +470,9 @@ def WriteDOS(outfile, bands, emin, emax, pts, smear):
 
 
 def main(options):
-    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    #VC.OptionsCheck(options,'Phonons')
-
-    Log.PrintMainHeader('Bandstructures', options)
+    Log.CreatePipeOutput(options)
+    #VC.OptionsCheck(options)
+    Log.PrintMainHeader(options)
 
     try:
         fdf = glob.glob(options.onlyTSdir+'/RUN.fdf')

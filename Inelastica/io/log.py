@@ -19,7 +19,7 @@ _default_stdout = sys.stdout
 _default_stderr = sys.stderr
 
 
-def CreatePipeOutput(f):
+def CreatePipeOutput(options):
     global _default_stdout, _default_stderr
     import os
     import os.path as osp
@@ -28,7 +28,7 @@ def CreatePipeOutput(f):
     # First ensure that the path to the file exists
     # In case one wishes to create a log folder this should
     # not be limited.
-    head = osp.split(f)[0]
+    head = options.DestDir
     try:
         # Create directory tree
         os.makedirs(head)
@@ -52,17 +52,21 @@ def CreatePipeOutput(f):
             self.log.flush()
 
     # Overwrite the std-out and std-err
-    sys.stdout = TeeLog(f, _default_stdout)
-    sys.stderr = TeeLog(f, _default_stderr)
+    f = options.DestDir+'/'+options.module
+    sys.stdout = TeeLog(f+'.log', _default_stdout)
+    sys.stderr = TeeLog(f+'.err', _default_stderr)
 
 
-def PrintMainHeader(name, options):
+def PrintMainHeader(options=None):
     import Inelastica.info as info
     print('=======================================================================')
     print('INELASTICA VERSION : %s'%(info.version))
     if info.git_count > 0:
         print('               GIT : %s'%(info.git_revision))
-    print('RUNNING %s : %s'%(name.upper(), time.ctime()))
+    try:
+        print('RUNNING %s : %s'%(options.module.upper(), time.ctime()))
+    except:
+        print('RUNNING : %s'% time.ctime())
     if options:
         print('\nOPTIONS :')
         opts_dict = vars(options)
@@ -72,9 +76,12 @@ def PrintMainHeader(name, options):
     print('=======================================================================')
 
 
-def PrintMainFooter(name):
+def PrintMainFooter(options=None):
     print('=======================================================================')
-    print('FINISHED %s : %s'%(name.upper(), time.ctime()))
+    try:
+        print('FINISHED %s : %s'%(options.module.upper(), time.ctime()))
+    except:
+        print('FINISHED : %s'% time.ctime())
     print('=======================================================================')
 
 

@@ -146,11 +146,8 @@ def GetOptions(argv, **kwargs):
 
     options = p.parse_args(argv)
 
-    # With this one can overwrite the logging information
-    if "log" in kwargs:
-        options.Logfile = kwargs["log"]
-    else:
-        options.Logfile = 'Phonons.log'
+    # Set module name
+    options.module = 'Phonons'
 
     # k-point
     options.kpoint = N.array([options.k1, options.k2, options.k3], N.float)
@@ -849,8 +846,8 @@ def main(options):
     ----------
     options : an ``options`` instance
     """
-    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    Log.PrintMainHeader('Phonons', options)
+    Log.CreatePipeOutput(options)
+    Log.PrintMainHeader(options)
 
     # Determine SIESTA input fdf files in FCruns
     fdf = glob.glob(options.FCwildcard+'/RUN.fdf')
@@ -878,9 +875,9 @@ def main(options):
                                WriteGradients=options.WriteGradients)
         # Write data to files
         DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        Log.PrintMainFooter('Phonons')
+        Log.PrintMainFooter(options)
         return DM.h0, DM.s0, DM.hw, DM.heph
     else:
         DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        Log.PrintMainFooter('Phonons')
+        Log.PrintMainFooter(options)
         return DM.hw

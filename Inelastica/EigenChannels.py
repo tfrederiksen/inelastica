@@ -54,7 +54,6 @@ def GetOptions(argv, **kwargs):
         For example `-n 2 test_dir`, which instructs to compute only the two most transmitting
         eigenchannel scattering states and place the results in the output directory `test_dir`.
     """
-    Log.PrintMainHeader('GetOptions', None)
 
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
@@ -113,11 +112,8 @@ def GetOptions(argv, **kwargs):
 
     options = p.parse_args(argv)
 
-    # With this one can overwrite the logging information
-    if "log" in kwargs:
-        options.Logfile = kwargs["log"]
-    else:
-        options.Logfile = 'EigenChannels.log'
+    # Set module name
+    options.module = 'EigenChannels'
 
     # k-point
     options.kpoint = N.array([options.k1, options.k2, 0.0], N.float)
@@ -135,9 +131,9 @@ def main(options):
     options : an ``options`` instance
     """
 
-    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    VC.OptionsCheck(options, 'EigenChannels')
-    Log.PrintMainHeader('EigenChannels', options)
+    Log.CreatePipeOutput(options)
+    VC.OptionsCheck(options)
+    Log.PrintMainHeader(options)
 
     # Read geometry
     XV = '%s/%s.XV'%(options.head, options.systemlabel)
@@ -233,7 +229,7 @@ def main(options):
             print 'You need to install scipy to solve the generalized eigenvalue problem'
             print 'for the molecular eigenstates in the nonorthogonal basis'
 
-    Log.PrintMainFooter('EigenChannels')
+    Log.PrintMainFooter(options)
 
 
 def calcWF(options, geom, basis, Y):

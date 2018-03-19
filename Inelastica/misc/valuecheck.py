@@ -102,7 +102,7 @@ def Check(name, val, *msgs):
         raise ArithmeticError("Criteria not met. Please check output...")
 
 
-def OptionsCheck(opts, exe):
+def OptionsCheck(opts):
     """
     Generic routine for adjusting most used options for routines.
     I.e. Inelastica/EigenChannels/pyTBT.
@@ -110,6 +110,9 @@ def OptionsCheck(opts, exe):
     import Inelastica.io.siesta as SIO
     import os
     import os.path as osp
+
+    # Module name
+    exe = opts.module
 
     # Destination directory
     if not osp.isdir(opts.DestDir):
