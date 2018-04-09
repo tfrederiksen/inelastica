@@ -10,13 +10,13 @@ Version release
 The release cycle should be performed like this:
 
 1. Increment the release numbers in the top-directory `setup.py` script:
-   
+
         MAJOR
         MINOR
         MICRO
 
    The complete tag is `VERSION = "v[MAJOR].[MINOR].[MICRO]"`.
-	
+
 2. Set the variable `GIT_REVISION` to the latest commit in the top-directory `setup.py`.
    This means that the revision specification for the release
    actually corresponds to the commit just before the actual release.

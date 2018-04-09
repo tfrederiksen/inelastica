@@ -116,7 +116,7 @@ class Geom(object):
         self.natoms = 0
         self.xyz, self.anr, self.snr = [], [], []
 
-        if len(fn)>1:
+        if len(fn) > 1:
             if fn.endswith('.XV') or fn.endswith('.XV.gz') or fn.endswith('.XV2') or fn.endswith('.XV2.gz'):
                 self.readXV(fn)
             elif fn.endswith('.xyz') or fn.endswith('.xyz.gz'):
@@ -149,7 +149,7 @@ class Geom(object):
 
     def rmAtom(self, rmnr):
         "Remove the offending atom"
-        if rmnr<0 or rmnr>self.natoms-1:
+        if rmnr < 0 or rmnr > self.natoms-1:
             print "ERROR: You tried to remove an atom that isn't there"
             sys.exit(1)
         self.xyz = self.xyz[0:rmnr]+self.xyz[rmnr+1:self.natoms]
@@ -413,7 +413,7 @@ class Geom(object):
             self.zLeftContact = self.xyz[self.leftContactList[-1]-1][2]
             self.ContactSeparation = max(N.array(self.pbc)[:, 2]) \
                                      - self.xyz[self.leftContactList[-1]-1][2]
-        elif len(self.rightContactList)>0:
+        elif len(self.rightContactList) > 0:
             self.zLeftContact = 0.0
             self.ContactSeparation = self.xyz[self.rightContactList[0]-1][2]
         elif len(self.leftContactList) == 0 and len(self.rightContactList) == 0:
@@ -455,7 +455,7 @@ class Geom(object):
         NN, zmax = 0, 0
         for ii in range(3):
             # Find cell vector with largest z-component
-            if self.pbc[ii][2]>zmax:
+            if self.pbc[ii][2] > zmax:
                 NN, zmax = ii, self.pbc[ii][2]
         self.pbc[NN][2] = zmax+NewContactSeparation-self.ContactSeparation
         self.ContactSeparation = NewContactSeparation
@@ -527,7 +527,7 @@ class Geom(object):
         # Find cell vector with largest z-component
         zmax = 0
         for ii in range(3):
-            if self.pbc[ii][2]>zmax:
+            if self.pbc[ii][2] > zmax:
                 zmax = self.pbc[ii][2]
         for i in range(IndexShift):
             # add z-periodicity to z-coordinate
@@ -581,7 +581,7 @@ class Geom(object):
     def readXV(self, fn):
         "Read XV file"
         self.pbc, self.snr, self.anr, self.xyz = SIO.ReadXVFile(fn)
-        self.natoms=len(self.xyz)
+        self.natoms = len(self.xyz)
         #self.move2origo()
 
     def writeXV(self, fn, rep=[1, 1, 1]):
@@ -645,7 +645,7 @@ class Geom(object):
         geom = copy.deepcopy(self)
         for i in range(3):
             geom.repeteGeom(self.pbc[i], rep=rep[i])
-            geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
+            geom.pbc[i] = [rep[i]*x for x in self.pbc[i]]
         SIO.WriteMKLFile(fn, geom.anr, geom.xyz, [], [], 0, 0)
 
     def readSTRUCT_OUT(self, fn):
