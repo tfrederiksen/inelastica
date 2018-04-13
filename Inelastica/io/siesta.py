@@ -825,6 +825,7 @@ def ReadMullikenPop(infile, outfile, writeallblocks=False):
     spin = False
     f = SIO_open(infile, 'r')
     print 'io.siesta.ReadMullikenPop: Reading', infile
+    exc = 0
     for line in f.readlines():
         if 'mulliken: Atomic and Orbital Populations:' in line:
             # Start of populations block
@@ -846,7 +847,6 @@ def ReadMullikenPop(infile, outfile, writeallblocks=False):
                 thisfile += '.UP'
             if spin and block%2 == 1:
                 thisfile += '.DOWN'
-            print 'io.siesta.ReadMullikenPop: Writing', thisfile
             f2 = open(thisfile, 'w')
             f2.write('# Sum of Mulliken charges: %.6f\n'%popsum)
             f2.write('# Atomnr  Pop.  dPop   Cum.sum.\n')
@@ -865,7 +865,14 @@ def ReadMullikenPop(infile, outfile, writeallblocks=False):
                 popsum += pop
                 mpop.append((nr, pop, dpop, 1.0*popsum))
             except Exception as e:
-                print 'Exception in ReadMullikenPop:', e
+                exc += 1
+    if spin:
+        print 'io.siesta.ReadMullikenPop: Wrote', outfile+'.UP'
+        print 'io.siesta.ReadMullikenPop: Wrote', outfile+'.DOWN'
+    else:
+        print 'io.siesta.ReadMullikenPop: Wrote', outfile
+    if exc > 0:
+        print 'Warning: %i exceptions encountered in ReadMullikenPop'%exc
     f.close()
 
 
