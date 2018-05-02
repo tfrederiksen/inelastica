@@ -451,10 +451,8 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
 
 def RunTBT(TSrun, Emin, Emax, NPoints, NumKxy_A1=1, NumKxy_A2=1,
            AtomsPerLayer=0, DeviceLayerInclLeft=0, DeviceLayerInclRight=0,
-           overwrite=False, PBStemplate=None, PBSsubs=None, submitJob=False):
+           PBStemplate=None, PBSsubs=None, submitJob=False):
     """
-    overwrite            : (True/False) Specifies if one is allowed to write in existing
-                              directories
     PBStemplate          : Path+foldername to a template RUN.pbs file for PBS queueing
     PBSsubs              : A list of string substitutions to be applied to the template
                               PBS script in order to generate a new PBS script

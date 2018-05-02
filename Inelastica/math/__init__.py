@@ -12,6 +12,7 @@
 
 """
 
+from math import *
 from gausskronrod import *
 from hilbert import *
 from misc import *
