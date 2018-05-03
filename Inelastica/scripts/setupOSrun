@@ -9,7 +9,7 @@ parser.add_argument('CGrun', metavar='CG',
 parser.add_argument('OSrun', metavar='OS',
                     help='Output OSrun directory name (to be created)')
 parser.add_argument('-d', '--displacement', dest='displacement', type=float, default=0.02,
-                    help='Finite displacement amplitude (default: %(default)s Ang')
+                    help='Finite displacement amplitude (default: %(default)s Ang)')
 args = parser.parse_args()
 
 SR.SetupOSrun(args.CGrun, args.OSrun, args.displacement)
