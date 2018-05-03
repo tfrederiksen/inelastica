@@ -3,7 +3,7 @@
 CO/Cu(111)
 ----------
 
-In this example we describe how to obtain STM images of a CO molecule adsorbed on a Cu(111) surface consisting of 3x3 Cu atoms with lattice constant 2.57 Å, using 5x5 k points along the surface plane. The vertical distance between the oxygen atom and the tip-apex copper atom is 7.4 Ang. (See /Examples/COatCu111-Cutip-3x3surf/) 
+In this example we describe how to obtain STM images of a CO molecule adsorbed on a Cu(111) surface consisting of 3x3 Cu atoms with lattice constant 3.646 Å (interatomic distance 2.57 Å), using 5x5 k points along the surface plane. The vertical distance between the oxygen atom and the tip-apex copper atom is 7.4 Å (see /Examples/COatCu111-Cutip-3x3surf/).
 
 .. code-block:: bash
 
