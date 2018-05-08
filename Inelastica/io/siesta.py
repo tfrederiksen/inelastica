@@ -1530,6 +1530,7 @@ def CheckTermination(infile):
 
 
 class HS(object):
+
     """
     Create full *HS* from *TSHS* file. Read fn and assemble for specified k-point
 

@@ -83,6 +83,7 @@ def __mm(args):
 
 
 class SpectralMatrix(object):
+
     r"""
     Matrix class for spectral matrices.
 

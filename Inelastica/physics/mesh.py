@@ -32,6 +32,7 @@ def generatelinmesh(Nk):
 
 
 class kmesh(object):
+
     """
     Create a k-mesh samling where each of the three components
     sample the range [-0.5,0.5]). They are not in reciprocal space.
