@@ -189,7 +189,7 @@ class Geom(object):
         new = Geom()
         tmp = []
         for i in range(self.natoms):
-            tmp.append([self.xyz[i][2], self.xyz[i][1], self.xyz[i][0],\
+            tmp.append([self.xyz[i][2], self.xyz[i][1], self.xyz[i][0],
                         self.snr[i], self.anr[i], self.constrained[i]])
         tmp.sort()
         for i in range(self.natoms):
@@ -244,9 +244,9 @@ class Geom(object):
                 self.xyz[ii][jj] += dr[jj]
 
     def move2origo(self):
-        self.move([-min(N.array(self.xyz)[:, 0]),\
-            -min(N.array(self.xyz)[:, 1]),\
-            -min(N.array(self.xyz)[:, 2])])
+        self.move([-min(N.array(self.xyz)[:, 0]),
+                   -min(N.array(self.xyz)[:, 1]),
+                   -min(N.array(self.xyz)[:, 2])])
 
     def rotate(self, axisvector, angle, RotationCenter=None, RotateSubset=None, Degrees=True,
                RotateLatticeVectors=False):
@@ -345,15 +345,15 @@ class Geom(object):
         if last-first >= 2:
             r0 = N.array(self.xyz[f])+N.array([0., 0., 10.])
             zmat[2, :3] = N.array([2, 1, 0])
-            zmat[2, 3:] = N.array([GetDist(self.xyz[f+1], self.xyz[f+2]),\
-                                   GetAngle(self.xyz[f], self.xyz[f+1], self.xyz[f+2]),\
+            zmat[2, 3:] = N.array([GetDist(self.xyz[f+1], self.xyz[f+2]),
+                                   GetAngle(self.xyz[f], self.xyz[f+1], self.xyz[f+2]),
                                    GetDihedral(r0, self.xyz[f], self.xyz[f+1], self.xyz[f+2])])
         # Remaining atoms
         if last-first >= 3:
             for i in range(f+3, last):
                 zmat[i-f, :3] = N.array([i-f, i-f-1, i-f-2])
-                zmat[i-f, 3:] = N.array([GetDist(self.xyz[i-1], self.xyz[i]),\
-                                         GetAngle(self.xyz[i-2], self.xyz[i-1], self.xyz[i]),\
+                zmat[i-f, 3:] = N.array([GetDist(self.xyz[i-1], self.xyz[i]),
+                                         GetAngle(self.xyz[i-2], self.xyz[i-1], self.xyz[i]),
                                          GetDihedral(self.xyz[i-3], self.xyz[i-2], self.xyz[i-1], self.xyz[i])])
         print 'Done!'
         return zmat

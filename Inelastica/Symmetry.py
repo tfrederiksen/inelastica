@@ -87,10 +87,8 @@ class Symmetry(object):
     def findSymmetry(self, onlyLatticeSym=False):
         # Reciprocal lattice for PBC
         pbc = self.pbc
-        bp1, bp2, bp3 = N.cross(pbc[1], pbc[2]), N.cross(pbc[0], pbc[2]),\
-            N.cross(pbc[0], pbc[1])
-        bp1, bp2, bp3 = bp1/mm(pbc[0], bp1), bp2/mm(pbc[1], bp2),\
-            bp3/mm(pbc[2], bp3)
+        bp1, bp2, bp3 = N.cross(pbc[1], pbc[2]), N.cross(pbc[0], pbc[2]), N.cross(pbc[0], pbc[1])
+        bp1, bp2, bp3 = bp1/mm(pbc[0], bp1), bp2/mm(pbc[1], bp2), bp3/mm(pbc[2], bp3)
         self.bp1, self.bp2, self.bp3 = bp1, bp2, bp3
 
         # Find minimal unit cell
@@ -129,7 +127,7 @@ class Symmetry(object):
             FCreshape = False
 
         # Rearange basis to fit FCfirst...FClast order in Siesta FC file
-        basisxyz = moveIntoCell(self.xyz[FCfirst-1:FClast],\
+        basisxyz = moveIntoCell(self.xyz[FCfirst-1:FClast],
                                 self.a1, self.a2, self.a3, self.accuracy)
         ipiv = []
         for elem in basisxyz[0:FClast-FCfirst+1]:
@@ -178,8 +176,8 @@ class Symmetry(object):
                 # Figure out which atoms are connected by symmetry op.
                 xyz = self.xyz.copy()-self.origo[iU]
                 FCxyz = xyz[FCfirst-1+ii, :].copy()
-                xyz = moveIntoClosest(N.array(xyz)-FCxyz,\
-                                    self.pbc[0], self.pbc[1], self.pbc[2])+FCxyz
+                xyz = moveIntoClosest(N.array(xyz)-FCxyz,
+                                      self.pbc[0], self.pbc[1], self.pbc[2])+FCxyz
                 nxyz = N.transpose(mm(self.U33[iU], N.transpose(xyz)))
                 # Did the moving atom move between unit cells?
                 nFCxyz, iix = nxyz[FCfirst-1+ii, :].copy(), 10
@@ -192,8 +190,8 @@ class Symmetry(object):
                     sys.exit('Symmetry Error')
                 tFCxyz = nFCxyz+iix*self.a1+iiy*self.a2+iiz*self.a3
                 shift = tFCxyz-nFCxyz # Shift all new coordinates
-                nxyz = moveIntoClosest(N.array(nxyz)+shift-FCxyz,\
-                                    self.pbc[0], self.pbc[1], self.pbc[2])+FCxyz
+                nxyz = moveIntoClosest(N.array(nxyz)+shift-FCxyz,
+                                       self.pbc[0], self.pbc[1], self.pbc[2])+FCxyz
 
                 # Which atoms are within radi?
                 indx = N.where(distance(xyz-FCxyz) < radi)[0]
@@ -493,7 +491,7 @@ class Symmetry(object):
         sameatoms = N.argwhere(self.snr == whichsnr)
         samexyz = self.xyz[sameatoms]
         samexyz = samexyz.reshape((-1, 3))
-        samexyz = moveIntoCell(samexyz, self.pbc[0, :], self.pbc[1, :],\
+        samexyz = moveIntoCell(samexyz, self.pbc[0, :], self.pbc[1, :],
                                self.pbc[2, :], self.accuracy)
         # Make matrix of difference between coordinates
         possible = samexyz.reshape((1, -1, 3))-samexyz.reshape((-1, 1, 3))

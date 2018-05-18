@@ -51,13 +51,13 @@ except:
 
 # Check length of int and long and use the one that has 8 bytes
 if struct.calcsize('l') == 8:
-    fortranPrefix='='
-    fortranuLong='I'
-    fortranLong='i'
+    fortranPrefix = '='
+    fortranuLong = 'I'
+    fortranLong = 'i'
 else:
-    fortranPrefix=''
-    fortranuLong='I'
-    fortranLong='i'
+    fortranPrefix = ''
+    fortranuLong = 'I'
+    fortranLong = 'i'
 
 
 def SIO_open(filename, mode='r'):
@@ -203,7 +203,7 @@ def WriteANIFile(filename, Geom, Energy, InUnits='Ang', OutUnits='Ang'):
     if (InUnits == 'Bohr') and (OutUnits == 'Ang'): convFactor = PC.Bohr2Ang
     elif (InUnits == 'Ang') and (OutUnits == 'Bohr'): convFactor = PC.Ang2Bohr
     elif (((InUnits == 'Ang') and (OutUnits == 'Ang')) \
-       or ((InUnits == 'Bohr') and (OutUnits == 'Bohr'))): convFactor = 1
+          or ((InUnits == 'Bohr') and (OutUnits == 'Bohr'))): convFactor = 1
     else: print 'io.siesta.WriteANIFile: Unit conversion error!'
     anifile = open(filename, 'w')
     for ii, iGeom in enumerate(Geom):
@@ -211,10 +211,10 @@ def WriteANIFile(filename, Geom, Energy, InUnits='Ang', OutUnits='Ang'):
         anifile.write('%f \n'%Energy[ii])
         for iixyz in range(iGeom.natoms):
             anifile.write('%s %2.6f %2.6f %2.6f\n'%\
-                       (PC.PeriodicTable[abs(iGeom.anr[iixyz])],\
-                        convFactor*iGeom.xyz[iixyz][0],\
-                        convFactor*iGeom.xyz[iixyz][1],\
-                        convFactor*iGeom.xyz[iixyz][2]))
+                          (PC.PeriodicTable[abs(iGeom.anr[iixyz])],\
+                           convFactor*iGeom.xyz[iixyz][0],\
+                           convFactor*iGeom.xyz[iixyz][1],\
+                           convFactor*iGeom.xyz[iixyz][2]))
     anifile.close()
 
 
@@ -225,27 +225,27 @@ def ReadANIFile(filename, InUnits='Ang', OutUnits='Ang'):
     if (InUnits == 'Bohr') and (OutUnits == 'Ang'): convFactor = PC.Bohr2Ang
     elif (InUnits == 'Ang') and (OutUnits == 'Bohr'): convFactor = PC.Ang2Bohr
     elif (((InUnits == 'Ang') and (OutUnits == 'Ang')) \
-       or ((InUnits == 'Bohr') and (OutUnits == 'Bohr'))): convFactor = 1
+          or ((InUnits == 'Bohr') and (OutUnits == 'Bohr'))): convFactor = 1
     else: print 'io.siesta.ReadANIFile: Unit conversion error!'
 
     Energy, Geom = [], []
     anifile = SIO_open(filename, 'r')
-    newNN=anifile.readline()
+    newNN = anifile.readline()
     while newNN != '':
-        NN=string.atoi(newNN)
+        NN = string.atoi(newNN)
         newG = MG.Geom()
         try:
             Energy.append(string.atof(anifile.readline()))
         except:
             Energy.append(0.0)
         for ii in range(NN):
-            line=string.split(anifile.readline())
-            xyz=[convFactor*string.atof(line[1]),
-                 convFactor*string.atof(line[2]),\
-                 convFactor*string.atof(line[3])]
+            line = string.split(anifile.readline())
+            xyz = [convFactor*string.atof(line[1]),
+                   convFactor*string.atof(line[2]),\
+                   convFactor*string.atof(line[3])]
             newG.addAtom(xyz, 1, PC.PeriodicTable[line[0]])
         Geom.append(newG)
-        newNN=anifile.readline()
+        newNN = anifile.readline()
     anifile.close()
     return Geom, Energy
 
@@ -305,7 +305,7 @@ def ReadWFSFile(filename):
     PSIvectors = []
     for iik in range(nk):
         for iispin in range(nspin):
-            ik, k1, k2, k3 =  ReadFortranBin(fortfile, 'Iddd', 1)
+            ik, k1, k2, k3 = ReadFortranBin(fortfile, 'Iddd', 1)
             #print ik,k1,k2,k3
             ispin, = ReadFortranBin(fortfile, 'I', 1)
             nwflist, = ReadFortranBin(fortfile, 'I', 1)
@@ -318,7 +318,7 @@ def ReadWFSFile(filename):
                 for jj in range(nuotot):
                     label = ''
                     for a in range(20): label += 'c'
-                    out =  ReadFortranBin(fortfile, 'I'+label+'III'+label+'dd', 1)
+                    out = ReadFortranBin(fortfile, 'I'+label+'III'+label+'dd', 1)
                     lab1, lab2, repsi, impsi = out[1:21], out[24:44], out[44], out[45]
                     labelfis, symfio = '', ''
                     for a in range(20):
@@ -353,7 +353,7 @@ def WriteMKLFile(filename, atomnumber, xyz, freq, vec, FCfirst, FClast):
         line = str(iatom)
         for j in range(3):
             line += string.rjust('%.9f'%xyz[i][j], 16)
-        line +='\n'
+        line += '\n'
         mklfile.write(line)
     mklfile.write('$END\n')
     if len(freq) > 0:
@@ -410,7 +410,7 @@ def WriteXYZFile(filename, atomnumber, xyz, write_ghosts=False):
     "Writes atomic geometry in xyz-file format"
     print 'io.siesta.WriteXYZFile: Writing', filename
     # Number of ghost atoms
-    nga = len(N.where(N.array(atomnumber)<0)[0])
+    nga = len(N.where(N.array(atomnumber) < 0)[0])
     # Write file
     xyzfile = open(filename, 'w')
     if write_ghosts:
@@ -428,7 +428,7 @@ def WriteXYZFile(filename, atomnumber, xyz, write_ghosts=False):
         line = string.ljust(element, 5)
         for j in range(3):
             line += string.rjust('%.9f'%xyz[i][j], 16)
-        line +='\n'
+        line += '\n'
         if atomnumber[i] > 0 or write_ghosts:
             xyzfile.write(line)
     xyzfile.close()
@@ -464,10 +464,10 @@ def WriteFDFFile(filename, vectors, speciesnumber, atomnumber, xyz):
     fdffile.write('%endblock LatticeVectors\nAtomicCoordinatesFormat  Ang'+
                '\n%block AtomicCoordinatesAndAtomicSpecies\n')
     for ii in range(len(xyz)):
-        line=string.rjust('%.9f'%xyz[ii][0], 16)+' '
-        line+=string.rjust('%.9f'%xyz[ii][1], 16)+' '
-        line+=string.rjust('%.9f'%xyz[ii][2], 16)+' '
-        line+=str(int(speciesnumber[ii]))+' # %i\n'%(ii+1)
+        line = string.rjust('%.9f'%xyz[ii][0], 16)+' '
+        line += string.rjust('%.9f'%xyz[ii][1], 16)+' '
+        line += string.rjust('%.9f'%xyz[ii][2], 16)+' '
+        line += str(int(speciesnumber[ii]))+' # %i\n'%(ii+1)
         fdffile.write(line)
     fdffile.write('%endblock AtomicCoordinatesAndAtomicSpecies\n')
 
@@ -493,8 +493,8 @@ def WriteFDFFileZmat(filename, vectors, speciesnumber, atomnumber, xyz, first=0,
             zmatfile.write(string.rjust('%.9f'%vectors[ii][jj], 16)+' ')
         zmatfile.write('\n')
     zmatfile.write('%endblock LatticeVectors\nAtomicCoordinatesFormat Ang'+
-               '\n\nZM.UnitsLength Ang\nZM.UnitsAngle deg\n'+
-               '\n%block Zmatrix\n')
+                   '\n\nZM.UnitsLength Ang\nZM.UnitsAngle deg\n'+
+                   '\n%block Zmatrix\n')
     if first != 1:
         zmatfile.write('cartesian\n')
     for ii in range(len(xyz)):
@@ -502,20 +502,20 @@ def WriteFDFFileZmat(filename, vectors, speciesnumber, atomnumber, xyz, first=0,
             zmatfile.write('molecule\n')
         if ii+1 >= first and ii+1 <= last:
             # We are within the molecular block
-            line =string.rjust('%i'%speciesnumber[ii], 2)
+            line = string.rjust('%i'%speciesnumber[ii], 2)
             a, b, c, d, e, f = zmat[ii+1-first]
-            line+=' %i %i %i '%(a, b, c)
-            line+=string.rjust('%.9f'%d, 16)
-            line+=string.rjust('%.9f'%e, 16)
-            line+=string.rjust('%.9f'%f, 16)
-            line+='   0 0 0\n'
+            line += ' %i %i %i '%(a, b, c)
+            line += string.rjust('%.9f'%d, 16)
+            line += string.rjust('%.9f'%e, 16)
+            line += string.rjust('%.9f'%f, 16)
+            line += '   0 0 0\n'
             zmatfile.write(line)
         else:
-            line =string.rjust('%i'%speciesnumber[ii], 2)
-            line+=string.rjust('%.9f'%xyz[ii][0], 16)
-            line+=string.rjust('%.9f'%xyz[ii][1], 16)
-            line+=string.rjust('%.9f'%xyz[ii][2], 16)
-            line+='   0 0 0\n'
+            line = string.rjust('%i'%speciesnumber[ii], 2)
+            line += string.rjust('%.9f'%xyz[ii][0], 16)
+            line += string.rjust('%.9f'%xyz[ii][1], 16)
+            line += string.rjust('%.9f'%xyz[ii][2], 16)
+            line += '   0 0 0\n'
             zmatfile.write(line)
         if ii+1 == last:
             zmatfile.write('cartesian\n')
@@ -835,7 +835,7 @@ def ReadMullikenPop(infile, outfile, writeallblocks=False):
             spin = True
         if 'mulliken: Qtot =' in line:
             # Determine whether or not we are still within a populations block
-            if spin and block%2==0: mline = True
+            if spin and block%2 == 0: mline = True
             else: mline = False
             mpop.sort()
             # Write data to file
@@ -1261,11 +1261,12 @@ def GetPROJBANDSfromOrbitals(dom, index=[], atom_index=[], species=[], nlist=[],
     nbands = GetPROJBANDSnbands(dom)
     pdos = 0.0*GetPROJBANDSenergies(dom)
     nodes = dom.getElementsByTagName('orbital')
-    k=-1
+    k = -1
     for node in nodes:
         ok = True
         i = int(node.attributes['index'].value)
-        if i == 1: k+=1 # Next k-point
+        if i == 1:
+            k += 1 # Next k-point
         ai = int(node.attributes['atom_index'].value)
         s = node.attributes['species'].value
         n = int(node.attributes['n'].value)
@@ -1328,7 +1329,7 @@ def ExtractPROJBANDS(filename, outfile, index=[], atom_index=[], species=[], nli
     f.write('points = %i\n'%points)
     f.write('format = ascii\ninterleaving = field\nfield = locations, field0\n')
     f.write('structure = 2-vector, scalar\ntype = float, float\n\nend\n')
-    f.close
+    f.close()
 
 
 #--------------------------------------------------------------------------------
@@ -1381,7 +1382,7 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
         pass
     CSL = GetFDFblock(FDFfile, 'ChemicalSpeciesLabel')
     systemlabel = GetFDFlineWithDefault(FDFfile, 'SystemLabel', str, 'siesta', 'io.siesta')
-    head, tail =  os.path.split(FDFfile)
+    head, tail = os.path.split(FDFfile)
     if head == '':
         head = '.'
     XVfile = '%s/%s.XV'%(head, systemlabel)
@@ -1424,8 +1425,8 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
         ion = ions[speciesnumber[ii]]
         for jj in range(len(ion.L)):
             for kk in range(-ion.L[jj], ion.L[jj]+1):
-                basis.ii[iorb]=ii+1
-                basis.atomnum[iorb]= an
+                basis.ii[iorb] = ii+1
+                basis.atomnum[iorb] = an
                 basis.L[iorb] = ion.L[jj]
                 basis.M[iorb] = kk
                 basis.N[iorb] = ion.N[jj]
@@ -1585,7 +1586,7 @@ class HS(object):
         if UseF90helpers and F90imported:
             print 'io.siesta.HS.__init__: Reading', fn
             self.gamma, self.onlyS, self.nuo, self.no, self.nspin, self.maxnh, self.qtot, \
-                self.temp, self.nua, self.ef, self.cell, self.ts_kscell, self.ts_kdispl,\
+                self.temp, self.nua, self.ef, self.cell, self.ts_kscell, self.ts_kdispl, \
                 self.ts_gamma_scf, self.istep, self.ia1 = F90.readtshs.read(fn)
             # Logical
             self.gamma, self.onlyS = self.gamma != 0, self.onlyS != 0
@@ -1602,13 +1603,13 @@ class HS(object):
                 self.version = arr.version.copy()
             except:
                 self.version = 0
-            self.lasto    = arr.lasto.copy()
-            self.xa       = arr.xa.copy()
-            self.numh     = arr.numh.copy()
-            self.listh    = arr.listh.copy()
+            self.lasto = arr.lasto.copy()
+            self.xa = arr.xa.copy()
+            self.numh = arr.numh.copy()
+            self.listh = arr.listh.copy()
             self.listhptr = arr.listhptr.copy()
-            self.xij      = arr.xij.copy()
-            self.Ssparse  = arr.s.copy()
+            self.xij = arr.xij.copy()
+            self.Ssparse = arr.s.copy()
             if not self.onlyS:
                 self.Hsparse = arr.h.copy()
             F90.readtshs.deallocate
@@ -1626,7 +1627,7 @@ class HS(object):
             else:
                 self.xa, self.cell, self.xij, self.Ssparse = matrices
         # Adjust memory layout
-        self.xa  = N.require(self.xa, requirements=['A', 'F'])
+        self.xa = N.require(self.xa, requirements=['A', 'F'])
         self.xij = N.require(self.xij, requirements=['A', 'F'])
         if not self.onlyS:
             self.Hsparse = N.require(self.Hsparse, requirements=['A', 'F'])
@@ -1691,27 +1692,27 @@ class HS(object):
         listh = N.array(listh)
         Ssparse, cnt = N.zeros(maxnh, N.float), 0
         for ii in range(nou):
-            Ssparse[cnt:cnt+numhg[ii]]=ReadFortranBin(fortfile, 'd', numhg[ii])
-            cnt=cnt+numhg[ii]
+            Ssparse[cnt:cnt+numhg[ii]] = ReadFortranBin(fortfile, 'd', numhg[ii])
+            cnt = cnt+numhg[ii]
         if not onlyS:
             Hsparse = N.zeros((nspin, maxnh), N.float, order='F')
             for ispin in range(nspin):
-                cnt=0
+                cnt = 0
                 for ii in range(nou):
-                    Hsparse[ispin, cnt:cnt+numhg[ii]]=ReadFortranBin(fortfile, 'd', numhg[ii])
-                    cnt=cnt+numhg[ii]
+                    Hsparse[ispin, cnt:cnt+numhg[ii]] = ReadFortranBin(fortfile, 'd', numhg[ii])
+                    cnt = cnt+numhg[ii]
             Hsparse = Hsparse.T*PC.Rydberg2eV
             Hsparse = N.require(Hsparse, requirements=['A', 'F'])
 
         if not gamma:
             # Read xij
             xij = N.zeros((maxnh, 3), N.float, order='F')
-            cnt=0
+            cnt = 0
             for ii in range(nou):
-                tmp=ReadFortranBin(fortfile, 'd', numhg[ii]*3)
+                tmp = ReadFortranBin(fortfile, 'd', numhg[ii]*3)
                 tmp = N.reshape(tmp, (3, numhg[ii]))
                 xij[cnt:cnt+numhg[ii], :] = tmp.T
-                cnt=cnt+numhg[ii]
+                cnt = cnt+numhg[ii]
             xij = xij.T*PC.Bohr2Ang
             xij = N.require(xij, requirements=['A', 'F'])
 
@@ -1738,14 +1739,15 @@ class HS(object):
         # numh(1:nuo)  : Number of non-zero elements in row of H
         if not 'listhptr' in self.__dict__:
             self.listhptr = N.empty(self.nuo, N.int)
-            self.listhptr[0]  = 0
+            self.listhptr[0] = 0
             self.listhptr[1:] = N.cumsum(self.numh[:-1])
 
         # lasto(0:nua) : Last orbital of atom in unitcell
         self.atomindx = N.empty(self.nuo, N.int)
         atom = 0
         for io in range(self.nuo):
-            while io >= self.lasto[atom]: atom=atom+1
+            while io >= self.lasto[atom]:
+                atom += 1
             self.atomindx[io] = atom
 
         # Reciprocal cell
@@ -1764,22 +1766,22 @@ class HS(object):
             #      subroutine f90removeunitcellxij( maxnh, no, nuo, nua,
             # +     numh, xij, xa, listhptr, listh, atomindx, xijo)
             self.xij = F90.removeunitcellxij(nnzs=self.maxnh, no_u=self.nuo,
-                                                na_u=self.nua,
-                                                numh=self.numh,
-                                                xij=self.xij,
-                                                xa=self.xa,
-                                                listh=self.listh,
-                                                atomindx=self.atomindx)
+                                             na_u=self.nua,
+                                             numh=self.numh,
+                                             xij=self.xij,
+                                             xa=self.xa,
+                                             listh=self.listh,
+                                             atomindx=self.atomindx)
         else:
             for iuo in range(self.nuo):
                 for jnz in range(self.numh[iuo]):
-                    jo=self.listh[self.listhptr[iuo]+jnz]-1
+                    jo = self.listh[self.listhptr[iuo]+jnz]-1
                     juo = self.indxuo[self.listh[self.listhptr[iuo]+jnz]-1]-1
                     ia, ja = self.atomindx[iuo]-1, self.atomindx[juo]-1
                     #if juo==jo and N.max(abs(self.xij[self.listhptr[iuo]+jnz,:]))>0.1:
                     #    print self.xij[self.listhptr[iuo]+jnz,:]
                     self.xij[:, self.listhptr[iuo]+jnz] = self.xij[:, self.listhptr[iuo]+jnz]-\
-                        (self.xa[:, ja]-self.xa[:, ia])
+                                                          (self.xa[:, ja]-self.xa[:, ia])
                     #if juo==jo and N.max(abs(self.xij[self.listhptr[iuo]+jnz,:]))>0.1:
                     #    print self.xij[self.listhptr[iuo]+jnz,:]
                     #if juo!=jo and N.max(abs(self.xij[self.listhptr[iuo]+jnz,:]))<0.1:
@@ -1817,10 +1819,10 @@ class HS(object):
         """
         if UseF90helpers and F90imported:
             Full = F90.setkpointhelper(nnzs=self.maxnh, sparse=Sparse, kpoint=kpoint,
-                                        no_u=self.nuo, numh=self.numh,
-                                        rcell=self.rcell, xij=self.xij,
-                                        listhptr=self.listhptr,
-                                        listh=self.listh)
+                                       no_u=self.nuo, numh=self.numh,
+                                       rcell=self.rcell, xij=self.xij,
+                                       listhptr=self.listhptr,
+                                       listh=self.listh)
             # Ensure correct memory alignment
             Full = N.require(Full, requirements=['A', 'C'])
             Full.shape = (self.nuo, self.nuo)

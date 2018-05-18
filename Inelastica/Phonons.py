@@ -639,10 +639,10 @@ class DynamicalMatrix(object):
         WriteAXSFFiles('%s.mol.real-displ.axsf'%label, self.geom.xyz, self.geom.anr, hw, UUdisp, 1, natoms)
         WriteAXSFFiles('%s.mol.charlength-displ.axsf'%label, self.geom.xyz, self.geom.anr, hw, UUcl, 1, natoms)
         WriteAXSFFilesPer('%s.per.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr, hw, UU, 1, natoms)
-        WriteAXSFFilesPer('%s.per.real-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,\
-                             hw, UUdisp, 1, natoms)
-        WriteAXSFFilesPer('%s.per.charlength-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,\
-                             hw, UUcl, 1, natoms)
+        WriteAXSFFilesPer('%s.per.real-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,
+                          hw, UUdisp, 1, natoms)
+        WriteAXSFFilesPer('%s.per.charlength-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,
+                          hw, UUcl, 1, natoms)
         # Netcdf format
         ncdffn = '%s.nc'%label
         print 'Phonons.WriteOutput: Writing', ncdffn
