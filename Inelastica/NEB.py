@@ -17,32 +17,23 @@ Classes
    savedData
    step
 
+=======================
+https://doi.org/10.1142/9789812839664_0016
 """
 
 import numpy as N
 import numpy.linalg as LA
-import sys
-import glob
-import os
-import copy
-import time
-import pickle
-from optparse import OptionParser, OptionGroup
+import sys, glob, os, copy, time, pickle, string
 import Inelastica.io.siesta as SIO
 import Inelastica.SetupRuns as SUR
 import Inelastica.MakeGeom as MG
 import Inelastica.math as MM
 import Inelastica.physics.constants as PC
+import Inelastica.misc.valuecheck as VC
 
 
 ##################### Global variabels #################
-
-
-class general(object):
-    pass
-steps=[]
-
-
+# steps, opts
 class savedData(object):
     pass
 
@@ -51,49 +42,55 @@ class savedData(object):
 ########################################################
 
 
-def main():
-    setupParameters()
+def main(options):
+    global opts
+    opts = options
     runNEB()
 
 
 ########################################################
 def runNEB():
-    global general, steps, savedData
+    global opts, steps, savedData
 
     # Restarting?
     fns = glob.glob('NEB_*/CGrun')
     if len(fns) == 0:
         restart = False
-    elif len(fns) != general.NNEB:
-        sys.exit('Number of NEB_??? directories %i does not match number of steps %i'%(len(fns), general.NNEB))
+    elif len(fns) != opts.NNEB:
+        sys.exit('Number of NEB_??? directories %i does not match number of steps %i'%(len(fns), opts.NNEB))
     else:
-        restart = True
+        if opts.onlyInit:
+            sys.exit('NEB_* directories already exist, exititng.')
+        else:
+            restart = True
 
-    fns = ["NEB_%i/CGrun"%ii for ii in range(general.NNEB)]
-    fns = [general.initial+"/CGrun"]+fns+[general.final+"/CGrun"]
+    fns = ["NEB_%i/CGrun"%ii for ii in range(opts.NNEB)]
+    fns = [opts.initial+"/CGrun"]+fns+[opts.final+"/CGrun"]
 
-    i, f = step(fns[0], False, 0), step(fns[general.NNEB+1], False, general.NNEB+1)
-    checkConst(i, f)
-
+    i, f = step(fns[0], False, 0), step(fns[opts.NNEB+1], False, opts.NNEB+1)
     if restart:
         try:
-            savedData.E, savedData.F, savedData.Fmax, savedData.geom, savedData.v = pickle.load(open('NEB_%i/savedData.pickle'%0, 'r'))
+            savedData.E, savedData.F, savedData.Fmax, \
+                savedData.FmaxWOspring, savedData.geom = pickle.load(open('NEB_0/savedData.pickle', 'r'))
         except:
             savedData.E = []
             savedData.F = []
             savedData.geom = []
             savedData.Fmax = []
-            savedData.v = N.zeros((general.NNEB+2, len(i.XVgeom.xyz), 3), N.float)
     else:
         savedData.E = []
         savedData.F = []
         savedData.geom = []
         savedData.Fmax = []
-        savedData.v = N.zeros((general.NNEB+2, len(i.XVgeom.xyz), 3), N.float)
 
     steps = [step(fn, restart, ii, initial=i, final=f) for ii, fn in enumerate(fns)]
 
-    done=False
+    checkConst(i, f)
+    if restart:
+        for ii in range(len(steps)-1):
+            checkConst(steps[ii],steps[ii+1])
+
+    done=opts.onlyInit
 
     while not done:
         # Start  calculations
@@ -103,76 +100,101 @@ def runNEB():
         nextstep=False
         while not nextstep:
             for ii in steps:
-                if not ii.checkDone():
+                if not ii.checkDone(): # Reads forces!
                     break
             else:
                 nextstep = True
             if not nextstep:
-                time.sleep(30)
+                time.sleep(10)
 
         savedData.E += [[SIO.GetTotalEnergy(ii.dir+'/RUN.out') for ii in steps]]
-        savedData.geom += [[copy.copy(ii.XVgeom) for ii in steps]]
+        savedData.geom += [[copy.deepcopy(ii.XVgeom) for ii in steps]]
 
-        oldgeom = [copy.deepcopy(ii.XVgeom) for ii in steps]
-        for ii, jj in enumerate(steps[1:-1]):
-            jj.update(oldgeom[ii], oldgeom[ii+2])
+        overShoot = False
+        for ii, jj in enumerate(steps[:-1]):
+            if ii!=0: # Skip first and last
+                overShoot = overShoot or jj.shootOver(savedData.geom[-1][ii-1], savedData.geom[-1][ii+1])
+        if overShoot: # Kill speed if one image overshoot ... otherwise kinks will appear
+            for ii in steps:
+                ii.v = ii.v*0
+
+        for ii, jj in enumerate(steps[:-1]):
+            if ii!=0: # Skip first and last
+                jj.update(savedData.geom[-1][ii-1], savedData.geom[-1][ii+1])
 
         # Write status
-        savedData.F += [[ii.Ftot for ii in steps]]
+        savedData.F += [[ii.F for ii in steps]]
         savedData.Fmax += [[ii.Fmax for ii in steps]]
         for ii in range(1, len(steps)-1):
             geoms = [savedData.geom[jj][ii] for jj in range(len(savedData.geom))]
-            Ftots = [savedData.Fmax[jj][ii] for jj in range(len(savedData.geom))]
+            Fmax = [savedData.Fmax[jj][ii] for jj in range(len(savedData.geom))]
             Fs    = [savedData.F[jj][ii] for jj in range(len(savedData.geom))]
-            SIO.WriteANIFile('NEB_%i/Steps.ANI'%(ii-1), geoms, Ftots)
+            SIO.WriteANIFile('NEB_%i/Steps.ANI'%(ii-1), geoms, Fmax)
             SIO.WriteAXSFFiles('NEB_%i/Steps.XASF'%(ii-1), geoms, forces=Fs)
 
         geoms = [ii.XVgeom for ii in steps]
         Fmax  = [ii.Fmax for ii in steps]
-        Ftot  = [ii.Ftot for ii in steps]
-        SIO.WriteANIFile('NEB_%i/NextStep.ANI'%0, geoms, Fmax)
-        SIO.WriteAXSFFiles('NEB_%i/NextStep.XASF'%0, geoms, forces=Ftot)
+        F  = [ii.F for ii in steps]
+        SIO.WriteANIFile('NextStep.ANI', geoms, \
+                         [ii-savedData.E[-1][0] for ii in savedData.E[-1]])
+        SIO.WriteAXSFFiles('NextStep.XASF', geoms, forces=F)
         done = True
         for ii in steps:
             done = done and ii.converged
-        pickle.dump((savedData.E, savedData.F, savedData.Fmax, savedData.geom, savedData.v),\
+        pickle.dump((savedData.E, savedData.F, savedData.Fmax, savedData.geom),\
                     open('NEB_%i/savedData.pickle'%0, 'w'))
+        f = open('Convergence','a')
+        f.write(('####### Iteration %i #######\n#Fmax '+('%2.3f '*(opts.NNEB+2))+'\n')%\
+                tuple([len(savedData.Fmax),]+savedData.Fmax[-1]))
+        f.write(('#step length '+(('%2.4f ')*(opts.NNEB+2))+'\n')%\
+                tuple([LA.norm(ii.v) for ii in steps]))
+        f.write('# Barrier [meV]:\n')
+        f.write((('%4.1f '*(opts.NNEB+2))+'\n')%tuple([1000*(savedData.E[-1][ii]-savedData.E[-1][0])\
+                                                       for ii in range(opts.NNEB+2)]))     
+        f.write('# delta E compared to start/restart [meV]:\n')
+        f.write((('%4.1f '*(opts.NNEB+2))+'\n')%tuple([1000*(savedData.E[0][ii]-savedData.E[-1][ii])\
+                                                       for ii in range(opts.NNEB+2)]))
+        f.close()
 
 #################### Class for each step ###############
 
 
 class step(object):
-    global steps, general
+    global steps, opts
 
     def __init__(self, dir, restart, iistep, initial=None, final=None):
         self.dir = dir
         self.converged, self.Fmax = False, 0.0
         self.ii = iistep
-        self.fixed = (iistep == 0) or (iistep == general.NNEB+1)
+        self.fixed = (iistep == 0) or (iistep == opts.NNEB+1)
+
+        if restart or self.fixed:
+            self.FDFgeom = MG.Geom(self.dir+"/"+opts.fn)
+            self.XVgeom =  readxv(self.dir)
+            self.v = N.array(self.FDFgeom.xyz)*0
 
         if not restart and not self.fixed:
             os.makedirs(dir)
-            SUR.CopyInputFiles(general.initial+"/CGrun/", dir,\
+            SUR.CopyInputFiles(opts.initial+"/CGrun/", dir,\
                                    ['.fdf', '.vps', '.psf'])
             # Interpolate
             ixyz, fxyz = N.array(initial.XVgeom.xyz), N.array(final.XVgeom.xyz)
-            mix = float(iistep)/(general.NNEB+1.0)
+            mix = float(iistep)/(opts.NNEB+1.0)
             xyz = (1-mix)*ixyz+mix*fxyz
             self.FDFgeom = copy.copy(initial.XVgeom)
             self.FDFgeom.xyz = [xyz[ii, :] for ii in range(len(xyz))]
             self.FDFgeom.writeFDF(self.dir+"/STRUCT.fdf")
+            self.v = N.array(self.FDFgeom.xyz)*0
 
             # Append lines to RUN.fdf
-            elm = dir+"/RUN.fdf"
+            elm = dir+"/"+opts.fn
             f = open(elm, 'r')
             lines = f.readlines()
             f.close()
             f = open(elm, 'w')
             f.write('### Lines appended %s \n' %time.ctime())
-            f.write("SolutionMethod       diagon\n")
             f.write("MD.TypeOfRun         CG\n")
             f.write("MD.NumCGsteps        0\n")
-            f.write("TS.SaveHS            True\n")
             f.write("MD.UseSaveXV         False\n")
             f.write("MD.UseSaveCG         False\n")
             f.write('# end of lines appended %s \n' %time.ctime())
@@ -181,29 +203,35 @@ class step(object):
             f.close()
 
         self.done = self.checkDone()
-        self.const = SIO.GetFDFblock(dir+"/RUN.fdf", "GeometryConstraints")
+        const = SIO.GetFDFblock(dir+"/"+opts.fn, "GeometryConstraints")
+        if opts.const2!=None:
+            self.const = [[opts.const2[0],opts.const2[0]]]
+        else:
+            self.const = []
+        for ii in const:
+            self.const += [[int(ii[2])-1, int(ii[4])-1]]
 
     def checkDone(self):
         if self.fixed == True:
-            self.FDFgeom = MG.Geom(self.dir+"/RUN.fdf")
+            self.FDFgeom = MG.Geom(self.dir+"/"+opts.fn)
             self.XVgeom = readxv(self.dir)
             self.forces = SIO.ReadForces(self.dir+"/RUN.out")
             self.forces = self.forces[-len(self.XVgeom.xyz):]
-            self.Ftot = self.forces
+            self.F = N.array(self.forces)*0
+            self.v = N.array(self.forces)*0
             self.converged = True
             return True
         else:
-            SIO.CheckTermination(self.dir+"/RUN.out")
-            self.FDFgeom = MG.Geom(self.dir+"/RUN.fdf")
-            done = False
-            try:
-                self.XVgeom = readxv(self.dir)
-                self.forces = SIO.ReadForces(self.dir+"/RUN.out")
-                print len(self.forces[0])
-                if N.allclose(self.XVgeom.xyz, self.FDFgeom.xyz, 1e-6):
-                    done = True
-            except:
-                done = False
+            done = SIO.CheckTermination(self.dir+"/RUN.out")
+            if done:
+                try:
+                    self.FDFgeom = MG.Geom(self.dir+"/"+opts.fn)
+                    self.XVgeom = readxv(self.dir)
+                    self.forces = SIO.ReadForces(self.dir+"/RUN.out")
+                    if N.allclose(self.XVgeom.xyz, self.FDFgeom.xyz, 1e-6):
+                        done = True
+                except:
+                    done = False
             return done
 
     def run(self):
@@ -220,58 +248,98 @@ class step(object):
                 os.remove(fn)
             self.FDFgeom.writeFDF(self.dir+"/STRUCT.fdf")
             SUR.MakePBS(None, self.dir+"/RUN.pbs",\
-                        [['$NODES$', '1:ppn=%i'%general.proc]],\
-                        True, type = 'TS')
+                        [['$NODES$', '1:ppn=%i'%opts.proc]],\
+                        True, rtype = 'TS')
 
-    def update(self, left, right):
-        # calculate new geometry
+    def shootOver(self, left, right):
+        if self.ii==0 or self.ii==opts.NNEB+1: return False
+
         xyz, F = N.array(self.XVgeom.xyz), N.array(self.forces)
-        if len(F[0]) != 4:
-            print F
-            print F.shape
         F = F[:, 1:4]
         lxyz, rxyz = N.array(left.xyz), N.array(right.xyz)
 
         tangent = rxyz-lxyz
-        tangent = tangent/N.sqrt(N.sum(tangent*tangent)) # Normalize
-        FS = general.SK*(rxyz+lxyz-2*xyz) # Spring forces
-        FS = N.sum(FS*tangent)*tangent    # Allong tangent
+        tangent = tangent/LA.norm(tangent) # Normalize
+
         F  = F-N.sum(F*tangent)*tangent  # orthogonal to tangent
-        Ftot = F+FS
 
         # Apply constraints
-        for s, f in general.const:
+        for s, f in self.const:
             for ii in range(s, f+1):
-                Ftot[ii, :]=0
+                F[ii, :]=0
+        if opts.const2!=None: # constraints 2
+            indx, vec = opts.const2[1], opts.const2[2]
+            F[indx,:]=N.dot(F[indx,:],vec)*vec # Allow along vec 
+            indx, vec = opts.const2[3], opts.const2[4]
+            F[indx,:]=F[indx,:]-N.dot(F[indx,:],vec)*vec # Plane perp to vec      
 
-        self.Ftot = Ftot
-        savedData.v[self.ii, :, :] = savedData.v[self.ii, :, :]-N.sum(savedData.v[self.ii, :, :]*tangent)*tangent
-        if N.sum(Ftot*savedData.v[self.ii, :, :]) < 0:
-            savedData.v[self.ii, :, :] = 0
-        savedData.v[self.ii, :, :] = savedData.v[self.ii, :, :]+Ftot*general.moveK
-        steplen = N.sqrt(N.sum(savedData.v[self.ii, :, :]*savedData.v[self.ii, :, :]))
-        if steplen > general.maxDist:
-            savedData.v[self.ii, :, :] = savedData.v[self.ii, :, :]/steplen*general.maxDist
-        xyz = xyz+savedData.v[self.ii, :, :]
-        xyz = [xyz[ii, :] for ii in range(len(xyz))]
-        self.FDFgeom.xyz = xyz
-        self.XVgeom.xyz = xyz
+        return N.sum(F*self.v)<0
 
-        self.Fmax = N.max(N.sqrt(N.sum(Ftot*Ftot, 1)))
-        self.converged = self.Fmax<general.convCrit
+    def update(self, left, right):
+        if self.ii==0 or self.ii==opts.NNEB+1: return
+        # calculate new geometry
+        xyz, F = N.array(self.XVgeom.xyz), N.array(self.forces)
+        F = F[:, 1:4]
+        lxyz, rxyz = N.array(left.xyz), N.array(right.xyz)
+
+        tangent = rxyz-lxyz
+        tangent = tangent/LA.norm(tangent) # Normalize
+
+        # Calculate distance to move along tangent to reach midpoint
+        dxyz = (rxyz+lxyz-2*xyz)/2.0*opts.tMix # Move to find mid-point /3 to converge
+        dxyz = N.sum(dxyz*tangent)*tangent # Constraint to tangent
+        steplen = N.sqrt(N.sum(dxyz*dxyz))
+        if steplen > opts.maxDist:
+            dxyz = dxyz/steplen*opts.maxDist
+        
+        F  = F-N.sum(F*tangent)*tangent  # orthogonal to tangent
+
+        # Apply constraints
+        for s, f in self.const:
+            for ii in range(s, f+1):
+                F[ii, :]=0
+        if opts.const2!=None: # constraints 2
+            indx, vec = opts.const2[1], opts.const2[2]
+            F[indx,:]=N.dot(F[indx,:],vec)*vec # Allow along vec 
+            indx, vec = opts.const2[3], opts.const2[4]
+            F[indx,:]=F[indx,:]-N.dot(F[indx,:],vec)*vec # Plane perp to vec      
+            
+        self.F = F
+
+        self.Fmax = N.max(N.sqrt(N.sum(F*F, 1)))
+        self.converged = self.Fmax<opts.convCrit
+
+        v = self.v + F*opts.moveK
+        steplen = N.sqrt(N.sum(v*v))
+        if steplen > opts.maxDist:
+            v = v/steplen*opts.maxDist
+        xyz += v
+
+        if not self.converged:
+            self.v = v
+            self.FDFgeom.xyz = xyz
+            self.XVgeom.xyz = xyz
+
         self.done = False
 
-
-def checkConst(initial, final):
-    if initial.const != final.const:
+def checkConst(a,b):
+    if not N.allclose(a.const, b.const):
         print "Error: NEB: constraints on initial and final states not the same"
         sys.exit(1)
-    general.const = []
-    for ii in initial.const:
-        general.const += [[int(ii[2])-1, int(ii[4])-1]]
-    print "Constraints on atoms:"
-    for ii in general.const:
-        print "from %i to %i (Siesta numbering)"%(ii[0]+1, ii[1]+1)
+    for ii in a.const:
+        if not N.allclose(a.FDFgeom.xyz[ii[0]:ii[1]+1],b.FDFgeom.xyz[ii[0]:ii[1]+1]):
+            sys.exit('Constrained atoms '+str([ii[0]+1,ii[1]+1])+'does not match for all geometries')
+    if opts.const2!=None:
+        # constraints 2
+        indx, vec = opts.const2[1], opts.const2[2]
+        dxyz = N.array(a.FDFgeom.xyz[indx])-N.array(b.FDFgeom.xyz[indx])
+        if LA.norm(dxyz-N.dot(dxyz,vec)*vec)>1e-6:
+            sys.exit('Constraints not fullfilled for Atom %i along [%f,%f,%f]'%(indx+1,vec[0],vec[1],vec[2]))
+        indx, vec = opts.const2[3], opts.const2[4]
+        dxyz = N.array(a.FDFgeom.xyz[indx])-N.array(b.FDFgeom.xyz[indx])
+        if N.abs(N.dot(dxyz,vec))>1e-6:
+            sys.exit('Constraints not fullfilled for Atom %i in plane with tangent [%f,%f,%f]'%(indx+1,vec[0],vec[1],vec[2]))
+    return
 
 ########################################################
 
@@ -294,81 +362,87 @@ def readxv(dirpath):
 ###########################################################
 
 
-def setupParameters():
-    global general
-
+def GetOptions(argv):
     usage = "usage: %prog [options] Initial Final"
     description = """
-Nudged elastic band calculation.
-Initial and Final and final states are read from the directories:
-Initial/CGrun
-Final/CGrun
-The directories should contain RUN.fdf (main fdf file) and STRUCT.fdf containing the structure of the the system (read from RUN.fdf with %include). RUN.out should contain the output of the Siesta calculations.
+Nudged elastic band calculation script. The script will generate the intermediate (linear interpolation) steps in a NEB calculation, submit them to the que system and repeat the calculations until finding the approximate NEB solution.
+Initial and Final states are read from the directories: Initial/CGrun, Final/CGrun. 
+The directories should contain RUN.fdf (main fdf file), RUN.out (forces) and one .XV file containing the geometry. Constraints can be given as '%block GeometryConstraints' and/or using the Constraint option for small molecules. If the script has died, it will try to restart the calculations. It is usefull to use '-s' to make a better starting interpolation. [https://doi.org/10.1142/9789812839664_0016], note that the implementation along the trajectory novel ... if you obtain buckeling of the path, try to decrease 'acceleration' (-d), if the distance between points oscillate, decrease mixing (-t). Convergence does not demand equal spacing.
 
 Intermediate steps will be written in:
 NEB_.../CGrun directories
 
 For help use --help!
 """
-    parser = OptionParser(usage, description=description)
-    EC = OptionGroup(parser, "Options for NEB")
-    EC.add_option("-n", "--NumNEB", dest="NNEB",\
-                      help="Number of intermediate steps [%default]",\
-                      type='int', default=10)
-    EC.add_option("-k", "--SpringK", dest="SK",\
-                      help="Spring constant [eV/A] [%default]",\
-                      type='float', default=100.0)
-    EC.add_option("-p", "--Proc", dest="proc",\
-                      help="Number of processors [%default]",\
-                      type='int', default=1)
-    EC.add_option("-d", "--MoveK", dest="moveK",\
-                      help="Distance moved/force [A/(eV/A)] [%default]",\
-                      type='float', default=0.004)
-    EC.add_option("-m", "--MaxDist", dest="maxDist",\
-                      help="Maximum distance moved [A/direction] [%default]",\
-                      type='float', default=0.04)
-    EC.add_option("-c", "--ConvCrit", dest="convCrit",\
-                      help="Convergence criteria, max force on atom [eV/A] [%default]",\
-                      type='float', default=0.08)
 
-    parser.add_option_group(EC)
+    import argparse
 
-    (general, args) = parser.parse_args()
-    print description
+    # if text string is specified, convert to list
+    print argv
+    if isinstance(argv, VC.string_types):
+        argv = argv.split()
+    print argv
+    p = argparse.ArgumentParser(description=description)
+    p.add_argument('initial', help='Initial geometry')
+    p.add_argument('final', help='Final geometry')
 
-    print args
-    if len(args) < 2:
-        parser.error("ERROR: You need to specify initial and final geometries")
-    if len(args) > 2:
-        parser.error("ERROR: you have more than 2 geometries")
+    p.add_argument("-n", "--NumNEB", dest="NNEB",\
+                   help="Number of intermediate steps [%(default)i]",\
+                   type=int, default=9)
+    p.add_argument("-f", "--fdf", dest='fn', default='RUN.fdf', type=str,
+                   help='Input fdf-file for SIESTA calculations [%(default)s]')
+    p.add_argument("-p", "--Proc", dest="proc",\
+                   help="Number of processors [%(default)i]",\
+                  type=int, default=1)
+    p.add_argument("-d", "--MoveK", dest="moveK",\
+                   help="Acceleration velocity/force/step [A/(eV/A)/step] [%(default)f]",\
+                   type=float, default=0.006)
+    p.add_argument("-t", "--tangent", dest="tMix",\
+                   help="Mixing along the trajectory, i.e., move points to \
+                   midpoint along tangent [%(default)f]",\
+                   type=float, default=.8)
+    p.add_argument("-m", "--MaxDist", dest="maxDist",\
+                   help="Maximum distance moved (separately enforced along/perpendicular to tangent) [Ang] [%(default)f]",\
+                  type=float, default=0.04)
+    p.add_argument("-e", "--ConvCrit", dest="convCrit",\
+                   help="Convergence criteria, max force on atom [eV/A] [%(default)f]",\
+                  type=float, default=0.08)
+    p.add_argument("-s", "--Start", dest="onlyInit",\
+                   help="Only make the initial structures [%(default)s]",\
+                   default=False,action='store_true')
+    p.add_argument("-c","--Constraint",dest="const2",
+                   help="Constraints string 'n1, n2, x,y,z, n3, x,y,z': where atom n1 is fully constrained, n2 can move along the vector (x,y,z), and n3 in the plane perpendicular to the vector. [%(default)s]",type=str,default=None)
 
-    general.initial = args[0]
-    general.final = args[1]
+    opts = p.parse_args()
+    opts.module = 'NEB'
 
-    class myopen(object):
-        # Double stdout to RUN.out and stdout
+    # Parse constraints
+    if opts.const2!=None:
+        strings = string.split(opts.const2,',')
+        opts.const2 = [int(strings[0]), int(strings[1]), N.array([float(strings[2]),float(strings[3]),float(strings[4])]),
+                       int(strings[5]), N.array([float(strings[6]),float(strings[7]),float(strings[8])])]
+        def normalize(x): 
+            return x/LA.norm(x)
+        opts.const2[2] = normalize(opts.const2[2])
+        opts.const2[4] = normalize(opts.const2[4])
 
-        def write(self, x):
-            self.stdout.write(x)
-            self.file.write(x)
-
-    fo = myopen()
-    fo.stdout, fo.file = sys.stdout, open('NEB.out', 'w', 0)
-    sys.stdout = fo
-
-    argv = ""
-    for ii in sys.argv:
-        argv += " "+ii
-    print(argv)
     print('##################################################################################')
     print('## NEB options')
-    print('Number of intermediate steps  : %i'%general.NNEB)
-    print('Spring constant [eV/A^2]      : %f'%general.SK)
-    print('Processor                     : %i'%general.proc)
-    print('Move constant [A/(eV/A)]      : %f'%general.moveK)
-    print('Max move distance/coord [A]   : %f'%general.maxDist)
-    print('Convergence criteria [eV/A]   : %f'%general.convCrit)
+    print('Number of intermediate steps  : %i'%opts.NNEB)
+    print('Tangent mixing                : %f'%opts.tMix)
+    print('Processors                    : %i'%opts.proc)
+    print('Acceleration [A/(eV/A)/step]  : %f'%opts.moveK)
+    print('Max move distance/coord [A]   : %f'%opts.maxDist)
+    print('Convergence criteria [eV/A]   : %f'%opts.convCrit)
+    print('Constraints                   : ',opts.const2)
     print('##################################################################################')
+
+    if opts.const2!=None: # Internal numbering
+        opts.const2[0] -= 1
+        opts.const2[1] -= 1
+        opts.const2[3] -= 1
+
+    return opts
 
 ################# Math helpers ################################
 mm = MM.mm
@@ -377,7 +451,3 @@ dist = MM.dist
 mysqrt = MM.mysqrt
 dagger = MM.dagger
 
-##################### Start main routine #####################
-
-if __name__ == '__main__':
-    main()
