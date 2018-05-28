@@ -174,8 +174,8 @@ class step(object):
             self.v = N.array(self.FDFgeom.xyz)*0
 
         if not restart and not self.fixed:
-            os.makedirs(dir)
-            SUR.CopyInputFiles(opts.initial+"/CGrun/", dir,\
+            os.makedirs(dirr)
+            SUR.CopyInputFiles(opts.initial+"/CGrun/", dirr,\
                                    ['.fdf', '.vps', '.psf'])
             # Interpolate
             ixyz, fxyz = N.array(initial.XVgeom.xyz), N.array(final.XVgeom.xyz)
@@ -187,7 +187,7 @@ class step(object):
             self.v = N.array(self.FDFgeom.xyz)*0
 
             # Append lines to RUN.fdf
-            elm = dir+"/"+opts.fn
+            elm = dirr+"/"+opts.fn
             f = open(elm, 'r')
             lines = f.readlines()
             f.close()
@@ -203,7 +203,7 @@ class step(object):
             f.close()
 
         self.done = self.checkDone()
-        const = SIO.GetFDFblock(dir+"/"+opts.fn, "GeometryConstraints")
+        const = SIO.GetFDFblock(dirr+"/"+opts.fn, "GeometryConstraints")
         if opts.const2!=None:
             self.const = [[opts.const2[0],opts.const2[0]]]
         else:
