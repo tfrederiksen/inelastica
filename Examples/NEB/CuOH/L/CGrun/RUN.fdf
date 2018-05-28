@@ -1,0 +1,39 @@
+SystemTitle CuOH
+SystemLabel CuOH
+
+SolutionMethod        diagon
+
+SlabDipoleCorrection true
+MeshCutoff          100. Ry
+
+PAO.BasisType split     
+
+%block ChemicalSpeciesLabel
+    1    1 H.mpn                   # Species index, atomic number, species label
+    2    8 O.mpn                   # Species index, atomic number, species label
+    3   29 Cu.mpn                  # Species index, atomic number, species label
+%endblock ChemicalSpeciesLabel
+
+%block GeometryConstraints
+position from 1 to 18
+%endblock GeometryConstraints
+
+MD.TypeOfRun        CG
+MD.NumCGsteps       200
+MD.UseSaveCG        true
+MD.UseSaveXV        true
+UseSaveData         true
+
+%block kgrid_Monkhorst_Pack
+ 1    0    0    0.0
+ 0    1    0    0.0
+ 0    0    1    0.0
+%endblock kgrid_Monkhorst_Pack
+
+MaxSCFIterations      300           # Maximum number of SCF iter
+DM.Tolerance          1.d-4         # Tolerance in maximum difference
+                                    # between input and output DM
+DM.UseSaveDM          true          # to use continuation files
+
+%include ./STRUCT.fdf
+%include ./Default.fdf
