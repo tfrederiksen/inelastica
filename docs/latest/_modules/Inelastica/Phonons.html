@@ -25,25 +25,17 @@
   
 
   
-  
     <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Inelastica v1.3.3 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -60,7 +52,7 @@
 
           
             
-            <img src="../../_static/82px-Inelastica-logo-mini.png" class="logo" />
+            <img src="../../_static/82px-Inelastica-logo-mini.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -68,7 +60,7 @@
             
             
               <div class="version">
-                v1.3.3
+                v1.3.3+55
               </div>
             
           
@@ -92,12 +84,10 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Scripts</span></p>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
@@ -105,9 +95,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../cite.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using Inelastica</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<p class="caption"><span class="caption-text">API documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api-gen/Inelastica.html">Inelastica package</a></li>
 </ul>
 
             
@@ -119,7 +109,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Inelastica</a>
@@ -127,9 +117,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -158,8 +149,6 @@
     
     
       <li class="wy-breadcrumbs-aside">
-        
-            
         
       </li>
     
@@ -258,7 +247,7 @@
 <span class="kn">import</span> <span class="nn">Inelastica.misc.valuecheck</span> <span class="kn">as</span> <span class="nn">VC</span>
 
 
-<div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.Phonons.html#Inelastica.Phonons.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an instance of ``options`` for the ``Phonons`` module</span>
 
@@ -320,11 +309,8 @@
 
     <span class="n">options</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
 
-    <span class="c1"># With this one can overwrite the logging information</span>
-    <span class="k">if</span> <span class="s2">&quot;log&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="n">options</span><span class="o">.</span><span class="n">Logfile</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;log&quot;</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">options</span><span class="o">.</span><span class="n">Logfile</span> <span class="o">=</span> <span class="s1">&#39;Phonons.log&#39;</span>
+    <span class="c1"># Set module name</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="s1">&#39;Phonons&#39;</span>
 
     <span class="c1"># k-point</span>
     <span class="n">options</span><span class="o">.</span><span class="n">kpoint</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">options</span><span class="o">.</span><span class="n">k1</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">k2</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">k3</span><span class="p">],</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
@@ -816,10 +802,10 @@
         <span class="n">WriteAXSFFiles</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.mol.real-displ.axsf&#39;</span><span class="o">%</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">UUdisp</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">natoms</span><span class="p">)</span>
         <span class="n">WriteAXSFFiles</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.mol.charlength-displ.axsf&#39;</span><span class="o">%</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">UUcl</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">natoms</span><span class="p">)</span>
         <span class="n">WriteAXSFFilesPer</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.per.axsf&#39;</span><span class="o">%</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span> <span class="n">hw</span><span class="p">,</span> <span class="n">UU</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">natoms</span><span class="p">)</span>
-        <span class="n">WriteAXSFFilesPer</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.per.real-displ.axsf&#39;</span><span class="o">%</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span>\
-                             <span class="n">hw</span><span class="p">,</span> <span class="n">UUdisp</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">natoms</span><span class="p">)</span>
-        <span class="n">WriteAXSFFilesPer</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.per.charlength-displ.axsf&#39;</span><span class="o">%</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span>\
-                             <span class="n">hw</span><span class="p">,</span> <span class="n">UUcl</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">natoms</span><span class="p">)</span>
+        <span class="n">WriteAXSFFilesPer</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.per.real-displ.axsf&#39;</span><span class="o">%</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span>
+                          <span class="n">hw</span><span class="p">,</span> <span class="n">UUdisp</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">natoms</span><span class="p">)</span>
+        <span class="n">WriteAXSFFilesPer</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.per.charlength-displ.axsf&#39;</span><span class="o">%</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">pbc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span>
+                          <span class="n">hw</span><span class="p">,</span> <span class="n">UUcl</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">natoms</span><span class="p">)</span>
         <span class="c1"># Netcdf format</span>
         <span class="n">ncdffn</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.nc&#39;</span><span class="o">%</span><span class="n">label</span>
         <span class="k">print</span> <span class="s1">&#39;Phonons.WriteOutput: Writing&#39;</span><span class="p">,</span> <span class="n">ncdffn</span>
@@ -850,6 +836,10 @@
         <span class="n">ncdf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;GeometryXYZ&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span>
         <span class="n">ncdf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;GeometryXYZ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="s1">&#39;Atomic coordinates of all atoms in cell&#39;</span>
         <span class="n">ncdf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;GeometryXYZ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;Ang&#39;</span>
+        <span class="n">ncdf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;FC&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;dyn_atoms&#39;</span><span class="p">,</span> <span class="s1">&#39;xyz&#39;</span><span class="p">,</span><span class="s1">&#39;natoms&#39;</span><span class="p">,</span><span class="s1">&#39;xyz&#39;</span><span class="p">))</span>
+        <span class="n">ncdf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;FC&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span>
+        <span class="n">ncdf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;FC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="s1">&#39;Force matrix&#39;</span>
+        <span class="n">ncdf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;FC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;ev/Ang^2&#39;</span>
         <span class="n">ncdf</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;AtomNumbers&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;natoms&#39;</span><span class="p">,))</span>
         <span class="n">ncdf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;AtomNumbers&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span>
         <span class="n">ncdf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;AtomNumbers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="s1">&#39;Element number for each atom (anr)&#39;</span>
@@ -1023,8 +1013,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    options : an ``options`` instance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">Log</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">options</span><span class="o">.</span><span class="n">Logfile</span><span class="p">)</span>
-    <span class="n">Log</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+    <span class="n">Log</span><span class="o">.</span><span class="n">CreatePipeOutput</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">Log</span><span class="o">.</span><span class="n">PrintMainHeader</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
 
     <span class="c1"># Determine SIESTA input fdf files in FCruns</span>
     <span class="n">fdf</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">FCwildcard</span><span class="o">+</span><span class="s1">&#39;/RUN.fdf&#39;</span><span class="p">)</span>
@@ -1052,18 +1042,16 @@
                                <span class="n">WriteGradients</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">WriteGradients</span><span class="p">)</span>
         <span class="c1"># Write data to files</span>
         <span class="n">DM</span><span class="o">.</span><span class="n">WriteOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Output&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">SinglePrec</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">GammaPoint</span><span class="p">)</span>
-        <span class="n">Log</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">)</span>
+        <span class="n">Log</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">DM</span><span class="o">.</span><span class="n">h0</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">s0</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">hw</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">heph</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">DM</span><span class="o">.</span><span class="n">WriteOutput</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Output&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">SinglePrec</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">GammaPoint</span><span class="p">)</span>
-        <span class="n">Log</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="s1">&#39;Phonons&#39;</span><span class="p">)</span>
+        <span class="n">Log</span><span class="o">.</span><span class="n">PrintMainFooter</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">DM</span><span class="o">.</span><span class="n">hw</span></div>
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -1076,7 +1064,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1095,6 +1083,7 @@
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
             VERSION:'v1.3.3',
+            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1113,14 +1102,11 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

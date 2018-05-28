@@ -25,25 +25,17 @@
   
 
   
-  
     <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Inelastica v1.3.3 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -60,7 +52,7 @@
 
           
             
-            <img src="../../_static/82px-Inelastica-logo-mini.png" class="logo" />
+            <img src="../../_static/82px-Inelastica-logo-mini.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -68,7 +60,7 @@
             
             
               <div class="version">
-                v1.3.3
+                v1.3.3+55
               </div>
             
           
@@ -92,12 +84,10 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Scripts</span></p>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
@@ -105,9 +95,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../cite.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using Inelastica</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<p class="caption"><span class="caption-text">API documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api-gen/Inelastica.html">Inelastica package</a></li>
 </ul>
 
             
@@ -119,7 +109,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Inelastica</a>
@@ -127,9 +117,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -158,8 +149,6 @@
     
     
       <li class="wy-breadcrumbs-aside">
-        
-            
         
       </li>
     
@@ -293,7 +282,7 @@
     <span class="n">indx</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">HS</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">bands</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span> <span class="o">&lt;</span> <span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">)</span><span class="o">*</span>\
-                     <span class="p">(</span><span class="n">bands</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span> <span class="o">&gt;</span> <span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)):</span>
+                 <span class="p">(</span><span class="n">bands</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span> <span class="o">&gt;</span> <span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)):</span>
             <span class="n">indx</span> <span class="o">+=</span> <span class="p">[</span><span class="n">ii</span><span class="p">]</span>
 
     <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="s1">&#39;FermiSurface&#39;</span><span class="o">+</span><span class="n">sspin</span><span class="o">+</span><span class="s1">&#39;.BXSF&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
@@ -361,14 +350,14 @@
         <span class="n">sspin</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
     <span class="n">Graphs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">jj</span><span class="p">,</span>  <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">what</span><span class="p">):</span>
-        <span class="n">f</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">elem</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">sspin</span><span class="o">+</span><span class="s1">&#39;.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">jj</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">what</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">elem</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">sspin</span><span class="o">+</span><span class="s1">&#39;.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="n">xx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">elem</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="n">N</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">elem</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span>
         <span class="n">iColor</span><span class="p">,</span> <span class="n">Datasets</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])):</span>
             <span class="c1"># Choose bands within +-5 eV from Ef</span>
             <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">bands</span><span class="p">[</span><span class="n">jj</span><span class="p">][:,</span> <span class="n">ii</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">)</span><span class="o">*</span>\
-                         <span class="p">(</span><span class="n">bands</span><span class="p">[</span><span class="n">jj</span><span class="p">][:,</span> <span class="n">ii</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1e-5</span><span class="p">:</span>
+                     <span class="p">(</span><span class="n">bands</span><span class="p">[</span><span class="n">jj</span><span class="p">][:,</span> <span class="n">ii</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1e-5</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"># Band </span><span class="si">%i</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">ii</span><span class="p">))</span>
                 <span class="k">for</span> <span class="n">kk</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bands</span><span class="p">[</span><span class="n">jj</span><span class="p">][:,</span> <span class="n">ii</span><span class="p">]):</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="s2"> </span><span class="si">%e</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">kk</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
@@ -383,11 +372,11 @@
 
         <span class="n">g</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">jj</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>\
-                           <span class="n">vmax</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+                       <span class="n">vmax</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="mf">1e10</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>\
-                           <span class="n">vmax</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">majorUnit</span><span class="o">=</span><span class="mf">1e10</span><span class="p">,</span> <span class="n">minorUnit</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+                       <span class="n">vmax</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMax</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">general</span><span class="o">.</span><span class="n">eMin</span><span class="p">)</span>
         <span class="n">Graphs</span> <span class="o">+=</span> <span class="p">[</span><span class="n">g</span><span class="p">]</span>
 
     <span class="n">p</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/BandStruct.agr&#39;</span><span class="p">,</span> <span class="n">Graphs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -458,8 +447,9 @@
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">fo</span>
 
     <span class="n">iofile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-    <span class="n">argv</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">:</span> <span class="n">argv</span><span class="o">+=</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">ii</span>
+    <span class="n">argv</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">:</span>
+        <span class="n">argv</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">ii</span>
     <span class="n">myprint</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">iofile</span><span class="p">)</span>
     <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;##################################################################################&#39;</span><span class="p">,</span> <span class="n">iofile</span><span class="p">)</span>
     <span class="n">myprint</span><span class="p">(</span><span class="s1">&#39;## Band structure &#39;</span><span class="p">,</span> <span class="n">iofile</span><span class="p">)</span>
@@ -476,9 +466,7 @@
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -491,7 +479,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -510,6 +498,7 @@
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
             VERSION:'v1.3.3',
+            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -528,14 +517,11 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

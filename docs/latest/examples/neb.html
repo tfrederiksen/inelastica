@@ -1,0 +1,298 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>NEB methods &mdash; Inelastica v1.3.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Scripts" href="../scripts.html" />
+    <link rel="prev" title="CO/Cu(111)" href="co_cu111.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Inelastica
+          
+
+          
+            
+            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v1.3.3+55
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#bulk-systems">Bulk systems</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../examples.html#nanoscale-electronic-devices">Nanoscale electronic devices</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="auh2.html">H2 molecule bridging 1D Au electrodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="graphene_sic.html">Graphene/SiC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="co_cu111.html">CO/Cu(111)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Nudged elastic band</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../scripts.html">Scripts</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api-gen/Inelastica.html">Inelastica package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inelastica</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../examples.html">Examples</a> &raquo;</li>
+        
+      <li>NEB methods</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/examples/neb.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="neb-methods">
+<span id="neb"></span><h1>NEB methods<a class="headerlink" href="#neb-methods" title="Permalink to this headline">¶</a></h1>
+<p>Nudged elastic band calculations try to find the minimal energy pathway between two conformations of a structure, i.e., how much energy is needed to enable a &#8216;chemical&#8217; reaction. This is done by optimizing the geometries for a series of images interpolating between the initial/final states.</p>
+<ul class="simple">
+<li>&lt;<a class="reference external" href="https://doi.org/10.1142/9789812839664_0016">https://doi.org/10.1142/9789812839664_0016</a>&gt;</li>
+<li>&lt;<a class="reference external" href="https://aip.scitation.org/doi/10.1063/1.2841941">https://aip.scitation.org/doi/10.1063/1.2841941</a>&gt;</li>
+</ul>
+<p>The optimization minimized the force perpendicular to the tangent between images. The NEB command actually implements the string-method, i.e., there is no spring constants between adjecent images, approximate equidistance between images is instead encouraged by redistribution along the tangent.</p>
+<p>There are two example directories explaining the NEB method.</p>
+<ul class="simple">
+<li><strong>NH3</strong> (Amonia inversion)</li>
+<li><strong>OH</strong> on Cu(110)</li>
+</ul>
+<p>The directory structure used in the examples are:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>/L/CGrun : Geometry of the initial state
+/R/CGrun : Geometry of the final state
+</pre></div>
+</div>
+<p>The command to run the <strong>NH3</strong> example is:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>NEB -n <span class="m">9</span> -p <span class="m">8</span> -c<span class="s1">&#39;2, 3,-0.476,0.824,0, 1,-0.476,0.824,0&#39;</span>  L R
+</pre></div>
+</div>
+<p>Since we have a small molecule we constrain the geometry (to fix translational and rotational symmetries). First we keep one of the hydrogens fixed &#8216;2,&#8217; (where 2 is the number of the hydrogen atom). Then a second hydrogen is fixed along the vector &#8216;3,-0.476,0.824,0,&#8217; (3 is the number of the hydrogen and after comes the vector, see the STRUCT.fdf to see why I choose this vector) and finally, the nitrogen is allowd to move in the plane perpendicular to the vector, &#8216;1,-0.476,0.824,0&#8217; (1 is the nitrogen number).</p>
+<p>The NEB command assembles the linear interpolation between L/R. These will end up i directories named NEB_0, NEB_1 etc. It submits job using the queing system of your cluster, see documentation about &#8216;~/.pbs&#8217; directory and Inelastica.SetupRuns. During the calculation the current status is updated in the file: Convergence, which last entry looks like this:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1">####### Iteration 30 #######</span>
+<span class="c1">#Fmax 0.000 0.062 0.042 0.060 0.063 0.079 0.063 0.060 0.042 0.062 0.000</span>
+<span class="c1">#step length 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000</span>
+<span class="c1"># Barrier [meV]:</span>
+ <span class="m">0</span>.0  <span class="m">3</span>.7 <span class="m">72</span>.2 <span class="m">151</span>.2 <span class="m">209</span>.5 <span class="m">233</span>.9 <span class="m">209</span>.5 <span class="m">151</span>.2 <span class="m">72</span>.2  <span class="m">3</span>.7  <span class="m">0</span>.0
+<span class="c1"># delta E compared to start/restart [meV]:</span>
+ <span class="m">0</span>.0 <span class="m">56</span>.3 <span class="m">126</span>.0 <span class="m">204</span>.7 <span class="m">271</span>.3 <span class="m">295</span>.3 <span class="m">271</span>.3 <span class="m">204</span>.7 <span class="m">126</span>.0 <span class="m">56</span>.3  <span class="m">0</span>.0
+</pre></div>
+</div>
+<p>Where Fmax is the norm of the force normal to the tangent, and barrier the energy compared to the fixed L state.</p>
+<p>The files NextStep.* contains animations of the path and under the NEB_* directories the Steps.* the animation of the optimizations of the individual images.</p>
+<p>The <strong>OH</strong> example is simpler in that we can reuse the Siesta constraints from &#8216;%block GeometryConstraints&#8217;:</p>
+<p>However, the initial linear interpolation given by NEB would have the hydrogen going straight through the oxygen. So to get an initial setup we run the NEB command with the &#8216;-s&#8217; (setup) flag:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>NEB L R -n <span class="m">11</span>
+</pre></div>
+</div>
+<p>To clean up the geoetries I have supplied a python script for this example that tries to keep the O-H bond length constant and the images equidistant.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python FixStartGeom.py
+</pre></div>
+</div>
+<p>and we can run the optimization:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>NEB -n <span class="m">11</span> -p <span class="m">8</span> L R
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../scripts.html" class="btn btn-neutral float-right" title="Scripts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="co_cu111.html" class="btn btn-neutral" title="CO/Cu(111)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'v1.3.3',
+            LANGUAGE:'en',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

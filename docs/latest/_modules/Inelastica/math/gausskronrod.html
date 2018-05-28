@@ -25,25 +25,17 @@
   
 
   
-  
     <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../../genindex.html"/>
-        <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Inelastica v1.3.3 documentation" href="../../../index.html"/>
-        <link rel="up" title="Module code" href="../../index.html"/> 
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 
   
   <script src="../../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -60,7 +52,7 @@
 
           
             
-            <img src="../../../_static/82px-Inelastica-logo-mini.png" class="logo" />
+            <img src="../../../_static/82px-Inelastica-logo-mini.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -68,7 +60,7 @@
             
             
               <div class="version">
-                v1.3.3
+                v1.3.3+55
               </div>
             
           
@@ -92,12 +84,10 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Scripts</span></p>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../scripts.html">Scripts</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
@@ -105,9 +95,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../cite.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../publications.html">Publications using Inelastica</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<p class="caption"><span class="caption-text">API documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api-gen/Inelastica.html">Inelastica package</a></li>
 </ul>
 
             
@@ -119,7 +109,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">Inelastica</a>
@@ -127,9 +117,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -158,8 +149,6 @@
     
     
       <li class="wy-breadcrumbs-aside">
-        
-            
         
       </li>
     
@@ -235,14 +224,16 @@
 <span class="c1">#    Mathematics of Computation,</span>
 <span class="c1">#    Volume 28, Number 125, January 1974, pages 135-139.</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">):</span>    <span class="n">ka</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>    <span class="n">ka</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">ka</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ka</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">51</span><span class="p">):</span>
         <span class="n">b1</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">b2</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">yy</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">2.0</span>
         <span class="n">d1</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">even</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">even</span><span class="p">:</span>
             <span class="n">ai</span> <span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">d2</span> <span class="o">=</span> <span class="n">ai</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">dif</span> <span class="o">=</span> <span class="mf">2.0</span>
@@ -258,11 +249,11 @@
             <span class="n">d0</span> <span class="o">=</span> <span class="n">d1</span>
             <span class="n">d1</span> <span class="o">=</span> <span class="n">d2</span>
             <span class="n">b2</span> <span class="o">=</span> <span class="n">yy</span> <span class="o">*</span> <span class="n">b1</span> <span class="o">-</span> <span class="n">b0</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">even</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">even</span><span class="p">:</span>
                 <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">d2</span> <span class="o">=</span> <span class="n">yy</span> <span class="o">*</span> <span class="n">d1</span> <span class="o">-</span> <span class="n">d0</span> <span class="o">+</span> <span class="n">ai</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">even</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">even</span><span class="p">:</span>
             <span class="n">f</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">b2</span> <span class="o">-</span> <span class="n">b1</span><span class="p">)</span>
             <span class="n">fd</span> <span class="o">=</span> <span class="n">d2</span> <span class="o">+</span> <span class="n">d1</span>
         <span class="k">else</span><span class="p">:</span>
@@ -273,14 +264,14 @@
 <span class="c1">#</span>
         <span class="n">delta</span> <span class="o">=</span> <span class="n">f</span> <span class="o">/</span> <span class="n">fd</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">delta</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">ka</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ka</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">break</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">:</span>
             <span class="n">ka</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="c1">#</span>
 <span class="c1">#  Catch non-convergence.</span>
 <span class="c1">#</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">ka</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">ka</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">print</span> <span class="s1">&#39;&#39;</span>
         <span class="k">print</span> <span class="s1">&#39;ABWE1 - Fatal error!&#39;</span>
         <span class="k">print</span> <span class="s1">&#39;  Iteration limit reached.&#39;</span>
@@ -318,21 +309,22 @@
 <span class="c1">#    Mathematics of Computation,</span>
 <span class="c1">#    Volume 28, Number 125, January 1974, pages 135-139.</span>
     <span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="nb">exit</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">):</span>    <span class="n">ka</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>    <span class="n">ka</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">ka</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ka</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">51</span><span class="p">):</span>
         <span class="n">p0</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="n">p1</span> <span class="o">=</span> <span class="n">x</span>
         <span class="n">pd0</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">pd1</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
                 <span class="n">p2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">3.0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
                 <span class="n">pd2</span> <span class="o">=</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">x</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">p2</span> <span class="o">=</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">x</span>
                 <span class="n">pd2</span> <span class="o">=</span> <span class="mf">3.0</span>
-
         <span class="n">ai</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">ai</span> <span class="o">=</span> <span class="n">ai</span> <span class="o">+</span> <span class="mf">1.0</span>
@@ -344,15 +336,15 @@
             <span class="n">pd1</span> <span class="o">=</span> <span class="n">pd2</span>
         <span class="n">delta</span> <span class="o">=</span> <span class="n">p2</span> <span class="o">/</span> <span class="n">pd2</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">delta</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">ka</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ka</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">break</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">:</span>
             <span class="n">ka</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">ka</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">ka</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">print</span> <span class="s1">&#39;&#39;</span>
         <span class="k">print</span> <span class="s1">&#39;ABWE2 - Fatal error!&#39;</span>
         <span class="k">print</span> <span class="s1">&#39;  Iteration limit reached.&#39;</span>
-        <span class="k">print</span> <span class="s1">&#39;  Last DELTA was </span><span class="si">%e</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s1">&#39;  Last DELTA was </span><span class="si">%e</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">delta</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ABWE2 - Fatal error!&#39;</span><span class="p">)</span>
     <span class="n">an</span> <span class="o">=</span> <span class="n">n</span>
     <span class="n">w2</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">an</span> <span class="o">*</span> <span class="n">pd2</span> <span class="o">*</span> <span class="n">p0</span><span class="p">)</span>
@@ -364,7 +356,7 @@
         <span class="n">p0</span> <span class="o">=</span> <span class="n">p1</span>
         <span class="n">p1</span> <span class="o">=</span> <span class="n">p2</span>
         <span class="n">p2</span> <span class="o">=</span> <span class="n">yy</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">-</span> <span class="n">p0</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">even</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">even</span><span class="p">:</span>
         <span class="n">w1</span> <span class="o">=</span> <span class="n">w2</span> <span class="o">+</span> <span class="n">coef2</span> <span class="o">/</span> <span class="p">(</span><span class="n">pd2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">p2</span> <span class="o">-</span> <span class="n">p1</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">w1</span> <span class="o">=</span> <span class="n">w2</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">coef2</span> <span class="o">/</span> <span class="p">(</span><span class="n">pd2</span> <span class="o">*</span> <span class="p">(</span><span class="n">p2</span> <span class="o">-</span> <span class="n">p0</span><span class="p">))</span>
@@ -507,7 +499,7 @@
         <span class="n">y</span> <span class="o">=</span> <span class="n">x1</span>
         <span class="n">x1</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">c</span> <span class="o">-</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">s</span>
         <span class="n">bb</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">s</span> <span class="o">+</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">c</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">n</span><span class="p">:</span>
             <span class="n">xx</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">xx</span> <span class="o">=</span> <span class="n">coef</span> <span class="o">*</span> <span class="n">x1</span>
@@ -517,7 +509,7 @@
         <span class="n">x1</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">c</span> <span class="o">-</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">s</span>
         <span class="n">bb</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">s</span> <span class="o">+</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">c</span>
         <span class="n">xx</span> <span class="o">=</span> <span class="n">coef</span> <span class="o">*</span> <span class="n">x1</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">even</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">even</span><span class="p">:</span>
         <span class="n">xx</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="p">[</span><span class="n">xx</span><span class="p">,</span> <span class="n">w1</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_abwe1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">coef2</span><span class="p">,</span> <span class="n">even</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">xx</span><span class="p">)</span>
         <span class="n">w2</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -526,9 +518,7 @@
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -541,7 +531,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -560,6 +550,7 @@
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
             VERSION:'v1.3.3',
+            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -578,14 +569,11 @@
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
