@@ -28,3 +28,4 @@ Calculation of eigenchannels, elastic transmission, vibrations, electron-phonon 
    H2 molecule bridging 1D Au electrodes <examples/auh2>
    Graphene/SiC <examples/graphene_sic>
    CO/Cu(111) <examples/co_cu111>
+   Nudged elastic band <examples/neb>
