@@ -42,7 +42,7 @@ import Inelastica.MakeGeom as MG
 import Inelastica.math as MM
 
 
-def GetOptions(argv, **kwargs):
+def GetOptions(argv):
     """
     Returns an instance of ``options`` for the ``iets`` module
 
@@ -52,7 +52,6 @@ def GetOptions(argv, **kwargs):
         For example `-n 10 test_dir`, which instructs to compute 10 eigenchannels
         and place the results in the output directory `test_dir`.
     """
-    Log.PrintMainHeader('GetOptions', None)
 
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
@@ -123,11 +122,8 @@ def GetOptions(argv, **kwargs):
     # Parse the options
     options = p.parse_args(argv)
 
-    # With this one can overwrite the logging information
-    if "log" in kwargs:
-        options.Logfile = kwargs['log']
-    else:
-        options.Logfile = 'Inelastica.log'
+    # Set module name
+    options.module = 'Inelastica'
 
     # k-point
     options.kpoint = N.array([options.k1, options.k2, 0.0], N.float)
@@ -144,9 +140,9 @@ def main(options):
     ----------
     options : an ``options`` instance
     """
-    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    VC.OptionsCheck(options, 'Inelastica')
-    Log.PrintMainHeader('Inelastica', options)
+    Log.CreatePipeOutput(options)
+    VC.OptionsCheck(options)
+    Log.PrintMainHeader(options)
 
     options.XV = '%s/%s.XV'%(options.head, options.systemlabel)
     options.geom = MG.Geom(options.XV, BufferAtoms=options.buffer)
@@ -242,7 +238,7 @@ def main(options):
     data = calcIETS(options, GFp, GFm, basis, hw)
     NCfile.close()
     NEGF.SavedSig.close()
-    Log.PrintMainFooter('Inelastica')
+    Log.PrintMainFooter(options)
     return data
 
 ########################################################

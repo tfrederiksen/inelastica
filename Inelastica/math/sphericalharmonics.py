@@ -3,8 +3,8 @@ import scipy.special as SS
 
 
 def sphericalHarmonics(l, m, costh, sinfi, cosfi):
-    """
-    Spherical harmonics :math:`Y_\ell^m(\Theta,\phi)` derived from ``scipy.special``.
+    r"""
+    Spherical harmonics :math:`Y_\ell^m(\theta,\phi)` derived from ``scipy.special``.
 
     Note: This function has been checked up to d-orbitals with the Siesta overlap matrix.
 
@@ -86,4 +86,3 @@ def _OLD_sphericalHarmonics(sinth, costh, sinfi, cosfi):
             [Y1m1, Y10, Y11],
             [Y2m2, Y2m1, Y20, Y21, Y22],
             [Y3m3, Y3m2, Y3m1, Y30, Y31, Y32, Y33]]
-

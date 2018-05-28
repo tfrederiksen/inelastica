@@ -32,6 +32,7 @@ def generatelinmesh(Nk):
 
 
 class kmesh(object):
+
     """
     Create a k-mesh samling where each of the three components
     sample the range [-0.5,0.5]). They are not in reciprocal space.
@@ -134,7 +135,7 @@ class kmesh(object):
         # No brute force (and therefore terribly slow) pairing here
         indx = [[ii, 2] for ii in range(self.NNk/2, self.NNk)] # Keep the last half of the k-points with double weight
         k0 = self.k[self.NNk/2]
-        if N.dot(k0, k0)==0: # gamma in the kptsist
+        if N.dot(k0, k0) == 0: # Gamma in the kptlist
             indx[0] = [self.NNk/2, 1] # lower weight to one
         indx, weight = N.array([ii[0] for ii in indx]), N.array([ii[1] for ii in indx])
         kpts, wgts = self.k[indx], self.w[:, indx]*weight
@@ -162,7 +163,7 @@ def test():
     """
     Test function
     """
-    mesh = kmesh(4, 3, 3, meshtype=['LIN', 'GK', 'LIN'],invsymmetry=False)
+    mesh = kmesh(4, 3, 3, meshtype=['LIN', 'GK', 'LIN'], invsymmetry=False)
     keys = mesh.__dict__.keys()
     print keys
     print mesh.Nk
@@ -175,17 +176,17 @@ def test():
     mesh.mesh2file('mesh-test.dat')
 
     print 'Integrate some simple functions over [-0.5,0.5]:'
-    print '   f(x,y,z)=1 => \int f dxdydz =',N.sum(mesh.w[0])
-    for i,s in enumerate(['x','y','z']):
-        f = mesh.k[:,i]
+    print '   f(x,y,z)=1 => \int f dxdydz =', N.sum(mesh.w[0])
+    for i, s in enumerate(['x', 'y', 'z']):
+        f = mesh.k[:, i]
         print '   f(x,y,z)=%s => \int f dxdydz ='%s, N.sum(f*mesh.w[0])
-    f = mesh.k[:,0]*mesh.k[:,1]*mesh.k[:,2]
-    print '   f(x,y,z)=x*y*z => \int f dxdydz =',N.sum(f*mesh.w[0])
-    f = (mesh.k[:,0]+1)*(mesh.k[:,1]+1)*(mesh.k[:,2]+1)
-    print '   f(x,y,z)=(x+1)*(y+1)*(z+1) => \int f dxdydz =',N.sum(f*mesh.w[0])
+    f = mesh.k[:, 0]*mesh.k[:, 1]*mesh.k[:, 2]
+    print '   f(x,y,z)=x*y*z => \int f dxdydz =', N.sum(f*mesh.w[0])
+    f = (mesh.k[:, 0]+1)*(mesh.k[:, 1]+1)*(mesh.k[:, 2]+1)
+    print '   f(x,y,z)=(x+1)*(y+1)*(z+1) => \int f dxdydz =', N.sum(f*mesh.w[0])
     import math
-    for i,s in enumerate(['x','y','z']):
-        f = N.cos(2*mesh.k[:,i])
+    for i, s in enumerate(['x', 'y', 'z']):
+        f = N.cos(2*mesh.k[:, i])
         print '   f(x,y,z)=cos(2%s) => \int f dxdydz ='%s, N.sum(f*mesh.w[0]), '[exact: sin(1) ~ 0.841470984807897]'
 
 if __name__ == '__main__':

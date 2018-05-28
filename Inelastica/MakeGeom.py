@@ -34,29 +34,29 @@ def interpolateGeom(g0, g1, newlength):
         g0 has to have findContacts data
     '''
     try:
-        dz=(newlength-g0.ContactSeparation)
+        dz = (newlength-g0.ContactSeparation)
     except:
-        dz=(newlength-g0.zlength)
+        dz = (newlength-g0.zlength)
 
     # Find unit cell length
-    NN, z0len=0, 0
+    NN, z0len = 0, 0
     for ii in range(3):
-        if g0.pbc[ii][2]>z0len:
-            NN, z0len=ii, g0.pbc[ii][2]
+        if g0.pbc[ii][2] > z0len:
+            NN, z0len = ii, g0.pbc[ii][2]
 
-    z1len=max(N.array(g1.pbc)[:, 2])
+    z1len = max(N.array(g1.pbc)[:, 2])
 
-    scale=dz/(z1len-z0len)
+    scale = dz/(z1len-z0len)
 
-    new=Geom()
+    new = Geom()
     for ii in range(g0.natoms):
-        r0=N.array(g0.xyz[ii])
-        r1=N.array(g1.xyz[ii])
-        rn=(r1-r0)*scale+r0
+        r0 = N.array(g0.xyz[ii])
+        r1 = N.array(g1.xyz[ii])
+        rn = (r1-r0)*scale+r0
         new.addAtom(rn, g0.snr[ii], g0.anr[ii])
 
-    new.pbc=N.array(g0.pbc).copy()
-    new.pbc[NN][2]=z0len+dz
+    new.pbc = N.array(g0.pbc).copy()
+    new.pbc[NN][2] = z0len+dz
     print 'MakeGeom.interpolateGeom: Electrode separation interpolated to L = %f' %newlength
     return new
 
@@ -113,10 +113,10 @@ class Geom(object):
     '''
 
     def __init__(self, fn="", BufferAtoms=N.empty((0,))):
-        self.natoms=0
+        self.natoms = 0
         self.xyz, self.anr, self.snr = [], [], []
 
-        if len(fn)>1:
+        if len(fn) > 1:
             if fn.endswith('.XV') or fn.endswith('.XV.gz') or fn.endswith('.XV2') or fn.endswith('.XV2.gz'):
                 self.readXV(fn)
             elif fn.endswith('.xyz') or fn.endswith('.xyz.gz'):
@@ -149,13 +149,13 @@ class Geom(object):
 
     def rmAtom(self, rmnr):
         "Remove the offending atom"
-        if rmnr<0 or rmnr>self.natoms-1:
+        if rmnr < 0 or rmnr > self.natoms-1:
             print "ERROR: You tried to remove an atom that isn't there"
             sys.exit(1)
-        self.xyz=self.xyz[0:rmnr]+self.xyz[rmnr+1:self.natoms]
-        self.snr=self.snr[0:rmnr]+self.snr[rmnr+1:self.natoms]
-        self.anr=self.anr[0:rmnr]+self.anr[rmnr+1:self.natoms]
-        self.natoms=self.natoms-1
+        self.xyz = self.xyz[0:rmnr]+self.xyz[rmnr+1:self.natoms]
+        self.snr = self.snr[0:rmnr]+self.snr[rmnr+1:self.natoms]
+        self.anr = self.anr[0:rmnr]+self.anr[rmnr+1:self.natoms]
+        self.natoms = self.natoms-1
 
     def addAtom(self, xyz, snr, anr, constrained=[0, 0, 0]):
         "Add atom"
@@ -189,7 +189,7 @@ class Geom(object):
         new = Geom()
         tmp = []
         for i in range(self.natoms):
-            tmp.append([self.xyz[i][2], self.xyz[i][1], self.xyz[i][0],\
+            tmp.append([self.xyz[i][2], self.xyz[i][1], self.xyz[i][0],
                         self.snr[i], self.anr[i], self.constrained[i]])
         tmp.sort()
         for i in range(self.natoms):
@@ -241,12 +241,12 @@ class Geom(object):
         "Move atoms by dr"
         for ii in range(self.natoms):
             for jj in range(3):
-                self.xyz[ii][jj]=self.xyz[ii][jj]+dr[jj]
+                self.xyz[ii][jj] += dr[jj]
 
     def move2origo(self):
-        self.move([-min(N.array(self.xyz)[:, 0]),\
-            -min(N.array(self.xyz)[:, 1]),\
-            -min(N.array(self.xyz)[:, 2])])
+        self.move([-min(N.array(self.xyz)[:, 0]),
+                   -min(N.array(self.xyz)[:, 1]),
+                   -min(N.array(self.xyz)[:, 2])])
 
     def rotate(self, axisvector, angle, RotationCenter=None, RotateSubset=None, Degrees=True,
                RotateLatticeVectors=False):
@@ -293,7 +293,7 @@ class Geom(object):
     def PlaceInXYplane(self, atomindices):
         # This function orientates the geometry such that three specified
         # atom indices fall in the same xy-plane
-        if len(atomindices)!=3:
+        if len(atomindices) != 3:
             raise ValueError("You need at least 3 atoms here")
         v1 = N.array(self.xyz[atomindices[0]])-N.array(self.xyz[atomindices[1]])
         v2 = N.array(self.xyz[atomindices[0]])-N.array(self.xyz[atomindices[2]])
@@ -326,12 +326,12 @@ class Geom(object):
         print 'MakeGeom.CalcZmatrix: Calculating Zmatrix (from atom %i to %i, SIESTA numbering)...'%(first, last),
         f = first-1 # Python numbering
         # 1st - Cartesian coordinates
-        if last-first>=0:
+        if last-first >= 0:
             zmat[0, :3] = N.array([0, 0, 0])
             zmat[0, 3:] = self.xyz[f]
 
         # 2nd - Spherical coordinates
-        if last-first>=1:
+        if last-first >= 1:
             origo = N.array([0., 0., 0.])
             d = GetDist(self.xyz[f], self.xyz[f+1])
             v01 = N.array(self.xyz[f+1])-N.array(self.xyz[f])
@@ -342,19 +342,19 @@ class Geom(object):
             zmat[1, 3:] = N.array([d, theta, phi])
 
         # 3rd - Dihedral angle with pseudoatom coordinate r0
-        if last-first>=2:
+        if last-first >= 2:
             r0 = N.array(self.xyz[f])+N.array([0., 0., 10.])
             zmat[2, :3] = N.array([2, 1, 0])
-            zmat[2, 3:] = N.array([GetDist(self.xyz[f+1], self.xyz[f+2]),\
-                                    GetAngle(self.xyz[f], self.xyz[f+1], self.xyz[f+2]),\
-                                    GetDihedral(r0, self.xyz[f], self.xyz[f+1], self.xyz[f+2])])
+            zmat[2, 3:] = N.array([GetDist(self.xyz[f+1], self.xyz[f+2]),
+                                   GetAngle(self.xyz[f], self.xyz[f+1], self.xyz[f+2]),
+                                   GetDihedral(r0, self.xyz[f], self.xyz[f+1], self.xyz[f+2])])
         # Remaining atoms
-        if last-first>=3:
+        if last-first >= 3:
             for i in range(f+3, last):
                 zmat[i-f, :3] = N.array([i-f, i-f-1, i-f-2])
-                zmat[i-f, 3:] = N.array([GetDist(self.xyz[i-1], self.xyz[i]),\
-                                      GetAngle(self.xyz[i-2], self.xyz[i-1], self.xyz[i]),\
-                                      GetDihedral(self.xyz[i-3], self.xyz[i-2], self.xyz[i-1], self.xyz[i])])
+                zmat[i-f, 3:] = N.array([GetDist(self.xyz[i-1], self.xyz[i]),
+                                         GetAngle(self.xyz[i-2], self.xyz[i-1], self.xyz[i]),
+                                         GetDihedral(self.xyz[i-3], self.xyz[i-2], self.xyz[i-1], self.xyz[i])])
         print 'Done!'
         return zmat
 
@@ -379,14 +379,14 @@ class Geom(object):
         self.leftContactList = []
         self.rightContactList = []
         self.deviceList = []
-        if AtomsPerLayer>1:
+        if AtomsPerLayer > 1:
             for i in range(self.natoms):
                 tmp = []
                 for j in range(self.natoms):
                     if abs(self.xyz[i][2]-self.xyz[j][2]) < tol: tmp.append(j)
-                if len(tmp)==AtomsPerLayer and len(self.deviceList)==0:
+                if len(tmp) == AtomsPerLayer and len(self.deviceList) == 0:
                     self.leftContactList.append(i+1)  # Siesta numbering starts from 1
-                elif len(tmp)==AtomsPerLayer and len(self.deviceList)>0:
+                elif len(tmp) == AtomsPerLayer and len(self.deviceList) > 0:
                     self.rightContactList.append(i+1) # Siesta numbering starts from 1
                 else:
                     self.deviceList.append(i+1) # Siesta numbering starts from 1
@@ -397,7 +397,7 @@ class Geom(object):
             for i in range(1, self.natoms-1):
                 distL = self.xyz[i][2]-self.xyz[i-1][2]
                 distR = self.xyz[i+1][2]-self.xyz[i][2]
-                if abs(distL-lsep) < tol and len(self.rightContactList)==0:
+                if abs(distL-lsep) < tol and len(self.rightContactList) == 0:
                     self.leftContactList.append(i+1)
                 elif abs(distR-lsep) < tol:
                     self.rightContactList.append(i+1)
@@ -405,18 +405,18 @@ class Geom(object):
                     self.deviceList.append(i+1)
             # Last atom belongs per definition to the right contact:
             self.rightContactList.append(self.natoms) # Siesta numbering starts from 1
-        if len(self.leftContactList)>0 and len(self.rightContactList)>0:
+        if len(self.leftContactList) > 0 and len(self.rightContactList) > 0:
             self.zLeftContact = self.xyz[self.leftContactList[-1]-1][2]
-            self.ContactSeparation =  self.xyz[self.rightContactList[0]-1][2] \
+            self.ContactSeparation = self.xyz[self.rightContactList[0]-1][2] \
                                      - self.zLeftContact
-        elif len(self.leftContactList)>0:
+        elif len(self.leftContactList) > 0:
             self.zLeftContact = self.xyz[self.leftContactList[-1]-1][2]
             self.ContactSeparation = max(N.array(self.pbc)[:, 2]) \
                                      - self.xyz[self.leftContactList[-1]-1][2]
-        elif len(self.rightContactList)>0:
+        elif len(self.rightContactList) > 0:
             self.zLeftContact = 0.0
             self.ContactSeparation = self.xyz[self.rightContactList[0]-1][2]
-        elif len(self.leftContactList)==0 and len(self.rightContactList)==0:
+        elif len(self.leftContactList) == 0 and len(self.rightContactList) == 0:
             self.zLeftContact = 0.0
             self.ContactSeparation = max([self.pbc[ii][2] for ii in range(3)])
         print 'MakeGeom.findContactsAndDevice: Electrode separation detected was L = %f' \
@@ -455,7 +455,7 @@ class Geom(object):
         NN, zmax = 0, 0
         for ii in range(3):
             # Find cell vector with largest z-component
-            if self.pbc[ii][2]>zmax:
+            if self.pbc[ii][2] > zmax:
                 NN, zmax = ii, self.pbc[ii][2]
         self.pbc[NN][2] = zmax+NewContactSeparation-self.ContactSeparation
         self.ContactSeparation = NewContactSeparation
@@ -512,7 +512,7 @@ class Geom(object):
 
     def BuildOnlyS(self, displacement=0.02):
         "Returns a new geometry object with 7 times as many atoms"
-        geom=copy.deepcopy(self)
+        geom = copy.deepcopy(self)
         for dim in range(3):
             for displdir in [-1, 1]:
                 new = copy.deepcopy(self)
@@ -527,7 +527,7 @@ class Geom(object):
         # Find cell vector with largest z-component
         zmax = 0
         for ii in range(3):
-            if self.pbc[ii][2]>zmax:
+            if self.pbc[ii][2] > zmax:
                 zmax = self.pbc[ii][2]
         for i in range(IndexShift):
             # add z-periodicity to z-coordinate
@@ -543,25 +543,25 @@ class Geom(object):
         # in the z-direction is enlarged correspondingly.
         AddLeftList = N.array(AddLeftList)
         AddRightList = N.array(AddRightList)
-        if len(AddLeftList)>0:
-            dz=AddLeftList[AtomsPerLayer, 2]-AddLeftList[0, 2]
-            tmp=N.array(geom.xyz)
-            minz=min(tmp[:, 2])
-            maxz=max(AddLeftList[:, 2])
+        if len(AddLeftList) > 0:
+            dz = AddLeftList[AtomsPerLayer, 2]-AddLeftList[0, 2]
+            tmp = N.array(geom.xyz)
+            minz = min(tmp[:, 2])
+            maxz = max(AddLeftList[:, 2])
             for ii in reversed(range(len(AddLeftList))):
                 geom.prependAtom(AddLeftList[ii, :]+
                                  (-maxz+minz-dz)*N.array([0, 0, 1], N.float),
                                  geom.snr[0], geom.anr[0])
-            geom.pbc[2][2]+=len(AddLeftList)/AtomsPerLayer*dz
-        if len(AddRightList)>0:
-            tmp=N.array(geom.xyz)
-            maxz=max(tmp[:, 2])
-            minz=min(AddRightList[:, 2])
+            geom.pbc[2][2] += len(AddLeftList)/AtomsPerLayer*dz
+        if len(AddRightList) > 0:
+            tmp = N.array(geom.xyz)
+            maxz = max(tmp[:, 2])
+            minz = min(AddRightList[:, 2])
             for ii in range(len(AddRightList)):
                 geom.addAtom(AddRightList[ii, :]+
                              (maxz-minz+dz)*N.array([0, 0, 1], N.float),
                              geom.snr[0], geom.anr[0])
-            geom.pbc[2][2]+=len(AddRightList)/AtomsPerLayer*dz
+            geom.pbc[2][2] += len(AddRightList)/AtomsPerLayer*dz
 
     def StretchAlongEigenvector(self, ncfilename, modeindex, displacement=0.04*PC.Bohr2Ang):
         'Displace a geometry along a calculated eigenmode'
@@ -581,27 +581,27 @@ class Geom(object):
     def readXV(self, fn):
         "Read XV file"
         self.pbc, self.snr, self.anr, self.xyz = SIO.ReadXVFile(fn)
-        self.natoms=len(self.xyz)
+        self.natoms = len(self.xyz)
         #self.move2origo()
 
     def writeXV(self, fn, rep=[1, 1, 1]):
         geom = copy.deepcopy(self)
         for i in range(3):
             geom.repeteGeom(self.pbc[i], rep=rep[i])
-            geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
+            geom.pbc[i] = [rep[i]*x for x in self.pbc[i]]
         SIO.WriteXVFile(fn, geom.pbc, geom.snr, geom.anr, geom.xyz)
 
     def readXYZ(self, fn):
         label, self.anr, self.xyz = SIO.ReadXYZFile(fn)
-        self.natoms=len(self.xyz)
+        self.natoms = len(self.xyz)
         #self.move2origo()
         self.snr = ast.literal_eval(raw_input('Input snr expression:'))
-        if len(self.xyz)!=len(self.snr):
+        if len(self.xyz) != len(self.snr):
             print 'Error assigning snr!'
         self.pbc = []
         for i in range(3):
             vec = ast.literal_eval(raw_input('Input cell vector (%i):'%i))
-            if len(vec)!=3:
+            if len(vec) != 3:
                 print 'Error assigning cell vector!'
             else:
                 self.pbc.append(vec)
@@ -611,7 +611,7 @@ class Geom(object):
         geom = copy.deepcopy(self)
         for i in range(3):
             geom.repeteGeom(self.pbc[i], rep=rep[i])
-            geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
+            geom.pbc[i] = [rep[i]*x for x in self.pbc[i]]
         SIO.WriteXYZFile(fn, geom.anr, geom.xyz, write_ghosts)
 
     def readFDF(self, fn):
@@ -622,7 +622,7 @@ class Geom(object):
         geom = copy.deepcopy(self)
         for i in range(3):
             geom.repeteGeom(self.pbc[i], rep=rep[i])
-            geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
+            geom.pbc[i] = [rep[i]*x for x in self.pbc[i]]
         SIO.WriteFDFFile(fn, geom.pbc, geom.snr, geom.anr, geom.xyz)
 
     def writeFDFZmat(self, fn, first=0, last=0, rep=[1, 1, 1]):
@@ -630,7 +630,7 @@ class Geom(object):
         geom = copy.deepcopy(self)
         for i in range(3):
             geom.repeteGeom(self.pbc[i], rep=rep[i])
-            geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
+            geom.pbc[i] = [rep[i]*x for x in self.pbc[i]]
         if first > 0 and last >= first:
             zmat = geom.CalcZmatrix(first, last)
         else:
@@ -645,7 +645,7 @@ class Geom(object):
         geom = copy.deepcopy(self)
         for i in range(3):
             geom.repeteGeom(self.pbc[i], rep=rep[i])
-            geom.pbc[i]=[rep[i]*x for x in self.pbc[i]]
+            geom.pbc[i] = [rep[i]*x for x in self.pbc[i]]
         SIO.WriteMKLFile(fn, geom.anr, geom.xyz, [], [], 0, 0)
 
     def readSTRUCT_OUT(self, fn):
@@ -673,7 +673,7 @@ class Geom(object):
         tmp = []
         anrnum = N.zeros(max(geom.anr)+1, N.int)
         for i, xyz in enumerate(geom.xyz):
-            if geom.anr[i]>0:
+            if geom.anr[i] > 0:
                 tmp += [[geom.anr[i], i]]
                 anrnum[geom.anr[i]] += 1 # count atoms of each element type
         tmp.sort() # sort according to increasing atom number
@@ -686,7 +686,7 @@ class Geom(object):
         speciesnumbers = []
         specieslabels = []
         for i, nanr in enumerate(anrnum):
-            if nanr!=0:
+            if nanr != 0:
                 speciesnumbers += [nanr]
                 specieslabels += [PC.PeriodicTable[i]]
         VIO.WritePOSCAR(fn, geom.pbc, specieslabels, speciesnumbers, xyz, constrained=N.array(cons))
@@ -734,6 +734,6 @@ def repeteANI(ANIinfile, XVinfile, outfile, rep=[1, 1, 1]):
         geom.pbc = N.zeros((3, 3), N.float)
         for i in range(3):
             geom.repeteGeom(initGeom.pbc[i], rep=rep[i])
-            geom.pbc[i]=[rep[i]*x for x in initGeom.pbc[i]]
+            geom.pbc[i] = [rep[i]*x for x in initGeom.pbc[i]]
         newGeomList.append(geom)
     SIO.WriteANIFile(outfile, newGeomList, Energy)

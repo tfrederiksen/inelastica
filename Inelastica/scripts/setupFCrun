@@ -13,7 +13,7 @@ parser.add_argument('-F', '--FCfirst', dest='FCfirst', type=int, default=1,
 parser.add_argument('-L', '--FClast', dest='FClast', type=int, default=1,
                     help='Last dynamic atom (default: %(default)s)')
 parser.add_argument('-d', '--displacement', dest='displacement', type=float, default=0.02,
-                    help='Finite displacement amplitude (default: %(default)s Ang')
+                    help='Finite displacement amplitude (default: %(default)s Ang)')
 args = parser.parse_args()
 
 SR.SetupFCrun(args.CGrun, args.FCrun, args.FCfirst, args.FClast, args.displacement)

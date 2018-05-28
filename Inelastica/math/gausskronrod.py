@@ -2,7 +2,7 @@ import numpy as N
 
 
 def GaussKronrod(n, tol=1e-10):
-    """
+    r"""
     Computes the (:math:`2n+1`)-point Gauss-Kronrod quadrature abscissa :math:`\{x_i\}`
     and weights :math:`\{w_{1,i}\}`, :math:`\{w_{2,i}\}`.
     Kronrod adds :math:`n+1` points to an :math:`n`-point Gaussian rule.
@@ -10,6 +10,8 @@ def GaussKronrod(n, tol=1e-10):
     Definition:
 
     :math:`\int_{-1/2}^{1/2} f(x) dx \sim \sum_i w_{1,i} f(x_i)`.
+
+    The integration range corresponds to the first Brillouin zone in Inelastica.
 
     The weights :math:`\{w_{2,i}\}` are used for error estimation.
 
@@ -59,14 +61,16 @@ def _abwe1(n, m, tol, coef2, even, b, x):
 #    Mathematics of Computation,
 #    Volume 28, Number 125, January 1974, pages 135-139.
 
-    if (x == 0.0):    ka = 1
-    else:    ka = 0
+    if x == 0.0:
+        ka = 1
+    else:
+        ka = 0
     for iter in range(1, 51):
         b1 = 0.0
         b2 = b[m+1-1]
         yy = 4.0 * x * x - 2.0
         d1 = 0.0
-        if (even):
+        if even:
             ai = m + m + 1
             d2 = ai * b[m+1-1]
             dif = 2.0
@@ -82,11 +86,11 @@ def _abwe1(n, m, tol, coef2, even, b, x):
             d0 = d1
             d1 = d2
             b2 = yy * b1 - b0 + b[i-1]
-            if (not even):
+            if not even:
                 i = i + 1
             d2 = yy * d1 - d0 + ai * b[i-1]
 
-        if (even):
+        if even:
             f = x * (b2 - b1)
             fd = d2 + d1
         else:
@@ -97,14 +101,14 @@ def _abwe1(n, m, tol, coef2, even, b, x):
 #
         delta = f / fd
         x = x - delta
-        if (ka == 1):
+        if ka == 1:
             break
-        if (abs(delta) <= tol):
+        if abs(delta) <= tol:
             ka = 1
 #
 #  Catch non-convergence.
 #
-    if (ka != 1):
+    if ka != 1:
         print ''
         print 'ABWE1 - Fatal error!'
         print '  Iteration limit reached.'
@@ -142,21 +146,22 @@ def _abwe2(n, m, tol, coef2, even, b, x):
 #    Mathematics of Computation,
 #    Volume 28, Number 125, January 1974, pages 135-139.
     from sys import exit
-    if (x == 0.0):    ka = 1
-    else:    ka = 0
+    if x == 0.0:
+        ka = 1
+    else:
+        ka = 0
     for iter in range(1, 51):
         p0 = 1.0
         p1 = x
         pd0 = 0.0
         pd1 = 1.0
-        if (n <= 1):
-            if (x != 0.0):
+        if n <= 1:
+            if x != 0.0:
                 p2 = (3.0 * x * x - 1.0) / 2.0
                 pd2 = 3.0 * x
             else:
                 p2 = 3.0 * x
                 pd2 = 3.0
-
         ai = 0.0
         for k in range(2, n + 1):
             ai = ai + 1.0
@@ -168,15 +173,15 @@ def _abwe2(n, m, tol, coef2, even, b, x):
             pd1 = pd2
         delta = p2 / pd2
         x = x - delta
-        if (ka == 1):
+        if ka == 1:
             break
-        if (abs(delta) <= tol):
+        if abs(delta) <= tol:
             ka = 1
-    if (ka != 1):
+    if ka != 1:
         print ''
         print 'ABWE2 - Fatal error!'
         print '  Iteration limit reached.'
-        print '  Last DELTA was %e' % (delta)
+        print '  Last DELTA was %e' % delta
         sys.exit('ABWE2 - Fatal error!')
     an = n
     w2 = 2.0 / (an * pd2 * p0)
@@ -188,7 +193,7 @@ def _abwe2(n, m, tol, coef2, even, b, x):
         p0 = p1
         p1 = p2
         p2 = yy * p1 - p0 + b[i-1]
-    if (even):
+    if even:
         w1 = w2 + coef2 / (pd2 * x * (p2 - p1))
     else:
         w1 = w2 + 2.0 * coef2 / (pd2 * (p2 - p0))
@@ -331,7 +336,7 @@ def _kronrod(n, tol):
         y = x1
         x1 = y * c - bb * s
         bb = y * s + bb * c
-        if (k == n):
+        if k == n:
             xx = 0.0
         else:
             xx = coef * x1
@@ -341,7 +346,7 @@ def _kronrod(n, tol):
         x1 = y * c - bb * s
         bb = y * s + bb * c
         xx = coef * x1
-    if (even):
+    if even:
         xx = 0.0
         [xx, w1[n+1-1]] = _abwe1(n, m, tol, coef2, even, b, xx)
         w2[n+1-1] = 0.0

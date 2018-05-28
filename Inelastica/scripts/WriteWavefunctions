@@ -20,13 +20,13 @@ if len(sys.argv)>3:
 
 # "Borrow" options object from EigenChannels
 options = EC.GetOptions(opts)
-Log.CreatePipeOutput(options.DestDir+'/WriteWavefunctions.log')
+Log.CreatePipeOutput(options)
 label = SIO.GetFDFlineWithDefault(options.fn, 'SystemLabel', str, 'siesta', 'WriteWavefunctions')
 
 # Read Hamiltonian
 tshs = SIO.HS(label+'.TSHS')
 geom = MG.Geom(label+'.XV')
-options.DeviceAtoms = range(1, geom.natoms+1)
+options.DeviceAtoms = [1, geom.natoms]
 
 # Build basis
 basis = SIO.BuildBasis(options.fn, 1, geom.natoms, tshs.lasto)

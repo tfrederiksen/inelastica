@@ -54,7 +54,7 @@ import Inelastica.io.xmgrace as XMGR
 # DIRECTLY in python
 
 
-def GetOptions(argv, **kwargs):
+def GetOptions(argv):
     """
     Returns an instance of ``options`` for the ``pyTBT`` module
 
@@ -64,7 +64,6 @@ def GetOptions(argv, **kwargs):
         For example `-N 5 test_dir`, which instructs to compute transmission on 5 energy points
         and place the results in the output directory `test_dir`.
     """
-    Log.PrintMainHeader('GetOptions', None)
 
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
@@ -135,11 +134,8 @@ def GetOptions(argv, **kwargs):
     # Parse the options
     options = p.parse_args(argv)
 
-    # With this one can overwrite the logging information
-    if "log" in kwargs:
-        options.Logfile = kwargs['log']
-    else:
-        options.Logfile = 'pyTBT.log'
+    # Set module name
+    options.module = 'pyTBT'
 
     return options
 
@@ -152,9 +148,9 @@ def main(options):
     ----------
     options : an ``options`` instance
     """
-    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    VC.OptionsCheck(options, 'pyTBT')
-    Log.PrintMainHeader('pyTBT', options)
+    Log.CreatePipeOutput(options)
+    VC.OptionsCheck(options)
+    Log.PrintMainHeader(options)
 
     # K-points
     if options.Gk1 > 1:
@@ -327,7 +323,7 @@ def main(options):
         WriteMPSH(outFile+'.MPSHL.gz', options, DevGF, MPSHL, ev0)
         WriteMPSH(outFile+'.MPSHR.gz', options, DevGF, MPSHR, ev0)
 
-    Log.PrintMainFooter('pyTBT')
+    Log.PrintMainFooter(options)
 
 
 def WritePDOS(fn, options, DevGF, DOS, basis):

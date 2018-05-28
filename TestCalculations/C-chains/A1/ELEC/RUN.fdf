@@ -2,7 +2,9 @@ SystemTitle elec
 SystemLabel elec
 
 SolutionMethod     diagon
+TS.HS.Save True
 
+Diag.ParallelOverK true
 %block kgrid_Monkhorst_Pack
 100    0    0    0.0
   0    1    0    0.0

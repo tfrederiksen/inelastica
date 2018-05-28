@@ -1,0 +1,93 @@
+TS.Voltage    0.00000 eV
+ 
+%block TS.ChemPots
+  Left
+  Right
+%endblock TS.ChemPots
+ 
+%block TS.ChemPot.Left
+  mu V/2
+  contour.eq
+    begin
+      c-Left
+      t-Left
+    end
+%endblock TS.ChemPot.Left
+%block TS.ChemPot.Right
+  mu -V/2
+  contour.eq
+    begin
+      c-Right
+      t-Right
+    end
+%endblock TS.ChemPot.Right
+ 
+TS.Elecs.Bulk true
+TS.Elecs.DM.Update cross-terms
+TS.Elecs.GF.ReUse true
+
+%block TS.Elecs
+  Left
+  Right
+%endblock TS.Elecs
+
+%block TS.Atoms.Buffer
+  atom from  1 to 21
+  atom from 81 to 83
+%endblock TS.Atoms.Buffer
+
+%block TS.Elec.Left
+  TSHS ../ELEC1/ELEC1.TSHS
+  chem-pot Left
+  semi-inf-dir -a3
+  elec-pos begin 22
+  bloch-A1 1 
+  bloch-A2 1 
+%endblock TS.Elec.Left
+ 
+%block TS.Elec.Right
+  TSHS ../ELEC2/ELEC2.TSHS
+  chem-pot Right
+  semi-inf-dir +a3
+  elec-pos end -4
+  bloch-A1 1 
+  bloch-A2 1 
+%endblock TS.Elec.Right
+
+TS.Contours.Eq.Pole 3 eV
+
+%block TS.Contour.c-Left
+  part circle
+   from   -3.00000 Ry + V/2 to -10. kT + V/2
+    points 38
+     method g-legendre
+%endblock TS.Contour.c-Left
+%block TS.Contour.t-Left
+  part tail
+   from prev to inf
+    points 15
+     method g-fermi
+%endblock TS.Contour.t-Left
+%block TS.Contour.c-Right
+  part circle
+   from   -3.00000 Ry - V/2 to -10. kT - V/2
+    points 38
+     method g-legendre
+%endblock TS.Contour.c-Right
+%block TS.Contour.t-Right
+  part tail
+   from prev to inf
+    points 15
+     method g-fermi
+%endblock TS.Contour.t-Right
+ 
+TS.Elecs.Eta    0.0000010000 Ry
+%block TS.Contours.nEq
+  neq
+%endblock TS.Contours.nEq
+%block TS.Contour.nEq.neq
+  part line
+   from -|V|/2 - 5 kT to |V|/2 + 5 kT
+    delta 0.01 eV
+     method simpson-mix
+%endblock TS.Contour.nEq.neq

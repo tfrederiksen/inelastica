@@ -61,7 +61,7 @@ DEBUG = False
 DEBUGPDE = False
 
 
-def GetOptions(argv, **kwargs):
+def GetOptions(argv):
     # if text string is specified, convert to list
     if isinstance(argv, basestring): argv = argv.split()
 
@@ -120,7 +120,7 @@ def GetOptions(argv, **kwargs):
     p.add_option("-y", "--Nk2", dest='Nk2', default=1, type='int',
                   help="k-points Nk2 along a2 [%default]")
 
-    #FD calculation
+    # FD calculation
     p.add_option("-r", "--rhoiso", dest='rhoiso', default=1e-3, type='float',
                  help="Density at the isosurface from which the localized-basis wave functions are propagated [default=%default Bohr^-3Ry^-1]")
     p.add_option("--ssp", dest='ShiftSeparationPlane', default=0, type='float',
@@ -136,11 +136,10 @@ def GetOptions(argv, **kwargs):
 
     # Get the last positional argument
     options.DestDir = VC.GetPositional(args, "You need to specify a destination directory!")
-    # With this one can overwrite the logging information
-    if "log" in kwargs:
-        options.Logfile = kwargs["log"]
-    else:
-        options.Logfile = 'STM.log'
+
+    # Set module name
+    options.module = 'STM'
+
     options.kpoints = Kmesh.kmesh(options.Nk1, options.Nk2, 1, meshtype=['LIN', 'LIN', 'LIN'], invsymmetry=False)
     return options
 
@@ -154,9 +153,9 @@ def main(options):
     if len(glob.glob('Rho.grid.nc')) == 0:
         sys.exit('Rho.grid.nc not found! Add "SaveRho true" to RUN.fdf')
 
-    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    VC.OptionsCheck(options, 'STM')
-    Log.PrintMainHeader('STM', options)
+    Log.CreatePipeOutput(options)
+    VC.OptionsCheck(options)
+    Log.PrintMainHeader(options)
 
     ## Step 1: Calculate scattering states from L/R on TranSiesta real space grid.
     if glob.glob(options.DestDir+'/kpoints') != []: # Check previous k-points
@@ -258,7 +257,7 @@ def main(options):
     n.write(TipHeight, 'TipHeight')
     n.close()
 
-    Log.PrintMainFooter('STM')
+    Log.PrintMainFooter(options)
 
 ########################################################
 

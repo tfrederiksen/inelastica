@@ -84,7 +84,7 @@ import Inelastica.math as MM
 import Inelastica.misc.valuecheck as VC
 
 
-def GetOptions(argv, **kwargs):
+def GetOptions(argv):
     """
     Returns an instance of ``options`` for the ``Phonons`` module
 
@@ -146,11 +146,8 @@ def GetOptions(argv, **kwargs):
 
     options = p.parse_args(argv)
 
-    # With this one can overwrite the logging information
-    if "log" in kwargs:
-        options.Logfile = kwargs["log"]
-    else:
-        options.Logfile = 'Phonons.log'
+    # Set module name
+    options.module = 'Phonons'
 
     # k-point
     options.kpoint = N.array([options.k1, options.k2, options.k3], N.float)
@@ -642,10 +639,10 @@ class DynamicalMatrix(object):
         WriteAXSFFiles('%s.mol.real-displ.axsf'%label, self.geom.xyz, self.geom.anr, hw, UUdisp, 1, natoms)
         WriteAXSFFiles('%s.mol.charlength-displ.axsf'%label, self.geom.xyz, self.geom.anr, hw, UUcl, 1, natoms)
         WriteAXSFFilesPer('%s.per.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr, hw, UU, 1, natoms)
-        WriteAXSFFilesPer('%s.per.real-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,\
-                             hw, UUdisp, 1, natoms)
-        WriteAXSFFilesPer('%s.per.charlength-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,\
-                             hw, UUcl, 1, natoms)
+        WriteAXSFFilesPer('%s.per.real-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,
+                          hw, UUdisp, 1, natoms)
+        WriteAXSFFilesPer('%s.per.charlength-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,
+                          hw, UUcl, 1, natoms)
         # Netcdf format
         ncdffn = '%s.nc'%label
         print 'Phonons.WriteOutput: Writing', ncdffn
@@ -676,6 +673,10 @@ class DynamicalMatrix(object):
         ncdf.variables['GeometryXYZ'][:] = self.geom.xyz
         ncdf.variables['GeometryXYZ'].info = 'Atomic coordinates of all atoms in cell'
         ncdf.variables['GeometryXYZ'].unit = 'Ang'
+        ncdf.createVariable('FC', 'd', ('dyn_atoms', 'xyz','natoms','xyz'))
+        ncdf.variables['FC'][:] = self.mean
+        ncdf.variables['FC'].info = 'Force matrix'
+        ncdf.variables['FC'].unit = 'ev/Ang^2'
         ncdf.createVariable('AtomNumbers', 'i', ('natoms',))
         ncdf.variables['AtomNumbers'][:] = self.geom.anr
         ncdf.variables['AtomNumbers'].info = 'Element number for each atom (anr)'
@@ -849,8 +850,8 @@ def main(options):
     ----------
     options : an ``options`` instance
     """
-    Log.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    Log.PrintMainHeader('Phonons', options)
+    Log.CreatePipeOutput(options)
+    Log.PrintMainHeader(options)
 
     # Determine SIESTA input fdf files in FCruns
     fdf = glob.glob(options.FCwildcard+'/RUN.fdf')
@@ -878,9 +879,9 @@ def main(options):
                                WriteGradients=options.WriteGradients)
         # Write data to files
         DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        Log.PrintMainFooter('Phonons')
+        Log.PrintMainFooter(options)
         return DM.h0, DM.s0, DM.hw, DM.heph
     else:
         DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        Log.PrintMainFooter('Phonons')
+        Log.PrintMainFooter(options)
         return DM.hw

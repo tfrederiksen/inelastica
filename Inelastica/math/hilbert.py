@@ -4,7 +4,7 @@ import numpy.fft as FFT
 
 def Hilbert(f, ker=None):
     r"""
-    Hilbert transform :math:`\mathcal{H}[f](y)` of a function :math:`f(x)` 
+    Hilbert transform :math:`\mathcal{H}[f](y)` of a function :math:`f(x)`
     with finite support, sampled on an equidistant grid :math:`\{x_1,x_2,x_{nh}\}`.
 
     Definition:

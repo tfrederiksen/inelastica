@@ -2,6 +2,7 @@
 MD.TypeOfRun  FC
 MD.FCfirst   9
 MD.FClast    9
+TS.HS.Save True
 TS.SaveHS    True
 MD.FCDispl   0.02000000 Ang
 SystemTitle device
