@@ -119,7 +119,7 @@ def writeFS(ispin, NNk, bands):
     indx = []
     for ii in range(HS.N):
         if N.sum((bands[:, :, :, ii].reshape((-1,)) < general.eMax)*\
-                     (bands[:, :, :, ii].reshape((-1,)) > general.eMin)):
+                 (bands[:, :, :, ii].reshape((-1,)) > general.eMin)):
             indx += [ii]
 
     f = open(general.DestDir+'/'+'FermiSurface'+sspin+'.BXSF', 'w')
@@ -187,14 +187,14 @@ def writeBands(ispin, what, bands):
         sspin = ''
 
     Graphs = []
-    for jj,  elem in enumerate(what):
-        f=open(general.DestDir+'/'+elem[0]+sspin+'.dat', 'w')
+    for jj, elem in enumerate(what):
+        f = open(general.DestDir+'/'+elem[0]+sspin+'.dat', 'w')
         xx = N.array(range(elem[3]), N.float)/(elem[3]-1.0)
         iColor, Datasets = 1, []
         for ii in range(len(bands[jj][0, :])):
             # Choose bands within +-5 eV from Ef
             if N.sum((bands[jj][:, ii] < general.eMax)*\
-                         (bands[jj][:, ii] > general.eMin)) > 1e-5:
+                     (bands[jj][:, ii] > general.eMin)) > 1e-5:
                 f.write("\n# Band %i \n"%(ii))
                 for kk, data in enumerate(bands[jj][:, ii]):
                     f.write("%i %e\n"%(kk, data))
@@ -209,11 +209,11 @@ def writeBands(ispin, what, bands):
 
         g.SetXaxis(label='', majorUnit=0.5, minorUnit=0.1, vmax=1, vmin=0)
         if jj == 0:
-            g.SetYaxis(label='eV', majorUnit=1, minorUnit=0.2,\
-                           vmax=general.eMax, vmin=general.eMin)
+            g.SetYaxis(label='eV', majorUnit=1, minorUnit=0.2,
+                       vmax=general.eMax, vmin=general.eMin)
         else:
-            g.SetYaxis(label='', majorUnit=1e10, minorUnit=0.2,\
-                           vmax=general.eMax, vmin=general.eMin)
+            g.SetYaxis(label='', majorUnit=1e10, minorUnit=0.2,
+                       vmax=general.eMax, vmin=general.eMin)
         Graphs += [g]
 
     p = XMGR.Plot(general.DestDir+'/BandStruct.agr', Graphs[0])
@@ -284,8 +284,9 @@ For help use --help!
     sys.stdout = fo
 
     iofile = open(general.DestDir+'/Parameters', 'w')
-    argv=""
-    for ii in sys.argv: argv+=" "+ii
+    argv = ""
+    for ii in sys.argv:
+        argv += " "+ii
     myprint(argv, iofile)
     myprint('##################################################################################', iofile)
     myprint('## Band structure ', iofile)

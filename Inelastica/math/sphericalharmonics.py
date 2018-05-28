@@ -86,4 +86,3 @@ def _OLD_sphericalHarmonics(sinth, costh, sinfi, cosfi):
             [Y1m1, Y10, Y11],
             [Y2m2, Y2m1, Y20, Y21, Y22],
             [Y3m3, Y3m2, Y3m1, Y30, Y31, Y32, Y33]]
-

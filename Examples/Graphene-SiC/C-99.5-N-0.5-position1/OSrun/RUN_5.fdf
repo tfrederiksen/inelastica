@@ -1,4 +1,4 @@
-### Lines written Thu Feb 16 22:01:03 2017 
+### Lines written Thu Mar 15 09:59:36 2018 
 TS.onlyS .true.
 SystemName STRUCT_5
 SystemLabel STRUCT_5
@@ -63,7 +63,7 @@ Au_pbr                2                    # Species label, number of l-shells
 0  0  1      0.00 
 %endblock kgrid_Monkhorst_Pack 
 MeshCutoff  400.0 Ry 
-MaxSCFIterations  200 
+MaxSCFIterations  400 
 SCF.Mix DM
 SCF.Mixer.Weight 0.01
 SCF.Mixer.History 10
@@ -74,7 +74,7 @@ DivideAndConquer true
 MD.TypeOfRun   Broyden 
 MD.Broyden.History.Steps 15 
 MD.NumCGSteps   30 
-MD.MAXCGDispl   0.2 Bohr  
+MD.MAXCGDispl   0.05 Bohr  
 MD.MaxForceTol   0.02  eV/Ang 
 WriteCoorInitial true 
 WriteCoorStep true 

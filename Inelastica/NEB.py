@@ -93,11 +93,11 @@ def runNEB():
     done=opts.onlyInit
 
     while not done:
-        # Start  calculations
+        # Start calculations
         for ii in steps:
             ii.run()
 
-        nextstep=False
+        nextstep = False
         while not nextstep:
             for ii in steps:
                 if not ii.checkDone(): # Reads forces!
@@ -107,7 +107,7 @@ def runNEB():
             if not nextstep:
                 time.sleep(10)
 
-        savedData.E += [[SIO.GetTotalEnergy(ii.dir+'/RUN.out') for ii in steps]]
+        savedData.E += [[SIO.GetTotalEnergy(ii.dirr+'/RUN.out') for ii in steps]]
         savedData.geom += [[copy.deepcopy(ii.XVgeom) for ii in steps]]
 
         overShoot = False
@@ -162,15 +162,15 @@ def runNEB():
 class step(object):
     global steps, opts
 
-    def __init__(self, dir, restart, iistep, initial=None, final=None):
-        self.dir = dir
+    def __init__(self, dirr, restart, iistep, initial=None, final=None):
+        self.dirr = dirr
         self.converged, self.Fmax = False, 0.0
         self.ii = iistep
         self.fixed = (iistep == 0) or (iistep == opts.NNEB+1)
 
         if restart or self.fixed:
-            self.FDFgeom = MG.Geom(self.dir+"/"+opts.fn)
-            self.XVgeom =  readxv(self.dir)
+            self.FDFgeom = MG.Geom(self.dirr+"/"+opts.fn)
+            self.XVgeom =  readxv(self.dirr)
             self.v = N.array(self.FDFgeom.xyz)*0
 
         if not restart and not self.fixed:
@@ -183,7 +183,7 @@ class step(object):
             xyz = (1-mix)*ixyz+mix*fxyz
             self.FDFgeom = copy.copy(initial.XVgeom)
             self.FDFgeom.xyz = [xyz[ii, :] for ii in range(len(xyz))]
-            self.FDFgeom.writeFDF(self.dir+"/STRUCT.fdf")
+            self.FDFgeom.writeFDF(self.dirr+"/STRUCT.fdf")
             self.v = N.array(self.FDFgeom.xyz)*0
 
             # Append lines to RUN.fdf
@@ -213,21 +213,21 @@ class step(object):
 
     def checkDone(self):
         if self.fixed == True:
-            self.FDFgeom = MG.Geom(self.dir+"/"+opts.fn)
-            self.XVgeom = readxv(self.dir)
-            self.forces = SIO.ReadForces(self.dir+"/RUN.out")
+            self.FDFgeom = MG.Geom(self.dirr+"/"+opts.fn)
+            self.XVgeom = readxv(self.dirr)
+            self.forces = SIO.ReadForces(self.dirr+"/RUN.out")
             self.forces = self.forces[-len(self.XVgeom.xyz):]
             self.F = N.array(self.forces)*0
             self.v = N.array(self.forces)*0
             self.converged = True
             return True
         else:
-            done = SIO.CheckTermination(self.dir+"/RUN.out")
+            done = SIO.CheckTermination(self.dirr+"/RUN.out")
             if done:
                 try:
-                    self.FDFgeom = MG.Geom(self.dir+"/"+opts.fn)
-                    self.XVgeom = readxv(self.dir)
-                    self.forces = SIO.ReadForces(self.dir+"/RUN.out")
+                    self.FDFgeom = MG.Geom(self.dirr+"/"+opts.fn)
+                    self.XVgeom = readxv(self.dirr)
+                    self.forces = SIO.ReadForces(self.dirr+"/RUN.out")
                     if N.allclose(self.XVgeom.xyz, self.FDFgeom.xyz, 1e-6):
                         done = True
                 except:
@@ -237,17 +237,17 @@ class step(object):
     def run(self):
         if (not self.done) and (not self.converged):
             try:
-                os.remove(self.dir+"/RUN.out")
+                os.remove(self.dirr+"/RUN.out")
             except Exception as e:
                 print e
-            fns = glob.glob(self.dir+'/*.XV')
+            fns = glob.glob(self.dirr+'/*.XV')
             for fn in fns:
                 os.remove(fn)
-            fns = glob.glob(self.dir+'/*.ANI')
+            fns = glob.glob(self.dirr+'/*.ANI')
             for fn in fns:
                 os.remove(fn)
-            self.FDFgeom.writeFDF(self.dir+"/STRUCT.fdf")
-            SUR.MakePBS(None, self.dir+"/RUN.pbs",\
+            self.FDFgeom.writeFDF(self.dirr+"/STRUCT.fdf")
+            SUR.MakePBS(None, self.dirr+"/RUN.pbs",\
                         [['$NODES$', '1:ppn=%i'%opts.proc]],\
                         True, rtype = 'TS')
 

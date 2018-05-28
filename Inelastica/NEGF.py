@@ -71,9 +71,9 @@ def hash2dec(hash):
 
 
 def dec2hash(dec):
-    s=''
+    s = ''
     for ii in range(len(dec)):
-        s=s+hex(dec[ii])[2:]
+        s += hex(dec[ii])[2:]
     return s
 
 
@@ -91,21 +91,21 @@ class SigDir(object):
         if 'Done' in ncfile.variables:
             print "Read ", fn
             ncv = ncfile.variables
-            hash, hash2l, reE, imE, LR, ispin, etaLead = ncv['hash'][:], ncv['hash2'][:], ncv['reE'][:], ncv['imE'][:], ncv['left'][:], ncv['ispin'][:], ncv['etaLead'][:]
-            hash = [dec2hash(ii) for ii in hash]
+            hash1, hash2l, reE, imE, LR, ispin, etaLead = ncv['hash'][:], ncv['hash2'][:], ncv['reE'][:], ncv['imE'][:], ncv['left'][:], ncv['ispin'][:], ncv['etaLead'][:]
+            hash1 = [dec2hash(ii) for ii in hash1]
             for ii in range(len(reE)):
                 hash2 = dec2hash(hash2l[ii])
                 print "Found ", hash2
                 self.data[hash2] = [ncfile, ii]
-            self.files+=[ncfile]
+            self.files += [ncfile]
         else:
             ncfile.close()
 
     def getSig(self, hash, ee, kp, left, ispin, etaLead):
         if left:
-            left=1
+            left = 1
         else:
-            left=0
+            left = 0
         hash2 = myHash([N.array(hash), N.array(ee.real), N.array(ee.imag), N.array(kp), N.array(left), N.array(ispin), N.array(etaLead)])
         print "Get ", hash2
         if hash2 in self.data:
@@ -118,9 +118,9 @@ class SigDir(object):
     def addSig(self, hash, ee, kp, left, ispin, etaLead, Sig):
         #print "Add ",hash,ee,kp,left,ispin,etaLead,Sig
         if left:
-            left=1
+            left = 1
         else:
-            left=0
+            left = 0
         if self.newFile == None:
             self.newFileIndx = 0
             nf = NC4.Dataset(self.path+'/Sig_'+str(N.floor(N.random.rand()*1e9))+'.nc', 'w')
@@ -140,21 +140,21 @@ class SigDir(object):
             nf.createVariable('reSig', 'd', ('List', 'Dim', 'Dim'))
             nf.createVariable('imSig', 'd', ('List', 'Dim', 'Dim'))
             self.newFile = nf
-            self.files+=[nf]
-        NN=self.newFileIndx
-        hash2=myHash([N.array(hash), N.array(ee.real), N.array(ee.imag), N.array(kp), N.array(left), N.array(ispin), N.array(etaLead)])
-        nfv=self.newFile.variables
+            self.files += [nf]
+        NN = self.newFileIndx
+        hash2 = myHash([N.array(hash), N.array(ee.real), N.array(ee.imag), N.array(kp), N.array(left), N.array(ispin), N.array(etaLead)])
+        nfv = self.newFile.variables
         nfv['hash'][NN, :], nfv['reE'][NN], nfv['imE'][NN] = hash2dec(hash), ee.real, ee.imag
-        nfv['hash2'][NN, :]= hash2dec(hash2)
+        nfv['hash2'][NN, :] = hash2dec(hash2)
         nfv['kp'][NN, :], nfv['left'][NN], nfv['ispin'][NN], nfv['etaLead'][NN] = kp, left, ispin, etaLead
         nfv['reSig'][NN, :, :], nfv['imSig'][NN, :, :] = Sig.real, Sig.imag
         print "Put ", hash2
         self.data[hash2] = [self.newFile, NN]
-        self.newFileIndx+=1
+        self.newFileIndx += 1
 
     def close(self):
-        if not self.newFile==None:
-            var=self.newFile.createVariable('Done', 'i', ('One',))
+        if not self.newFile == None:
+            var = self.newFile.createVariable('Done', 'i', ('One',))
         for f in self.files:
             f.close()
 
@@ -169,11 +169,11 @@ class SavedSigClass(object):
     """
 
     def __init__(self):
-        self.sigs={}
+        self.sigs = {}
 
     def add_hsfile(self, path):
         if not path in self.sigs:
-            self.sigs[path]=SigDir(path)
+            self.sigs[path] = SigDir(path)
 
     def getSig(self, path, hash, ee, kp, left, ispin, etaLead):
         return self.sigs[path].getSig(hash, ee, kp, left, ispin, etaLead)
@@ -183,7 +183,7 @@ class SavedSigClass(object):
 
     def close(self):
         for ii in self.sigs: self.sigs[ii].close()
-        self.sigs={}
+        self.sigs = {}
 
 global SavedSig
 SavedSig = SavedSigClass()
@@ -201,13 +201,13 @@ class ElectrodeSelfEnergy(object):
 
     def __init__(self, fn, NA1, NA2, voltage=0.0, UseF90helpers=True):
         self.path = os.path.split(os.path.abspath(fn))[0]
-        self.HS=SIO.HS(fn, UseF90helpers=UseF90helpers) # An electrode HS
-        self.hash=myHash([self.HS, NA1, NA2, voltage])
+        self.HS = SIO.HS(fn, UseF90helpers=UseF90helpers) # An electrode HS
+        self.hash = myHash([self.HS, NA1, NA2, voltage])
         SavedSig.add_hsfile(self.path)
         if self.HS.gamma:
             raise IOError("Are you trying to sneak a Gamma point electrode calculation past me?")
-        self.NA1=NA1
-        self.NA2=NA2
+        self.NA1 = NA1
+        self.NA2 = NA2
         self.kpoint = N.array([1e10, 1e10], N.float)
         self.voltage = voltage
         self.scaling = 1.0 # Default scale factor for coupling to device
@@ -233,12 +233,12 @@ class ElectrodeSelfEnergy(object):
         if useSigNCfiles:
             Found, Sig = SavedSig.getSig(self.path, self.hash, eeshifted, qp, left*1, ispin, etaLead)
             if Found:
-                if self.scaling!=1.0:
+                if self.scaling != 1.0:
                     print 'NEGF.getSig: Scaling self-energy with a factor', self.scaling
                 return Sig*self.scaling
 
-        if ispin>=self.HS.nspin:
-            ispin=0
+        if ispin >= self.HS.nspin:
+            ispin = 0
             print "Warning: Non-spinpolarized electrode calculation used for both spin up and down"
 
         NA1, NA2 = self.NA1, self.NA2
@@ -256,7 +256,7 @@ class ElectrodeSelfEnergy(object):
 
         elif SIO.F90imported and UseF90helpers:
 
-            g0   = N.empty((nuo, nuo, NA1*NA2), N.complex, order='F')
+            g0 = N.empty((nuo, nuo, NA1*NA2), N.complex, order='F')
             mESH = N.empty((nuo, nuo, NA1*NA2), N.complex, order='F')
 
             iq = -1
@@ -270,12 +270,8 @@ class ElectrodeSelfEnergy(object):
                     g0[:, :, iq] = self.getg0(eeshifted+1j*etaLead, kpoint, left=left, ispin=ispin, UseF90=UseF90helpers)
                     mESH[:, :, iq] = eeshifted*self.S-self.H[ispin, :, :]
 
-            ESH, SGF = SIO.F90.expansion_se(no_u=nuo, no_s=nuo*NA1*NA2, \
-                                                na1=NA1, na2=NA2,\
-                                                kpt=qp, \
-                                                na_u=self.HS.nua, \
-                                                lasto=self.HS.lasto, \
-                                                esh=mESH, g0=g0)
+            ESH, SGF = SIO.F90.expansion_se(no_u=nuo, no_s=nuo*NA1*NA2, na1=NA1, na2=NA2, kpt=qp,
+                                            na_u=self.HS.nua, lasto=self.HS.lasto, esh=mESH, g0=g0)
             # Clean up before calculating the self-energy
             del g0, mESH
 
@@ -291,10 +287,10 @@ class ElectrodeSelfEnergy(object):
                 g0start, g0end = lasto[ia], lasto[ia+1]-1
                 for i2 in range(NA2):     # Repetition NA2
                     for i1 in range(NA1): # Repetition NA1
-                        SGFend   = SGFstart+(g0end-g0start+1)-1 # add the number of orbitals in atom ia
+                        SGFend = SGFstart+(g0end-g0start+1)-1 # add the number of orbitals in atom ia
                         loop.append([ia, i1, i2, SGFstart, SGFend, g0start, g0end])
                         SGFstart = SGFend+1
-            if SGFstart!=NA1*NA2*nuo:
+            if SGFstart != NA1*NA2*nuo:
                 raise ValueError("Error: Check of orbitals in making Sigma not correct")
             # Complete the full Gs with atoms copied out NA1*NA2
             # To obtain Sigma we also need H expanded, i.e.,
@@ -304,11 +300,11 @@ class ElectrodeSelfEnergy(object):
             ESH = N.zeros((NA1*NA2*nuo, NA1*NA2*nuo), N.complex) # Temporary E S00 - H00
             for ik2 in range(NA2):
                 for ik1 in range(NA1):
-                    kpoint=qp.copy() # Checked against 1x1 and 3x3 electrode calculation
-                    kpoint[0]=kpoint[0]/NA1
-                    kpoint[1]=kpoint[1]/NA2
-                    kpoint[0]+=ik1*1.0/NA1
-                    kpoint[1]+=ik2*1.0/NA2
+                    kpoint = qp.copy() # Checked against 1x1 and 3x3 electrode calculation
+                    kpoint[0] = kpoint[0]/NA1
+                    kpoint[1] = kpoint[1]/NA2
+                    kpoint[0] += ik1*1.0/NA1
+                    kpoint[1] += ik2*1.0/NA2
                     # Surface GF with possible extra imaginary part (etaLead):
                     g0 = self.getg0(eeshifted+1j*etaLead, kpoint, left=left, ispin=ispin, UseF90=UseF90helpers)
 
@@ -330,7 +326,7 @@ class ElectrodeSelfEnergy(object):
 
         if useSigNCfiles:
             SavedSig.addSig(self.path, self.hash, eeshifted, qp, left, ispin, etaLead, Sig)
-        if self.scaling!=1.0:
+        if self.scaling != 1.0:
             print 'NEGF.getSig: Scaling self-energy with a factor', self.scaling
         return Sig*self.scaling
 
@@ -372,7 +368,7 @@ class ElectrodeSelfEnergy(object):
         ev, evec = SLA.eig(a, b)
 
         # Select lambda <0 and the eps part of the evec
-        ipiv = N.where(N.abs(ev)<1.0)[0]
+        ipiv = N.where(N.abs(ev) < 1.0)[0]
         ev, evec = ev[ipiv], N.transpose(evec[:NN, ipiv])
         # Normalize evec
         norm = N.sqrt(N.diag(MM.mm(evec, MM.dagger(evec))))
@@ -384,11 +380,11 @@ class ElectrodeSelfEnergy(object):
         g00 = LA.inv(ee*s00-h00-MM.mm(h01-ee*s01, FP))
 
         # Check!
-        err=N.max(N.abs(g00-LA.inv(ee*s00-h00-\
-                         MM.mm(h01-ee*s01, g00, MM.dagger(h01)-ee*MM.dagger(s01)))))
-        if err>1.0e-8 and left:
+        err = N.max(N.abs(g00-LA.inv(ee*s00-h00-\
+                                     MM.mm(h01-ee*s01, g00, MM.dagger(h01)-ee*MM.dagger(s01)))))
+        if err > 1.0e-8 and left:
             print "WARNING: Lopez-scheme not-so-well converged for LEFT electrode at E = %.4f eV:"%ee, err
-        if err>1.0e-8 and not left:
+        if err > 1.0e-8 and not left:
             print "WARNING: Lopez-scheme not-so-well converged for RIGHT electrode at E = %.4f eV:"%ee, err
         return g00
 
@@ -450,30 +446,30 @@ class ElectrodeSelfEnergy(object):
         alpha, beta = MM.dagger(H01)-ee*MM.dagger(S01), H01-ee*S01
         eps, epss = H.copy(), H.copy()
 
-        converged=False
-        iteration=0
+        converged = False
+        iteration = 0
         while not converged:
-            iteration+=1
+            iteration += 1
             oldeps, oldepss = eps.copy(), epss.copy()
             oldalpha, oldbeta = alpha.copy(), beta.copy()
-            tmpa=LA.solve(ee*S - oldeps, oldalpha)
-            tmpb=LA.solve(ee*S - oldeps, oldbeta)
+            tmpa = LA.solve(ee*S - oldeps, oldalpha)
+            tmpb = LA.solve(ee*S - oldeps, oldbeta)
             alpha, beta = MM.mm(oldalpha, tmpa), MM.mm(oldbeta, tmpb)
             eps = oldeps + MM.mm(oldalpha, tmpb)+MM.mm(oldbeta, tmpa)
             if left:
                 epss = oldepss + MM.mm(oldalpha, tmpb)
             else:
                 epss = oldepss + MM.mm(oldbeta, tmpa)
-            LopezConvTest=N.max(abs(alpha)+abs(beta))
-            if LopezConvTest<1.0e-40:
-                gs=LA.inv(ee*S-epss)
+            LopezConvTest = N.max(abs(alpha)+abs(beta))
+            if LopezConvTest < 1.0e-40:
+                gs = LA.inv(ee*S-epss)
                 if left:
-                    test=ee*S-H-MM.mm(ee*MM.dagger(S01)-MM.dagger(H01), gs, ee*S01-H01)
+                    test = ee*S-H-MM.mm(ee*MM.dagger(S01)-MM.dagger(H01), gs, ee*S01-H01)
                 else:
-                    test=ee*S-H-MM.mm(ee*S01-H01, gs, ee*MM.dagger(S01)-MM.dagger(H01))
-                myConvTest=N.max(abs(MM.mm(test, gs)-N.identity((self.HS.nuo), N.complex)))
-                if myConvTest<VC.GetCheck("Lopez-Sancho"):
-                    converged=True
+                    test = ee*S-H-MM.mm(ee*S01-H01, gs, ee*MM.dagger(S01)-MM.dagger(H01))
+                myConvTest = N.max(abs(MM.mm(test, gs)-N.identity((self.HS.nuo), N.complex)))
+                if myConvTest < VC.GetCheck("Lopez-Sancho"):
+                    converged = True
                     if myConvTest > VC.GetCheck("Lopez-Sancho-warning"):
                         v = "RIGHT"
                         if left: v = "LEFT"
@@ -490,7 +486,7 @@ class ElectrodeSelfEnergy(object):
         (... 0     0     H01^+ H     H01    0      ...  )
         """
         # Save time by not repeating too often
-        if N.max(abs(kpoint-self.kpoint))>1e-10:
+        if N.max(abs(kpoint-self.kpoint)) > 1e-10:
             self.kpoint = kpoint.copy()
             # Do the trick:
             # H(k=0)+H(kz=0.5) = H + H01 + H10 + H - H01 - H10 = 2 H
@@ -545,13 +541,13 @@ class GF(object):
         self.HS = SIO.HS(TSHSfile, BufferAtoms=BufferAtoms)
         print 'GF: UseBulk=', Bulk
         self.DeviceAtoms=DeviceAtoms
-        if DeviceAtoms[0]<=1:
-            self.DeviceAtoms[0]=1
+        if DeviceAtoms[0] <= 1:
+            self.DeviceAtoms[0] = 1
             self.FoldedL = False
         else:
             self.FoldedL = True
-        if DeviceAtoms[1]==0 or DeviceAtoms[1]>=self.HS.nua:
-            self.DeviceAtoms[1]=self.HS.nua
+        if DeviceAtoms[1] == 0 or DeviceAtoms[1] >= self.HS.nua:
+            self.DeviceAtoms[1] = self.HS.nua
             self.FoldedR = False
         else:
             self.FoldedR = True
@@ -570,7 +566,7 @@ class GF(object):
 
         if self.FoldedL or self.FoldedR:
             # Check that device region is large enough!
-            kpoint=N.zeros((2,), N.float)
+            kpoint = N.zeros((2,), N.float)
             self.setkpoint(kpoint, ispin=0) # At least for one spin
 
             devSt, devEnd = self.DeviceOrbs[0], self.DeviceOrbs[1]
@@ -582,18 +578,18 @@ class GF(object):
                      "Make device region larger")
         if self.FoldedL:
             # Find orbitals in device region coupling to left and right.
-            tau  = abs(self.S0[0:devSt-1, 0:devEnd])
+            tau = abs(self.S0[0:devSt-1, 0:devEnd])
             coupling = N.sum(tau, axis=0)
-            ii=devEnd-1
-            while coupling[ii]<1e-10: ii=ii-1
+            ii = devEnd-1
+            while coupling[ii] < 1e-10: ii = ii-1
             self.devEndL = max(ii+1, self.nuoL0)
             self.nuoL = self.devEndL-devSt+1
             print "Left self energy on orbitals %i-%i"%(devSt, self.devEndL)
         if self.FoldedR:
-            tau  = abs(self.S0[devEnd-1:self.nuo0, 0:self.nuo0])
+            tau = abs(self.S0[devEnd-1:self.nuo0, 0:self.nuo0])
             coupling = N.sum(tau, axis=0)
-            ii=devSt-1
-            while coupling[ii]<1e-10: ii=ii+1
+            ii = devSt-1
+            while coupling[ii] < 1e-10: ii = ii+1
             self.devStR = min(ii+1, self.nuo0-self.nuoR0+1)
             self.nuoR = devEnd-self.devStR+1
             print "Right self energy on orbitals %i-%i"%(self.devStR, devEnd)
@@ -629,11 +625,11 @@ class GF(object):
                 eSmHmS[0:nuoL0, 0:nuoL0] = SigL0 # SGF^1
             else:
                 eSmHmS[0:nuoL0, 0:nuoL0] = eSmHmS[0:nuoL0, 0:nuoL0]-SigL0
-            tau  = eSmHmS[0:devSt-1, devSt-1:devEndL].copy()
+            tau = eSmHmS[0:devSt-1, devSt-1:devEndL].copy()
             taud = eSmHmS[devSt-1:devEndL, 0:devSt-1].copy()
             inv = LA.inv(eSmHmS[0:devSt-1, 0:devSt-1])
-            eSmHmS[devSt-1:devEndL, devSt-1:devEndL]=eSmHmS[devSt-1:devEndL, devSt-1:devEndL]-\
-                MM.mm(taud, inv, tau)
+            eSmHmS[devSt-1:devEndL, devSt-1:devEndL] = eSmHmS[devSt-1:devEndL, devSt-1:devEndL]-\
+                                                       MM.mm(taud, inv, tau)
             self.SigL = eSmH[devSt-1:devEndL, devSt-1:devEndL]-eSmHmS[devSt-1:devEndL, devSt-1:devEndL]
         else:
             self.SigL = SigL0
@@ -648,15 +644,15 @@ class GF(object):
             devStR = self.devStR
             eSmH = ee*self.S0-self.H0
             eSmHmS = eSmH[devStR-1:nuo0, devStR-1:nuo0].copy()
-            tmpnuo=len(eSmHmS)
+            tmpnuo = len(eSmHmS)
             if self.Bulk:
                 eSmHmS[tmpnuo-nuoR0:tmpnuo, tmpnuo-nuoR0:tmpnuo] = SigR0 # SGF^1
             else:
                 eSmHmS[tmpnuo-nuoR0:tmpnuo, tmpnuo-nuoR0:tmpnuo] = eSmHmS[tmpnuo-nuoR0:tmpnuo, tmpnuo-nuoR0:tmpnuo]-SigR0
-            tau  = eSmHmS[0:nuoR, nuoR:tmpnuo].copy()
+            tau = eSmHmS[0:nuoR, nuoR:tmpnuo].copy()
             taud = eSmHmS[nuoR:tmpnuo, 0:nuoR].copy()
             inv = LA.inv(eSmHmS[nuoR:tmpnuo, nuoR:tmpnuo])
-            eSmHmS[0:nuoR, 0:nuoR]=eSmHmS[0:nuoR, 0:nuoR]-MM.mm(tau, inv, taud)
+            eSmHmS[0:nuoR, 0:nuoR] = eSmHmS[0:nuoR, 0:nuoR]-MM.mm(tau, inv, taud)
             self.SigR = eSmH[devStR-1:devEnd, devStR-1:devEnd]-eSmHmS[0:nuoR, 0:nuoR]
         else:
             self.SigR = SigR0
@@ -674,12 +670,16 @@ class GF(object):
         devSt, devEnd = self.DeviceOrbs[0], self.DeviceOrbs[1]
 
         # Determine whether electrode self-energies should be k-sampled or not
-        try:    mesh = self.elecL.mesh # a mesh was attached
-        except: mesh = False
+        try:
+            mesh = self.elecL.mesh # a mesh was attached
+        except:
+            mesh = False
         # Calculate electrode self-energies
         if mesh:
-            try:    self.SigAvg # Averaged self-energies exist
-            except: self.SigAvg = [False, -1]
+            try:
+                self.SigAvg # Averaged self-energies exist
+            except:
+                self.SigAvg = [False, -1]
             if self.SigAvg[0] == ee and self.SigAvg[1] == ispin:
                 # We have already the averaged self-energies
                 print 'NEGF: Reusing sampled electrode self-energies', mesh.Nk, mesh.type, 'for ispin= %i e= %f'%(ispin, ee)
@@ -703,16 +703,16 @@ class GF(object):
 
         # Ready to calculate Gr
         self.setkpoint(kpoint, ispin)
-        eSmH=ee*self.S-self.H
+        eSmH = ee*self.S-self.H
         if FoldedL:
-            eSmH[0:nuoL, 0:nuoL]=eSmH[0:nuoL, 0:nuoL]-self.SigL
+            eSmH[0:nuoL, 0:nuoL] = eSmH[0:nuoL, 0:nuoL]-self.SigL
         else:
             if self.Bulk:
                 eSmH[0:nuoL, 0:nuoL] = self.SigL # SGF^1
             else:
                 eSmH[0:nuoL, 0:nuoL] = eSmH[0:nuoL, 0:nuoL]-self.SigL
         if FoldedR:
-            eSmH[nuo-nuoR:nuo, nuo-nuoR:nuo]=eSmH[nuo-nuoR:nuo, nuo-nuoR:nuo]-self.SigR
+            eSmH[nuo-nuoR:nuo, nuo-nuoR:nuo] = eSmH[nuo-nuoR:nuo, nuo-nuoR:nuo]-self.SigR
         else:
             if self.Bulk:
                 eSmH[nuo-nuoR:nuo, nuo-nuoR:nuo] = self.SigR # SGF^1
@@ -721,7 +721,7 @@ class GF(object):
         self.Gr = LA.inv(eSmH)
         self.Ga = MM.dagger(self.Gr)
         # Calculate spectral functions
-        if SpectralCutoff>0.0:
+        if SpectralCutoff > 0.0:
             self.AL = MM.SpectralMatrix(MM.mm(self.Gr[:, 0:nuoL], self.GamL, self.Ga[0:nuoL, :]), cutoff=SpectralCutoff)
             tmp = MM.mm(self.GamL, self.Gr[0:nuoL, :])
             self.ALT = MM.SpectralMatrix(MM.mm(self.Ga[:, 0:nuoL], tmp), cutoff=SpectralCutoff)
@@ -768,14 +768,14 @@ class GF(object):
         else:
             # Do trick with kz
             tmpH, tmpS = self.HS.H[ispin, :, :].copy(), self.HS.S.copy()
-            if self.elecL.semiinf==0 and self.elecR.semiinf==0:
+            if self.elecL.semiinf == 0 and self.elecR.semiinf == 0:
                 # Periodicity along A1
                 if kpoint[0] == 0.0:
                     kpoint3[0] = 0.5
                 else:
                     print 'Specified 2D k-point=', kpoint
                     raise IOError('Incompatible 2D k-point - use z as transport direction')
-            elif self.elecL.semiinf==1 and self.elecR.semiinf==1:
+            elif self.elecL.semiinf == 1 and self.elecR.semiinf == 1:
                 # Periodicity along A1
                 if kpoint[1] == 0.0:
                     kpoint3[1] = 0.5
@@ -838,7 +838,7 @@ class GF(object):
 
         # Sigmas/Gammas in pyTBT GF can be smaller than device region
         # First give them the shape of the device region
-        nnL, nnR = len(self.SigL),  len(self.SigR)
+        nnL, nnR = len(self.SigL), len(self.SigR)
         S1, S2 = N.zeros(self.H.shape, N.complex), N.zeros(self.H.shape, N.complex)
         S1[0:nnL, 0:nnL],  S2[-nnR:, -nnR:] = self.SigL, self.SigR
         # Resetting Sigmas to orthogonalized quantities
@@ -871,9 +871,9 @@ class GF(object):
 
         nuo, nuoL, nuoR = self.nuo, self.nuoL, self.nuoR
         if Left:
-            tt=MM.mm(MM.dagger(Utilde[nuo-nuoR:nuo, :]), 2*N.pi*G2, Utilde[nuo-nuoR:nuo, :])
+            tt = MM.mm(MM.dagger(Utilde[nuo-nuoR:nuo, :]), 2*N.pi*G2, Utilde[nuo-nuoR:nuo, :])
         else:
-            tt=MM.mm(MM.dagger(Utilde[:nuoL, :]), 2*N.pi*G2, Utilde[:nuoL, :])
+            tt = MM.mm(MM.dagger(Utilde[:nuoL, :]), 2*N.pi*G2, Utilde[:nuoL, :])
 
         # Diagonalize (note that this is on a reduced tt matrix (no 0 contributing columns)
         evF, UF = LA.eigh(tt)

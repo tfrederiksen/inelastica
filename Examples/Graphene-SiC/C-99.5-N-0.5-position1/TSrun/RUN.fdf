@@ -55,15 +55,17 @@ Au_pbr                2                    # Species label, number of l-shells
 0  0  1      0.00 
 %endblock kgrid_Monkhorst_Pack 
 MeshCutoff  400.0 Ry 
-MaxSCFIterations  200 
-MD.NumCGSteps   0
-MD.MaxCGDispl     0.020 Bohr
-DM.MixingWeight   0.005 
-DM.NumberPulay   8 
+MaxSCFIterations  1000 
+SCF.Mixer.Weight 0.005
+SCF.Mixer.History 8
 DM.Tolerance   1.d-5 
 DM.UseSaveDM   true 
-MaxSCFIterations  5000
-SolutionMethod transiesta
+SolutionMethod transiesta 
+MD.TypeOfRun   Broyden 
+MD.Broyden.History.Steps 15 
+MD.NumCGSteps   0 
+MD.MAXCGDispl   0.05 Bohr  
+MD.MaxForceTol   0.02  eV/Ang 
 WriteCoorInitial true 
 WriteCoorStep true 
 WriteForces true 

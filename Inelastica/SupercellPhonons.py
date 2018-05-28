@@ -88,13 +88,13 @@ def GetOptions(argv):
     options.module = 'Bandstructures'
 
     # Check if AtomicMasses are specified
-    if options.AtomicMass!='[]':
+    if options.AtomicMass != '[]':
         masslist = ast.literal_eval(options.AtomicMass.replace('\n', '').replace(' ', ''))
         for elm in masslist:
             anr = int(elm[0])
             mass = float(elm[1])
             PC.AtomicMass[anr] = mass
-            if len(elm)==3:
+            if len(elm) == 3:
                 label = elm[2]
                 PC.PeriodicTable[anr] = label
                 PC.PeriodicTable[label] = anr
@@ -302,11 +302,11 @@ def ReadKpoints_ascii(filename):
     # Initialize variables with the first read k-point
     ln = f.readlines()[0]
     s = ln.split()
-    if len(s)==3 or len(s)==4:
+    if len(s) == 3 or len(s) == 4:
         klist += [N.array([N.float(s[0]), N.float(s[1]), N.float(s[2])])]
         dk = N.zeros(3, N.float)
         dklist += [N.dot(dk, dk)**.5]
-        if len(s)==4:
+        if len(s) == 4:
             labels += [s[3]]
             ticks += [[dklist[0], s[3]]]
         else:
@@ -316,11 +316,11 @@ def ReadKpoints_ascii(filename):
     for ln in f.readlines()[1:]:
         i = len(klist)
         s = ln.split()
-        if len(s)==3 or len(s)==4:
+        if len(s) == 3 or len(s) == 4:
             klist += [N.array([N.float(s[0]), N.float(s[1]), N.float(s[2])])]
             dk = klist[i]-klist[i-1]
             dklist += [dklist[i-1]+N.dot(dk, dk)**.5]
-            if len(s)==4:
+            if len(s) == 4:
                 labels += [s[3]]
                 ticks += [[dklist[i], s[3]]]
             else:
@@ -347,13 +347,13 @@ def WritePath(filename, path, steps):
     kpts = []
     labels = []
     for i, k in enumerate(path):
-        if i<len(path)-1:
+        if i < len(path)-1:
             k1 = path[i][0]
             k2 = path[i+1][0]
             for j in range(steps):
                 kj = k1 + (k2-k1)*j/steps
                 kpts.append(kj)
-                if j==0:
+                if j == 0:
                     labels.append(path[i][1])
                 else:
                     labels.append('')
@@ -380,7 +380,7 @@ def SortBands(ev):
             for k in range(j+1, bands):
                 d2ev = abs(ev[i, j]+ev[i-2, j]-2*ev[i-1, j])+abs(ev[i, k]+ev[i-2, k]-2*ev[i-1, k])
                 d2evfl = abs(ev[i, k]+ev[i-2, j]-2*ev[i-1, j])+abs(ev[i, j]+ev[i-2, k]-2*ev[i-1, k])
-                if d2ev>d2evfl:
+                if d2ev > d2evfl:
                     # flip bands
                     tmp = ev[i:, j].copy()
                     ev[i:, j] = ev[i:, k]
@@ -391,7 +391,7 @@ def SortBands(ev):
 
 def PlotElectronBands(filename, dk, elist, ticks):
     # Make xmgrace plots
-    if len(dk)>1:
+    if len(dk) > 1:
         x = N.array([dk])
     else:
         x = N.array([[0.0]])
@@ -407,7 +407,7 @@ def PlotElectronBands(filename, dk, elist, ticks):
 
 def PlotPhononBands(filename, dq, phlist, ticks):
     # Make xmgrace plots
-    if len(dq)>1:
+    if len(dq) > 1:
         x = N.array([dq])
     else:
         x = N.array([[0.0]])
@@ -417,19 +417,19 @@ def PlotPhononBands(filename, dq, phlist, ticks):
     gp.SetXaxisSpecialTicks(ticks)
     gp.SetXaxis(vmax=dq[-1], majorGridlines=True)
     maxy = 1000*N.amax(phlist)
-    if maxy<20: mu, mx = 5, 20
-    elif maxy<30: mu, mx = 5, 30
-    elif maxy<40: mu, mx = 5, 40
-    elif maxy<50: mu, mx = 10, 50
-    elif maxy<75: mu, mx = 10, 75
-    elif maxy<100: mu, mx = 20, 100
-    elif maxy<125: mu, mx = 25, 125
-    elif maxy<150: mu, mx = 25, 150
-    elif maxy<175: mu, mx = 25, 175
-    elif maxy<200: mu, mx = 25, 200
-    elif maxy<220: mu, mx = 25, 220
-    elif maxy<250: mu, mx = 25, 250
-    elif maxy<500: mu, mx = 100, 500
+    if maxy < 20: mu, mx = 5, 20
+    elif maxy < 30: mu, mx = 5, 30
+    elif maxy < 40: mu, mx = 5, 40
+    elif maxy < 50: mu, mx = 10, 50
+    elif maxy < 75: mu, mx = 10, 75
+    elif maxy < 100: mu, mx = 20, 100
+    elif maxy < 125: mu, mx = 25, 125
+    elif maxy < 150: mu, mx = 25, 150
+    elif maxy < 175: mu, mx = 25, 175
+    elif maxy < 200: mu, mx = 25, 200
+    elif maxy < 220: mu, mx = 25, 220
+    elif maxy < 250: mu, mx = 25, 250
+    elif maxy < 500: mu, mx = 100, 500
     gp.SetYaxis(label='\\f{Symbol}w\\f{} (meV)', majorUnit=mu, vmin=0.0, vmax=mx)
     pp = XMGR.Plot(filename, gp)
     pp.WriteFile()
@@ -438,12 +438,12 @@ def PlotPhononBands(filename, dq, phlist, ticks):
 def ComputeDOS(ncfile, outfile, emin=0.0, emax=1.0, pts=1001, smear=1e-3):
     ncf = NC4.Dataset(ncfile, 'r')
     ev = ncf.variables['eigenvalues'][:]
-    if len(ev.shape)==2: # Phonons.nc (gridpts, bands)
+    if len(ev.shape) == 2: # Phonons.nc (gridpts, bands)
         WriteDOS(outfile, ev, emin, emax, pts, smear)
-    elif len(ev.shape)==3: # Electrons.nc (gridpts, nspin, bands)
-        if len(ev[0])==1: # nspin==1
+    elif len(ev.shape) == 3: # Electrons.nc (gridpts, nspin, bands)
+        if len(ev[0]) == 1: # nspin==1
             WriteDOS(outfile, ev[:, 0], emin, emax, pts, smear)
-        elif len(ev[0])==2: # nspin==2
+        elif len(ev[0]) == 2: # nspin==2
             WriteDOS(outfile+'.UP', ev[:, 0], emin, emax, pts, smear)
             WriteDOS(outfile+'.DOWN', ev[:, 1], emin, emax, pts, smear)
     ncf.close()
@@ -476,10 +476,10 @@ def main(options):
 
     try:
         fdf = glob.glob(options.onlyTSdir+'/RUN.fdf')
-        TSrun=True
+        TSrun = True
     except:
         fdf = glob.glob(options.FCwildcard+'/RUN.fdf') # This should be made an input flag
-        TSrun=False
+        TSrun = False
     SCDM = Supercell_DynamicalMatrix(fdf, TSrun)
 
     # Write high-symmetry path
@@ -533,13 +533,13 @@ def main(options):
         ncf.sync()
         # Loop over kpoints
         for i, k in enumerate(kpts):
-            if i<100: # Print only for the first 100 points
+            if i < 100: # Print only for the first 100 points
                 ev, evec = SCDM.ComputeElectronStates(k, verbose=True, TSrun=TSrun)
             else:
                 ev, evec = SCDM.ComputeElectronStates(k, verbose=False, TSrun=TSrun)
                 # otherwise something simple
-                if i%100==0: print '%i out of %i k-points computed'%(i, len(kpts))
-            if i==0:
+                if i%100 == 0: print '%i out of %i k-points computed'%(i, len(kpts))
+            if i == 0:
                 ncf.createDimension('nspin', SCDM.nspin)
                 ncf.createDimension('orbs', SCDM.rednao)
                 if options.nbands and options.nbands < SCDM.rednao:
@@ -603,9 +603,9 @@ def main(options):
                 evals[:, i, :] = SortBands(evals[:, i, :])
         # Produce nice plots if labels exist
         if klabels:
-            if SCDM.nspin==1:
+            if SCDM.nspin == 1:
                 PlotElectronBands(options.DestDir+'/Electrons.agr', dk, evals[:, 0, :], kticks)
-            elif SCDM.nspin==2:
+            elif SCDM.nspin == 2:
                 PlotElectronBands(options.DestDir+'/Electrons.UP.agr', dk, evals[:, 0, :], kticks)
                 PlotElectronBands(options.DestDir+'/Electrons.DOWN.agr', dk, evals[:, 1, :], kticks)
         ncf.close()
@@ -644,13 +644,13 @@ def main(options):
         ncf.sync()
         # Loop over q
         for i, q in enumerate(qpts):
-            if i<100: # Print only for the first 100 points
+            if i < 100: # Print only for the first 100 points
                 hw, U = SCDM.ComputePhononModes_q(q, verbose=True)
             else:
                 hw, U = SCDM.ComputePhononModes_q(q, verbose=False)
                 # otherwise something simple
-                if i%100==0: print '%i out of %i q-points computed'%(i, len(qpts))
-            if i==0:
+                if i%100 == 0: print '%i out of %i q-points computed'%(i, len(qpts))
+            if i == 0:
                 ncf.createDimension('bands', len(hw))
                 ncf.createDimension('displ', len(hw))
                 evals = ncf.createVariable('eigenvalues', 'd', ('gridpts', 'bands'))
