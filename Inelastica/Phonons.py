@@ -673,7 +673,7 @@ class DynamicalMatrix(object):
         ncdf.variables['GeometryXYZ'][:] = self.geom.xyz
         ncdf.variables['GeometryXYZ'].info = 'Atomic coordinates of all atoms in cell'
         ncdf.variables['GeometryXYZ'].unit = 'Ang'
-        ncdf.createVariable('FC', 'd', ('natoms', 'xyz','natoms','xyz'))
+        ncdf.createVariable('FC', 'd', ('dyn_atoms', 'xyz','natoms','xyz'))
         ncdf.variables['FC'][:] = self.mean
         ncdf.variables['FC'].info = 'Force matrix'
         ncdf.variables['FC'].unit = 'ev/Ang^2'
