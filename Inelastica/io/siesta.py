@@ -1851,7 +1851,10 @@ class HS(object):
 
 
 def ReadTSHS(fn, **kwargs):
-    print 'io.siesta.ReadTSHS: Reading TSHS header from', fn
+    if os.path.isfile(fn):
+        print 'io.siesta.ReadTSHS: Reading TSHS header from', fn
+    else:
+        raise ValueError('File %s not found'%fn)
     # return dictionary
     d = {}
     # Read in TSHS header (do not read in everything!)

@@ -342,8 +342,11 @@ class OSrun(object):
             for i in range(1, 7):
                 thisd = 1e10
                 xyz = N.array(SIO.Getxyz(onlySdir+'/RUN_%i.fdf'%i))
-                for j in range(1, len(xyz)):
-                    thisd = min(thisd, (N.dot(xyz[0]-xyz[j], xyz[0]-xyz[j]))**.5)
+                #for j in range(1, len(xyz)):
+                #    thisd = min(thisd, (N.dot(xyz[0]-xyz[j], xyz[0]-xyz[j]))**.5)
+                j = len(xyz)/2
+                v = xyz[0]-xyz[j]
+                thisd = N.dot(v, v)**.5
                 Displ[(i-1)/2, 1-2*(i%2)] = thisd
                 print 'Phonons.GetOnlyS: OnlyS-displacement (min) = %.5f Ang'%thisd
             # Construct dS array
@@ -427,7 +430,7 @@ class DynamicalMatrix(object):
         for i, v in enumerate(self.DynamicAtoms):
             for j, w in enumerate(self.DynamicAtoms):
                 FCtilde[i, :, j, :] = 0.5*(FC[i, :, w-1, :]+MM.dagger(FC[j, :, v-1, :]))\
-                                   /(self.Masses[i]*self.Masses[j])**0.5
+                                      /(self.Masses[i]*self.Masses[j])**0.5
         # Solve eigenvalue problem with symmetric FCtilde
         FCtilde = FCtilde.reshape((3*dyn, 3*dyn), order='C')
         self.FCtilde = FCtilde
@@ -514,7 +517,7 @@ class DynamicalMatrix(object):
             # It appears to be a bug in TranSIESTA 3.2 and 4.0b affecting runs
             # with TS.onlyS=True, i.e., the quick evaluations in the OSrun folder
             if not N.allclose(OS.S0, self.TSHS0.S):
-                sys.exit('Inconsistency detected with your .onlyS files. Perhaps a bug in your TranSIESTA version/compilation.')
+                sys.exit('Inconsistency detected with your .onlyS files. Perhaps a bug in your TranSIESTA version/compilation or overlaps beyond first neighbor cells.')
         self.invS0H0 = N.empty((2,)+self.TSHS0.H.shape, dtype=self.TSHS0.H.dtype)
         #invS0 = LA.inv(OS.S0) # <--- This choice was used in rev. 324-397
         invS0 = LA.inv(self.TSHS0.S) # Reverting to the matrix used up to rev. 323

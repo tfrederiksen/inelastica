@@ -38,7 +38,7 @@ copyright = u'2003-2018, ' + author
 
 import Inelastica.info as info
 release = info.release # release tag
-version = info.version # version includes git count
+version = info.release
 
 
 # The default language to highlight source code in.
