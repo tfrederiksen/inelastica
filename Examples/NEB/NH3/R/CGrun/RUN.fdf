@@ -1,0 +1,38 @@
+SystemName          NH3
+SystemLabel         NH3
+
+PAO.BasisType split
+
+%block 	PAO.BasisSizes
+	H.mpn		DZP
+	N.mpn		DZP
+%endblock PAO.BasisSizes
+
+LongOutput      T
+
+MD.TypeOfRun    CG
+MD.NumCGsteps   230
+MD.VariableCell F
+WriteCoorStep	T
+SolutionMethod	diagon
+WriteMDXmol     T
+
+%block ChemicalSpeciesLabel
+ 1  1  H.mpn
+ 2  7  N.mpn
+%endblock ChemicalSpeciesLabel
+
+#%block GeometryConstraints
+#position from 1 to 1
+#%endblock GeometryConstraints
+
+%include ./STRUCT.fdf
+%include ./Default.fdf
+
+# Restat calculations?
+UseSaveData     T
+MD.UseSaveXV    T
+MD.UseSaveCG    T
+
+
+
