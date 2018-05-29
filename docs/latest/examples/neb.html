@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                v1.3.3+55
+                v1.3.3+24
               </div>
             
           
@@ -95,7 +95,11 @@
 <li class="toctree-l3"><a class="reference internal" href="auh2.html">H2 molecule bridging 1D Au electrodes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="graphene_sic.html">Graphene/SiC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="co_cu111.html">CO/Cu(111)</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Nudged elastic band</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Nudged elastic band</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nh3-inversion">NH3 inversion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oh-cu-110">OH&#64;Cu(110)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -183,7 +187,7 @@
 <li>&lt;<a class="reference external" href="https://doi.org/10.1142/9789812839664_0016">https://doi.org/10.1142/9789812839664_0016</a>&gt;</li>
 <li>&lt;<a class="reference external" href="https://aip.scitation.org/doi/10.1063/1.2841941">https://aip.scitation.org/doi/10.1063/1.2841941</a>&gt;</li>
 </ul>
-<p>The optimization minimized the force perpendicular to the tangent between images. The NEB command actually implements the string-method, i.e., there is no spring constants between adjecent images, approximate equidistance between images is instead encouraged by redistribution along the tangent.</p>
+<p>The optimization minimize the force perpendicular to the tangent between images. The NEB command actually implements the string-method, i.e., there is no spring constants between adjecent images, approximate equidistance between images is instead encouraged by redistribution along the tangent.</p>
 <p>There are two example directories explaining the NEB method.</p>
 <ul class="simple">
 <li><strong>NH3</strong> (Amonia inversion)</li>
@@ -194,7 +198,9 @@
 /R/CGrun : Geometry of the final state
 </pre></div>
 </div>
-<p>The command to run the <strong>NH3</strong> example is:</p>
+<div class="section" id="nh3-inversion">
+<h2>NH3 inversion<a class="headerlink" href="#nh3-inversion" title="Permalink to this headline">¶</a></h2>
+<p>The command to run the example is:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>NEB -n <span class="m">9</span> -p <span class="m">8</span> -c<span class="s1">&#39;2, 3,-0.476,0.824,0, 1,-0.476,0.824,0&#39;</span>  L R
 </pre></div>
 </div>
@@ -211,7 +217,11 @@
 </div>
 <p>Where Fmax is the norm of the force normal to the tangent, and barrier the energy compared to the fixed L state.</p>
 <p>The files NextStep.* contains animations of the path and under the NEB_* directories the Steps.* the animation of the optimizations of the individual images.</p>
+</div>
+<div class="section" id="oh-cu-110">
+<h2>OH&#64;Cu(110)<a class="headerlink" href="#oh-cu-110" title="Permalink to this headline">¶</a></h2>
 <p>The <strong>OH</strong> example is simpler in that we can reuse the Siesta constraints from &#8216;%block GeometryConstraints&#8217;:</p>
+<a class="reference internal image-reference" href="../_images/NEB.gif"><img alt="alttext here" class="align-center" src="../_images/NEB.gif" style="width: 320.0px; height: 320.0px;" /></a>
 <p>However, the initial linear interpolation given by NEB would have the hydrogen going straight through the oxygen. So to get an initial setup we run the NEB command with the &#8216;-s&#8217; (setup) flag:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>NEB L R -n <span class="m">11</span>
 </pre></div>
@@ -223,6 +233,7 @@
 <p>and we can run the optimization:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>NEB -n <span class="m">11</span> -p <span class="m">8</span> L R
 </pre></div>
+</div>
 </div>
 </div>
 
