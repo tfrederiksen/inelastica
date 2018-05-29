@@ -35,7 +35,7 @@ mysqrt = MM.mysqrt
 
 
 def main():
-    setupParameters()
+    #setupParameters()
 
     readxv()
     readHS()
@@ -93,11 +93,11 @@ def readHS():
 ########################################################
 def calcFS(ispin):
     # Calculate Fermi-surface
-    NNk = general.NNk
+    NNk = 31
     bands = N.zeros((NNk, NNk, NNk, HS.N), N.float)
-    for ix in range(general.NNk):
-        for iy in range(general.NNk):
-            for iz in range(general.NNk):
+    for ix in range(NNk):
+        for iy in range(NNk):
+            for iz in range(NNk):
                 # "unitless" k-vect
                 kpnt = N.array([ix, iy, iz], N.float)/float(NNk-1)
                 HS.setkpoint(kpnt)
@@ -162,7 +162,12 @@ def calcBands(ispin):
     what = geom.sym.what()
 
     bands = []
-    for txt, kdir, korig, Nk in what:
+    for ii in range(len(what)-1):
+        txt = what[ii][1]+'-'+what[ii+1][1]
+        f, t = what[ii][0], what[ii+1][0]
+        korig, kdir = f, t-f
+        Nk=general.NNk
+
         ev = N.zeros((Nk, HS.N), N.float)
         for ii in range(Nk):
             kpnt = korig + kdir*(ii/float(Nk-1))
@@ -187,9 +192,13 @@ def writeBands(ispin, what, bands):
         sspin = ''
 
     Graphs = []
-    for jj, elem in enumerate(what):
-        f = open(general.DestDir+'/'+elem[0]+sspin+'.dat', 'w')
-        xx = N.array(range(elem[3]), N.float)/(elem[3]-1.0)
+    for jj in range(len(what)-1):
+        #for jj, elem in enumerate(what):
+        txt = what[jj][1]+"-"+what[jj+1][1]
+        Nk=general.NNk
+
+        f = open(general.DestDir+'/'+txt+sspin+'.dat', 'w')
+        xx = N.array(range(Nk), N.float)/(Nk-1.0)
         iColor, Datasets = 1, []
         for ii in range(len(bands[jj][0, :])):
             # Choose bands within +-5 eV from Ef

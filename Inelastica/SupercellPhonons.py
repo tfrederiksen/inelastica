@@ -611,6 +611,15 @@ def main(options):
         ncf.close()
 
     if TSrun: # only electronic calculation
+        # Ugly hack to get my old code to work again. -Magnus
+        import BandStruct as BS
+        options.fdfFile='RUN.fdf'
+        options.eMin, options.eMax = -10, 10
+        options.NNk = 101
+        BS.general = options
+
+        BS.main()
+
         return SCDM.Sym.path
 
     # Compute phonon eigenvalues
