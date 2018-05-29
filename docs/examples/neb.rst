@@ -8,7 +8,8 @@ Nudged elastic band calculations try to find the minimal energy pathway between 
 * <https://doi.org/10.1142/9789812839664_0016>
 * <https://aip.scitation.org/doi/10.1063/1.2841941>
 
-The optimization minimized the force perpendicular to the tangent between images. The NEB command actually implements the string-method, i.e., there is no spring constants between adjecent images, approximate equidistance between images is instead encouraged by redistribution along the tangent.
+
+The optimization minimize the force perpendicular to the tangent between images. The NEB command actually implements the string-method, i.e., there is no spring constants between adjecent images, approximate equidistance between images is instead encouraged by redistribution along the tangent.
 
 There are two example directories explaining the NEB method.
 
@@ -22,7 +23,9 @@ The directory structure used in the examples are:
    /L/CGrun : Geometry of the initial state
    /R/CGrun : Geometry of the final state
 
-The command to run the **NH3** example is:
+NH3 inversion
+~~~~~~~~~~~~~
+The command to run the example is:
 
 .. code-block:: bash
 
@@ -46,9 +49,11 @@ Where Fmax is the norm of the force normal to the tangent, and barrier the energ
 
 The files NextStep.* contains animations of the path and under the NEB_* directories the Steps.* the animation of the optimizations of the individual images.
 
+OH@Cu(110)
+~~~~~~~~~~
 The **OH** example is simpler in that we can reuse the Siesta constraints from '%block GeometryConstraints':
 
-.. image::results/NEB.gif
+.. image:: results/NEB.gif
    :scale: 100 %
    :alt: alttext here
    :align: center
