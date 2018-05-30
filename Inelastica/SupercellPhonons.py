@@ -675,6 +675,10 @@ def main(options):
                 hw2 = const*N.diagonal(tmp)**0.5 # Units in eV
                 print ' ... Allclose=', N.allclose(hw, N.absolute(hw2), atol=1e-5, rtol=1e-3)
                 ncf.sync()
+                # Write only AXSF files for the first q-point
+                PH.WriteAXSFFiles(options.DestDir+'/q%i_re.axsf'%i, SCDM.Sym.basis.xyz, SCDM.Sym.basis.anr, hw, U.real, 1, SCDM.Sym.basis.NN)
+                PH.WriteAXSFFiles(options.DestDir+'/q%i_im.axsf'%i, SCDM.Sym.basis.xyz, SCDM.Sym.basis.anr, hw, U.imag, 1, SCDM.Sym.basis.NN)
+                PH.WriteFreqFile(options.DestDir+'/q%i.freq'%i, hw)
             evals[i] = hw
             evecsRe[i] = U.real
             evecsIm[i] = U.imag
