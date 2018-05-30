@@ -613,7 +613,7 @@ def main(options):
     if TSrun: # only electronic calculation
         # Ugly hack to get my old code to work again. -Magnus
         import BandStruct as BS
-        options.fdfFile='RUN.fdf'
+        options.fdfFile = 'RUN.fdf'
         options.eMin, options.eMax = -10, 10
         options.NNk = 101
         BS.general = options

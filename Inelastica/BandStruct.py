@@ -166,7 +166,7 @@ def calcBands(ispin):
         txt = what[ii][1]+'-'+what[ii+1][1]
         f, t = what[ii][0], what[ii+1][0]
         korig, kdir = f, t-f
-        Nk=general.NNk
+        Nk = general.NNk
 
         ev = N.zeros((Nk, HS.N), N.float)
         for ii in range(Nk):
@@ -195,7 +195,7 @@ def writeBands(ispin, what, bands):
     for jj in range(len(what)-1):
         #for jj, elem in enumerate(what):
         txt = what[jj][1]+"-"+what[jj+1][1]
-        Nk=general.NNk
+        Nk = general.NNk
 
         f = open(general.DestDir+'/'+txt+sspin+'.dat', 'w')
         xx = N.array(range(Nk), N.float)/(Nk-1.0)
