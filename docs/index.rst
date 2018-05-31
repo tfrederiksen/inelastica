@@ -62,15 +62,10 @@ Indices
 .. toctree::
    :hidden:
    :maxdepth: 2
+   :caption: User guide
 
    install
    examples
-
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :caption: Scripts
-
    scripts
 
 .. toctree::
@@ -84,9 +79,9 @@ Indices
 .. toctree::
    :hidden:
    :maxdepth: 2
-   :caption: Reference documentation
+   :caption: API documentation
 
-   api
+   api-gen/Inelastica
 
 
 .. |buildstatus| image:: https://travis-ci.org/tfrederiksen/inelastica.svg

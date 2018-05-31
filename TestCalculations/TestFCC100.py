@@ -3,7 +3,7 @@ import Inelastica.NEGF as NEGF
 import numpy as N
 import numpy.random as RA
 
-sys.path+=['../..']
+sys.path += ['../..']
 
 
 def err_SE_k(ee, E1, E2, k, **kwargs):
@@ -48,7 +48,7 @@ def main():
     print "#########################################"
     print "#########################################"
     print "Maximum error : ", maxerr
-    if maxerr>0.001:
+    if maxerr > 0.001:
         print "ERROR!"
         kuk
     else:

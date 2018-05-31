@@ -15,27 +15,11 @@ def test_prereq():
         print "Inelastica needs the package 'numpy' to run."
         raise NameError('numpy package not found')
 
-    try:
-        import numpy.distutils
-        import numpy.distutils.extension
-    except:
-        print "Inelastica requires the f2py extension of numpy."
-        raise NameError('numpy f2py package not found')
-
-    try:
-        import netCDF4 as NC4
-    except:
-        print "Inelastica requires netCDF4 (1.2.7 or newer recommended)"
-        print "See https://pypi.python.org/pypi/netCDF4"
-        raise NameError('netCDF4 package not found')
-
     # Make sure that numpy is compiled with optimized LAPACK/BLAS
     st = time.time()
-
-    # For release 600!
     a = N.ones((600, 600), N.complex)
     b = N.dot(a, a)
-    c, d = LA.eigh(b)
+    LA.eigh(b)
     en = time.time()
     if en - st > 4.0:
         print "#### Warning ####"
@@ -46,9 +30,23 @@ def test_prereq():
         print "#### Warning ####"
 
     try:
+        import numpy.distutils
+        import numpy.distutils.extension
+    except:
+        print "Inelastica requires the f2py extension of numpy."
+        raise NameError('numpy f2py package not found')
+
+    try:
+        import netCDF4
+    except:
+        print "Inelastica requires netCDF4 (1.2.7 or newer recommended)"
+        print "See https://pypi.python.org/pypi/netCDF4"
+        raise NameError('netCDF4 package not found')
+
+    try:
         import scipy
-        import scipy.linalg as SLA
-        import scipy.special as SS
+        import scipy.linalg
+        import scipy.special
     except:
         print "#### Warning ####"
         print 'Some modules will not work without the scipy package'
@@ -56,10 +54,10 @@ def test_prereq():
         print 'and spherical harmonics)'
         print "#### Warning ####"
 
+
 test_prereq()
 
 from numpy.distutils.core import setup
-from numpy.distutils.system_info import get_info, NotFoundError
 
 # Create list of all sub-directories with
 #   __init__.py files...
@@ -84,12 +82,13 @@ def configuration(parent_package='', top_path=None):
 
 
 def git_version():
-    # Default Inelastica version info
+    # Default release info
     MAJOR = 1
     MINOR = 3
-    MICRO = 1
+    MICRO = 4
     VERSION = [MAJOR, MINOR, MICRO]
-    GIT_REVISION = "5daa0d366a2644799f1571d3a35cf1cd632682b2"
+    # Git revision prior to release:
+    GIT_REVISION = "fea55e4eb58575c6d283ccca59a08b0db27d9735"
     GIT_LABEL = '.'.join(map(str, [MAJOR, MINOR, MICRO]))
 
     def _minimal_ext_cmd(cmd):
@@ -118,23 +117,22 @@ def git_version():
 
         # Get latest revision tag
         rev = _minimal_ext_cmd(['git', 'rev-parse', 'HEAD'])
-        if len(rev)>7:
+        if len(rev) > 7:
             GIT_REVISION = rev
         # Get latest tag
         tag = _minimal_ext_cmd(['git', 'describe', '--abbrev=0', '--tags'])
-        tag = tag.replace('v', '')
-        if len(tag)>4:
-            VERSION = tag.split('.')
+        if len(tag) > 4:
+            VERSION = tag[1:].split('.')
         # Get complete "git describe" string
         label = _minimal_ext_cmd(['git', 'describe', '--tags'])
-        if len(label)>7:
+        if len(label) > 7:
             GIT_LABEL = label
         # Get number of commits since tag
         count = _minimal_ext_cmd(['git', 'rev-list', tag + '..', '--count'])
         if len(count) == 0:
             count = '1'
+
     except Exception as e:
-        print(e)
         count = '0'
 
     return GIT_REVISION, VERSION, int(count), GIT_LABEL
@@ -151,13 +149,18 @@ git_count = {count}
 major   = {version[0]}
 minor   = {version[1]}
 micro   = {version[2]}
-version = '.'.join(map(str,[major, minor, micro]))
-release = version
-label   = '{description}'
 
-if git_count > 2:
+# Release tag
+release = 'v'+'.'.join(map(str,[major, minor, micro]))
+
+# Version (release + count)
+version = release
+if git_count > 0:
     # Add git-revision to the version string
     version += '+' + str(git_count)
+
+# Extensive version description
+label   = '{description}'
 """
     # If we are in git we try and fetch the
     # git version as well
@@ -172,34 +175,32 @@ write_version()
 
 # Main setup of python modules
 setup(name='Inelastica',
-      requires = ['python (>=2.7)', 'numpy (>=1.8)', 'scipy (>=0.17)', 'netCDF4 (>=1.2.7)'],
+      requires=['python (>=2.7)', 'numpy (>=1.8)', 'scipy (>=0.17)', 'netCDF4 (>=1.2.7)'],
       description='Python tools for SIESTA/TranSIESTA',
       author='Magnus Paulsson and Thomas Frederiksen',
       author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',
       url='https://github.com/tfrederiksen/inelastica',
       license='GPL',
-      scripts= ['Inelastica/scripts/Inelastica',
-                'Inelastica/scripts/EigenChannels',
-                'Inelastica/scripts/pyTBT',
-                'Inelastica/scripts/geom2geom',
-                'Inelastica/scripts/geom2zmat',
-                'Inelastica/scripts/Bandstructures',
-                'Inelastica/scripts/ComputeDOS',
-                'Inelastica/scripts/Vasp2Siesta',
-                'Inelastica/scripts/Phonons',
-                'Inelastica/scripts/NEB',
-                'Inelastica/scripts/grid2grid',
-                'Inelastica/scripts/setupFCrun',
-                'Inelastica/scripts/setupOSrun',
-                'Inelastica/scripts/kaverage-TBT',
-                'Inelastica/scripts/STM',
-                'Inelastica/scripts/kaverage-IETS',
-                'Inelastica/scripts/average-gridfunc',
-                'Inelastica/scripts/WriteWavefunctions',
-                'Inelastica/utils/agr2pdf',
-                'Inelastica/utils/bands2xmgr',
-                'Inelastica/utils/siesta_cleanup'
-      ],
+      scripts=['Inelastica/scripts/Inelastica',
+               'Inelastica/scripts/EigenChannels',
+               'Inelastica/scripts/pyTBT',
+               'Inelastica/scripts/geom2geom',
+               'Inelastica/scripts/geom2zmat',
+               'Inelastica/scripts/Bandstructures',
+               'Inelastica/scripts/ComputeDOS',
+               'Inelastica/scripts/Vasp2Siesta',
+               'Inelastica/scripts/Phonons',
+               'Inelastica/scripts/NEB',
+               'Inelastica/scripts/grid2grid',
+               'Inelastica/scripts/setupFCrun',
+               'Inelastica/scripts/setupOSrun',
+               'Inelastica/scripts/kaverage-TBT',
+               'Inelastica/scripts/STM',
+               'Inelastica/scripts/kaverage-IETS',
+               'Inelastica/scripts/average-gridfunc',
+               'Inelastica/scripts/WriteWavefunctions',
+               'Inelastica/utils/agr2pdf',
+               'Inelastica/utils/bands2xmgr',
+               'Inelastica/utils/siesta_cleanup'],
       packages=packages,
-      configuration=configuration,
-      )
+      configuration=configuration)

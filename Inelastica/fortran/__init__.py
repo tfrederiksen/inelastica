@@ -1,11 +1,11 @@
 """
-=============================================
-Fortran interface (:mod:`Inelastica.fortran`)
-=============================================
 
-.. module:: Inelastica.fortran
+:mod:`Inelastica.fortran`
+=========================
 
 Interface to fortran routines.
+
+.. module:: Inelastica.fortran
 
 """
 

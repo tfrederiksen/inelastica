@@ -1,7 +1,7 @@
 """
 
-Phonons (:mod:`Inelastica.Phonons`)
-===================================
+:mod:`Inelastica.Phonons`
+=========================
 
 Overview
 --------
@@ -51,7 +51,7 @@ To run phonon calculations as a script one can execute:
 
 
 Classes and methods
--------
+-------------------
 
 .. autosummary::
    :toctree:
@@ -77,14 +77,14 @@ import string
 import ast
 import Inelastica.io.siesta as SIO
 import Inelastica.Symmetry as Symmetry
-import Inelastica.CommonFunctions as CF
+import Inelastica.io.log as Log
 import Inelastica.MakeGeom as MG
 import Inelastica.physics.constants as PC
-import Inelastica.MiscMath as MM
-import Inelastica.ValueCheck as VC
+import Inelastica.math as MM
+import Inelastica.misc.valuecheck as VC
 
 
-def GetOptions(argv, **kwargs):
+def GetOptions(argv):
     """
     Returns an instance of ``options`` for the ``Phonons`` module
 
@@ -146,18 +146,15 @@ def GetOptions(argv, **kwargs):
 
     options = p.parse_args(argv)
 
-    # With this one can overwrite the logging information
-    if "log" in kwargs:
-        options.Logfile = kwargs["log"]
-    else:
-        options.Logfile = 'Phonons.log'
+    # Set module name
+    options.module = 'Phonons'
 
     # k-point
     options.kpoint = N.array([options.k1, options.k2, options.k3], N.float)
     del options.k1, options.k2, options.k3
 
     # Determine array type for H,S,dH,...
-    options.GammaPoint = N.dot(options.kpoint, options.kpoint)<1e-7
+    options.GammaPoint = N.dot(options.kpoint, options.kpoint) < 1e-7
     if options.GammaPoint:
         if options.SinglePrec:
             options.atype = N.float32
@@ -173,7 +170,7 @@ def GetOptions(argv, **kwargs):
     options.DynamicAtoms = range(options.FCfirst, options.FClast+1)
 
     # EPH atoms - set only different from options.DynamicAtoms if a subset is specified
-    if options.EPHfirst>=options.FCfirst and options.EPHlast<=options.FClast:
+    if options.EPHfirst >= options.FCfirst and options.EPHlast <= options.FClast:
         options.EPHAtoms = range(options.EPHfirst, options.EPHlast+1)
     else:
         options.EPHAtoms = options.DynamicAtoms
@@ -193,7 +190,7 @@ def GetOptions(argv, **kwargs):
         for line in f.readlines():
             s += line.replace('\n', '')
         options.Isotopes = s
-    options.Isotopes=ast.literal_eval(options.Isotopes)
+    options.Isotopes = ast.literal_eval(options.Isotopes)
 
     return options
 
@@ -202,15 +199,15 @@ class FCrun(object):
 
     def __init__(self, runfdf):
         self.fdf = runfdf
-        self.directory, self.tail =  os.path.split(runfdf)
+        self.directory, self.tail = os.path.split(runfdf)
         self.systemlabel = SIO.GetFDFlineWithDefault(runfdf, 'SystemLabel', str, 'siesta', 'Phonons')
         FCfirst = SIO.GetFDFlineWithDefault(runfdf, 'MD.FCfirst', int, 0, 'Phonons')
         FClast = SIO.GetFDFlineWithDefault(runfdf, 'MD.FClast', int, 0, 'Phonons')
         # Finite-displacement amplitude
         ampl, unit = SIO.GetFDFline(runfdf, KeyWord='MD.FCDispl')
-        if unit.upper()=='ANG':
+        if unit.upper() == 'ANG':
             self.Displ = float(ampl)
-        elif unit.upper()=='BOHR':
+        elif unit.upper() == 'BOHR':
             self.Displ = float(ampl)*PC.Bohr2Ang
         print 'Displacement = %.6f Ang'%self.Displ
         # Read geometry
@@ -256,7 +253,7 @@ class FCrun(object):
 
     def GetOrbitalIndices(self):
         # Determine snr (siesta number) for each label
-        csl = SIO.GetFDFblock(self.fdf, KeyWord = 'ChemicalSpeciesLabel')
+        csl = SIO.GetFDFblock(self.fdf, KeyWord='ChemicalSpeciesLabel')
         csl2snr = {}
         for set in csl:
             csl2snr[set[2]] = set[0]
@@ -279,7 +276,7 @@ class FCrun(object):
         for num in self.geom.snr:
             nao = snr2nao[num]
             orbitalIndices.append([tmpOrb, tmpOrb+int(nao)-1])
-            tmpOrb+=nao
+            tmpOrb += nao
         self.orbitalIndices = N.array(orbitalIndices)
         self.nao = tmpOrb # total number of orbitals
         self.snr2nao = snr2nao # orbitals per species
@@ -316,9 +313,9 @@ class OSrun(object):
         print 'Phonons.GetOnlyS: Reading from', onlySdir
         onlySfiles = glob.glob(onlySdir+'/*.onlyS*')
         onlySfiles.sort()
-        if len(onlySfiles)<1:
+        if len(onlySfiles) < 1:
             sys.exit('Phonons.GetOnlyS: No .onlyS file found!')
-        if len(onlySfiles)!=6:
+        if len(onlySfiles) != 6:
             sys.exit('Phonons.GetOnlyS: Wrong number of onlyS files found!')
         else:
             onlyS = {}
@@ -330,7 +327,7 @@ class OSrun(object):
                 del thisHS
                 nao = len(S)/2
                 S0 = S[0:nao, 0:nao].copy()
-                dmat=S[0:nao, nao:nao*2].copy()
+                dmat = S[0:nao, nao:nao*2].copy()
                 if file.endswith('_1.onlyS'):
                     onlyS[0, -1] = dmat
                 elif file.endswith('_2.onlyS'):
@@ -347,8 +344,11 @@ class OSrun(object):
             for i in range(1, 7):
                 thisd = 1e10
                 xyz = N.array(SIO.Getxyz(onlySdir+'/RUN_%i.fdf'%i))
-                for j in range(1, len(xyz)):
-                    thisd = min(thisd, (N.dot(xyz[0]-xyz[j], xyz[0]-xyz[j]))**.5)
+                #for j in range(1, len(xyz)):
+                #    thisd = min(thisd, (N.dot(xyz[0]-xyz[j], xyz[0]-xyz[j]))**.5)
+                j = len(xyz)/2
+                v = xyz[0]-xyz[j]
+                thisd = N.dot(v, v)**.5
                 Displ[(i-1)/2, 1-2*(i%2)] = thisd
                 print 'Phonons.GetOnlyS: OnlyS-displacement (min) = %.5f Ang'%thisd
             # Construct dS array
@@ -394,7 +394,7 @@ class DynamicalMatrix(object):
                         self.TSHS[v, k, 1] = fcr.TSHS[v, k, 1]
                     break
             # Check that we really found the required atom
-            if len(self.Displ)<=i:
+            if len(self.Displ) <= i:
                 sys.exit('Error: Did not find FC data for a dynamic atom %i'%v)
         self.mean = (self.m+self.p)/2
 
@@ -432,7 +432,7 @@ class DynamicalMatrix(object):
         for i, v in enumerate(self.DynamicAtoms):
             for j, w in enumerate(self.DynamicAtoms):
                 FCtilde[i, :, j, :] = 0.5*(FC[i, :, w-1, :]+MM.dagger(FC[j, :, v-1, :]))\
-                                   /(self.Masses[i]*self.Masses[j])**0.5
+                                      /(self.Masses[i]*self.Masses[j])**0.5
         # Solve eigenvalue problem with symmetric FCtilde
         FCtilde = FCtilde.reshape((3*dyn, 3*dyn), order='C')
         self.FCtilde = FCtilde
@@ -462,13 +462,13 @@ class DynamicalMatrix(object):
             print 'Phonons.CalcPhonons: Frequencies in meV:'
             for i in range(3*dyn):
                 print string.rjust('%.3f'%(1000*hw[i]), 9),
-                if (i-5)%6==0: print
-            if (i-5)%6!=0: print
+                if (i-5)%6 == 0: print
+            if (i-5)%6 != 0: print
         #print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
         #for i in range(3*dyn):
         #    print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
-        #    if (i-5)%6==0: print
-        #if (i-5)%6!=0: print
+        #    if (i-5)%6 == 0: print
+        #if (i-5)%6 != 0: print
 
         # Compute real displacement vectors
         Udisp = U.copy()
@@ -481,7 +481,7 @@ class DynamicalMatrix(object):
         for j in range(3*dyn):
             for i in range(3*dyn):
                 # Eigenvectors after multiplication by characteristic length
-                if hw[j]>0:
+                if hw[j] > 0:
                     Ucl[j, i] = U[j, i]*(1./(self.Masses[i/3]*(hw[j]/(2*PC.Rydberg2eV)))**.5)
                 else:
                     # Characteristic length not defined for non-postive frequency
@@ -519,7 +519,7 @@ class DynamicalMatrix(object):
             # It appears to be a bug in TranSIESTA 3.2 and 4.0b affecting runs
             # with TS.onlyS=True, i.e., the quick evaluations in the OSrun folder
             if not N.allclose(OS.S0, self.TSHS0.S):
-                sys.exit('Inconsistency detected with your .onlyS files. Perhaps a bug in your TranSIESTA version/compilation.')
+                sys.exit('Inconsistency detected with your .onlyS files. Perhaps a bug in your TranSIESTA version/compilation or overlaps beyond first neighbor cells.')
         self.invS0H0 = N.empty((2,)+self.TSHS0.H.shape, dtype=self.TSHS0.H.dtype)
         #invS0 = LA.inv(OS.S0) # <--- This choice was used in rev. 324-397
         invS0 = LA.inv(self.TSHS0.S) # Reverting to the matrix used up to rev. 323
@@ -594,7 +594,7 @@ class DynamicalMatrix(object):
                 # Remove Periodic Boundary terms
                 nuo = len(dH[0])
                 pbcf = self.OrbIndx[PBCFirst-1][0]
-                pbcl  = self.OrbIndx[PBCLast-1][1]
+                pbcl = self.OrbIndx[PBCLast-1][1]
                 if v < PBCFirst:
                     # we have something to remove...
                     print 'Warning: Setting certain elements in dH[%i,%i] to zero because %i<PBCFirst'%(v, j, v)
@@ -612,10 +612,10 @@ class DynamicalMatrix(object):
                     self.gradients.append(dh)
                 # Loop over modes and throw away the gradient (to save memory)
                 for m in range(len(self.hw)):
-                    if self.hw[m]>0:
+                    if self.hw[m] > 0:
                         # Eigenvectors should be real for GammaPoint phonons, hence we always take the real part
                         Heph[m] += const*dh*self.UU[m, v-1, j].real/(2*self.Masses[i]*self.hw[m])**.5
-                    elif i==0:
+                    elif i == 0:
                         # Print only first time
                         print 'Phonons.ComputeEPHcouplings: Mode %i has nonpositive frequency --> Zero-valued coupling matrix'%m
                         # already zero
@@ -644,10 +644,10 @@ class DynamicalMatrix(object):
         WriteAXSFFiles('%s.mol.real-displ.axsf'%label, self.geom.xyz, self.geom.anr, hw, UUdisp, 1, natoms)
         WriteAXSFFiles('%s.mol.charlength-displ.axsf'%label, self.geom.xyz, self.geom.anr, hw, UUcl, 1, natoms)
         WriteAXSFFilesPer('%s.per.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr, hw, UU, 1, natoms)
-        WriteAXSFFilesPer('%s.per.real-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,\
-                             hw, UUdisp, 1, natoms)
-        WriteAXSFFilesPer('%s.per.charlength-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,\
-                             hw, UUcl, 1, natoms)
+        WriteAXSFFilesPer('%s.per.real-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,
+                          hw, UUdisp, 1, natoms)
+        WriteAXSFFilesPer('%s.per.charlength-displ.axsf'%label, self.geom.pbc, self.geom.xyz, self.geom.anr,
+                          hw, UUcl, 1, natoms)
         # Netcdf format
         ncdffn = '%s.nc'%label
         print 'Phonons.WriteOutput: Writing', ncdffn
@@ -678,6 +678,10 @@ class DynamicalMatrix(object):
         ncdf.variables['GeometryXYZ'][:] = self.geom.xyz
         ncdf.variables['GeometryXYZ'].info = 'Atomic coordinates of all atoms in cell'
         ncdf.variables['GeometryXYZ'].unit = 'Ang'
+        ncdf.createVariable('FC', 'd', ('dyn_atoms', 'xyz','natoms','xyz'))
+        ncdf.variables['FC'][:] = self.mean
+        ncdf.variables['FC'].info = 'Force matrix'
+        ncdf.variables['FC'].unit = 'ev/Ang^2'
         ncdf.createVariable('AtomNumbers', 'i', ('natoms',))
         ncdf.variables['AtomNumbers'][:] = self.geom.anr
         ncdf.variables['AtomNumbers'].info = 'Element number for each atom (anr)'
@@ -775,10 +779,10 @@ def WriteVibDOSFile(filename, hw, type='Gaussian'):
     ETA = N.outer(0*erng+1, eta)
     spectrum = N.zeros((len(erng), len(eta)), N.float)
     for i in range(len(hw)):
-        if type=='Gaussian':
+        if type == 'Gaussian':
             spectrum += (2*N.pi)**(-.5)/ETA*N.exp(N.clip(-1.0*(hw[i]-ERNG)**2/(2*ETA**2), -300, 300))
             spectrum -= (2*N.pi)**(-.5)/ETA*N.exp(N.clip(-1.0*(-hw[i]-ERNG)**2/(2*ETA**2), -300, 300))
-        elif type=='Lorentzian':
+        elif type == 'Lorentzian':
             spectrum += 1/N.pi*ETA/((hw[i]-ERNG)**2+ETA**2)
             spectrum -= 1/N.pi*ETA/((-hw[i]-ERNG)**2+ETA**2)
     # Write data to file
@@ -851,8 +855,8 @@ def main(options):
     ----------
     options : an ``options`` instance
     """
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    CF.PrintMainHeader('Phonons', options)
+    Log.CreatePipeOutput(options)
+    Log.PrintMainHeader(options)
 
     # Determine SIESTA input fdf files in FCruns
     fdf = glob.glob(options.FCwildcard+'/RUN.fdf')
@@ -880,9 +884,9 @@ def main(options):
                                WriteGradients=options.WriteGradients)
         # Write data to files
         DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        CF.PrintMainFooter('Phonons')
+        Log.PrintMainFooter(options)
         return DM.h0, DM.s0, DM.hw, DM.heph
     else:
         DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        CF.PrintMainFooter('Phonons')
+        Log.PrintMainFooter(options)
         return DM.hw

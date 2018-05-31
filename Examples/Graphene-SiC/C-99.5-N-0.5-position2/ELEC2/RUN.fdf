@@ -1,0 +1,44 @@
+SystemName ELEC2 
+SystemLabel ELEC2 
+TS.HS.Save T
+TS.DE.Save T
+%block ChemicalSpeciesLabel 
+1  79  Au_pbr  
+%endblock ChemicalSpeciesLabel 
+XC.functional GGA 
+XC.authors PBE 
+%block PAO.BasisSizes 
+Au_pbr DZP 
+%endblock PAO.BasisSizes 
+PAO.BasisType split 
+Diag.ParallelOverK  true
+%block kgrid_Monkhorst_Pack 
+9  0  0      0.00 
+0   9   0       0.00 
+0  0  100      0.00 
+%endblock kgrid_Monkhorst_Pack 
+MeshCutoff  400.0 Ry 
+MaxSCFIterations  100 
+DM.MixingWeight   0.05 
+DM.NumberPulay   10 
+DM.Tolerance   1.d-5 
+DM.UseSaveDM   true 
+SolutionMethod diagon 
+DivideAndConquer true 
+WriteCoorInitial true 
+WriteCoorStep true 
+WriteForces true 
+WriteCoorXmol true 
+WriteMDXmol true 
+WriteMDhistory true 
+UseSaveData true 
+MD.USeSaveCG true 
+BandLinesScale  ReciprocalLatticeVectors 
+%block BandLines 
+1  0.0000000000    0.0000000000    0.00000000    \Gamma 
+20  0.000000000    0.00000000    0.50000000   \Z 
+%endblock BandLines 
+%block ProjectedDensityOfStates 
+  -20.00  20.00  0.200  1000  eV 
+%endblock ProjectedDensityOfStates 
+%include STRUCT.fdf 

@@ -1,7 +1,7 @@
 """
 
-EigenChannels (:mod:`Inelastica.EigenChannels`)
-===============================================
+:mod:`Inelastica.EigenChannels`
+===============================
 
 1. Eigenchannels, method from Paulsson and Brandbyge PRB 2007
 2. Calculate "bond" currents
@@ -36,15 +36,15 @@ import netCDF4 as NC4
 import string
 import struct
 import Inelastica.physics.constants as PC
-import Inelastica.ValueCheck as VC
-import Inelastica.CommonFunctions as CF
+import Inelastica.misc.valuecheck as VC
+import Inelastica.io.log as Log
 import Inelastica.NEGF as NEGF
 import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 
 
-def GetOptions(argv, **kwargs):
+def GetOptions(argv):
     """
     Returns an instance of ``options`` for the ``EigenChannels`` module
 
@@ -54,7 +54,6 @@ def GetOptions(argv, **kwargs):
         For example `-n 2 test_dir`, which instructs to compute only the two most transmitting
         eigenchannel scattering states and place the results in the output directory `test_dir`.
     """
-    CF.PrintMainHeader('GetOptions', None)
 
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
@@ -113,11 +112,8 @@ def GetOptions(argv, **kwargs):
 
     options = p.parse_args(argv)
 
-    # With this one can overwrite the logging information
-    if "log" in kwargs:
-        options.Logfile = kwargs["log"]
-    else:
-        options.Logfile = 'EigenChannels.log'
+    # Set module name
+    options.module = 'EigenChannels'
 
     # k-point
     options.kpoint = N.array([options.k1, options.k2, 0.0], N.float)
@@ -135,9 +131,9 @@ def main(options):
     options : an ``options`` instance
     """
 
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    VC.OptionsCheck(options, 'EigenChannels')
-    CF.PrintMainHeader('EigenChannels', options)
+    Log.CreatePipeOutput(options)
+    VC.OptionsCheck(options)
+    Log.PrintMainHeader(options)
 
     # Read geometry
     XV = '%s/%s.XV'%(options.head, options.systemlabel)
@@ -187,7 +183,7 @@ def main(options):
         options.iSide, options.iChan = 0, jj+1
         writeWavefunction(options, geom, basis, ECleft[jj])
         if BC:
-            Curr=calcCurrent(options, basis, DevGF.H, ECleft[jj])
+            Curr = calcCurrent(options, basis, DevGF.H, ECleft[jj])
             writeCurrent(options, geom, Curr)
 
     # Calculate eigenchannels from right
@@ -197,15 +193,15 @@ def main(options):
             options.iSide, options.iChan = 1, jj+1
             writeWavefunction(options, geom, basis, ECright[jj])
             if BC:
-                Curr=calcCurrent(options, basis, DevGF.H, ECright[jj])
+                Curr = calcCurrent(options, basis, DevGF.H, ECright[jj])
                 writeCurrent(options, geom, Curr)
 
     # Calculate total "bond currents"
     if BC:
-        Curr=-calcCurrent(options, basis, DevGF.H, DevGF.AL)
+        Curr = -calcCurrent(options, basis, DevGF.H, DevGF.AL)
         options.iChan, options.iSide = 0, 0
         writeCurrent(options, geom, Curr)
-        Curr=-calcCurrent(options, basis, DevGF.H, DevGF.AR)
+        Curr = -calcCurrent(options, basis, DevGF.H, DevGF.AR)
         options.iSide = 1
         writeCurrent(options, geom, Curr)
 
@@ -227,15 +223,13 @@ def main(options):
             # Compute selected eigenstates
             for ii, val in enumerate(ev):
                 if N.abs(val) < options.MolStates:
-                    fn=options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii, val)
+                    fn = options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii, val)
                     writeWavefunction(options, geom, basis, es[:, ii], fn=fn)
         except:
             print 'You need to install scipy to solve the generalized eigenvalue problem'
             print 'for the molecular eigenstates in the nonorthogonal basis'
 
-    CF.PrintMainFooter('EigenChannels')
-
-########################################################
+    Log.PrintMainFooter(options)
 
 
 def calcWF(options, geom, basis, Y):
@@ -247,7 +241,7 @@ def calcWF(options, geom, basis, Y):
     nx, ny, nz : number of grid points
     """
 
-    xyz=N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
+    xyz = N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
 
     # Size of cube
     xmin, xmax = min(xyz[:, 0])-5.0, max(xyz[:, 0])+5.0
@@ -285,7 +279,7 @@ def calcWF(options, geom, basis, Y):
 
         imax = (basis.coff[ii]-2*basis.delta[ii])/basis.delta[ii]
         ri = dr/basis.delta[ii]
-        ri = N.where(ri<imax, ri, imax)
+        ri = N.where(ri < imax, ri, imax)
         ri = ri.astype(N.int)
         costh = MM.outerAdd(0*ddx, 0*ddy, ddz)/dr
         cosfi, sinfi = MM.outerAdd(ddx, 0*ddy, 0*ddz)/drho, MM.outerAdd(0*ddx, ddy, 0*ddz)/drho
@@ -341,8 +335,6 @@ def calcCurrent(options, basis, H, Y):
                 Curr[a1, a2] = Curr[a1, a2]+4*N.pi*tmp.imag
 
     return Curr
-
-########################################################
 
 
 def writeCurrent(options, geom, Curr):
@@ -536,7 +528,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
             for jj in range(nx):
                 data.append(YY.real[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6 == 0):
+        if (iii+1)%6 == 0:
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
@@ -554,7 +546,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
             for jj in range(nx):
                 data.append(YY.imag[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6 == 0):
+        if (iii+1)%6 == 0:
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
@@ -573,7 +565,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
             for jj in range(nx):
                 data.append(YYA2[jj, kk, ii])
     for iii in range((nx*ny*nz)):
-        if ((iii+1)%6 == 0):
+        if (iii+1)%6 == 0:
             fo.write('  %1.5E\n'% (data[iii]))
         else:
             fo.write('  %1.5E'% (data[iii]))
@@ -597,7 +589,7 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
     phase = 1.0+0.0j
 
     for Ykk in Y:
-        if abs(Ykk)>max_amp:
+        if abs(Ykk) > max_amp:
             max_amp = abs(Ykk)
             phase = Ykk/max_amp
     Y = Y/phase

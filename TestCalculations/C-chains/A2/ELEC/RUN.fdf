@@ -2,6 +2,7 @@ SystemTitle elec
 SystemLabel elec
 
 SolutionMethod     diagon
+TS.HS.Save True
 
 %block kgrid_Monkhorst_Pack
   1    0    0    0.0

@@ -1,13 +1,13 @@
 """
 
-netcdf (:mod:`Inelastica.io.netcdf`)
-====================================
+:mod:`Inelastica.io.netcdf`
+===========================
 
-IO interface for handling NetCDF files
+IO interface for handling netCDF4 files
 
 .. currentmodule:: Inelastica.io.netcdf
 
-classes
+Classes
 -------
 
 .. autosummary::

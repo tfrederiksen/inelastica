@@ -1,9 +1,11 @@
 """
 
-xmgrace (:mod:`Inelastica.io.xmgrace`)
-======================================
+:mod:`Inelastica.io.xmgrace`
+============================
 
-This module provides a `Python`_ interface to write `XMGR/GRACE <xmgrace_>`_ files. Written by Thomas Frederiksen, July 2007.
+This module provides a `Python`_ interface to write `XMGR/GRACE <xmgrace_>`_ files.
+
+It is a renamed version of the code `WriteXMGR.py` written by Thomas Frederiksen, July 2007.
 
 Scripting
 ---------
@@ -14,7 +16,7 @@ script structure takes the following form:
 .. code-block:: bash
 
     >>> from Inelastica.io.xmgrace import *
-    >>> x,y = [1,2],[3,4]
+    >>> x,y = [1, 2], [3, 4]
     >>> data = XYset(x,y)
     >>> graph = Graph(data)
     >>> plot = Plot('test.agr',graph)
@@ -25,7 +27,7 @@ example above:
 
 .. code-block:: bash
 
-    >>> x2,y2 = [0,1],[2,1]
+    >>> x2,y2 = [0, 1], [2, 1]
     >>> data2 = XYset(x2,y2)
     >>> graph2 = Graph(data2)
     >>> plot.AddGraphs(graph2)
@@ -84,7 +86,7 @@ flag = {True: 'on', False: 'off'}
 
 def Array2XYsets(A, **keywords):
     """
-    Converts a matrix  A = [X,Y1,Y2,...] into a list of XYset objects.
+    Converts a matrix  A = [X, Y1, Y2, ...] into a list of XYset objects.
     Formatting keywords (Lcolor, Stype, etc.) are applied to all the generated XYsets.
     """
     sets = []
@@ -108,7 +110,7 @@ def Datafile2XYsets(fn, Sort=False, **keywords):
             l = line.split()
             for i, lval in enumerate(l):
                 l[i] = float(lval)
-            if len(l)>=2:
+            if len(l) >= 2:
                 A.append(l)
     f.close()
     A = N.array(A)
@@ -151,21 +153,21 @@ class Dataset(object):
                   Slinewidth='', Slinestyle='',
                   EBsize='', EBcolor='', EBlinewidth=''):
         "Sets the formatting options (linestyle, symbol type, etc.)."
-        if legend!='': self.SetLegend(legend)
-        if Ltype!='': self.SetLtype(Ltype)
-        if Lstyle!='': self.SetLstyle(Lstyle)
-        if Lwidth!='': self.SetLwidth(Lwidth)
-        if Lcolor!='': self.SetLcolor(Lcolor)
-        if Stype!='': self.SetStype(Stype)
-        if Ssize!='': self.SetSsize(Ssize)
-        if Scolor!='': self.SetScolor(Scolor)
-        if Sfillcolor!='': self.SetSfillcolor(Sfillcolor)
-        if Sfillpattern!='': self.SetSfillpattern(Sfillpattern)
-        if Slinewidth!='': self.SetSlinewidth(Slinewidth)
-        if Slinestyle!='': self.SetSlinestyle(Slinestyle)
-        if EBsize!='': self.SetEBsize(EBsize)
-        if EBcolor!='': self.SetEBcolor(EBcolor)
-        if EBlinewidth!='': self.SetEBlinewidth(EBlinewidth)
+        if legend != '': self.SetLegend(legend)
+        if Ltype != '': self.SetLtype(Ltype)
+        if Lstyle != '': self.SetLstyle(Lstyle)
+        if Lwidth != '': self.SetLwidth(Lwidth)
+        if Lcolor != '': self.SetLcolor(Lcolor)
+        if Stype != '': self.SetStype(Stype)
+        if Ssize != '': self.SetSsize(Ssize)
+        if Scolor != '': self.SetScolor(Scolor)
+        if Sfillcolor != '': self.SetSfillcolor(Sfillcolor)
+        if Sfillpattern != '': self.SetSfillpattern(Sfillpattern)
+        if Slinewidth != '': self.SetSlinewidth(Slinewidth)
+        if Slinestyle != '': self.SetSlinestyle(Slinestyle)
+        if EBsize != '': self.SetEBsize(EBsize)
+        if EBcolor != '': self.SetEBcolor(EBcolor)
+        if EBlinewidth != '': self.SetEBlinewidth(EBlinewidth)
 
     def SetLegend(self, legend):
         "Sets the legend (string)."
@@ -229,35 +231,35 @@ class Dataset(object):
 
     def __GetXMGRstring__(self, graphnr, setnr):
         string = ''
-        if self.legend!='':
+        if self.legend != '':
             string += '@ s%i legend \"%s\" \n'%(setnr, self.legend)
-        if self.Ltype!='':
+        if self.Ltype != '':
             string += '@ s%i line type %i \n'%(setnr, self.Ltype)
-        if self.Lstyle!='':
+        if self.Lstyle != '':
             string += '@ s%i line linestyle %i \n'%(setnr, self.Lstyle)
-        if self.Lwidth!='':
+        if self.Lwidth != '':
             string += '@ s%i line linewidth %f \n'%(setnr, self.Lwidth)
-        if self.Lcolor!='':
+        if self.Lcolor != '':
             string += '@ s%i line color %i \n'%(setnr, self.Lcolor)
-        if self.Stype!='':
+        if self.Stype != '':
             string += '@ s%i symbol %i \n'%(setnr, self.Stype)
-        if self.Ssize!='':
+        if self.Ssize != '':
             string += '@ s%i symbol size %f \n'%(setnr, self.Ssize)
-        if self.Scolor!='':
+        if self.Scolor != '':
             string += '@ s%i symbol color %i \n'%(setnr, self.Scolor)
-        if self.Sfillcolor!='':
+        if self.Sfillcolor != '':
             string += '@ s%i symbol fill color %i \n'%(setnr, self.Sfillcolor)
-        if self.Sfillpattern!='':
+        if self.Sfillpattern != '':
             string += '@ s%i symbol fill pattern %i \n'%(setnr, self.Sfillpattern)
-        if self.Slinewidth!='':
+        if self.Slinewidth != '':
             string += '@ s%i symbol linewidth %f \n'%(setnr, self.Slinewidth)
-        if self.Slinestyle!='':
+        if self.Slinestyle != '':
             string += '@ s%i symbol linestyle %i \n'%(setnr, self.Slinestyle)
-        if self.EBsize!='':
+        if self.EBsize != '':
             string += '@ s%i errorbar size %f \n'%(setnr, self.EBsize)
-        if self.EBcolor!='':
+        if self.EBcolor != '':
             string += '@ s%i errorbar color %i \n'%(setnr, self.EBcolor)
-        if self.EBlinewidth!='':
+        if self.EBlinewidth != '':
             string += '@ s%i errorbar linewidth %f \n'%(setnr, self.EBlinewidth)
             string += '@ s%i errorbar riser linewidth %f \n'%(setnr, self.EBlinewidth)
         return string
@@ -396,7 +398,7 @@ class Graph(object):
         self.legend = False
         self.SetWorld()
         self.SetView()
-        if len(datasets)>0:
+        if len(datasets) > 0:
             self.AddDatasets(*datasets)
 
     def SetTitle(self, title, font=0, size=1.5, color=1):
@@ -432,13 +434,13 @@ class Graph(object):
 
     def SetView(self, xmin='', xmax='', ymin='', ymax=''):
         "Sets the graph view (defining the position of the graph on the canvas)."
-        if xmin!='':
+        if xmin != '':
             self.view[0] = float(xmin)
-        if xmax!='':
+        if xmax != '':
             self.view[2] = float(xmax)
-        if ymin!='':
+        if ymin != '':
             self.view[1] = float(ymin)
-        if ymax!='':
+        if ymax != '':
             self.view[3] = float(ymax)
         # Default position of legend box is upper left corner of the graph
         [xmin, ymin, xmax, ymax] = self.view
@@ -446,13 +448,13 @@ class Graph(object):
 
     def Add2View(self, xmin='', xmax='', ymin='', ymax=''):
         "Adds value(s) to the graph view."
-        if xmin!='':
+        if xmin != '':
             self.view[0] += float(xmin)
-        if xmax!='':
+        if xmax != '':
             self.view[2] += float(xmax)
-        if ymin!='':
+        if ymin != '':
             self.view[1] += float(ymin)
-        if ymax!='':
+        if ymax != '':
             self.view[3] += float(ymax)
         self.SetView()
 
@@ -466,20 +468,20 @@ class Graph(object):
 
     def SetLegend(self, showlegend='', xpos='', ypos='', boxLstyle=0, fillpattern=0, Csize=1.0):
         "Sets the graph legend flag and its position/style."
-        if showlegend!='':
+        if showlegend != '':
             self.legend = bool(showlegend)
             self.string += '@ legend %s \n'%flag[showlegend]
-        if xpos!='' and ypos!='':
+        if xpos != '' and ypos != '':
             self.string += '@ legend %.8f, %.8f \n'%(xpos, ypos)
-        if xpos!='' and ypos=='':
+        if xpos != '' and ypos == '':
             self.string += '@ legend %.8f, %.8f \n'%(xpos, 0.80)
-        if xpos=='' and ypos!='':
+        if xpos == '' and ypos != '':
             self.string += '@ legend %.8f, %.8f \n'%(0.20, ypos)
-        if boxLstyle!='':
+        if boxLstyle != '':
             self.string += '@ legend box linestyle %i \n'%boxLstyle
-        if fillpattern!='':
+        if fillpattern != '':
             self.string += '@ legend box fill pattern %i \n'%fillpattern
-        if Csize!='':
+        if Csize != '':
             self.string += '@ legend char size %.8f \n'%Csize
 
     def SetXaxis(self, vmin='', vmax='', label='', labelsize='', labelautopos='', labelpospar='',
@@ -508,50 +510,50 @@ class Graph(object):
         autoscale : bool, optional
         scale : \"Normal\"/\"Logarithmic\", optional
         """
-        if vmin!='':
+        if vmin != '':
             self.SetWorld(xmin=float(vmin))
-        if vmax!='':
+        if vmax != '':
             self.SetWorld(xmax=float(vmax))
-        if label!='':
+        if label != '':
             self.string += '@ xaxis label \"%s\" \n'%str(label)
-        if labelsize!='':
+        if labelsize != '':
             self.string += '@ xaxis label char size %.3f \n'%float(labelsize)
-        if labelautopos!='':
-            if labelautopos==True:
+        if labelautopos != '':
+            if labelautopos == True:
                 self.string += '@ xaxis label place auto \n'
             else:
                 self.string += '@ xaxis label place spec \n'
-            if labelpospar!='' and labelposper!='':
+            if labelpospar != '' and labelposper != '':
                 self.string += '@ xaxis label place %.8f, %.8f \n'%(float(labelpospar), float(labelposper))
-        if majorUnit!='':
+        if majorUnit != '':
             self.string += '@ xaxis tick major %.8f \n'%float(majorUnit)
-        if minorUnit!='':
+        if minorUnit != '':
             self.string += '@ xaxis tick minor %.8f \n'%float(minorUnit)
-        if useticks!='':
+        if useticks != '':
             self.string += '@ xaxis tick %s \n'%flag[useticks]
-        if useticklabels!='':
+        if useticklabels != '':
             self.string += '@ xaxis ticklabel %s \n'%flag[useticklabels]
-        if ticklabelsize!='':
+        if ticklabelsize != '':
             self.string += '@ xaxis ticklabel char size %.3f \n'%float(ticklabelsize)
-        if majorGridlines!='':
+        if majorGridlines != '':
             self.string += '@ xaxis tick major grid %s \n'%flag[majorGridlines]
-        if minorGridlines!='':
+        if minorGridlines != '':
             self.string += '@ xaxis tick minor grid %s \n'%flag[minorGridlines]
-        if autoscale!='':
+        if autoscale != '':
             xmin, ymin, xmax, ymax = self.GetWorldOfDatasets()
             rng = xmax-xmin
-            if rng>1e-20:
+            if rng > 1e-20:
                 unit = 2*10**math.floor(math.log(rng, 10))
             else:
                 unit = 1
             self.SetXaxis(vmin=xmin, vmax=xmax, majorUnit=unit, minorUnit=unit/2.)
-        if scale =='Logarithmic':
+        if scale == 'Logarithmic':
             self.string += '@ xaxes scale %s \n'%scale
             # Scale axis to positive numbers
             xmin, ymin, xmax, ymax = self.GetWorldOfDatasets()
-            if xmin<=0.: self.SetXaxis(vmin=1e-10)
+            if xmin <= 0.: self.SetXaxis(vmin=1e-10)
             else: self.SetXaxis(vmin=xmin)
-            if xmax<=0.: self.SetXaxis(vmax=1e10)
+            if xmax <= 0.: self.SetXaxis(vmax=1e10)
             else: self.SetXaxis(vmax=xmax)
 
     def SetYaxis(self, vmin='', vmax='', label='', labelsize='', labelautopos='',
@@ -580,50 +582,50 @@ class Graph(object):
         autoscale : bool, optional
         scale : \"Normal\"/\"Logarithmic\", optional
         """
-        if vmin!='':
+        if vmin != '':
             self.SetWorld(ymin=vmin)
-        if vmax!='':
+        if vmax != '':
             self.SetWorld(ymax=vmax)
-        if label!='':
+        if label != '':
             self.string += '@ yaxis label \"%s\" \n'%str(label)
-        if labelsize!='':
+        if labelsize != '':
             self.string += '@ yaxis label char size %.3f \n'%float(labelsize)
-        if labelautopos!='':
-            if labelautopos==True:
+        if labelautopos != '':
+            if labelautopos == True:
                 self.string += '@ yaxis label place auto \n'
             else:
                 self.string += '@ yaxis label place spec \n'
-            if labelpospar!='' and labelposper!='':
+            if labelpospar != '' and labelposper != '':
                 self.string += '@ yaxis label place %.8f, %.8f \n'%(float(labelpospar), float(labelposper))
-        if majorUnit!='':
+        if majorUnit != '':
             self.string += '@ yaxis tick major %.8f \n'%float(majorUnit)
-        if minorUnit!='':
+        if minorUnit != '':
             self.string += '@ yaxis tick minor %.8f \n'%float(minorUnit)
-        if useticks!='':
+        if useticks != '':
             self.string += '@ yaxis tick %s \n'%flag[useticks]
-        if useticklabels!='':
+        if useticklabels != '':
             self.string += '@ yaxis ticklabel %s \n'%flag[useticklabels]
-        if ticklabelsize!='':
+        if ticklabelsize != '':
             self.string += '@ yaxis ticklabel char size %.3f \n'%float(ticklabelsize)
-        if majorGridlines!='':
+        if majorGridlines != '':
             self.string += '@ yaxis tick major grid %s\n'%flag[majorGridlines]
-        if minorGridlines!='':
+        if minorGridlines != '':
             self.string += '@ yaxis tick minor grid %s \n'%flag[minorGridlines]
-        if autoscale!='':
+        if autoscale != '':
             xmin, ymin, xmax, ymax = self.GetWorldOfDatasets()
             rng = ymax-ymin
-            if rng>1e-20:
+            if rng > 1e-20:
                 unit = 2* 10**math.floor(math.log(rng, 10))
             else:
                 unit = 1
             self.SetYaxis(vmin=ymin, vmax=ymax, majorUnit=unit, minorUnit=unit/2.)
-        if scale =='Logarithmic':
+        if scale == 'Logarithmic':
             self.string += '@ yaxes scale %s \n'%scale
             # Scale axis to positive numbers
             xmin, ymin, xmax, ymax = self.GetWorldOfDatasets()
-            if ymin<=0.: self.SetYaxis(vmin=1e-10)
+            if ymin <= 0.: self.SetYaxis(vmin=1e-10)
             else: self.SetYaxis(vmin=ymin)
-            if ymax<=0.: self.SetYaxis(vmax=1e10)
+            if ymax <= 0.: self.SetYaxis(vmax=1e10)
             else: self.SetYaxis(vmax=ymax)
 
     def SetXaxisSpecialTicks(self, ticklist):
@@ -650,7 +652,7 @@ class Graph(object):
 
     def SetSpecial(self, string):
         "Inserts a special GRACE command string to the graph."
-        if string[-1]!='\n': string += '\n'
+        if string[-1] != '\n': string += '\n'
         self.string += string
 
     def AddDatasets(self, *datasets):
@@ -689,7 +691,7 @@ class Plot(object):
         self.frame = [0.15, 0.15, 1.15, 0.85]
         self.string = '# Grace file created on %s\n'%time.ctime()
         self.SetDefaults()
-        if len(graphs)>0:
+        if len(graphs) > 0:
             self.AddGraphs(*graphs)
 
     def AddGraphs(self, *graphs):
@@ -707,31 +709,31 @@ class Plot(object):
         dy = ((self.frame[3]-self.frame[1])-(ny-1)*vspace)/ny
         for i in range(len(self.graphs)):
             graph = self.graphs[i]
-            if order==1:
+            if order == 1:
                 print '... %i: Filling top to down, starting from upper left'%i
                 x = x0+(i/ny)*(dx+hspace)
                 y = y1-dy-(i%ny)*(dy+vspace)
-            elif order==2:
+            elif order == 2:
                 print '... %i: Filling left to right, starting from lower left'%i
                 x = x0+(i%nx)*(dx+hspace)
                 y = y0+(i/nx)*(dy+vspace)
-            elif order==3:
+            elif order == 3:
                 print '... %i: Sorting down to top, starting from lower left'%i
                 x = x0+(i/ny)*(dx+hspace)
                 y = y0+(i%ny)*(dy+vspace)
-            elif order==4:
+            elif order == 4:
                 print '... %i: Sorting right to left, starting from upper right'%i
                 x = x1-dx-(i%nx)*(dx+hspace)
                 y = y1-dy-(i/nx)*(dy+vspace)
-            elif order==5:
+            elif order == 5:
                 print '... %i: Sorting top to down, starting from upper right'%i
                 x = x1-dx-(i/ny)*(dx+hspace)
                 y = y1-dy-(i%ny)*(dy+vspace)
-            elif order==6:
+            elif order == 6:
                 print '... %i: Sorting right to left, starting from lower right'%i
                 x = x1-dx-(i%nx)*(dx+hspace)
                 y = y0+(i/nx)*(dy+vspace)
-            elif order==7:
+            elif order == 7:
                 print '... %i: Sorting down to top, starting from lower right'%i
                 x = x1-dx-(i/ny)*(dx+hspace)
                 y = y0+(i%ny)*(dy+vspace)
@@ -771,7 +773,7 @@ class Plot(object):
 
     def SetSpecial(self, string):
         "Inserts a special GRACE command string to the plot."
-        if string[-1]!='\n': string += '\n'
+        if string[-1] != '\n': string += '\n'
         self.string += string
 
     def PutText(self, string, posx, posy, color=1, rot=0, font=0, just=0, charsize=1.0):
@@ -798,7 +800,7 @@ class Plot(object):
 
     def WriteFile(self, filename=''):
         "Writes the GRACE commands that describe the whole plot to a file."
-        if filename=='': filename = self.filename
+        if filename == '': filename = self.filename
         print 'Writing plot to file \"%s\"'%(filename)
         f = open(filename, 'w')
         f.write(self.string)
@@ -869,28 +871,28 @@ def demo():
         g.SetSubtitle('nr %i'%i)
         g.SetXaxis(autoscale=True)
         g.SetYaxis(autoscale=True)
-        if i==1:
+        if i == 1:
             # Show legend
             g.ShowLegend()
-        if i==2:
+        if i == 2:
             # Use special labels and ticks
             g.SetXaxisSpecialTicks([[2, '\alpha'], [3, '\beta'], [4, '\gamma']])
             g.SetYaxisSpecialTicks([[3, '\Gamma'], [5, '\Delta']])
-        if i==3:
+        if i == 3:
             # No ticks and labels
             g.SetXaxis(useticks=False, useticklabels=False)
             g.SetYaxis(useticks=False, useticklabels=False)
-        if i==4:
+        if i == 4:
             # MajorGridlines
             g.SetXaxis(majorGridlines=True, minorGridlines=True, scale='Logarithmic')
             g.SetYaxis(majorGridlines=True, minorGridlines=True, scale='Logarithmic')
-        if i==5:
+        if i == 5:
             # Fixed coordinate ranges
             g.ShowLegend()
             g.SetXaxis(vmin=-4, vmax=4)
             g.SetYaxis(vmin=-2, vmax=8)
             g.AddDatasets(d3)
-        if i==6:
+        if i == 6:
             g.AddDatasets(dsets)
             g.SetXaxis(autoscale=True)
             g.SetYaxis(autoscale=True)

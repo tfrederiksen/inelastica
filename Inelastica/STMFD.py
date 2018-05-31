@@ -1,7 +1,9 @@
 """
 
-STMFD (:mod:`Inelastica.STMFD`)
-===============================
+:mod:`Inelastica.STMFD`
+=======================
+
+(a descriptive text is missing here)
 
 .. currentmodule:: Inelastica.STMFD
 
@@ -44,7 +46,7 @@ def main(options, kpoint, ikpoint):
     if options.samplingscale != 1:
         print '\nReal-space sampling in xy plane coarser by factor', options.samplingscale, '...'
         tmp = sampling(options, Nx, Ny, Nz, Subwfs, Tipwfs, SubChans, TipChans, SubPot, TipPot, SubRho, TipRho)
-        Nx, Ny, Nz  = tmp[0], tmp[1], tmp[2]
+        Nx, Ny, Nz = tmp[0], tmp[1], tmp[2]
         NN = Nx*Ny*Nz
         a1, a2 = a1*options.samplingscale, a2*options.samplingscale
         ucSize = [a1, a2, a3]
@@ -92,7 +94,7 @@ def LayersAndTipheight(options, kpoint, ikpoint):
     #First substrate layer
     for ii in range(len(xyz)-1):
         atomlayer1[ii] += xyz[ii][2]
-        if N.abs(N.sum(atomlayer1)/(ii+1)-atomlayer1[ii])>.5:
+        if N.abs(N.sum(atomlayer1)/(ii+1)-atomlayer1[ii]) > 0.5:
             break
     Layer1 = ii
     print '\nThe atomic layers seem to consist of '+str(ii)+' atoms.'
@@ -101,14 +103,14 @@ def LayersAndTipheight(options, kpoint, ikpoint):
     atomlayer2 = N.zeros(len(xyz))
     for jj in range(ii, len(xyz)-1):
         atomlayer2[jj] += xyz[jj][2]
-        if N.abs(N.sum(atomlayer2[:])/(jj-ii+1)-atomlayer2[jj])>.5:
+        if N.abs(N.sum(atomlayer2[:])/(jj-ii+1)-atomlayer2[jj]) > 0.5:
             break
     Layer2 = jj
     #Third!?
     atomlayer3 = N.zeros(len(xyz))
     for kk in range(jj, len(xyz)-1):
         atomlayer3[kk] += xyz[kk][2]
-        if N.abs(N.sum(atomlayer3[:])/(kk-jj+1)-atomlayer3[kk])>.5:
+        if N.abs(N.sum(atomlayer3[:])/(kk-jj+1)-atomlayer3[kk]) > 0.5:
             break
     Layer3 = kk
     if Layer2-Layer1 < Layer1:
@@ -123,8 +125,10 @@ def LayersAndTipheight(options, kpoint, ikpoint):
             TipHeightMol = N.round(N.abs(xyz[ii+1][2]-xyz[ii][2])*PC.Bohr2Ang, 3)
             print 'Vacuum gap along z appears to be '+str(TipHeightMol)+' Ang'
             break
-    Molidx = ii; Tipidx = ii+1
-    posZMol = xyz[Molidx][2]; posZTip = xyz[Tipidx][2]
+    Molidx = ii
+    Tipidx = ii+1
+    posZMol = xyz[Molidx][2]
+    posZTip = xyz[Tipidx][2]
     TipHeightLayer1 = N.round(N.abs(posZTip-zSurfLayer1)*PC.Bohr2Ang, 3)
     if Layer2-Layer1 < Layer1:
         print 'Substrate surface  --- tip-apex distance: '+str(TipHeightLayer1)+' Ang'
@@ -153,7 +157,7 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     tmp = NC.Dataset(pathkpt+options.systemlabel+'.AL0.nc', 'r')
     tmp2 = N.array(tmp.variables['Re-Psi'][:], N.float)
     dim = N.shape(tmp2)
-    Nx, Ny, Nz = dim[0], dim[1], dim[2];
+    Nx, Ny, Nz = dim[0], dim[1], dim[2]
 
     SubChans = N.shape(glob.glob(pathkpt+options.systemlabel+'.AL*.nc'))[0]
     TipChans = N.shape(glob.glob(pathkpt+options.systemlabel+'.AR*.nc'))[0]
@@ -253,7 +257,7 @@ def sampling(options, Nx, Ny, Nz, Subwfs, Tipwfs, SubChans, TipChans, SubPot, Ti
     x, y = N.arange(0, Nx), N.arange(0, Ny)
     xnew, ynew = N.arange(0, Nx, ssc), N.arange(0, Ny, ssc)
 
-    ReNewSubwfs, ImNewSubwfs  = N.zeros((SubChans, NX, NY, NZ)), N.zeros((SubChans, NX, NY, NZ))
+    ReNewSubwfs, ImNewSubwfs = N.zeros((SubChans, NX, NY, NZ)), N.zeros((SubChans, NX, NY, NZ))
     for imode in range(SubChans):
         for iz in range(NZ):
             tmp1 = N.real(Subwfs[imode, :, :, iz]).T
@@ -264,7 +268,7 @@ def sampling(options, Nx, Ny, Nz, Subwfs, Tipwfs, SubChans, TipChans, SubPot, Ti
             ImNewSubwfs[imode, :, :, iz] = f2(xnew, ynew).T
     NewSubwfs = ReNewSubwfs+1j*ImNewSubwfs
 
-    ReNewTipwfs, ImNewTipwfs  = N.zeros((TipChans, NX, NY, NZ)), N.zeros((TipChans, NX, NY, NZ))
+    ReNewTipwfs, ImNewTipwfs = N.zeros((TipChans, NX, NY, NZ)), N.zeros((TipChans, NX, NY, NZ))
     for imode in range(TipChans):
         for iz in range(NZ):
             tmp1 = N.real(Tipwfs[imode, :, :, iz]).T
@@ -300,8 +304,8 @@ def sampling(options, Nx, Ny, Nz, Subwfs, Tipwfs, SubChans, TipChans, SubPot, Ti
 
 def reindexing(options, Nx, Ny, Nz, NN, WFs, Chans, rho, ucSize, theta):
     rhoindx = N.array([rho[ii, jj, kk] for kk in range(Nz) for jj in range(Ny) for ii in range(Nx)])
-    inda = N.where(rhoindx>options.rhoiso)[0]
-    tmp  = set(inda)
+    inda = N.where(rhoindx > options.rhoiso)[0]
+    tmp = set(inda)
     indb = [ii for ii in N.arange(NN) if ii not in tmp]
     return inda, indb
 
@@ -318,7 +322,9 @@ def Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint):
     mixX, mixY, mixXY = N.round(mixX, 8), N.round(mixY, 8), N.round(mixXY, 8)
     print 'nabla^2_{xy} = '+str(mixX)+'d^2/dx^2+'+str(mixY)+'d^2/dy^2+'+str(mixXY)+'d^2/dxdy'
     #print 'd^2x:',mixX,',d2^y:',mixY,',dxdy:',mixXY
-    bx = mixX/a1**2; by = mixY/a2**2; bz = 1./a3**2;
+    bx = mixX/a1**2
+    by = mixY/a2**2
+    bz = 1./a3**2
     bands = 23
     D2 = N.zeros((bands, NN), N.complex)
 
@@ -415,7 +421,7 @@ def SplitHam(Ham, inda, indb):
 
 
 def LinearSolve(options, WFs, inda, indb, Ef, Tau, Hb, NN, Nx, Ny, Nz, Chans):
-    Na, Nb  = len(inda), len(indb)
+    Na, Nb = len(inda), len(indb)
     pmodes = N.zeros((Chans, NN), N.complex)
     timemodeprop = time.clock()
     print '\nMode propagation starts'
@@ -494,7 +500,7 @@ def Current(options, propSubModes, propTipModes, Nx, Ny, Nz, Max, ucSize, ChansL
             currmat[ii, jj] = N.sum(N.abs(tmp1-tmp2)**2)
     STMcurrent = scale*tot
     STMcurrent = STMcurrent[:Nx/2, :Ny/2]
-    n=wNC.NCfile(pathkpt+'FDcurr'+N.str(ikpoint)+'.nc')
+    n = wNC.NCfile(pathkpt+'FDcurr'+N.str(ikpoint)+'.nc')
     n.write(STMcurrent, 'Curr')
     n.write(kpoint, 'kpnt')
     n.close()

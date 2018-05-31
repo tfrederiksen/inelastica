@@ -1,7 +1,7 @@
 """
 
-pyTBT (:mod:`Inelastica.pyTBT`)
-========================================
+:mod:`Inelastica.pyTBT`
+=======================
 
 ``pyTBT`` was initiated by Magnus Paulsson as a Python version
 of the `tbtrans` code originally developed in Fortran by Mads Brandbyge.
@@ -42,11 +42,11 @@ orthogonal space that is fourier transformed.
 
 import numpy as N
 import Inelastica.io.siesta as SIO
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 import Inelastica.NEGF as NEGF
 import Inelastica.physics.mesh as Kmesh
-import Inelastica.ValueCheck as VC
-import Inelastica.CommonFunctions as CF
+import Inelastica.misc.valuecheck as VC
+import Inelastica.io.log as Log
 import Inelastica.io.xmgrace as XMGR
 
 # For doing loops with pyTBT we encourage the usage of this function
@@ -54,7 +54,7 @@ import Inelastica.io.xmgrace as XMGR
 # DIRECTLY in python
 
 
-def GetOptions(argv, **kwargs):
+def GetOptions(argv):
     """
     Returns an instance of ``options`` for the ``pyTBT`` module
 
@@ -64,7 +64,6 @@ def GetOptions(argv, **kwargs):
         For example `-N 5 test_dir`, which instructs to compute transmission on 5 energy points
         and place the results in the output directory `test_dir`.
     """
-    CF.PrintMainHeader('GetOptions', None)
 
     # if text string is specified, convert to list
     if isinstance(argv, VC.string_types):
@@ -135,11 +134,8 @@ def GetOptions(argv, **kwargs):
     # Parse the options
     options = p.parse_args(argv)
 
-    # With this one can overwrite the logging information
-    if "log" in kwargs:
-        options.Logfile = kwargs['log']
-    else:
-        options.Logfile = 'pyTBT.log'
+    # Set module name
+    options.module = 'pyTBT'
 
     return options
 
@@ -152,16 +148,16 @@ def main(options):
     ----------
     options : an ``options`` instance
     """
-    CF.CreatePipeOutput(options.DestDir+'/'+options.Logfile)
-    VC.OptionsCheck(options, 'pyTBT')
-    CF.PrintMainHeader('pyTBT', options)
+    Log.CreatePipeOutput(options)
+    VC.OptionsCheck(options)
+    Log.PrintMainHeader(options)
 
     # K-points
-    if options.Gk1>1:
+    if options.Gk1 > 1:
         Nk1, t1 = options.Gk1, 'GK'
     else:
         Nk1, t1 = options.Nk1, 'LIN'
-    if options.Gk2>1:
+    if options.Gk2 > 1:
         Nk2, t2 = options.Gk2, 'GK'
     else:
         Nk2, t2 = options.Nk2, 'LIN'
@@ -202,19 +198,21 @@ def main(options):
     # Loop over spin
     for iSpin in range(nspin):
         # initialize transmission and shot noise arrays
-        Tkpt=N.zeros((len(options.Elist), mesh.NNk, options.numchan+1), N.float)
-        SNkpt=N.zeros((len(options.Elist), mesh.NNk, options.numchan+1), N.float)
+        Tkpt = N.zeros((len(options.Elist), mesh.NNk, options.numchan+1), N.float)
+        SNkpt = N.zeros((len(options.Elist), mesh.NNk, options.numchan+1), N.float)
         # prepare output files
         outFile = options.DestDir+'/%s.%ix%i'%(options.systemlabel, mesh.Nk[0], mesh.Nk[1])
-        if nspin<2: thisspinlabel = outFile
-        else: thisspinlabel = outFile+['.UP', '.DOWN'][iSpin]
-        fo=open(thisspinlabel+'.AVTRANS', 'write')
+        if nspin < 2:
+            thisspinlabel = outFile
+        else:
+            thisspinlabel = outFile+['.UP', '.DOWN'][iSpin]
+        fo = open(thisspinlabel+'.AVTRANS', 'write')
         fo.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(mesh.type[0], mesh.Nk[0], mesh.type[1], mesh.Nk[1], options.eta, options.etaLead))
         fo.write('# E   Ttot(E)   Ti(E)(i=1-%i)   RelErrorTtot(E)\n'%options.numchan)
-        foSN=open(thisspinlabel+'.AVNOISE', 'write')
+        foSN = open(thisspinlabel+'.AVNOISE', 'write')
         foSN.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(mesh.type[0], mesh.Nk[0], mesh.type[1], mesh.Nk[1], options.eta, options.etaLead))
         foSN.write('# E   SNtot(E)   SNi(E)(i=1-%i)\n'%options.numchan)
-        foFF=open(thisspinlabel+'.FANO', 'write')
+        foFF = open(thisspinlabel+'.FANO', 'write')
         foFF.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(mesh.type[0], mesh.Nk[0], mesh.type[1], mesh.Nk[1], options.eta, options.etaLead))
         foFF.write('# E   Fano factor \n')
         # Loop over energy
@@ -236,7 +234,7 @@ def main(options):
                 SNkpt[ie, ik] = SN
                 # DOS calculation:
                 if options.dos:
-                    if options.SpectralCutoff>0.0:
+                    if options.SpectralCutoff > 0.0:
                         AavL += mesh.w[0, ik]*MM.mm(DevGF.AL.L, DevGF.AL.R, DevGF.S)
                         AavR += mesh.w[0, ik]*MM.mm(DevGF.AR.L, DevGF.AR.R, DevGF.S)
                     else:
@@ -249,7 +247,7 @@ def main(options):
             transline = '\n%.10f '%ee
             noiseline = '\n%.10f '%ee
             for ichan in range(options.numchan+1):
-                if ichan==0:
+                if ichan == 0:
                     transline += '%.8e '%Tavg[ichan, 0]
                     noiseline += '%.8e '%SNavg[ichan, 0]
                 else:
@@ -281,7 +279,7 @@ def main(options):
             for ie, ee in enumerate(options.Elist):
                 transline = '\n%.10f '%ee
                 for ichan in range(options.numchan+1):
-                    if ichan==0:
+                    if ichan == 0:
                         transline += '%.8e '%Tkpt[ie, ik, ichan]
                     else:
                         transline += '%.4e '%Tkpt[ie, ik, ichan]
@@ -297,7 +295,7 @@ def main(options):
             for ie, ee in enumerate(options.Elist):
                 noiseline = '\n%.10f '%ee
                 for ichan in range(options.numchan+1):
-                    if ichan==0:
+                    if ichan == 0:
                         noiseline += '%.8e '%SNkpt[ie, ik, ichan]
                     else:
                         noiseline += '%.4e '%SNkpt[ie, ik, ichan]
@@ -325,7 +323,7 @@ def main(options):
         WriteMPSH(outFile+'.MPSHL.gz', options, DevGF, MPSHL, ev0)
         WriteMPSH(outFile+'.MPSHR.gz', options, DevGF, MPSHR, ev0)
 
-    CF.PrintMainFooter('pyTBT')
+    Log.PrintMainFooter(options)
 
 
 def WritePDOS(fn, options, DevGF, DOS, basis):
@@ -433,11 +431,11 @@ def WriteMPSH(fn, options, DevGF, DOS, ev0):
 def myprint(x): # Do numpy vector or matrix to string
     s = ''
     dim = len(x.shape)
-    if dim==1:
+    if dim == 1:
         rows, = x.shape
         for i in range(rows):
             s += '%s\n'%x[i]
-    if dim==2:
+    if dim == 2:
         columns, rows = x.shape
         for i in range(rows):
             for j in range(columns):

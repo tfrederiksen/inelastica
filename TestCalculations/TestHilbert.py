@@ -1,7 +1,7 @@
 import numpy as N
 import scipy.special as ss
 import Inelastica.io.xmgrace as XMGR
-import Inelastica.MiscMath as mm
+import Inelastica.misc.math as mm
 
 # We try a simple Gaussian function:
 x0 = 50

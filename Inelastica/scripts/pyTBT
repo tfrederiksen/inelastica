@@ -3,7 +3,7 @@
 import sys
 from datetime import datetime
 import Inelastica.pyTBT as Module
-import Inelastica.CommonFunctions as CF
+import Inelastica.io.log as Log
 
 start = datetime.now()
 
@@ -12,4 +12,4 @@ Module.main(options)
 
 dT = datetime.now()-start
 
-CF.PrintScriptSummary(sys.argv, dT)
+Log.PrintScriptSummary(sys.argv, dT)

@@ -1,7 +1,7 @@
 """
 
-BandStruct (:mod:`Inelastica.BandStruct`)
-=========================================
+:mod:`Inelastica.BandStruct`
+============================
 
 Bandstructure and Fermi surface calculator
 
@@ -12,9 +12,10 @@ Bandstructure and Fermi surface calculator
 import Inelastica.Symmetry as SYM
 import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
-import Inelastica.MiscMath as MM
+import Inelastica.math as MM
 import numpy as N
 import numpy.linalg as LA
+import scipy.linalg as SLA
 import sys
 import glob
 import os
@@ -35,13 +36,13 @@ mysqrt = MM.mysqrt
 
 
 def main():
-    setupParameters()
+    #setupParameters()
 
     readxv()
     readHS()
     readbasis()
     for ispin in range(HS.nspin):
-        calcBands(ispin)
+        #calcBands(ispin)
         calcFS(ispin)
 
 ########################################################
@@ -93,15 +94,15 @@ def readHS():
 ########################################################
 def calcFS(ispin):
     # Calculate Fermi-surface
-    NNk = general.NNk
+    NNk = 31
     bands = N.zeros((NNk, NNk, NNk, HS.N), N.float)
-    for ix in range(general.NNk):
-        for iy in range(general.NNk):
-            for iz in range(general.NNk):
+    for ix in range(NNk):
+        for iy in range(NNk):
+            for iz in range(NNk):
                 # "unitless" k-vect
                 kpnt = N.array([ix, iy, iz], N.float)/float(NNk-1)
-                HS.setkpoint(kpnt)
-                eival = LA.eigvals(mm(LA.inv(HS.S), HS.H[ispin, :, :]))
+                HS.setkpoint(kpnt, verbose=False)
+                eival = SLA.eigh(HS.H[ispin], HS.S, eigvals_only=True)
                 ipiv = N.argsort(eival)
                 bands[ix, iy, iz, :] = eival[ipiv]
         SIO.printDone(ix, NNk, 'Fermi Surface: ')
@@ -119,7 +120,7 @@ def writeFS(ispin, NNk, bands):
     indx = []
     for ii in range(HS.N):
         if N.sum((bands[:, :, :, ii].reshape((-1,)) < general.eMax)*\
-                     (bands[:, :, :, ii].reshape((-1,)) > general.eMin)):
+                 (bands[:, :, :, ii].reshape((-1,)) > general.eMin)):
             indx += [ii]
 
     f = open(general.DestDir+'/'+'FermiSurface'+sspin+'.BXSF', 'w')
@@ -162,7 +163,12 @@ def calcBands(ispin):
     what = geom.sym.what()
 
     bands = []
-    for txt, kdir, korig, Nk in what:
+    for ii in range(len(what)-1):
+        txt = what[ii][1]+'-'+what[ii+1][1]
+        f, t = what[ii][0], what[ii+1][0]
+        korig, kdir = f, t-f
+        Nk = general.NNk
+
         ev = N.zeros((Nk, HS.N), N.float)
         for ii in range(Nk):
             kpnt = korig + kdir*(ii/float(Nk-1))
@@ -170,7 +176,7 @@ def calcBands(ispin):
             kpnt2 = mm(N.array([geom.sym.a1, geom.sym.a2, geom.sym.a3]), kpnt)
 
             HS.setkpoint(kpnt2)
-            eival = LA.eigvals(mm(LA.inv(HS.S), HS.H[ispin, :, :]))
+            eival = SLA.eigh(HS.H[ispin], HS.S, eigvals_only=True)
             ipiv = N.argsort(eival)
             ev[ii, :] = eival[ipiv]
         bands += [ev]
@@ -187,14 +193,18 @@ def writeBands(ispin, what, bands):
         sspin = ''
 
     Graphs = []
-    for jj,  elem in enumerate(what):
-        f=open(general.DestDir+'/'+elem[0]+sspin+'.dat', 'w')
-        xx = N.array(range(elem[3]), N.float)/(elem[3]-1.0)
+    for jj in range(len(what)-1):
+        #for jj, elem in enumerate(what):
+        txt = what[jj][1]+"-"+what[jj+1][1]
+        Nk = general.NNk
+
+        f = open(general.DestDir+'/'+txt+sspin+'.dat', 'w')
+        xx = N.array(range(Nk), N.float)/(Nk-1.0)
         iColor, Datasets = 1, []
         for ii in range(len(bands[jj][0, :])):
             # Choose bands within +-5 eV from Ef
             if N.sum((bands[jj][:, ii] < general.eMax)*\
-                         (bands[jj][:, ii] > general.eMin)) > 1e-5:
+                     (bands[jj][:, ii] > general.eMin)) > 1e-5:
                 f.write("\n# Band %i \n"%(ii))
                 for kk, data in enumerate(bands[jj][:, ii]):
                     f.write("%i %e\n"%(kk, data))
@@ -209,11 +219,11 @@ def writeBands(ispin, what, bands):
 
         g.SetXaxis(label='', majorUnit=0.5, minorUnit=0.1, vmax=1, vmin=0)
         if jj == 0:
-            g.SetYaxis(label='eV', majorUnit=1, minorUnit=0.2,\
-                           vmax=general.eMax, vmin=general.eMin)
+            g.SetYaxis(label='eV', majorUnit=1, minorUnit=0.2,
+                       vmax=general.eMax, vmin=general.eMin)
         else:
-            g.SetYaxis(label='', majorUnit=1e10, minorUnit=0.2,\
-                           vmax=general.eMax, vmin=general.eMin)
+            g.SetYaxis(label='', majorUnit=1e10, minorUnit=0.2,
+                       vmax=general.eMax, vmin=general.eMin)
         Graphs += [g]
 
     p = XMGR.Plot(general.DestDir+'/BandStruct.agr', Graphs[0])
@@ -284,8 +294,9 @@ For help use --help!
     sys.stdout = fo
 
     iofile = open(general.DestDir+'/Parameters', 'w')
-    argv=""
-    for ii in sys.argv: argv+=" "+ii
+    argv = ""
+    for ii in sys.argv:
+        argv += " "+ii
     myprint(argv, iofile)
     myprint('##################################################################################', iofile)
     myprint('## Band structure ', iofile)
