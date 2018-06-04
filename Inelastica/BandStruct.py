@@ -42,6 +42,7 @@ def main():
     readbasis()
     for ispin in range(HS.nspin):
         calcBands(ispin)
+    for ispin in range(HS.nspin):
         calcFS(ispin)
 
 ########################################################
@@ -164,7 +165,7 @@ def calcBands(ispin):
     bands = []
     for ii in range(len(what)-1):
         txt = what[ii][1]+'-'+what[ii+1][1]
-        f, t = what[ii][0], what[ii+1][0]
+        f, t = what[ii][0]/(2.0*N.pi), what[ii+1][0]/(2.0*N.pi)
         korig, kdir = f, t-f
         Nk=general.NNk
 
@@ -214,18 +215,18 @@ def writeBands(ispin, what, bands):
         g = XMGR.Graph()
         for data in Datasets:
             g.AddDatasets(data)
-        g.SetSubtitle(what[jj][0])
+        g.SetSubtitle(txt)
 
         g.SetXaxis(label='', majorUnit=0.5, minorUnit=0.1, vmax=1, vmin=0)
         if jj == 0:
-            g.SetYaxis(label='eV', majorUnit=1, minorUnit=0.2,
+            g.SetYaxis(label='E-Ef [eV]', majorUnit=1, minorUnit=0.2,
                        vmax=general.eMax, vmin=general.eMin)
         else:
             g.SetYaxis(label='', majorUnit=1e10, minorUnit=0.2,
                        vmax=general.eMax, vmin=general.eMin)
         Graphs += [g]
 
-    p = XMGR.Plot(general.DestDir+'/BandStruct.agr', Graphs[0])
+    p = XMGR.Plot(general.DestDir+'/BandStruct'+sspin+'.agr', Graphs[0])
 
     for ii in range(1, len(Graphs)):
         p.AddGraphs(Graphs[ii])
