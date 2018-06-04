@@ -81,6 +81,8 @@ def GetOptions(argv):
                  help='Location of TranSIESTA calculation directory (will ignore FC and OnlyS directories) [default=%(default)s]')
     p.add_argument('--nbands', dest='nbands', type=int, default=None,
                  help='Number of electronic bands to be included in netCDF output (lower energy bands) [default=%(default)s]')
+    p.add_argument('--FermiSurface', dest='FermiSurface', action='store_true', default=False,
+                 help='Write FermiSurface.BXSF file for visualization of the Fermi surface? [default=%(default)s]')
 
     options = p.parse_args(argv)
 
@@ -612,13 +614,13 @@ def main(options):
 
     if TSrun: # only electronic calculation
         # Ugly hack to get my old code to work again. -Magnus
-        import BandStruct as BS
-        options.fdfFile='RUN.fdf'
-        options.eMin, options.eMax = -10, 10
-        options.NNk = 101
-        BS.general = options
-
-        BS.main()
+        if options.FermiSurface == True:
+            import BandStruct as BS
+            options.fdfFile = 'RUN.fdf'
+            options.eMin, options.eMax = -10, 10
+            options.NNk = 101
+            BS.general = options
+            BS.main()
 
         return SCDM.Sym.path
 
@@ -673,6 +675,10 @@ def main(options):
                 hw2 = const*N.diagonal(tmp)**0.5 # Units in eV
                 print ' ... Allclose=', N.allclose(hw, N.absolute(hw2), atol=1e-5, rtol=1e-3)
                 ncf.sync()
+                # Write only AXSF files for the first q-point
+                PH.WriteAXSFFiles(options.DestDir+'/q%i_re.axsf'%i, SCDM.Sym.basis.xyz, SCDM.Sym.basis.anr, hw, U.real, 1, SCDM.Sym.basis.NN)
+                PH.WriteAXSFFiles(options.DestDir+'/q%i_im.axsf'%i, SCDM.Sym.basis.xyz, SCDM.Sym.basis.anr, hw, U.imag, 1, SCDM.Sym.basis.NN)
+                PH.WriteFreqFile(options.DestDir+'/q%i.freq'%i, hw)
             evals[i] = hw
             evecsRe[i] = U.real
             evecsIm[i] = U.imag

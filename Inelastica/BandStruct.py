@@ -15,6 +15,7 @@ import Inelastica.MakeGeom as MG
 import Inelastica.math as MM
 import numpy as N
 import numpy.linalg as LA
+import scipy.linalg as SLA
 import sys
 import glob
 import os
@@ -101,8 +102,8 @@ def calcFS(ispin):
             for iz in range(NNk):
                 # "unitless" k-vect
                 kpnt = N.array([ix, iy, iz], N.float)/float(NNk-1)
-                HS.setkpoint(kpnt)
-                eival = LA.eigvals(mm(LA.inv(HS.S), HS.H[ispin, :, :]))
+                HS.setkpoint(kpnt, verbose=False)
+                eival = SLA.eigh(HS.H[ispin], HS.S, eigvals_only=True)
                 ipiv = N.argsort(eival)
                 bands[ix, iy, iz, :] = eival[ipiv]
         SIO.printDone(ix, NNk, 'Fermi Surface: ')
@@ -167,7 +168,7 @@ def calcBands(ispin):
         txt = what[ii][1]+'-'+what[ii+1][1]
         f, t = what[ii][0]/(2.0*N.pi), what[ii+1][0]/(2.0*N.pi)
         korig, kdir = f, t-f
-        Nk=general.NNk
+        Nk = general.NNk
 
         ev = N.zeros((Nk, HS.N), N.float)
         for ii in range(Nk):
@@ -176,7 +177,7 @@ def calcBands(ispin):
             kpnt2 = mm(N.array([geom.sym.a1, geom.sym.a2, geom.sym.a3]), kpnt)
 
             HS.setkpoint(kpnt2)
-            eival = LA.eigvals(mm(LA.inv(HS.S), HS.H[ispin, :, :]))
+            eival = SLA.eigh(HS.H[ispin], HS.S, eigvals_only=True)
             ipiv = N.argsort(eival)
             ev[ii, :] = eival[ipiv]
         bands += [ev]
@@ -196,7 +197,7 @@ def writeBands(ispin, what, bands):
     for jj in range(len(what)-1):
         #for jj, elem in enumerate(what):
         txt = what[jj][1]+"-"+what[jj+1][1]
-        Nk=general.NNk
+        Nk = general.NNk
 
         f = open(general.DestDir+'/'+txt+sspin+'.dat', 'w')
         xx = N.array(range(Nk), N.float)/(Nk-1.0)
