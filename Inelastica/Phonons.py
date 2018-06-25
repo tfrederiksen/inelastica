@@ -66,10 +66,12 @@ Classes and methods
 .. currentmodule:: Inelastica.Phonons
 
 """
+from __future__ import print_function
 
 import netCDF4 as NC4
 import numpy as N
 import numpy.linalg as LA
+import warnings
 import glob
 import os
 import sys
@@ -209,7 +211,7 @@ class FCrun(object):
             self.Displ = float(ampl)
         elif unit.upper() == 'BOHR':
             self.Displ = float(ampl)*PC.Bohr2Ang
-        print 'Displacement = %.6f Ang'%self.Displ
+        print('Displacement = %.6f Ang'%self.Displ)
         # Read geometry
         self.geom = MG.Geom(runfdf)
         # Compare with XV file corrected for last displacement
@@ -236,12 +238,15 @@ class FCrun(object):
                 self.m[i, j, FCfirst-1+i, :] = -N.sum(self.m[i, j], axis=0)
                 self.p[i, j, FCfirst-1+i, :] = 0.0
                 self.p[i, j, FCfirst-1+i, :] = -N.sum(self.p[i, j], axis=0)
+        self.DynamicAtoms = range(FCfirst, FClast+1)
+
         # Determine TSHS files
         files = glob.glob(self.directory+'/%s*.TSHS'%self.systemlabel)
         files.sort()
         if (FClast-FCfirst+1)*6+1 != len(files):
-            sys.exit('Phonons.GetFileLists: WARNING - Inconsistent number of *.TSHS files in %s'%self.directory)
-        self.DynamicAtoms = range(FCfirst, FClast+1)
+            warnings.warn('Phonons.GetFileLists: WARNING - Inconsistent number of *.TSHS files in %s'%self.directory)
+            return
+
         # Build dictionary over TSHS files and corresponding displacement amplitudes
         self.TSHS = {}
         self.TSHS[0] = files[0] # Equilibrium TSHS
@@ -262,14 +267,14 @@ class FCrun(object):
         snr2nao = {}
         for ionfile in ionNCfiles:
             if ionfile.endswith('.gz'):
-                print 'Phonons.GetOrbitalIndices: Unzipping', ionfile
+                print('Phonons.GetOrbitalIndices: Unzipping: ' + ionfile)
                 os.system('gunzip '+ionfile)
                 ionfile = ionfile[:-3]
             file = NC4.Dataset(ionfile, 'r')
             thissnr = int(csl2snr[file.Label])
             snr2nao[thissnr] = file.Number_of_orbitals
             file.close()
-        print 'Phonons.GetOrbitalIndices: Dictionary snr2nao =', snr2nao
+        print('Phonons.GetOrbitalIndices: Dictionary snr2nao = ' + str(snr2nao))
         # Determine which orbital indices that belongs to a certain atom
         orbitalIndices = []
         tmpOrb = 0
@@ -302,13 +307,13 @@ class OTSrun(FCrun): # Only TranSiesta run
         try:
             self.TSHS[0] = files[0] # Equilibrium TSHS
         except:
-            sys.exit('Phonons.GetFileLists: No TSHS file found in %s'%self.directory)
+            warnings.warn('Phonons.GetFileLists: No TSHS file found in %s'%self.directory)
 
 
 class OSrun(object):
 
     def __init__(self, onlySdir, kpoint, atype=N.complex):
-        print 'Phonons.GetOnlyS: Reading from', onlySdir
+        print('Phonons.GetOnlyS: Reading from: ' + onlySdir)
         onlySfiles = glob.glob(onlySdir+'/*.onlyS*')
         onlySfiles.sort()
         if len(onlySfiles) < 1:
@@ -348,7 +353,7 @@ class OSrun(object):
                 v = xyz[0]-xyz[j]
                 thisd = N.dot(v, v)**.5
                 Displ[(i-1)/2, 1-2*(i%2)] = thisd
-                print 'Phonons.GetOnlyS: OnlyS-displacement (min) = %.5f Ang'%thisd
+                print('Phonons.GetOnlyS: OnlyS-displacement (min) = %.5f Ang'%thisd)
             # Construct dS array
             self.S0 = S0
             self.dS = N.empty((3,)+dmat.shape, dtype=dmat.dtype)
@@ -378,19 +383,26 @@ class DynamicalMatrix(object):
         self.p = N.zeros((NN, 3, self.geom.natoms, 3), N.complex)
         self.Displ = {}
         self.TSHS = {}
-        self.TSHS[0] = self.FCRs[0].TSHS[0]
+        try:
+            self.TSHS[0] = self.FCRs[0].TSHS[0]
+            has_TSHS = True
+        except:
+            has_TSHS = False
         for i, v in enumerate(DynamicAtoms):
             for fcr in self.FCRs:
-                if v in fcr.DynamicAtoms:
-                    j = fcr.DynamicAtoms.index(v)
-                    print 'Reading FC data for dynamic atom %i from %s' %(v, fcr.fdf)
-                    self.Displ[v] = fcr.Displ
-                    self.m[i] = fcr.m[j]
-                    self.p[i] = fcr.p[j]
+                if not v in fcr.DynamicAtoms:
+                    continue
+
+                j = fcr.DynamicAtoms.index(v)
+                print('Reading FC data for dynamic atom %i from %s' %(v, fcr.fdf))
+                self.Displ[v] = fcr.Displ
+                self.m[i] = fcr.m[j]
+                self.p[i] = fcr.p[j]
+                if has_TSHS:
                     for k in range(3):
                         self.TSHS[v, k, -1] = fcr.TSHS[v, k, -1]
                         self.TSHS[v, k, 1] = fcr.TSHS[v, k, 1]
-                    break
+                break
             # Check that we really found the required atom
             if len(self.Displ) <= i:
                 sys.exit('Error: Did not find FC data for a dynamic atom %i'%v)
@@ -403,13 +415,13 @@ class DynamicalMatrix(object):
             try:
                 self.Masses.append(PC.AtomicMass[self.geom.anr[v-1]])
             except:
-                print 'WARNING: Mass of atom %i unknown, set arbitrarily to 1000.00 amu'%v
+                print('WARNING: Mass of atom %i unknown, set arbitrarily to 1000.00 amu'%v)
                 self.Masses.append(1000.00)
         # Override with specified masses?
         for ii, mass in Isotopes:
             if ii in self.DynamicAtoms:
                 j = self.DynamicAtoms.index(ii)
-                print 'Phonons.Analyse: Setting mass for atom %i (SIESTA numbering) to %f:'%(ii, mass)
+                print('Phonons.Analyse: Setting mass for atom %i (SIESTA numbering) to %f:'%(ii, mass))
                 self.Masses[j] = mass
 
     def ApplySumRule(self, FC):
@@ -420,7 +432,7 @@ class DynamicalMatrix(object):
             for j in range(3):
                 FC[i, j, v-1, :] = 0.0
                 FC[i, j, v-1, :] = -N.sum(FC[i, j], axis=0)
-        print 'Total sumrule change in FC: %.3e eV/Ang' % N.sum(abs(FC0)-abs(FC))
+        print('Total sumrule change in FC: %.3e eV/Ang' % N.sum(abs(FC0)-abs(FC)))
         return FC
 
     def ComputePhononModes(self, FC, verbose=True):
@@ -457,11 +469,11 @@ class DynamicalMatrix(object):
         U = U[indx]
         # Print mode frequencies
         if verbose:
-            print 'Phonons.CalcPhonons: Frequencies in meV:'
+            print('Phonons.CalcPhonons: Frequencies in meV:')
             for i in range(3*dyn):
-                print string.rjust('%.3f'%(1000*hw[i]), 9),
-                if (i-5)%6 == 0: print
-            if (i-5)%6 != 0: print
+                print(string.rjust('%.3f'%(1000*hw[i]), 9), end='')
+                if (i-5)%6 == 0: print()
+            if (i-5)%6 != 0: print()
         #print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
         #for i in range(3*dyn):
         #    print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
@@ -503,7 +515,7 @@ class DynamicalMatrix(object):
         self.UUcl = UUcl
 
     def PrepareGradients(self, onlySdir, kpoint, DeviceFirst, DeviceLast, AbsEref, atype, TSrun=False):
-        print '\nPhonons.PrepareGradients: Setting up various arrays'
+        print('\nPhonons.PrepareGradients: Setting up various arrays')
         self.atype = atype
         self.kpoint = kpoint
         self.OrbIndx, nao = self.FCRs[0].GetOrbitalIndices()
@@ -539,7 +551,7 @@ class DynamicalMatrix(object):
         self.AbsEref = AbsEref
 
     def GetGradient(self, Atom, Axis):
-        print '\nPhonons.GetGradient: Computing dH[%i,%i]'%(Atom, Axis)
+        print('\nPhonons.GetGradient: Computing dH[%i,%i]'%(Atom, Axis))
         # Read TSHS files
         TSHSm = SIO.HS(self.TSHS[Atom, Axis, -1])
         TSHSm.setkpoint(self.kpoint, atype=self.atype)
@@ -547,7 +559,7 @@ class DynamicalMatrix(object):
         TSHSp.setkpoint(self.kpoint, atype=self.atype)
         # Use Fermi energy of equilibrium calculation as energy reference?
         if self.AbsEref:
-            print 'Computing gradient with absolute energy reference'
+            print('Computing gradient with absolute energy reference')
             for iSpin in range(self.nspin):
                 TSHSm.H[iSpin, :, :] += (TSHSm.ef-self.TSHS0.ef)*TSHSm.S
                 TSHSp.H[iSpin, :, :] += (TSHSp.ef-self.TSHS0.ef)*TSHSp.S
@@ -571,14 +583,14 @@ class DynamicalMatrix(object):
 
         if Restart:
             if not os.path.exists(CheckPointNetCDF):
-                print "ERROR!!! You have enforced a restart but you have not provided any checkpoint NetCDF file!"
+                print("ERROR!!! You have enforced a restart but you have not provided any checkpoint NetCDF file!")
                 sys.exit()
             else:
-                print "Restart e-ph. calculation. Partial information read from file:", CheckPointNetCDF
+                print("Restart e-ph. calculation. Partial information read from file: " + CheckPointNetCDF)
                 RNCfile = NC4.Dataset(CheckPointNetCDF, 'r')
                 Heph = N.array(RNCfile.variables['He_ph'], self.atype)
         else:
-            print "Start e-ph. calculation from scratch"
+            print("Start e-ph. calculation from scratch")
             Heph = N.zeros((len(self.hw), self.nspin, rednao, rednao), self.atype)
 
         if WriteGradients:
@@ -595,12 +607,12 @@ class DynamicalMatrix(object):
                 pbcl = self.OrbIndx[PBCLast-1][1]
                 if v < PBCFirst:
                     # we have something to remove...
-                    print 'Warning: Setting certain elements in dH[%i,%i] to zero because %i<PBCFirst'%(v, j, v)
+                    print('Warning: Setting certain elements in dH[%i,%i] to zero because %i<PBCFirst'%(v, j, v))
                     #bb = (PBCFirst - FCfirst) * 3
                     dH[:, pbcl+1:nuo, :] = 0.0
                     dH[:, :, pbcl+1:nuo] = 0.0
                 if PBCLast < v:
-                    print 'Warning: Setting certain elements in dH[%i,%i] to zero because PBCLast<%i'%(v, j, v)
+                    print('Warning: Setting certain elements in dH[%i,%i] to zero because PBCLast<%i'%(v, j, v))
                     #aa = (PBCLast - FCfirst) * 3
                     dH[:, :pbcf-1, :] = 0.0
                     dH[:, :, :pbcf-1] = 0.0
@@ -615,7 +627,7 @@ class DynamicalMatrix(object):
                         Heph[m] += const*dh*self.UU[m, v-1, j].real/(2*self.Masses[i]*self.hw[m])**.5
                     elif i == 0:
                         # Print only first time
-                        print 'Phonons.ComputeEPHcouplings: Mode %i has nonpositive frequency --> Zero-valued coupling matrix'%m
+                        print('Phonons.ComputeEPHcouplings: Mode %i has nonpositive frequency --> Zero-valued coupling matrix'%m)
                         # already zero
         del dH, dh
         self.heph = Heph
@@ -623,7 +635,7 @@ class DynamicalMatrix(object):
             self.gradients = N.array(self.gradients)
 
     def WriteOutput(self, label, SinglePrec, GammaPoint):
-        print '\nPhonons.WriteOutput'
+        print('\nPhonons.WriteOutput')
         ### Write MKL- and xyz-files
         natoms = self.geom.natoms
         hw = self.hw
@@ -648,7 +660,7 @@ class DynamicalMatrix(object):
                           hw, UUcl, 1, natoms)
         # Netcdf format
         ncdffn = '%s.nc'%label
-        print 'Phonons.WriteOutput: Writing', ncdffn
+        print('Phonons.WriteOutput: Writing ' + ncdffn)
         ncdf = NC4.Dataset(ncdffn, 'w')
         ncdf.createDimension('one', 1)
         ncdf.createDimension('xyz', 3)
@@ -718,9 +730,9 @@ class DynamicalMatrix(object):
                 ncdf.createVariable('S0.imag', 'd', ('nspin', 'norb', 'norb'))
                 ncdf.variables['S0.imag'][:] = self.s0.imag
                 ncdf.variables['S0.imag'].info = 'Imaginary part of overlap'
-            print 'Phonons.WriteOutput: Wrote H and S to', ncdffn
+            print('Phonons.WriteOutput: Wrote H and S to ' + ncdffn)
         except:
-            print 'Hamiltonian etc not computed'
+            print('Hamiltonian etc not computed')
         # Precision for He_ph (and gradients)
         if SinglePrec:
             atype = 'f'
@@ -736,9 +748,9 @@ class DynamicalMatrix(object):
                 ncdf.createVariable('ImHe_ph', atype, ('modes', 'nspin', 'norb', 'norb'))
                 ncdf.variables['ImHe_ph'][:] = self.heph.imag
                 ncdf.variables['ImHe_ph'].info = 'Imaginary part of EPH couplings'
-            print 'Phonons.WriteOutput: Wrote He_ph to', ncdffn
+            print('Phonons.WriteOutput: Wrote He_ph to ' + ncdffn)
         except:
-            print 'EPH couplings etc not computed'
+            print('EPH couplings etc not computed')
         try:
             self.gradients
             ncdf.createVariable('grad.re', atype, ('modes', 'nspin', 'norb', 'norb'))
@@ -749,15 +761,15 @@ class DynamicalMatrix(object):
                 ncdf.createVariable('grad.im', atype, ('modes', 'nspin', 'norb', 'norb'))
                 ncdf.variables['grad.im'][:] = self.gradients.imag
                 ncdf.variables['grad.im'].info = 'Imaginary part of gradients'
-            print 'Phonons.WriteOutput: Wrote gradients to', ncdffn
+            print('Phonons.WriteOutput: Wrote gradients to ' + ncdffn)
         except:
-            print 'Phonons.WriteOutpot: Gradients not computed'
+            print('Phonons.WriteOutpot: Gradients not computed')
         ncdf.close()
-        print 'Phonons.WriteOutput: Finished', ncdffn
+        print('Phonons.WriteOutput: Finished ' + ncdffn)
 
 
 def WriteFreqFile(filename, hw):
-    print 'Phonons.WriteFreqFile: Writing', filename
+    print('Phonons.WriteFreqFile: Writing ' + filename)
     file = open(filename, 'w')
     file.write('# ')
     for i in range(len(hw)):
@@ -784,7 +796,7 @@ def WriteVibDOSFile(filename, hw, type='Gaussian'):
             spectrum += 1/N.pi*ETA/((hw[i]-ERNG)**2+ETA**2)
             spectrum -= 1/N.pi*ETA/((-hw[i]-ERNG)**2+ETA**2)
     # Write data to file
-    print 'Phonons.WriteVibDOSFile: Writing', filename
+    print('Phonons.WriteVibDOSFile: Writing ' + filename)
     f = open(filename, 'w')
     f.write('\n# energy/eV  DOS/atom (eta=1,2,3,...,10meV) \n')
     for i in range(len(erng)):
@@ -797,7 +809,7 @@ def WriteVibDOSFile(filename, hw, type='Gaussian'):
 
 def WriteAXSFFiles(filename, xyz, anr, hw, U, FCfirst, FClast):
     'Writes the vibrational normal coordinates in xcrysden axsf-format (isolated molecule)'
-    print 'Phonons.WriteAXSFFile: Writing', filename
+    print('Phonons.WriteAXSFFile: Writing ' + filename)
     f = open(filename, 'w')
     f.write('ANIMSTEPS %i\n'%len(hw))
     for i in range(len(hw)):
@@ -821,7 +833,7 @@ def WriteAXSFFiles(filename, xyz, anr, hw, U, FCfirst, FClast):
 
 def WriteAXSFFilesPer(filename, vectors, xyz, anr, hw, U, FCfirst, FClast):
     'Writes the vibrational normal coordinates in xcrysden axsf-format (periodic structure)'
-    print 'Phonons.WriteAXSFFilePer: Writing', filename
+    print('Phonons.WriteAXSFFilePer: Writing ' + filename)
     VEC = N.zeros((len(hw), 3*len(xyz)), N.float)
     VEC[:, 3*(FCfirst-1):3*FClast] = U
     f = open(filename, 'w')
@@ -859,16 +871,16 @@ def main(options):
     # Determine SIESTA input fdf files in FCruns
     fdf = glob.glob(options.FCwildcard+'/RUN.fdf')
 
-    print 'Phonons.Analyze: This run uses'
+    print('Phonons.Analyze: This run uses')
     FCfirst, FClast = min(options.DynamicAtoms), max(options.DynamicAtoms)
-    print '  ... FCfirst     = %4i, FClast     = %4i, Dynamic atoms = %4i'\
-          %(FCfirst, FClast, len(options.DynamicAtoms))
-    print '  ... DeviceFirst = %4i, DeviceLast = %4i, Device atoms  = %4i'\
-          %(options.DeviceFirst, options.DeviceLast, options.DeviceLast-options.DeviceFirst+1)
-    print '  ... PBC First   = %4i, PBC Last   = %4i, Device atoms  = %4i'\
-          %(options.PBCFirst, options.PBCLast, options.PBCLast-options.PBCFirst+1)
+    print('  ... FCfirst     = %4i, FClast     = %4i, Dynamic atoms = %4i'
+          %(FCfirst, FClast, len(options.DynamicAtoms)))
+    print('  ... DeviceFirst = %4i, DeviceLast = %4i, Device atoms  = %4i'
+          %(options.DeviceFirst, options.DeviceLast, options.DeviceLast-options.DeviceFirst+1))
+    print('  ... PBC First   = %4i, PBC Last   = %4i, Device atoms  = %4i'
+          %(options.PBCFirst, options.PBCLast, options.PBCLast-options.PBCFirst+1))
 
-    print '\nSetting array type to %s\n'%options.atype
+    print('\nSetting array type to %s\n'%options.atype)
 
     # Build Dynamical Matrix
     DM = DynamicalMatrix(fdf, options.DynamicAtoms)
