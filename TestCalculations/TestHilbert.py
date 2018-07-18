@@ -3,7 +3,7 @@ from __future__ import print_function
 import numpy as N
 import scipy.special as ss
 import Inelastica.io.xmgrace as XMGR
-import Inelastica.misc.math as mm
+import Inelastica.math as mm
 
 # We try a simple Gaussian function:
 x0 = 50
