@@ -191,9 +191,7 @@
 <span class="sd">.. currentmodule:: Inelastica.STM</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-
-
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
@@ -214,7 +212,7 @@
 <span class="kn">import</span> <span class="nn">Inelastica.math</span> <span class="kn">as</span> <span class="nn">MM</span>
 <span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
 <span class="kn">import</span> <span class="nn">Inelastica.physics.mesh</span> <span class="kn">as</span> <span class="nn">Kmesh</span>
-<span class="kn">import</span> <span class="nn">Inelastica.misc.multiprocessing</span> <span class="kn">as</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">Inelastica.misc.multiproc</span> <span class="kn">as</span> <span class="nn">MP</span>
 
 <span class="c1">#Units: Bohr and Rydberg!</span>
 
@@ -226,7 +224,7 @@
 
 <div class="viewcode-block" id="GetOptions"><a class="viewcode-back" href="../../api-gen/Inelastica.STM.html#Inelastica.STM.GetOptions">[docs]</a><span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="n">argv</span><span class="p">):</span>
     <span class="c1"># if text string is specified, convert to list</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span> <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span> <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
 
     <span class="kn">import</span> <span class="nn">optparse</span> <span class="kn">as</span> <span class="nn">o</span>
 
@@ -359,7 +357,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="s1">&#39;STM calculation starts.&#39;</span><span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="p">[(</span><span class="n">options</span><span class="p">,</span> <span class="n">ik</span><span class="p">)</span> <span class="k">for</span> <span class="n">ik</span> <span class="ow">in</span> <span class="n">doK</span><span class="p">]</span>
-    <span class="n">tmp</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">runParallel</span><span class="p">(</span><span class="n">calcTSWFPar</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nCPU</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">nCPU</span><span class="p">)</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">MP</span><span class="o">.</span><span class="n">runParallel</span><span class="p">(</span><span class="n">calcTSWFPar</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">nCPU</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">nCPU</span><span class="p">)</span>
 
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Calculating k-point averaged STM image&#39;</span><span class="p">)</span>
 

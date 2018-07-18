@@ -161,7 +161,9 @@
            <div itemprop="articleBody">
             
   <h1>Source code for Inelastica.math.hilbert</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">numpy.fft</span> <span class="kn">as</span> <span class="nn">FFT</span>
 
 
@@ -213,7 +215,7 @@
         <span class="c1"># A kernel was specified at the function call</span>
         <span class="k">return</span> <span class="n">transform</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ker</span><span class="p">),</span> <span class="n">ker</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s1">&#39;Hilbert: Generating kernel&#39;</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Hilbert: Generating kernel&#39;</span><span class="p">)</span>
         <span class="n">ker</span> <span class="o">=</span> <span class="n">kernel</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">transform</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ker</span><span class="p">),</span> <span class="n">ker</span></div>
 </pre></div>

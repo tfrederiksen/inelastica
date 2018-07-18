@@ -179,6 +179,8 @@
 <span class="sd">   NCfile</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span> <span class="kn">as</span> <span class="nn">NC4</span>
 
@@ -216,11 +218,11 @@
 <div class="viewcode-block" id="NCfile.write"><a class="viewcode-back" href="../../../api-gen/Inelastica.io.netcdf.html#Inelastica.io.netcdf.NCfile.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">vartype</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">):</span>
         <span class="s2">&quot;Writes numpy array to file&quot;</span>
         <span class="n">dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__checkDimensions</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-        <span class="k">print</span> <span class="s1">&#39;io.netcdf: Writing variable </span><span class="si">%s</span><span class="s1">(</span><span class="si">%s</span><span class="s1">) to file </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">vartype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;io.netcdf: Writing variable </span><span class="si">%s</span><span class="s1">(</span><span class="si">%s</span><span class="s1">) to file </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">vartype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">vartype</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">print</span> <span class="s1">&#39;  ...variable </span><span class="si">%s</span><span class="s1"> already exist. Overwriting!!!&#39;</span><span class="o">%</span><span class="n">label</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;  ...variable </span><span class="si">%s</span><span class="s1"> already exist. Overwriting!!!&#39;</span><span class="o">%</span><span class="n">label</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">label</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">vartype</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__checkDimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>

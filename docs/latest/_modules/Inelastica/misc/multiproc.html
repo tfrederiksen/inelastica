@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.misc.multiprocessing &mdash; Inelastica v1.3.4 documentation</title>
+  <title>Inelastica.misc.multiproc &mdash; Inelastica v1.3.4 documentation</title>
   
 
   
@@ -145,7 +145,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>Inelastica.misc.multiprocessing</li>
+      <li>Inelastica.misc.multiproc</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -160,24 +160,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for Inelastica.misc.multiprocessing</h1><div class="highlight"><pre>
+  <h1>Source code for Inelastica.misc.multiproc</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">:mod:`Inelastica.misc.multiprocessing`</span>
-<span class="sd">======================================</span>
+<span class="sd">:mod:`Inelastica.misc.multiproc`</span>
+<span class="sd">================================</span>
 
-<span class="sd">.. currentmodule:: Inelastica.misc.multiprocessing</span>
+<span class="sd">.. currentmodule:: Inelastica.misc.multiproc</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">absolute_import</span>
-
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="kn">as</span> <span class="nn">MP</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
 
-<div class="viewcode-block" id="runParallel"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.multiprocessing.html#Inelastica.misc.multiprocessing.runParallel">[docs]</a><span class="k">def</span> <span class="nf">runParallel</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">argList</span><span class="p">,</span> <span class="n">nCPU</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="runParallel"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.multiproc.html#Inelastica.misc.multiproc.runParallel">[docs]</a><span class="k">def</span> <span class="nf">runParallel</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">argList</span><span class="p">,</span> <span class="n">nCPU</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="c1"># Run in parallel the function with arguments given in the list</span>
     <span class="c1"># return list of results. You have to wrap the normal function with:</span>
     <span class="c1"># def myFuncPar(resQue, ii, *args):</span>

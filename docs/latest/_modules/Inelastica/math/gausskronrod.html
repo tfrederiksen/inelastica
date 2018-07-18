@@ -161,7 +161,9 @@
            <div itemprop="articleBody">
             
   <h1>Source code for Inelastica.math.gausskronrod</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 
 
 <div class="viewcode-block" id="GaussKronrod"><a class="viewcode-back" href="../../../api-gen/Inelastica.math.gausskronrod.html#Inelastica.math.GaussKronrod">[docs]</a><span class="k">def</span> <span class="nf">GaussKronrod</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
@@ -272,10 +274,10 @@
 <span class="c1">#  Catch non-convergence.</span>
 <span class="c1">#</span>
     <span class="k">if</span> <span class="n">ka</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s1">&#39;&#39;</span>
-        <span class="k">print</span> <span class="s1">&#39;ABWE1 - Fatal error!&#39;</span>
-        <span class="k">print</span> <span class="s1">&#39;  Iteration limit reached.&#39;</span>
-        <span class="k">print</span> <span class="s1">&#39;  Last DELTA was </span><span class="si">%e</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;ABWE1 - Fatal error!&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;  Iteration limit reached.&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;  Last DELTA was </span><span class="si">%e</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">delta</span><span class="p">))</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ABWE1 - Fatal error!&#39;</span><span class="p">)</span>
 <span class="c1">#</span>
 <span class="c1">#  Computation of the weight.</span>
@@ -341,10 +343,10 @@
         <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">:</span>
             <span class="n">ka</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">ka</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s1">&#39;&#39;</span>
-        <span class="k">print</span> <span class="s1">&#39;ABWE2 - Fatal error!&#39;</span>
-        <span class="k">print</span> <span class="s1">&#39;  Iteration limit reached.&#39;</span>
-        <span class="k">print</span> <span class="s1">&#39;  Last DELTA was </span><span class="si">%e</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">delta</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;ABWE2 - Fatal error!&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;  Iteration limit reached.&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;  Last DELTA was </span><span class="si">%e</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">delta</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ABWE2 - Fatal error!&#39;</span><span class="p">)</span>
     <span class="n">an</span> <span class="o">=</span> <span class="n">n</span>
     <span class="n">w2</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">an</span> <span class="o">*</span> <span class="n">pd2</span> <span class="o">*</span> <span class="n">p0</span><span class="p">)</span>

@@ -183,6 +183,7 @@
 <span class="sd">=======================</span>
 <span class="sd">https://doi.org/10.1142/9789812839664_0016</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
@@ -402,7 +403,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirr</span><span class="o">+</span><span class="s2">&quot;/RUN.out&quot;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">print</span> <span class="n">e</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="n">fns</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirr</span><span class="o">+</span><span class="s1">&#39;/*.XV&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">fns</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
@@ -487,7 +488,7 @@
 
 <div class="viewcode-block" id="checkConst"><a class="viewcode-back" href="../../api-gen/Inelastica.NEB.html#Inelastica.NEB.checkConst">[docs]</a><span class="k">def</span> <span class="nf">checkConst</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">N</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">const</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">const</span><span class="p">):</span>
-        <span class="k">print</span> <span class="s2">&quot;Error: NEB: constraints on initial and final states not the same&quot;</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Error: NEB: constraints on initial and final states not the same&quot;</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">const</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">N</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">FDFgeom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">ii</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">b</span><span class="o">.</span><span class="n">FDFgeom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ii</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">ii</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">]):</span>
@@ -513,12 +514,12 @@
     <span class="n">fns</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">dirpath</span><span class="o">+</span><span class="s1">&#39;/*.XV&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s2">&quot;ERROR: NEB: More than one .XV file in dir:</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">dirpath</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;ERROR: NEB: More than one .XV file in dir:</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">dirpath</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">fns</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">None</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Reading geometry from &quot;</span><span class="si">%s</span><span class="s1">&quot; file&#39;</span> <span class="o">%</span> <span class="n">fns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">((</span><span class="s1">&#39;Reading geometry from &quot;</span><span class="si">%s</span><span class="s1">&quot; file&#39;</span> <span class="o">%</span> <span class="n">fns</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
     <span class="n">geom</span> <span class="o">=</span> <span class="n">MG</span><span class="o">.</span><span class="n">Geom</span><span class="p">(</span><span class="n">fns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">geom</span></div>
 
@@ -541,10 +542,10 @@
     <span class="kn">import</span> <span class="nn">argparse</span>
 
     <span class="c1"># if text string is specified, convert to list</span>
-    <span class="k">print</span> <span class="n">argv</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">VC</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
         <span class="n">argv</span> <span class="o">=</span> <span class="n">argv</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-    <span class="k">print</span> <span class="n">argv</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
     <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;initial&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Initial geometry&#39;</span><span class="p">)</span>
     <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;final&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Final geometry&#39;</span><span class="p">)</span>
@@ -591,13 +592,13 @@
 
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;##################################################################################&#39;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;## NEB options&#39;</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Number of intermediate steps  : </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">NNEB</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Tangent mixing                : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">tMix</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Processors                    : </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">proc</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Acceleration [A/(eV/A)/step]  : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">moveK</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Max move distance/coord [A]   : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">maxDist</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Convergence criteria [eV/A]   : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">convCrit</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Constraints                   : &#39;</span><span class="p">,</span><span class="n">opts</span><span class="o">.</span><span class="n">const2</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">((</span><span class="s1">&#39;Number of intermediate steps  : </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">NNEB</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">((</span><span class="s1">&#39;Tangent mixing                : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">tMix</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">((</span><span class="s1">&#39;Processors                    : </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">proc</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">((</span><span class="s1">&#39;Acceleration [A/(eV/A)/step]  : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">moveK</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">((</span><span class="s1">&#39;Max move distance/coord [A]   : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">maxDist</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">((</span><span class="s1">&#39;Convergence criteria [eV/A]   : </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">opts</span><span class="o">.</span><span class="n">convCrit</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">((</span><span class="s1">&#39;Constraints                   : &#39;</span><span class="p">,</span><span class="n">opts</span><span class="o">.</span><span class="n">const2</span><span class="p">))</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;##################################################################################&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">const2</span><span class="o">!=</span><span class="bp">None</span><span class="p">:</span> <span class="c1"># Internal numbering</span>

@@ -178,8 +178,6 @@
 <span class="sd">.. currentmodule:: Inelastica.misc.valuecheck</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="c1"># Simple case for allowing the newer print function (Python3 compliant)</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 
 <span class="kn">import</span> <span class="nn">sys</span> <span class="kn">as</span> <span class="nn">s</span>
@@ -191,7 +189,7 @@
 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
     <span class="n">string_types</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">string_types</span> <span class="o">=</span> <span class="nb">basestring</span><span class="p">,</span>
+    <span class="n">string_types</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>
 
 <span class="c1"># Place holder for checks</span>
 <span class="n">_check</span> <span class="o">=</span> <span class="p">{}</span>
