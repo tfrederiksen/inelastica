@@ -9,8 +9,7 @@ import Inelastica.info as info
 ver = info.label
 
 # Loop over the three orientations of the carbon chain
-#for d in ['A1', 'A2', 'A3']:
-for d in ['A1']:
+for d in ['A1', 'A2', 'A3']:
 
     # Eigenchannels
     my_argv = '-f %s/TSrun/RUN.fdf %s/%s/ECscript'%(d, d, ver)
