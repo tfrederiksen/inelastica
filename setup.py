@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import os
 import os.path as osp
@@ -12,7 +13,7 @@ def test_prereq():
         import numpy as N
         import numpy.linalg as LA
     except:
-        print "Inelastica needs the package 'numpy' to run."
+        print("Inelastica needs the package 'numpy' to run.")
         raise NameError('numpy package not found')
 
     # Make sure that numpy is compiled with optimized LAPACK/BLAS
@@ -22,25 +23,25 @@ def test_prereq():
     LA.eigh(b)
     en = time.time()
     if en - st > 4.0:
-        print "#### Warning ####"
-        print "A minimal test showed that your system takes %3.2f s"%(en-st)
-        print "numpy was compiled with a slow versions of BLAS/LAPACK."
-        print "  (normal Xeon5430/ifort/mkl10 takes ~ 1 s)"
-        print "Please see http://dipc.ehu.es/frederiksen/inelastica/index.php"
-        print "#### Warning ####"
+        print("#### Warning ####")
+        print("A minimal test showed that your system takes %3.2f s"%(en-st))
+        print("numpy was compiled with a slow versions of BLAS/LAPACK.")
+        print("  (normal Xeon5430/ifort/mkl10 takes ~ 1 s)")
+        print("Please see http://dipc.ehu.es/frederiksen/inelastica/index.php")
+        print("#### Warning ####")
 
     try:
         import numpy.distutils
         import numpy.distutils.extension
     except:
-        print "Inelastica requires the f2py extension of numpy."
+        print("Inelastica requires the f2py extension of numpy.")
         raise NameError('numpy f2py package not found')
 
     try:
         import netCDF4
     except:
-        print "Inelastica requires netCDF4 (1.2.7 or newer recommended)"
-        print "See https://pypi.python.org/pypi/netCDF4"
+        print("Inelastica requires netCDF4 (1.2.7 or newer recommended)")
+        print("See https://pypi.python.org/pypi/netCDF4")
         raise NameError('netCDF4 package not found')
 
     try:
@@ -48,11 +49,11 @@ def test_prereq():
         import scipy.linalg
         import scipy.special
     except:
-        print "#### Warning ####"
-        print 'Some modules will not work without the scipy package'
-        print '(needed for solving generalized eigenvalue problems'
-        print 'and spherical harmonics)'
-        print "#### Warning ####"
+        print("#### Warning ####")
+        print('Some modules will not work without the scipy package')
+        print('(needed for solving generalized eigenvalue problems')
+        print('and spherical harmonics)')
+        print("#### Warning ####")
 
 
 test_prereq()
