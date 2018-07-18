@@ -49,7 +49,7 @@ import Inelastica.MakeGeom as MG
 import Inelastica.math as MM
 import Inelastica.physics.constants as PC
 import Inelastica.physics.mesh as Kmesh
-import Inelastica.misc.multiprocessing as multiprocessing
+import Inelastica.misc.multiproc as MP
 
 #Units: Bohr and Rydberg!
 
@@ -194,7 +194,7 @@ def main(options):
         else:
             print('STM calculation starts.')
     args = [(options, ik) for ik in doK]
-    tmp = multiprocessing.runParallel(calcTSWFPar, args, nCPU=options.nCPU)
+    tmp = MP.runParallel(calcTSWFPar, args, nCPU=options.nCPU)
 
     print('Calculating k-point averaged STM image')
 
