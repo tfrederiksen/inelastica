@@ -20,8 +20,6 @@ matrix:
    - python: 2.7
      env: PYTHONOPTIMIZE=2
    - python: 3.6
-  allow_failures:
-   - python: 3.6
 
 install:
   - conda install hdf4 libnetcdf
