@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import numpy as N
 import netCDF4 as netcdf
@@ -11,7 +12,7 @@ def average(ncfile, args):
     """This function writes plane-averaged 1D functions of 
     SIESTA gridfunctions such as the ElectrostaticPotential.nc
     on a selected axis"""
-    print 'Averaging %s on axis %i'%(ncfile.filepath(), args.axis)
+    print('Averaging %s on axis %i'%(ncfile.filepath(), args.axis))
     dat = ncfile.variables['gridfunc'][args.spin, :] # spin-component 0 only
     cell = ncfile.variables['cell'][:]
     a = 3-args.axis
@@ -40,7 +41,7 @@ def average(ncfile, args):
         elif args.axis == 3:
             fout.write('%.8f %.8e\n'%(z, N.sum(dat[i, :, :])/(n1*n2)))
     fout.close()
-    print '... wrote', fn
+    print('... wrote', fn)
     del dat, cell, n, n1, n2, n3, A
     ncfile.close()
 

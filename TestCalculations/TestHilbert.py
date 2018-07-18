@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import numpy as N
 import scipy.special as ss
 import Inelastica.io.xmgrace as XMGR
@@ -39,4 +41,4 @@ plot.ArrangeGraphs(nx=2, ny=1)
 plot.WriteFile()
 
 # Print measure of the difference
-print 'Max deviation between the two evaulations:', max(abs(err))
+print('Max deviation between the two evaulations:', max(abs(err)))

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 
 import argparse
 import Inelastica.MakeGeom as MG
@@ -24,5 +25,5 @@ parser.add_argument('-v','--version', action='version', version='Inelastica %s' 
 args = parser.parse_args()
 
 rep = [args.A1, args.A2, args.A3]
-print 'Converting %s to %s with repetition'%(args.GIN, args.GOUT), rep
+print('Converting %s to %s with repetition'%(args.GIN, args.GOUT), rep)
 MG.convert(args.GIN, args.GOUT, rep=rep)

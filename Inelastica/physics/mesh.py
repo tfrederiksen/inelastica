@@ -16,6 +16,7 @@ Classes
 .. currentmodule:: Inelastica.physics.mesh
 
 """
+from __future__ import print_function
 
 import Inelastica.math as MM
 import numpy as N
@@ -84,7 +85,7 @@ class kmesh(object):
                     self.w.append(wgts)
                     errorw.append(ew)
                 else:
-                    print 'Kmesh.py: GK method requires Nk=%i>1'%(self.Nk[i])
+                    print('Kmesh.py: GK method requires Nk=%i>1'%(self.Nk[i]))
                     sys.exit(1)
             elif self.type[i].upper() == 'LIN' or self.type[i].upper() == 'LINEAR':
                 self.type[i] = 'LIN'
@@ -93,12 +94,12 @@ class kmesh(object):
                 self.w.append(wgts)
                 errorw.append(wgts)
             else:
-                print 'Kmesh.py: Unknown meshtype:', self.type[i].upper()
+                print('Kmesh.py: Unknown meshtype:', self.type[i].upper())
             self.Nk[i] = len(self.k[i])
         self.NNk = N.prod(self.Nk)
-        print 'Kmesh.py: Generating mesh:'
-        print ' ... type = ', self.type
-        print ' ... Nk = ', self.Nk
+        print('Kmesh.py: Generating mesh:')
+        print(' ... type = ', self.type)
+        print(' ... Nk = ', self.Nk)
         # repete out in 3D
         kpts = N.zeros((self.NNk, 3)) # Array of k-points
         wgts = N.ones((4, self.NNk)) # (wgts, errorw1, errorw2, errorw3)
@@ -112,8 +113,8 @@ class kmesh(object):
                     wgts[2, nn] = self.w[0][i]*errorw[1][j]*self.w[2][k]
                     wgts[3, nn] = self.w[0][i]*self.w[1][j]*errorw[2][k]
                     nn += 1
-        print ' ... NNk = %i, sum(wgts) = %.8f'%(self.NNk, N.sum(wgts[0]))
-        print ' ... sum(errorw) = (%.8f,%.8f,%.8f)'%tuple(N.sum(wgts[i+1]) for i in range(3))
+        print(' ... NNk = %i, sum(wgts) = %.8f'%(self.NNk, N.sum(wgts[0])))
+        print(' ... sum(errorw) = (%.8f,%.8f,%.8f)'%tuple(N.sum(wgts[i+1]) for i in range(3)))
         self.k = kpts
         self.w = wgts
 
@@ -131,7 +132,7 @@ class kmesh(object):
         t,\psi(r,t) --> -t,\psi^\dagger(r,-t). T(k) = T(-k).
         (Elastic) propagation from L to R is always identical to propagation from R to L.
         """
-        print ' ... Applying inversion symmetry (the simple way)'
+        print(' ... Applying inversion symmetry (the simple way)')
         # No brute force (and therefore terribly slow) pairing here
         indx = [[ii, 2] for ii in range(self.NNk/2, self.NNk)] # Keep the last half of the k-points with double weight
         k0 = self.k[self.NNk/2]
@@ -142,8 +143,8 @@ class kmesh(object):
         self.k = kpts
         self.NNk = len(kpts)
         self.w = wgts
-        print ' ... NNk = %i, sum(wgts) = %.8f'%(self.NNk, N.sum(wgts[0]))
-        print ' ... sum(errorw) = (%.8f,%.8f,%.8f)'%tuple(N.sum(wgts[i+1]) for i in range(3))
+        print(' ... NNk = %i, sum(wgts) = %.8f'%(self.NNk, N.sum(wgts[0])))
+        print(' ... sum(errorw) = (%.8f,%.8f,%.8f)'%tuple(N.sum(wgts[i+1]) for i in range(3)))
 
     def mesh2file(self, fn):
         "Writes the k-mesh to file"
@@ -164,30 +165,30 @@ def test():
     Test function
     """
     mesh = kmesh(4, 3, 3, meshtype=['LIN', 'GK', 'LIN'], invsymmetry=False)
-    keys = mesh.__dict__.keys()
-    print keys
-    print mesh.Nk
-    print mesh.NNk
-    print mesh.type
-    print mesh.invsymmetry
+    keys = list(mesh.__dict__.keys())
+    print(keys)
+    print(mesh.Nk)
+    print(mesh.NNk)
+    print(mesh.type)
+    print(mesh.invsymmetry)
     #print 'ki wi'
     #for i in range(len(mesh.k)):
     #    print mesh.k[i], mesh.w[0, i]
     mesh.mesh2file('mesh-test.dat')
 
-    print 'Integrate some simple functions over [-0.5,0.5]:'
-    print '   f(x,y,z)=1 => \int f dxdydz =', N.sum(mesh.w[0])
+    print('Integrate some simple functions over [-0.5,0.5]:')
+    print('   f(x,y,z)=1 => \int f dxdydz =', N.sum(mesh.w[0]))
     for i, s in enumerate(['x', 'y', 'z']):
         f = mesh.k[:, i]
-        print '   f(x,y,z)=%s => \int f dxdydz ='%s, N.sum(f*mesh.w[0])
+        print('   f(x,y,z)=%s => \int f dxdydz ='%s, N.sum(f*mesh.w[0]))
     f = mesh.k[:, 0]*mesh.k[:, 1]*mesh.k[:, 2]
-    print '   f(x,y,z)=x*y*z => \int f dxdydz =', N.sum(f*mesh.w[0])
+    print('   f(x,y,z)=x*y*z => \int f dxdydz =', N.sum(f*mesh.w[0]))
     f = (mesh.k[:, 0]+1)*(mesh.k[:, 1]+1)*(mesh.k[:, 2]+1)
-    print '   f(x,y,z)=(x+1)*(y+1)*(z+1) => \int f dxdydz =', N.sum(f*mesh.w[0])
+    print('   f(x,y,z)=(x+1)*(y+1)*(z+1) => \int f dxdydz =', N.sum(f*mesh.w[0]))
     import math
     for i, s in enumerate(['x', 'y', 'z']):
         f = N.cos(2*mesh.k[:, i])
-        print '   f(x,y,z)=cos(2%s) => \int f dxdydz ='%s, N.sum(f*mesh.w[0]), '[exact: sin(1) ~ 0.841470984807897]'
+        print('   f(x,y,z)=cos(2%s) => \int f dxdydz ='%s, N.sum(f*mesh.w[0]), '[exact: sin(1) ~ 0.841470984807897]')
 
 if __name__ == '__main__':
     test()

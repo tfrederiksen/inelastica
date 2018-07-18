@@ -30,6 +30,7 @@ Classes
 .. currentmodule:: Inelastica.EigenChannels
 
 """
+from __future__ import print_function
 
 import numpy as N
 import netCDF4 as NC4
@@ -154,7 +155,7 @@ def main(options):
     NEGF.SavedSig.close() # Make sure saved Sigma is written to file
 
     # Transmission
-    print 'Transmission Ttot(%.4feV) = %.16f'%(options.energy, N.trace(DevGF.TT).real)
+    print('Transmission Ttot(%.4feV) = %.16f'%(options.energy, N.trace(DevGF.TT).real))
 
     # Build basis
     options.nspin = DevGF.HS.nspin
@@ -172,7 +173,7 @@ def main(options):
 
     # Compute bond currents?
     if options.kpoint[0] != 0.0 or options.kpoint[1] != 0.0:
-        print 'Warning: The current implementation of bond currents is only valid for the Gamma point (should be easy to fix)'
+        print('Warning: The current implementation of bond currents is only valid for the Gamma point (should be easy to fix)')
         BC = False
     else:
         BC = True
@@ -210,11 +211,11 @@ def main(options):
         try:
             import scipy.linalg as SLA
             ev, es = SLA.eigh(DevGF.H, DevGF.S)
-            print 'EigenChannels: Eigenvalues (in eV) of computed molecular eigenstates:'
-            print ev
+            print('EigenChannels: Eigenvalues (in eV) of computed molecular eigenstates:')
+            print(ev)
             # Write eigenvalues to file
             fn = options.DestDir+'/'+options.systemlabel+'.EIGVAL'
-            print 'EigenChannels: Writing', fn
+            print('EigenChannels: Writing', fn)
             fnfile = open(fn, 'w')
             fnfile.write('# Device region = [%i,%i], units in eV\n'%(options.DeviceFirst, options.DeviceLast))
             for i, val in enumerate(ev):
@@ -226,8 +227,8 @@ def main(options):
                     fn = options.DestDir+'/'+options.systemlabel+'.S%.3i.E%.3f'%(ii, val)
                     writeWavefunction(options, geom, basis, es[:, ii], fn=fn)
         except:
-            print 'You need to install scipy to solve the generalized eigenvalue problem'
-            print 'for the molecular eigenstates in the nonorthogonal basis'
+            print('You need to install scipy to solve the generalized eigenvalue problem')
+            print('for the molecular eigenstates in the nonorthogonal basis')
 
     Log.PrintMainFooter(options)
 
@@ -255,9 +256,9 @@ def calcWF(options, geom, basis, Y):
 
     # Def cube
     YY = N.zeros((nx, ny, nz), N.complex)
-    rx = N.array(range(nx), N.float)*dx+origo[0]
-    ry = N.array(range(ny), N.float)*dy+origo[1]
-    rz = N.array(range(nz), N.float)*dz+origo[2]
+    rx = N.array(list(range(nx)), N.float)*dx+origo[0]
+    ry = N.array(list(range(ny)), N.float)*dy+origo[1]
+    rz = N.array(list(range(nz)), N.float)*dz+origo[2]
 
     for ii, Yval in enumerate(Y):
         if ii > 0:# and ii%(int(len(Y)/10)) == 0:
@@ -291,13 +292,13 @@ def calcWF(options, geom, basis, Y):
         l = basis.L[ii]
         m = basis.M[ii]
         if l == 3:
-            print 'f-shell : l=%i, m=%i (NOT TESTED!!)'%(l, m)
+            print('f-shell : l=%i, m=%i (NOT TESTED!!)'%(l, m))
         thisSphHar = MM.sphericalHarmonics(l, m, costh, sinfi, cosfi)
 
         YY[ixmin:ixmax, iymin:iymax, izmin:izmax] = YY[ixmin:ixmax, iymin:iymax, izmin:izmax]+\
                                                     RR*thisSphHar*Yval
 
-    print "Wave function norm on real space grid:", N.sum(YY.conjugate()*YY)*dx*dy*dz
+    print("Wave function norm on real space grid:", N.sum(YY.conjugate()*YY)*dx*dy*dz)
 
     return YY, options.res, origo, nx, ny, nz
 
@@ -583,7 +584,7 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
     """
     if fn == None:
         fn = fileName(options)
-    print 'Eigenchannels.writeWavefunction: Writing', fn
+    print('Eigenchannels.writeWavefunction: Writing', fn)
     # Rotate in complex space
     max_amp = -1.0
     phase = 1.0+0.0j

@@ -169,11 +169,11 @@ def GetOptions(argv):
             options.atype = N.complex128
 
     # Dynamic atoms
-    options.DynamicAtoms = range(options.FCfirst, options.FClast+1)
+    options.DynamicAtoms = list(range(options.FCfirst, options.FClast+1))
 
     # EPH atoms - set only different from options.DynamicAtoms if a subset is specified
     if options.EPHfirst >= options.FCfirst and options.EPHlast <= options.FClast:
-        options.EPHAtoms = range(options.EPHfirst, options.EPHlast+1)
+        options.EPHAtoms = list(range(options.EPHfirst, options.EPHlast+1))
     else:
         options.EPHAtoms = options.DynamicAtoms
     del options.EPHfirst, options.EPHlast
@@ -238,7 +238,7 @@ class FCrun(object):
                 self.m[i, j, FCfirst-1+i, :] = -N.sum(self.m[i, j], axis=0)
                 self.p[i, j, FCfirst-1+i, :] = 0.0
                 self.p[i, j, FCfirst-1+i, :] = -N.sum(self.p[i, j], axis=0)
-        self.DynamicAtoms = range(FCfirst, FClast+1)
+        self.DynamicAtoms = list(range(FCfirst, FClast+1))
 
         # Determine TSHS files
         files = glob.glob(self.directory+'/%s*.TSHS'%self.systemlabel)
@@ -542,7 +542,7 @@ class DynamicalMatrix(object):
         self.dSdij = N.zeros((nao, nao), atype)
 
         # Take Device region
-        self.DeviceAtoms = range(DeviceFirst, DeviceLast+1)
+        self.DeviceAtoms = list(range(DeviceFirst, DeviceLast+1))
         first, last = self.OrbIndx[DeviceFirst-1][0], self.OrbIndx[DeviceLast-1][1]
         self.h0 = self.TSHS0.H[:, first:last+1, first:last+1]
         self.s0 = self.TSHS0.S[first:last+1, first:last+1]

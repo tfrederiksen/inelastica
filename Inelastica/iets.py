@@ -29,6 +29,7 @@ Classes
 .. currentmodule:: Inelastica.iets
 
 """
+from __future__ import print_function
 
 import numpy as N
 import netCDF4 as NC4
@@ -148,7 +149,7 @@ def main(options):
     options.geom = MG.Geom(options.XV, BufferAtoms=options.buffer)
     # Voltage fraction over left-center interface
     VfracL = options.VfracL # default is 0.5
-    print 'Inelastica: Voltage fraction over left-center interface: VfracL =', VfracL
+    print('Inelastica: Voltage fraction over left-center interface: VfracL =', VfracL)
     # Set up electrodes and device Greens function
     elecL = NEGF.ElectrodeSelfEnergy(options.fnL, options.NA1L, options.NA2L, options.voltage*VfracL)
     elecL.scaling = options.scaleSigL
@@ -158,7 +159,7 @@ def main(options):
     elecR.semiinf = options.semiinfR
     # Read phonons
     NCfile = NC4.Dataset(options.PhononNetCDF, 'r')
-    print 'Inelastica: Reading ', options.PhononNetCDF
+    print('Inelastica: Reading ', options.PhononNetCDF)
     hw = NCfile.variables['hw'][:]
     # Work with GFs etc for positive (V>0: \mu_L>\mu_R) and negative (V<0: \mu_L<\mu_R) bias voltages
     GFp = NEGF.GF(options.TSHS, elecL, elecR,
@@ -208,7 +209,7 @@ def main(options):
     # Check consistency of PHrun vs TSrun inputs
     IntegrityCheck(options, GFp, basis, NCfile)
     # Calculate trace factors one mode at a time
-    print 'Inelastica: LOEscale =', options.LOEscale
+    print('Inelastica: LOEscale =', options.LOEscale)
     if options.LOEscale==0.0:
         # LOEscale=0.0 => Original LOE-WBA method, PRB 72, 201101(R) (2005) [cond-mat/0505473].
         GFp.calcGF(options.energy+options.eta*1.0j, options.kpoint[0:2], ispin=options.iSpin,
@@ -252,14 +253,14 @@ def IntegrityCheck(options, GF, basis, NCfile):
     PH_dyn = NCfile.variables['DynamicAtoms'][:]
     PH_xyz = NCfile.variables['GeometryXYZ'][:]
     PH_anr = NCfile.variables['AtomNumbers'][:]
-    TS_dev = range(options.DeviceAtoms[0], options.DeviceAtoms[1]+1)
+    TS_dev = list(range(options.DeviceAtoms[0], options.DeviceAtoms[1]+1))
     TS_anr = options.geom.anr
     TS_xyz = options.geom.xyz
-    print '\nInelastica.IntegrityCheck:'
-    print 'A = %s'%options.PhononNetCDF
-    print 'B = %s'%options.XV
-    print ' idxA    xA       yA       zA    anrA   ',
-    print ' idxB    xB       yB       zB    anrB'
+    print('\nInelastica.IntegrityCheck:')
+    print('A = %s'%options.PhononNetCDF)
+    print('B = %s'%options.XV)
+    print(' idxA    xA       yA       zA    anrA   ', end=' ')
+    print(' idxB    xB       yB       zB    anrB')
     for i in range(max(len(PH_dev), len(TS_dev))):
         # Geom A
         if PH_dev[0]+i in PH_dev:
@@ -278,19 +279,19 @@ def IntegrityCheck(options, GF, basis, NCfile):
             s += ('%i'%TS_anr[options.DeviceAtoms[0]-1+i]).rjust(5)
         else:
             s += ('---').center(36)
-        print s
+        print(s)
         # Dynamic region
         if PH_dev[0]+i+1 == PH_dyn[0]:
-            print '        -------------------- Dynamic region begins ---------------------'
+            print('        -------------------- Dynamic region begins ---------------------')
         if PH_dev[0]+i == PH_dyn[-1]:
-            print '        --------------------- Dynamic region ends ----------------------'
+            print('        --------------------- Dynamic region ends ----------------------')
     # - check 1: Matrix sizes
     PH_H0 = NCfile.variables['H0'][:]
     check1 = N.shape(PH_H0[0])==N.shape(GF.Gr)
     if check1:
-        print '... Check 1 passed: Device orb. space matches'
+        print('... Check 1 passed: Device orb. space matches')
     else:
-        print '... Check 1 failed: Device orb. space do not match!!!'
+        print('... Check 1 failed: Device orb. space do not match!!!')
     # - check 2&3: Geometry and atom number
     dist_xyz = 0.0
     dist_anr = 0.0
@@ -299,7 +300,7 @@ def IntegrityCheck(options, GF, basis, NCfile):
         if i==0:
             # Allow for a global offset of coordinates R
             R = PH_xyz[PH_dev[0]-1+i]-TS_xyz[options.DeviceAtoms[0]-1+i]
-            print 'Global offset R = [%.3f %.3f %.3f]'%(R[0], R[1], R[2])
+            print('Global offset R = [%.3f %.3f %.3f]'%(R[0], R[1], R[2]))
         d = PH_xyz[PH_dev[0]-1+i]-TS_xyz[options.DeviceAtoms[0]-1+i] - R
         dist_xyz += N.dot(d, d)**.5
         # Difference between atom numbers
@@ -307,19 +308,19 @@ def IntegrityCheck(options, GF, basis, NCfile):
         a = (PH_anr[PH_dev[0]-1+i])%200 - (TS_anr[options.DeviceAtoms[0]-1+i])%200
         dist_anr += abs(a)
     if dist_xyz<1e-3:
-        print '... Check 2 passed: Atomic coordinates consistent'
+        print('... Check 2 passed: Atomic coordinates consistent')
         check2 = True
     elif dist_xyz<0.1:
-        print '... Check 2 WARNING: Atomic coordinates deviate by %.3f Ang!!!'%dist_xyz
+        print('... Check 2 WARNING: Atomic coordinates deviate by %.3f Ang!!!'%dist_xyz)
         check2 = True
     else:
-        print '... Check 2 failed: Atomic coordinates deviate by %.3f Ang!!!'%dist_xyz
+        print('... Check 2 failed: Atomic coordinates deviate by %.3f Ang!!!'%dist_xyz)
         check2 = False
     if dist_anr==0:
-        print '... Check 3 passed: Atomic numbers consistent'
+        print('... Check 3 passed: Atomic numbers consistent')
         check3 = True
     else:
-        print '... Check 3 failed: Atomic numbers inconsistent!!!'
+        print('... Check 3 failed: Atomic numbers inconsistent!!!')
         check3 = False
     if (not check1) or (not check2) or (not check3):
         sys.exit('Inelastica: Error - inconsistency detected for device region.\n')
@@ -333,7 +334,7 @@ def calcTraces(options, GF1, GF2, basis, NCfile, ihw):
     try:
         M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw, options.iSpin, :, :], N.complex)
     except:
-        print 'Warning: Variable ImHe_ph not found'
+        print('Warning: Variable ImHe_ph not found')
     # Calculation of intermediate quantity
     MARGLGM = MM.mm(M, GF1.ARGLG, M)
     MARGLGM2 = MM.mm(M, GF2.ARGLG, M)
@@ -366,11 +367,11 @@ def calcTraces(options, GF1, GF2, basis, NCfile, ihw):
         isym2 = MM.mm(MM.dagger(GF1.ARGLG), M, GF2.A, M)
         isym3 = MM.mm(GF1.ARGLG, M, GF2.A, M)
         isym = MM.trace(isym1)+1j/2.*(MM.trace(isym2)-MM.trace(isym3))
-        print 'LOE-WBA check: Isym diff', K23+K4-isym
+        print('LOE-WBA check: Isym diff', K23+K4-isym)
         iasym1 = MM.mm(MM.dagger(GF1.ARGLG), M, GF2.AR-GF2.AL, M)
         iasym2 = MM.mm(GF1.ARGLG, M, GF2.AR-GF2.AL, M)
         iasym = MM.trace(iasym1)+MM.trace(iasym2)
-        print 'LOE-WBA check: Iasym diff', aK23-iasym
+        print('LOE-WBA check: Iasym diff', aK23-iasym)
 
         # Compute inelastic shot noise terms according to the papers
         # Haupt, Novotny & Belzig, PRB 82, 165441 (2010) and
@@ -402,10 +403,10 @@ def calcTraces(options, GF1, GF2, basis, NCfile, ihw):
 
 def calcIETS(options, GFp, GFm, basis, hw):
     # Calculate product of electronic traces and voltage functions
-    print 'Inelastica.calcIETS: nHTp =', GFp.nHT*PC.unitConv # OK
-    print 'Inelastica.calcIETS: nHTm =', GFm.nHT*PC.unitConv # OK
-    print 'Inelastica.calcIETS: HTp  =', GFp.HT # OK
-    print 'Inelastica.calcIETS: HTm  =', GFm.HT # OK
+    print('Inelastica.calcIETS: nHTp =', GFp.nHT*PC.unitConv) # OK
+    print('Inelastica.calcIETS: nHTm =', GFm.nHT*PC.unitConv) # OK
+    print('Inelastica.calcIETS: HTp  =', GFp.HT) # OK
+    print('Inelastica.calcIETS: HTm  =', GFm.HT) # OK
 
     # Set up grid and Hilbert term
     kT = options.Temp/11604.0 # (eV)
@@ -416,10 +417,10 @@ def calcIETS(options, GFp, GFm, basis, hw):
     min_win=min(-options.maxBias, -max_hw)-20*kT-4*options.Vrms
     pts=int(N.floor((max_win-min_win)/kT*3))
     Egrid=N.linspace(min_win, max_win, pts)
-    print "Inelastica.calcIETS: Hilbert integration grid : %i pts [%f,%f]" % (pts, min(Egrid), max(Egrid))
+    print("Inelastica.calcIETS: Hilbert integration grid : %i pts [%f,%f]" % (pts, min(Egrid), max(Egrid)))
 
     NN = options.biasPoints
-    print 'Inelastica.calcIETS: Biaspoints =', NN
+    print('Inelastica.calcIETS: Biaspoints =', NN)
 
     # Add some points for the Lock in broadening
     approxdV=(options.maxBias-options.minBias)/(NN-1)
@@ -481,8 +482,8 @@ def calcIETS(options, GFp, GFm, basis, hw):
     # Current: Asymmetric/Hilbert part (IH)
     try:
         import scipy.special as SS
-        print "Inelastica: Computing asymmetric term using digamma function,"
-        print "... see G. Bevilacqua et al., Eur. Phys. J. B (2016) 89: 3"
+        print("Inelastica: Computing asymmetric term using digamma function,")
+        print("... see G. Bevilacqua et al., Eur. Phys. J. B (2016) 89: 3")
         IH = N.zeros((NN,), N.float)
         IasymF = N.zeros((NN,), N.float)
         for i in (hw>options.modeCutoff).nonzero()[0]:
@@ -494,7 +495,7 @@ def calcIETS(options, GFp, GFm, basis, hw):
             IH += GFp.HT[i]*N.array(Vl>0.0, dtype=int)*Iasym
             IH += GFm.HT[i]*N.array(Vl<0.0, dtype=int)*Iasym
     except:
-        print "Computing using explit Hilbert transformation"
+        print("Computing using explit Hilbert transformation")
         IH = N.zeros((NN,), N.float)
         IasymF = N.zeros((NN,), N.float)
         # Prepare box/window function on array
@@ -520,11 +521,11 @@ def calcIETS(options, GFp, GFm, basis, hw):
     absVl = N.absolute(Vl)
     Inew = N.zeros(len(Vl), N.float)
     Snew = N.zeros(len(Vl), N.float)
-    print 'Noise factors:'
-    print GFp.dIel
-    print GFp.dIinel
-    print GFp.dSel
-    print GFp.dSinel
+    print('Noise factors:')
+    print(GFp.dIel)
+    print(GFp.dIinel)
+    print(GFp.dSel)
+    print(GFp.dSinel)
     for i in (hw>options.modeCutoff).nonzero()[0]:
         # Elastic part
         Inew += GFp.dIel[i]*Vl
@@ -549,10 +550,10 @@ def calcIETS(options, GFp, GFm, basis, hw):
         gamma_heat_p[i]=GFp.P2T[i]*PC.unitConv
         gamma_heat_m[i]=GFm.P2T[i]*PC.unitConv
 
-    print 'Inelastica.calcIETS: gamma_eh_p =', gamma_eh_p # OK
-    print 'Inelastica.calcIETS: gamma_eh_m =', gamma_eh_m # OK
-    print 'Inelastica.calcIETS: gamma_heat_p =', gamma_heat_p # OK
-    print 'Inelastica.calcIETS: gamma_heat_m =', gamma_heat_m # OK
+    print('Inelastica.calcIETS: gamma_eh_p =', gamma_eh_p) # OK
+    print('Inelastica.calcIETS: gamma_eh_m =', gamma_eh_m) # OK
+    print('Inelastica.calcIETS: gamma_heat_p =', gamma_heat_p) # OK
+    print('Inelastica.calcIETS: gamma_heat_m =', gamma_heat_m) # OK
 
     V, I, dI, ddI, BdI, BddI = Broaden(options, Vl, InH+IH)
     V, Is, dIs, ddIs, BdIs, BddIs = Broaden(options, Vl, IsymF)
@@ -569,14 +570,14 @@ def calcIETS(options, GFp, GFm, basis, hw):
     NV, NI, NdI, NddI, NBdI, NBddI = Broaden(options, Vl, GFp.TeF*Vl+Inew)
     NV, NS, NdS, NddS, NBdS, NBddS = Broaden(options, Vl, Snew)
 
-    print 'Inelastica.calcIETS: V[:5]        =', V[:5] # OK
-    print 'Inelastica.calcIETS: V[-5:][::-1] =', V[-5:][::-1] # OK
-    print 'Inelastica.calcIETS: I[:5]        =', I[:5] # OK
-    print 'Inelastica.calcIETS: I[-5:][::-1] =', I[-5:][::-1] # OK
-    print 'Inelastica.calcIETS: BdI[:5]        =', BdI[:5] # OK
-    print 'Inelastica.calcIETS: BdI[-5:][::-1] =', BdI[-5:][::-1] # OK
-    print 'Inelastica.calcIETS: BddI[:5]        =', BddI[:5] # OK
-    print 'Inelastica.calcIETS: BddI[-5:][::-1] =', BddI[-5:][::-1] # OK
+    print('Inelastica.calcIETS: V[:5]        =', V[:5]) # OK
+    print('Inelastica.calcIETS: V[-5:][::-1] =', V[-5:][::-1]) # OK
+    print('Inelastica.calcIETS: I[:5]        =', I[:5]) # OK
+    print('Inelastica.calcIETS: I[-5:][::-1] =', I[-5:][::-1]) # OK
+    print('Inelastica.calcIETS: BdI[:5]        =', BdI[:5]) # OK
+    print('Inelastica.calcIETS: BdI[-5:][::-1] =', BdI[-5:][::-1]) # OK
+    print('Inelastica.calcIETS: BddI[:5]        =', BddI[:5]) # OK
+    print('Inelastica.calcIETS: BddI[-5:][::-1] =', BddI[-5:][::-1]) # OK
 
     datafile = '%s/%s.IN'%(options.DestDir, options.systemlabel)
     # ascii format
@@ -642,11 +643,11 @@ def calcIETS(options, GFp, GFm, basis, hw):
 
 ########################################################
 def writeFGRrates(options, GF, hw, NCfile):
-    print 'Inelastica.writeFGRrates: Computing FGR rates'
+    print('Inelastica.writeFGRrates: Computing FGR rates')
     # Eigenchannels
     GF.calcEigChan(channels=options.numchan)
     NCfile = NC4.Dataset(options.PhononNetCDF, 'r')
-    print 'Reading ', options.PhononNetCDF
+    print('Reading ', options.PhononNetCDF)
 
     outFile = file('%s/%s.IN.FGR'%(options.DestDir, options.systemlabel), 'w')
     outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (PC.unitConv*GF.TeF,))
@@ -657,7 +658,7 @@ def writeFGRrates(options, GF, hw, NCfile):
         try:
             M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw, options.iSpin, :, :], N.complex)
         except:
-            print 'Warning: Variable ImHe_ph not found'
+            print('Warning: Variable ImHe_ph not found')
         rate=N.zeros((len(GF.ECleft), len(GF.ECright)), N.float)
         totrate=0.0
         inter, intra = 0.0, 0.0 # splitting total rate in two
@@ -705,53 +706,53 @@ def Broaden(options, VV, II):
     to match a common voltage list
     """
 
-    II=II.copy()
-    II=II.real
+    II = II.copy()
+    II = II.real
 
     # First derivative dI and bias list dV
-    dI=(II[1:len(II)]-II[:-1])/(VV[1]-VV[0])
-    dV=(VV[1:len(VV)]+VV[:-1])/2
+    dI = (II[1:len(II)]-II[:-1])/(VV[1]-VV[0])
+    dV = (VV[1:len(VV)]+VV[:-1])/2
     # Second derivative and bias ddV
-    ddI=(dI[1:len(dI)]-dI[:-1])/(VV[1]-VV[0])
-    ddV=(dV[1:len(dV)]+dV[:-1])/2
+    ddI = (dI[1:len(dI)]-dI[:-1])/(VV[1]-VV[0])
+    ddV = (dV[1:len(dV)]+dV[:-1])/2
 
     # Modulation amplitude
-    VA=N.sqrt(2.0)*options.Vrms
+    VA = N.sqrt(2.0)*options.Vrms
 
     # New bias ranges for broadening
-    tmp=int(N.floor(VA/(dV[1]-dV[0]))+1)
-    BdV=dV[tmp:-tmp]
-    BddV=ddV[tmp:-tmp]
+    tmp = int(N.floor(VA/(dV[1]-dV[0]))+1)
+    BdV = dV[tmp:-tmp]
+    BddV = ddV[tmp:-tmp]
 
     # Initiate derivatives
-    BdI=0*BdV
-    BddI=0*BddV
+    BdI = 0*BdV
+    BddI = 0*BddV
 
     # Calculate first derivative with Vrms broadening
     for iV, V in enumerate(BdV):
         SIO.printDone(iV, len(BdV), 'Inelastica.Broaden: First-derivative Vrms broadening')
-        wt=(N.array(range(200))/200.0-0.5)*N.pi
-        VL=V+VA*N.sin(wt)
-        dIL=MM.interpolate(VL, dV, dI)
-        BdI[iV]=2/N.pi*N.sum(dIL*(N.cos(wt)**2))*(wt[1]-wt[0])
+        wt = (N.array(list(range(200)))/200.0-0.5)*N.pi
+        VL = V+VA*N.sin(wt)
+        dIL = MM.interpolate(VL, dV, dI)
+        BdI[iV] = 2/N.pi*N.sum(dIL*(N.cos(wt)**2))*(wt[1]-wt[0])
 
     # Calculate second derivative with Vrms broadening
     for iV, V in enumerate(BddV):
         SIO.printDone(iV, len(BddV), 'Inelastica.Broaden: Second-derivative Vrms broadening')
-        wt=(N.array(range(200))/200.0-0.5)*N.pi
-        VL=V+VA*N.sin(wt)
-        ddIL=MM.interpolate(VL, ddV, ddI)
-        BddI[iV]=8.0/3.0/N.pi*N.sum(ddIL*(N.cos(wt)**4))*(wt[1]-wt[0])
+        wt = (N.array(list(range(200)))/200.0-0.5)*N.pi
+        VL = V+VA*N.sin(wt)
+        ddIL = MM.interpolate(VL, ddV, ddI)
+        BddI[iV] = 8.0/3.0/N.pi*N.sum(ddIL*(N.cos(wt)**4))*(wt[1]-wt[0])
 
     # Reduce to one voltage grid
-    NN=options.biasPoints
+    NN = options.biasPoints
     V = N.linspace(options.minBias, options.maxBias, NN)
 
-    NI=MM.interpolate(V, VV, II)
-    NdI=MM.interpolate(V, dV, dI)
-    NddI=MM.interpolate(V, ddV, ddI)
-    NBdI=MM.interpolate(V, BdV, BdI)
-    NBddI=MM.interpolate(V, BddV, BddI)
+    NI = MM.interpolate(V, VV, II)
+    NdI = MM.interpolate(V, dV, dI)
+    NddI = MM.interpolate(V, ddV, ddI)
+    NBdI = MM.interpolate(V, BdV, BdI)
+    NBddI = MM.interpolate(V, BddV, BddI)
 
     return V, NI, NdI, NddI, NBdI, NBddI
 
@@ -762,7 +763,7 @@ def Broaden(options, VV, II):
 
 def initNCfile(filename, hw, V):
     'Initiate netCDF file'
-    print 'Inelastica: Initializing nc-file'
+    print('Inelastica: Initializing nc-file')
     ncfile = NC4.Dataset(filename+'.nc', 'w')
     ncfile.title = 'Inelastica Output'
     ncfile.version = 1
@@ -783,7 +784,7 @@ def write2NCfile(NCfile, var, name, unit):
     var = N.array(var)
     dim1 = len(NCfile.variables['hw'][:])
     dim2 = len(NCfile.variables['V'][:])
-    print 'Inelastica.write2NCfile: Writing', name, var.shape
+    print('Inelastica.write2NCfile: Writing', name, var.shape)
     if var.shape == (dim1,):
         tmp = NCfile.createVariable(name, 'd', ('Nph',))
     elif var.shape == (dim2,):

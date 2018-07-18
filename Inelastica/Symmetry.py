@@ -17,6 +17,8 @@ Classes
 
 """
 
+from __future__ import print_function
+
 import Inelastica.io.siesta as SIO
 import Inelastica.math as MM
 import numpy as N
@@ -112,7 +114,7 @@ class Symmetry(object):
     def symmetrizeFC(self, FC, FCfirst, FClast, radi=0.0):
         NN, NU, NFC = self.NN, len(self.U33), FClast-FCfirst+1
         if self.basis.NN > NFC:
-            print "Phonons: ERROR: FCfirst/last do contain all atoms in the basis (%i)."%self.basis.NN
+            print("Phonons: ERROR: FCfirst/last do contain all atoms in the basis (%i)."%self.basis.NN)
             sys.exit('Symmetry error:')
 
         # Rearrange to FC_ia,jb, force from atom j, axis b to atom i, axis a
@@ -136,7 +138,7 @@ class Symmetry(object):
                     ipiv += [jj]
                     break
         if len(N.unique(ipiv)) != self.basis.NN:
-            print "Symmetry: Some confusion about the order of the basis of atoms and the FCfirst/last region."
+            print("Symmetry: Some confusion about the order of the basis of atoms and the FCfirst/last region.")
             sys.exit('Symmetry: This should never happen')
         self.basis.xyz = self.basis.xyz[ipiv, :]
         self.basis.snr, self.basis.anr = N.array(self.basis.snr)[ipiv], N.array(self.basis.anr)[ipiv]
@@ -155,7 +157,7 @@ class Symmetry(object):
         if radi == 0.0:
             radi = findRadi(self.pbc[0], self.pbc[1], self.pbc[2])*\
                 (1-5*self.accuracy)
-        print "Symmetry: Longest range of forces %f Ang."%radi
+        print("Symmetry: Longest range of forces %f Ang."%radi)
 
         # Symmetry operation on FC is composed of:
         #     FC_ia,jb = U^t_aa' PL^j_ii' FC_i'a',j'b' PR_j'j UR_b'b
@@ -224,8 +226,8 @@ class Symmetry(object):
                     oFC = FC[ii, :, indx3[kk], :].reshape((3, 3))
                     sFC = mm(UL[iU], FC[indx2[0], :, tindx2[kk], :].reshape((3, 3)), UR[iU])
                     if N.max(N.abs(oFC-sFC)) > 0.5:
-                        print oFC
-                        print sFC
+                        print(oFC)
+                        print(sFC)
 
         def applySym(FC):
             FCn = N.tensordot(UR[iU], FC, ((1, 1)))
@@ -239,7 +241,7 @@ class Symmetry(object):
             return FCn2
 
         # Symmetrize dynamical matrix
-        print "Symmetry: Iterative application of symmetries"
+        print("Symmetry: Iterative application of symmetries")
         niter, change = 0, 10
         FCo = FC.copy()
         # Uncomment the two lines below to skip the application of symmetries
@@ -256,11 +258,11 @@ class Symmetry(object):
                 FCs = FCs/self.rankU33[iU]
 
             change = N.max(N.abs(FCs-FCo))
-            print "Symmetry: max change between old and symmetrized = %e"%change
-            print "Symmetry: relative change = %e\n"%(N.max(N.abs(FCs-FCo))/N.max(abs(FCo)))
+            print("Symmetry: max change between old and symmetrized = %e"%change)
+            print("Symmetry: relative change = %e\n"%(N.max(N.abs(FCs-FCo))/N.max(abs(FCo))))
             FCo = FCs
         if N.max(N.abs(FCs-FC))/N.max(abs(FC)) > 0.05:
-            print "Symmetry: WARNING: large relative difference"
+            print("Symmetry: WARNING: large relative difference")
 
         # Change format back ...
         if FCreshape:
@@ -290,8 +292,8 @@ class Symmetry(object):
                         nU += [self.U33[kk]]
                         nO += [self.origo[kk]]
                         nR += [rotn[jj]]
-                    print "Symmetry: Irreducible point operations around %f %f %f"%(self.origo[ii-1][0], self.origo[ii-1][1], self.origo[ii-1][2])
-                    print "Ranks*determinant : ", rotn*sign
+                    print("Symmetry: Irreducible point operations around %f %f %f"%(self.origo[ii-1][0], self.origo[ii-1][1], self.origo[ii-1][2]))
+                    print("Ranks*determinant : ", rotn*sign)
                 lasto = ii
 
         if len(self.U33) != 0:
@@ -301,8 +303,8 @@ class Symmetry(object):
                 nO += [self.origo[kk]]
                 nR += [rotn[jj]]
 
-            print "Symmetry: Irreducible point operations around %f %f %f"%(self.origo[ii-1][0], self.origo[ii-1][1], self.origo[ii-1][2])
-            print "Ranks*determinant : ", rotn*sign
+            print("Symmetry: Irreducible point operations around %f %f %f"%(self.origo[ii-1][0], self.origo[ii-1][1], self.origo[ii-1][2]))
+            print("Ranks*determinant : ", rotn*sign)
 
         self.fullU33, self.fullOrigo = self.U33, self.origo
         self.U33, self.origo, self.rankU33 = nU, nO, nR
@@ -382,8 +384,8 @@ class Symmetry(object):
             # Find centers by solving U(x_i-o)==x_j-o +R where o is center, R is lattice vector
             centers = []
             A = U-N.eye(3)
-            for i1, i2, i3 in iprod(range(-1, 2), repeat=3):
-                for ii, jj in iprod(range(len(xyz)), repeat=2):
+            for i1, i2, i3 in iprod(list(range(-1, 2)), repeat=3):
+                for ii, jj in iprod(list(range(len(xyz))), repeat=2):
                     sol = LA.lstsq(A, mm(U, xyz[ii, :].transpose())-xyz[jj, :].transpose()+(a1*i1+a2*i2+a3*i3))[0]
                     correct = not N.any(N.abs(mm(A, sol)-mm(U, xyz[ii, :].transpose())+xyz[jj, :].transpose()-(a1*i1+a2*i2+a3*i3)) > 1e-6)
                     if correct: centers += [sol]
@@ -408,7 +410,7 @@ class Symmetry(object):
                 pointO += [origin]
 
         self.U33, self.origo = pointU, pointO
-        print("Symmetry: %i point symmetry operations (with rotation centers) found for lattice+basis."%len(pointU))
+        print(("Symmetry: %i point symmetry operations (with rotation centers) found for lattice+basis."%len(pointU)))
 
         # Calculate rank of operations
         self.rankU33, sign = [], []
@@ -419,8 +421,8 @@ class Symmetry(object):
             if ii > 6: sys.exit('Symmetry error: rank >6 !!')
             self.rankU33 += [ii]
             sign += [N.linalg.det(U)]
-        print "Symmetry: rank*det"
-        print N.array(self.rankU33)*sign
+        print("Symmetry: rank*det")
+        print(N.array(self.rankU33)*sign)
         return
 
     ###########################################################
@@ -435,7 +437,7 @@ class Symmetry(object):
         b1, b2, b3 = self.b1, self.b2, self.b3
         points, dist = [], []
         # Generate lattice points
-        for i1, i2, i3 in iprod(range(-2, 3), repeat=3):
+        for i1, i2, i3 in iprod(list(range(-2, 3)), repeat=3):
             points += [i1*a1+i2*a2+i3*a3]
             dist += [distance(points[-1])]
         points, dist = N.array(points), N.array(dist)
@@ -457,7 +459,7 @@ class Symmetry(object):
                 Ulist += [U]
 
         self.pointU33 = Ulist
-        print "Symmetry: %i point symmetry operations found for lattice"%len(Ulist)
+        print("Symmetry: %i point symmetry operations found for lattice"%len(Ulist))
         sign = N.array([N.linalg.det(ii) for ii in Ulist])
 
         rotn = []
@@ -468,8 +470,8 @@ class Symmetry(object):
             rotn += [M]
 
         self.pointRank = rotn
-        print "Symmetry: rank * determinant"
-        print sign*self.pointRank
+        print("Symmetry: rank * determinant")
+        print(sign*self.pointRank)
 
         return
 
@@ -558,22 +560,22 @@ class Symmetry(object):
 
         indx = N.round(abs(mm(self.pbc, N.transpose(N.array([b1, b2, b3])))))
         N1, N2, N3 = indx[0, 0], indx[1, 1], indx[2, 2]
-        print "Symmetry: Lattice structure"
-        print "%i atoms in the basis"%(self.NNbasis)
-        print "a1 = (%f,%f,%f), N1=%i"%(a1[0], a1[1], a1[2], N1)
-        print "a2 = (%f,%f,%f), N2=%i"%(a2[0], a2[1], a2[2], N2)
-        print "a3 = (%f,%f,%f), N3=%i"%(a3[0], a3[1], a3[2], N3)
-        print
-        print "b1 = (%f,%f,%f)"%(b1[0], b1[1], b1[2])
-        print "b2 = (%f,%f,%f)"%(b2[0], b2[1], b2[2])
-        print "b3 = (%f,%f,%f)"%(b3[0], b3[1], b3[2])
+        print("Symmetry: Lattice structure")
+        print("%i atoms in the basis"%(self.NNbasis))
+        print("a1 = (%f,%f,%f), N1=%i"%(a1[0], a1[1], a1[2], N1))
+        print("a2 = (%f,%f,%f), N2=%i"%(a2[0], a2[1], a2[2], N2))
+        print("a3 = (%f,%f,%f), N3=%i"%(a3[0], a3[1], a3[2], N3))
+        print()
+        print("b1 = (%f,%f,%f)"%(b1[0], b1[1], b1[2]))
+        print("b2 = (%f,%f,%f)"%(b2[0], b2[1], b2[2]))
+        print("b3 = (%f,%f,%f)"%(b3[0], b3[1], b3[2]))
 
         # Shift to more convenient origin
         xyz = moveIntoCell(self.xyz, a1, a2, a3, self.accuracy)
         tmp = mm(N.array([b1, b2, b3]), N.transpose(xyz))
         mx, my, mz = min(tmp[0, :]), min(tmp[1, :]), min(tmp[2, :])
         shift = mx*a1+my*a2+mz*a3
-        print "Shifting coordinates by : ", -shift
+        print("Shifting coordinates by : ", -shift)
         self.xyz = self.xyz-shift
 
         # Find basis
@@ -593,7 +595,7 @@ class Symmetry(object):
         basis.xyz = N.array(basis.xyz)
         basis.NN = len(basis.xyz)
         if len(basis.anr) != self.NNbasis:
-            print "Symmetry: ERROR! Inconsistent number of basis atoms. Probably bug in program."
+            print("Symmetry: ERROR! Inconsistent number of basis atoms. Probably bug in program.")
             sys.exit('Symmetry error')
         self.basis = basis
 
@@ -618,8 +620,8 @@ class Symmetry(object):
                 angles += [N.round(N.arccos(mm(a, b)/distance(a)/distance(b))*180/N.pi)]
         # Move angles into range [0,90]
         angles = [min(ii, 180-ii) for ii in angles]
-        print 'Lattice angles  =', angles
-        print 'Lattice lengths =', length
+        print('Lattice angles  =', angles)
+        print('Lattice lengths =', length)
         latticetype = 'UNKNOWN'
         if N.allclose(length[0], length[1], atol=self.accuracy) and \
            N.allclose(length[1], length[2], atol=self.accuracy):
@@ -656,7 +658,7 @@ class Symmetry(object):
                 # a1 = [a,0,0]
                 # a2 = [0,b,0]
                 # a3 = [0,0,c]
-        print "Symmetry: Lattice = %s"%latticetype
+        print("Symmetry: Lattice = %s"%latticetype)
         self.latticeType = latticetype
 
     def makeHumanReadable(self, a1, a2, a3):
@@ -673,7 +675,7 @@ class Symmetry(object):
 
         # Make possible n a1 + m a2 + l a3
         poss = []
-        for i1, i2, i3 in iprod(range(-1, 2), repeat=3):
+        for i1, i2, i3 in iprod(list(range(-1, 2)), repeat=3):
             poss += [a1*i1+a2*i2+a3*i3]
         poss = N.array(poss)
 
@@ -867,7 +869,7 @@ class Symmetry(object):
             Z = b1*0/2+b2*0/2+b3*1/2
             self.path = [[G, 'G'], [X, 'X'], [S, 'S'], [Y, 'Y'], [G, 'G'], [Z, 'Z']]
         else:
-            print "Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType
+            print("Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType)
             sys.exit('Error: unknown lattice type')
         return self.path
 
@@ -1012,7 +1014,7 @@ def test():
     a3 = N.array([1, 1, 0])
 
     for iitest in range(200000):
-        print '\nRunning test no.', iitest
+        print('\nRunning test no.', iitest)
         N1, N2, N3 = int(N.random.rand()*10+1), int(N.random.rand()*10+1), int(N.random.rand()*10+1)
         NB = 2# int(N.random.rand()*3+1)
         basis = (N.random.rand(NB, 3)-.5)*10-6
@@ -1042,5 +1044,5 @@ def test():
         sym.setupGeom([N.dot(U, a1*N1), N.dot(U, a2*N2), N.dot(U, a3*N3)],
                       anr[ipiv], anr[ipiv], xyz[ipiv], onlyLatticeSym=False)
         if len(sym.pointU33) != 48 or sym.basis.NN != NB or len(sym.U33) != 8:
-            print(N1, N2, N3, NB)
+            print((N1, N2, N3, NB))
             sys.exit('Failed in tourture test of symmetry')

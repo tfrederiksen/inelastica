@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import numpy as N
 import numpy.fft as FFT
 
@@ -50,6 +52,6 @@ def Hilbert(f, ker=None):
         # A kernel was specified at the function call
         return transform(f, ker), ker
     else:
-        print 'Hilbert: Generating kernel'
+        print('Hilbert: Generating kernel')
         ker = kernel(f)
         return transform(f, ker), ker

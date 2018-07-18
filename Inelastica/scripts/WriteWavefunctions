@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import scipy.linalg as SLA
 import sys
@@ -38,10 +39,10 @@ tshs.setkpoint(options.kpoint)
 for ispin in range(tshs.nspin):
     ev, es = SLA.eigh(tshs.H[ispin], tshs.S)
     for ii in range(firstorb, lastorb+1):
-        print '\nORBITAL:', ii
+        print('\nORBITAL:', ii)
         v = es[:, ii]
         vd = N.conjugate(v)
-        print 'Eigenvalue <v|H|v>:', N.dot(vd, N.dot(tshs.H[ispin], v))
-        print 'Normalization <v|S|v>:', N.dot(vd, N.dot(tshs.S, v))
+        print('Eigenvalue <v|H|v>:', N.dot(vd, N.dot(tshs.H[ispin], v)))
+        print('Normalization <v|S|v>:', N.dot(vd, N.dot(tshs.S, v)))
         fn = options.DestDir+'/%s.s%i_i%.3i_%.2feV'%(label, ispin, ii, ev[ii])
         EC.writeWavefunction(options, geom, basis, es[:, ii], fn=fn)

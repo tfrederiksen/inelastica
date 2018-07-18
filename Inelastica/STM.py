@@ -28,9 +28,7 @@ averaged STM image and the STM images of individual k points are saved in
 .. currentmodule:: Inelastica.STM
 
 """
-
-
-from __future__ import absolute_import, print_function
+from __future__ import print_function
 
 import numpy as N
 import numpy.linalg as LA
@@ -63,7 +61,7 @@ DEBUGPDE = False
 
 def GetOptions(argv):
     # if text string is specified, convert to list
-    if isinstance(argv, basestring): argv = argv.split()
+    if isinstance(argv, str): argv = argv.split()
 
     import optparse as o
 

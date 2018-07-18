@@ -23,6 +23,8 @@ Classes
 
 
 """
+from __future__ import print_function
+
 import numpy as N
 import numpy.linalg as LA
 import string
@@ -40,14 +42,14 @@ try:
     F90imported = True
 except:
     F90imported = False
-    print "########################################################"
-    print "Problems encountered with F90helpers.so"
-    print "Falling back on a pure python (slower) implementation"
-    print "Try compiling manually following these steps:"
-    print " $ cd Inelastica/fortran"
-    print " $ source compile.bat (or compile_alternative.bat)"
-    print " $ cp F90helpers.so <python>/site-packages/Inelastica/fortran"
-    print "########################################################"
+    print("########################################################")
+    print("Problems encountered with F90helpers.so")
+    print("Falling back on a pure python (slower) implementation")
+    print("Try compiling manually following these steps:")
+    print(" $ cd Inelastica/fortran")
+    print(" $ source compile.bat (or compile_alternative.bat)")
+    print(" $ cp F90helpers.so <python>/site-packages/Inelastica/fortran")
+    print("########################################################")
 
 # Check length of int and long and use the one that has 8 bytes
 if struct.calcsize('l') == 8:
@@ -80,12 +82,12 @@ def SIO_open(filename, mode='r'):
 
 def ReadXVFile(filename, InUnits='Bohr', OutUnits='Ang', ReadVelocity=False):
     "Returns tuple (vectors,speciesnumber,atomnumber,xyz,[v,]) from an XV-file"
-    print 'io.siesta.ReadXVFile: Reading', filename
+    print('io.siesta.ReadXVFile: Reading', filename)
     if (InUnits == 'Bohr') and (OutUnits == 'Ang'): convFactor = PC.Bohr2Ang
     elif (InUnits == 'Ang') and (OutUnits == 'Bohr'): convFactor = PC.Ang2Bohr
     elif (((InUnits == 'Ang') and (OutUnits == 'Ang')) \
        or ((InUnits == 'Bohr') and (OutUnits == 'Bohr'))): convFactor = 1
-    else: print 'io.siesta.ReadXVFile: Unit conversion error!'
+    else: print('io.siesta.ReadXVFile: Unit conversion error!')
     xvfile = SIO_open(filename, 'r')
     # Read cell vectors (lines 1-3)
     vectors = []
@@ -105,7 +107,7 @@ def ReadXVFile(filename, InUnits='Bohr', OutUnits='Ang', ReadVelocity=False):
             V.append([string.atof(data[5+j])*convFactor for j in range(3)])
     xvfile.close()
     if len(speciesnumber) != numberOfAtoms:
-        print 'io.siesta.ReadXVFile: Inconstency in %s detected!' %filename
+        print('io.siesta.ReadXVFile: Inconstency in %s detected!' %filename)
     if ReadVelocity:
         return N.array(vectors), N.array(speciesnumber), N.array(atomnumber), N.array(xyz), N.array(V)
     else:
@@ -115,12 +117,12 @@ def ReadXVFile(filename, InUnits='Bohr', OutUnits='Ang', ReadVelocity=False):
 def WriteXVFile(filename, vectors, speciesnumber, atomnumber, xyz,\
                 InUnits='Ang', OutUnits='Bohr', Velocity=[]):
     "Writes (vectors,speciesnumber,atomnumber,xyz,[V],) to the XV-file format"
-    print 'io.siesta.WriteXVFile: Writing', filename
+    print('io.siesta.WriteXVFile: Writing', filename)
     if (InUnits == 'Bohr') and (OutUnits == 'Ang'): convFactor = PC.Bohr2Ang
     elif (InUnits == 'Ang') and (OutUnits == 'Bohr'): convFactor = PC.Ang2Bohr
     elif (((InUnits == 'Ang') and (OutUnits == 'Ang')) \
        or ((InUnits == 'Bohr') and (OutUnits == 'Bohr'))): convFactor = 1
-    else: print 'io.siesta.WriteXVFile: Unit conversion error!'
+    else: print('io.siesta.WriteXVFile: Unit conversion error!')
     xvfile = SIO_open(filename, 'w')
     # Write basis vectors (lines 1-3)
     for i in range(3):
@@ -199,12 +201,12 @@ def WriteAXSFFiles(filename, geoms, forces=None):
 
 def WriteANIFile(filename, Geom, Energy, InUnits='Ang', OutUnits='Ang'):
     " Write .ANI file from list of geometries with Energy=[E1,E2..]"
-    print 'io.siesta.WriteANIFile: Writing', filename
+    print('io.siesta.WriteANIFile: Writing', filename)
     if (InUnits == 'Bohr') and (OutUnits == 'Ang'): convFactor = PC.Bohr2Ang
     elif (InUnits == 'Ang') and (OutUnits == 'Bohr'): convFactor = PC.Ang2Bohr
     elif (((InUnits == 'Ang') and (OutUnits == 'Ang')) \
           or ((InUnits == 'Bohr') and (OutUnits == 'Bohr'))): convFactor = 1
-    else: print 'io.siesta.WriteANIFile: Unit conversion error!'
+    else: print('io.siesta.WriteANIFile: Unit conversion error!')
     anifile = open(filename, 'w')
     for ii, iGeom in enumerate(Geom):
         anifile.write('%i \n'%iGeom.natoms)
@@ -221,12 +223,12 @@ def WriteANIFile(filename, Geom, Energy, InUnits='Ang', OutUnits='Ang'):
 def ReadANIFile(filename, InUnits='Ang', OutUnits='Ang'):
     "Returns tuple (Geometry,Energy[Ry?],) from an ANI-file"
     import Inelastica.MakeGeom as MG
-    print 'io.siesta.ReadANIFile: Reading', filename
+    print('io.siesta.ReadANIFile: Reading', filename)
     if (InUnits == 'Bohr') and (OutUnits == 'Ang'): convFactor = PC.Bohr2Ang
     elif (InUnits == 'Ang') and (OutUnits == 'Bohr'): convFactor = PC.Ang2Bohr
     elif (((InUnits == 'Ang') and (OutUnits == 'Ang')) \
           or ((InUnits == 'Bohr') and (OutUnits == 'Bohr'))): convFactor = 1
-    else: print 'io.siesta.ReadANIFile: Unit conversion error!'
+    else: print('io.siesta.ReadANIFile: Unit conversion error!')
 
     Energy, Geom = [], []
     anifile = SIO_open(filename, 'r')
@@ -255,12 +257,12 @@ def ReadANIFile(filename, InUnits='Ang', OutUnits='Ang'):
 
 def ReadFCFile(filename):
     "Returns FC from an FC-file"
-    print 'io.siesta.ReadFCFile: Reading', filename
+    print('io.siesta.ReadFCFile: Reading', filename)
     fcfile = SIO_open(filename, 'rb')
     # Read comment line (line 1)
     line = fcfile.readline()
     if string.strip(line) != 'Force constants matrix':
-        print 'io.siesta.ReadFCFile: Inconstency in %s detected!' %filename
+        print('io.siesta.ReadFCFile: Inconstency in %s detected!' %filename)
     # Read remaining lines
     FC = []
     for line in fcfile.readlines():
@@ -281,9 +283,9 @@ def ReadFortranBin(fortfile, dtype, num, printLength=False, unpack=True):
     if unpack:
         data = struct.unpack(fortranPrefix+fortranLong+fmt+fortranLong, fbin)
         if printLength:
-            print 'io.siesta.ReadFortranBin: %i bytes read' %data[0]
+            print('io.siesta.ReadFortranBin: %i bytes read' %data[0])
         if data[0] != data[-1] or data[0] != struct.calcsize(fortranPrefix+fmt):
-            print 'io.siesta.ReadFortranBin: Error reading Fortran formatted binary file'
+            print('io.siesta.ReadFortranBin: Error reading Fortran formatted binary file')
             sys.exit(1)
         return data[1:-1]
     else:
@@ -335,9 +337,9 @@ def printDone(i, n, mess):
     # Print progress report
     if n > 10:
         if i%(int(n/10)+1) == 0:
-            print mess, ": %3.0f %% done" %(10.0*int(10.0*float(i+1)/n))
+            print(mess, ": %3.0f %% done" %(10.0*int(10.0*float(i+1)/n)))
         if i+1 == n:
-            print mess, ": 100 % done"
+            print(mess, ": 100 % done")
         sys.stdout.flush()
 
 #--------------------------------------------------------------------------------
@@ -346,7 +348,7 @@ def printDone(i, n, mess):
 
 def WriteMKLFile(filename, atomnumber, xyz, freq, vec, FCfirst, FClast):
     "Writes a MKL-file"
-    print 'io.siesta.WriteMKLFile: Writing', filename
+    print('io.siesta.WriteMKLFile: Writing', filename)
     mklfile = open(filename, 'w')
     mklfile.write('$MKL\n$COORD\n')
     for i, iatom in enumerate(atomnumber):
@@ -402,13 +404,13 @@ def ReadXYZFile(filename):
             xyz.append([string.atof(data[1+j]) for j in range(3)])
     xyzfile.close()
     if len(xyz) != numberOfAtoms:
-        print 'io.siesta.ReadXYZFile: Inconstency in %s detected!' %filename
+        print('io.siesta.ReadXYZFile: Inconstency in %s detected!' %filename)
     return label, N.array(atomnumber), N.array(xyz)
 
 
 def WriteXYZFile(filename, atomnumber, xyz, write_ghosts=False):
     "Writes atomic geometry in xyz-file format"
-    print 'io.siesta.WriteXYZFile: Writing', filename
+    print('io.siesta.WriteXYZFile: Writing', filename)
     # Number of ghost atoms
     nga = len(N.where(N.array(atomnumber) < 0)[0])
     # Write file
@@ -417,7 +419,7 @@ def WriteXYZFile(filename, atomnumber, xyz, write_ghosts=False):
         xyzfile.write(str(len(xyz)))
     else:
         if nga > 0:
-            print '... skipped %i ghost atoms'%nga
+            print('... skipped %i ghost atoms'%nga)
         xyzfile.write(str(len(xyz)-nga))
     xyzfile.write('\n\n')
     for i in range(len(xyz)):
@@ -446,13 +448,13 @@ def ReadFDFFile(infile):
     anr = Getanr(infile)
     natoms = Getnatoms(infile)
     if natoms != len(xyz):
-        print 'Error! natoms != len(xyz)'
+        print('Error! natoms != len(xyz)')
     return pbc, xyz, snr, anr, natoms
 
 
 def WriteFDFFile(filename, vectors, speciesnumber, atomnumber, xyz):
     "Write STRUCT.fdf file"
-    print 'io.siesta.WriteFDFFile: Writing', filename
+    print('io.siesta.WriteFDFFile: Writing', filename)
     fdffile = open(filename, 'w')
     fdffile.write('NumberOfAtoms '+str(len(xyz))+'\n')
     fdffile.write('NumberOfSpecies '+str(max(speciesnumber))+'\n')
@@ -480,10 +482,10 @@ def WriteFDFFileZmat(filename, vectors, speciesnumber, atomnumber, xyz, first=0,
        zmat[:,3:] : fractional part of z-matrix (angles)"""
     # Sanity check
     if first > last or first > len(xyz) or first < 0 or last > len(xyz) or last < 0:
-        print 'io.siesta.WriteFDFFileZmat: Meaningless first (%i) / last (%i) inputs. '%(first, last)
+        print('io.siesta.WriteFDFFileZmat: Meaningless first (%i) / last (%i) inputs. '%(first, last))
         first, last = 0, 0
     # Writing zmatrix
-    print 'io.siesta.WriteFDFFileZmat: Writing', filename
+    print('io.siesta.WriteFDFFileZmat: Writing', filename)
     zmatfile = open(filename, 'w')
     zmatfile.write('NumberOfAtoms '+str(len(xyz))+'\n')
     zmatfile.write('NumberOfSpecies '+str(max(speciesnumber))+'\n')
@@ -547,7 +549,7 @@ def ReadSTRUCT_OUTFile(filename):
             xyz.append([string.atof(data[2+j]) for j in range(3)])
     stfile.close()
     if len(speciesnumber) != numberOfAtoms:
-        print 'io.siesta.ReadSTRUCT_OUTFile: Inconstency in %s detected!' %filename
+        print('io.siesta.ReadSTRUCT_OUTFile: Inconstency in %s detected!' %filename)
     xyz = N.array(xyz, N.float)
     vectors = N.array(vectors, N.float)
     for i in range(len(xyz)):
@@ -586,7 +588,7 @@ def ReadFDFLines(infile, head='', printAlot=True):
     if head == '':
         head =  os.path.split(infile)[0]
     if printAlot:
-        print 'io.siesta.ReadFDFLines: Reading', infile
+        print('io.siesta.ReadFDFLines: Reading', infile)
     fdffile = SIO_open(infile, 'r')
     lines = []
     tmp = fdffile.readline()
@@ -777,7 +779,7 @@ def GetTotalEnergy(infile):
 
 def GetFermiEnergy(infile):
     # Read Fermi energy from SIESTA stdout file
-    print 'io.siesta.GetFermiEnergy: Reading', infile
+    print('io.siesta.GetFermiEnergy: Reading', infile)
     f = SIO_open(infile, 'rb')
     lines = f.readlines()
     f.close()
@@ -786,10 +788,10 @@ def GetFermiEnergy(infile):
         words = string.split(line)
         if 'Fermi' in words and 'energy' in words:
             E = string.atof(words[-2])
-            print '... eF = %.4f eV'%E
+            print('... eF = %.4f eV'%E)
             break
     if E == 0.0:
-        print '... did not find the Fermi energy'
+        print('... did not find the Fermi energy')
     return E
 
 
@@ -808,9 +810,9 @@ def ReadEIGfile(infile, printing=False, FermiRef=True):
         # Do not take Fermi level as energy reference
         eF = 0.0
     if printing:
-        print '# State, eigenvalue wrt. eF'
+        print('# State, eigenvalue wrt. eF')
         for i in range(len(EIG)):
-            print i+1, float(EIG[i])-eF
+            print(i+1, float(EIG[i])-eF)
     f.close()
     return eF
 
@@ -824,7 +826,7 @@ def ReadMullikenPop(infile, outfile, writeallblocks=False):
     block = 0
     spin = False
     f = SIO_open(infile, 'r')
-    print 'io.siesta.ReadMullikenPop: Reading', infile
+    print('io.siesta.ReadMullikenPop: Reading', infile)
     exc = 0
     for line in f.readlines():
         if 'mulliken: Atomic and Orbital Populations:' in line:
@@ -867,12 +869,12 @@ def ReadMullikenPop(infile, outfile, writeallblocks=False):
             except Exception as e:
                 exc += 1
     if spin:
-        print 'io.siesta.ReadMullikenPop: Wrote', outfile+'.UP'
-        print 'io.siesta.ReadMullikenPop: Wrote', outfile+'.DOWN'
+        print('io.siesta.ReadMullikenPop: Wrote', outfile+'.UP')
+        print('io.siesta.ReadMullikenPop: Wrote', outfile+'.DOWN')
     else:
-        print 'io.siesta.ReadMullikenPop: Wrote', outfile
+        print('io.siesta.ReadMullikenPop: Wrote', outfile)
     if exc > 0:
-        print 'Warning: %i exceptions encountered in ReadMullikenPop'%exc
+        print('Warning: %i exceptions encountered in ReadMullikenPop'%exc)
     f.close()
 
 
@@ -881,7 +883,7 @@ def ReadForces(infile):
     data = []
     fline = False
     f = SIO_open(infile, 'r')
-    print 'io.siesta.ReadForces: Reading', infile
+    print('io.siesta.ReadForces: Reading', infile)
     for line in f.readlines():
         if fline:
             # We are inside a range of lines with forces
@@ -899,7 +901,7 @@ def ReadForces(infile):
 
 def ReadFAFile(filename):
     "Returns forces from a FA-file"
-    print 'io.siesta.ReadFAFile: Reading', filename
+    print('io.siesta.ReadFAFile: Reading', filename)
     file = SIO_open(filename, 'rb')
     # Read comment line (line 1)
     line = file.readline()
@@ -941,7 +943,7 @@ def CrossProd(A, B):
 
 def GetReciprocalLatticeVectors(infile):
     # Calculate reciprocal lattice vectors
-    print 'io.siesta.GetReciprocalLatticeVectors: Reading', infile
+    print('io.siesta.GetReciprocalLatticeVectors: Reading', infile)
     if infile.endswith('.fdf'):
         pbc = Getpbc(infile)
     elif infile.endswith('.XV'):
@@ -958,7 +960,7 @@ def GetReciprocalLatticeVectors(infile):
 def WriteBandLinesFDF(infile, outfile, res=0.05):
     # Sets up an fdf-file which can be included in RUN.fdf for
     # calculating band structure and total density of states
-    print 'io.siesta.WriteBandLinesFDF: Writing fdf-input file', outfile
+    print('io.siesta.WriteBandLinesFDF: Writing fdf-input file', outfile)
     b0, b1, b2 = GetReciprocalLatticeVectors(infile)
     f = open(outfile, 'w')
     f.write('BandLineScale  pi/a\n%block BandLines\n')
@@ -996,7 +998,7 @@ def ReadBlock(file, lines, type='float'):
 
 
 def ReadBandsFile(filename, origformat=True):
-    print 'io.siesta.ReadBandsFile: Reading', filename
+    print('io.siesta.ReadBandsFile: Reading', filename)
     # Reads SIESTA *.bands files
     f = SIO_open(filename, 'r')
     # line 1:
@@ -1028,7 +1030,7 @@ def ReadBandsFile(filename, origformat=True):
 
 def WriteBandsFile(filename, eF, EvsK, labels, spins):
     "Writes SIESTA *.bands files"
-    print 'io.siesta.WriteBandsFile: Writing', filename
+    print('io.siesta.WriteBandsFile: Writing', filename)
     xmin, xmax, ymin, ymax = min(EvsK[:, 0]), max(EvsK[:, 0]), min(EvsK[0, 1:]), max(EvsK[0, 1:])
     for i in range(1, len(EvsK)):
         if min(EvsK[i, 1:]) < ymin: ymin = min(EvsK[i, 1:])
@@ -1051,7 +1053,7 @@ def WriteBandsFile(filename, eF, EvsK, labels, spins):
 
 def ConvertBandsFile(filename):
     eF, EvsK, labels, spins = ReadBandsFile(filename)
-    print 'io.siesta.ConvertBandsFile: Writing', filename+'.dat'
+    print('io.siesta.ConvertBandsFile: Writing', filename+'.dat')
     f = open(filename+'.dat', 'w')
     for j in range(1, len(EvsK[0])):
         for i in range(len(EvsK)):
@@ -1063,7 +1065,7 @@ def ConvertBandsFile(filename):
 def ReadDOSFile(filename):
     # Reads SIESTA *.DOS files
     f = SIO_open(filename, 'r')
-    print 'io.siesta.ReadDOSFile: Reading', filename
+    print('io.siesta.ReadDOSFile: Reading', filename)
     DOS = []
     for line in f.readlines():
         data = line.split()
@@ -1085,7 +1087,7 @@ def GetXMLFermiEnergy(dom):
     try:
         node = dom.getElementsByTagName('E_Fermi')[0] # First (and only) entry
         eF = float(node.childNodes[0].data)
-        print 'io.siesta.GetXMLFermiEnergy: Found E_Fermi = %.8f eV'%eF
+        print('io.siesta.GetXMLFermiEnergy: Found E_Fermi = %.8f eV'%eF)
     except:
         eF = 0.0
     return eF
@@ -1145,16 +1147,16 @@ def GetPDOSfromOrbitals(dom, index=[], atom_index=[], species=[], nlist=[], llis
                 data[i] = float(data[i])
             pdos += N.array(data)
     # Generate some output-related information
-    if atom_index != []: print '... Atom indices =', atom_index
-    if species != []: print '... Species =', species
-    if nlist != []: print '... Allowed n quantum numbers =', nlist
-    if llist != []: print '... Allowed l quantum numbers =', llist
-    if mlist != []: print '... Allowed m quantum numbers =', mlist
-    print '... Orbitals included =', len(usedOrbitals)
+    if atom_index != []: print('... Atom indices =', atom_index)
+    if species != []: print('... Species =', species)
+    if nlist != []: print('... Allowed n quantum numbers =', nlist)
+    if llist != []: print('... Allowed l quantum numbers =', llist)
+    if mlist != []: print('... Allowed m quantum numbers =', mlist)
+    print('... Orbitals included =', len(usedOrbitals))
     usedAtoms = []
     for orb in usedOrbitals:
         if orb[1] not in usedAtoms: usedAtoms.append(orb[1])
-    print '... Atoms included =', len(usedAtoms)
+    print('... Atoms included =', len(usedAtoms))
     return pdos, usedOrbitals, usedAtoms
 
 
@@ -1173,7 +1175,7 @@ def ReadPDOSFile(filename, index=[], atom_index=[], species=[], nlist=[], llist=
 
 
 def ExtractPDOS(filename, outfile, index=[], atom_index=[], species=[], nlist=[], llist=[], mlist=[], FermiRef=True, Normalize=False):
-    print 'io.siesta.ExtractPDOS: Reading', filename
+    print('io.siesta.ExtractPDOS: Reading', filename)
     head, tail =  os.path.split(filename)
     nspin, norb, ev, pdos, usedOrbitals, usedAtoms, eF = ReadPDOSFile(filename, index, atom_index, species, nlist, llist, mlist)
     if FermiRef:
@@ -1181,24 +1183,24 @@ def ExtractPDOS(filename, outfile, index=[], atom_index=[], species=[], nlist=[]
         if eF == 0.0:
             eF = GetFermiEnergy(head+'/RUN.out')
         if eF == 0.0:
-            print 'io.siesta.ExtractPDOS: Reading', filename[:-5]+'.EIG'
+            print('io.siesta.ExtractPDOS: Reading', filename[:-5]+'.EIG')
             eF = ReadEIGfile(filename[:-5]+'.EIG')
-            print '... eF = %.4f eV'%eF
+            print('... eF = %.4f eV'%eF)
     else:
         # Set energy reference to SIESTAs internal
         eF = 0.0
     if Normalize and len(usedAtoms) > 0:
         pdos = pdos/len(usedAtoms)
-        print 'io.siesta.ExtractPDOS: Normalizing PDOS to states/atom/eV'
+        print('io.siesta.ExtractPDOS: Normalizing PDOS to states/atom/eV')
     if outfile!=None: # Write to file or return lists
         if nspin == 1: # No spin
-            print 'io.siesta.ExtractPDOS: Writing', outfile
+            print('io.siesta.ExtractPDOS: Writing', outfile)
             f = open(outfile, 'w')
             for i in range(len(ev)):
                 f.write('%.6f %.9f\n'%(ev[i]-eF, pdos[i]))
             f.close()
         elif nspin == 2: # Spin polarized
-            print 'io.siesta.ExtractPDOS: Writing', outfile
+            print('io.siesta.ExtractPDOS: Writing', outfile)
             f = open(outfile, 'w')
             for i in range(len(ev)):
                 f.write('%.6f %.9f %.9f\n'%(ev[i]-eF, pdos[2*i], -pdos[2*i+1]))
@@ -1282,7 +1284,7 @@ def GetPROJBANDSfromOrbitals(dom, index=[], atom_index=[], species=[], nlist=[],
         if l not in llist and llist != []:
             ok = False
         if ok:
-            print 'Adding PDOS from (k=%i,i=%i,ai=%i,s=%s,n=%i,l=%i)'%(k, i, ai, s, n, l)
+            print('Adding PDOS from (k=%i,i=%i,ai=%i,s=%s,n=%i,l=%i)'%(k, i, ai, s, n, l))
             data = node.getElementsByTagName('bandproj')[0] # First (and only) entry
             data = data.childNodes[0].data.split()
             for i in range(len(data)):
@@ -1343,7 +1345,7 @@ def ReadIonNCFile(filename, printnorm=False):
         pass
 
     file = NC4.Dataset(filename, 'r')
-    print 'Reading Basis from %s' % filename
+    print('Reading Basis from %s' % filename)
 
     # General attributes
     ion.filename = filename
@@ -1361,14 +1363,14 @@ def ReadIonNCFile(filename, printnorm=False):
     ion.cutoff = N.array(file.variables['cutoff'][:], N.float)
     ion.delta = N.array(file.variables['delta'][:], N.float)
 
-    print '   Element: %s   Atom number: %i,  L-orbs '% (ion.element, ion.atomnum), ion.L
+    print('   Element: %s   Atom number: %i,  L-orbs '% (ion.element, ion.atomnum), ion.L)
     for i in range(len(ion.L)):
-        rr = ion.delta[i] * N.array(range(len(ion.orb[i])), N.float)
+        rr = ion.delta[i] * N.array(list(range(len(ion.orb[i]))), N.float)
         ion.orb[i] = ion.orb[i]*(rr**ion.L[i])/(PC.Bohr2Ang**(3./2.))
         rr = rr*PC.Bohr2Ang
         # check normalization:
         if printnorm:
-            print '   orb %i (L=%i),    Norm = %.6f'%(i, ion.L[i], N.sum(rr*rr*(ion.orb[i]**2))* ion.delta[i]*PC.Bohr2Ang)
+            print('   orb %i (L=%i),    Norm = %.6f'%(i, ion.L[i], N.sum(rr*rr*(ion.orb[i]**2))* ion.delta[i]*PC.Bohr2Ang))
     ion.delta = PC.Bohr2Ang*ion.delta
     file.close()
     return ion
@@ -1402,9 +1404,9 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
         nn += ions[speciesnumber[i]].numorb
 
     if nn != lasto[LastAtom]-lasto[FirstAtom-1]:
-        print "Length of basis set build: %i"%nn
-        print "Size of Hamiltonian: %i"%(lasto[LastAtom]-lasto[FirstAtom-1])
-        print "Error: Could not build basis set. Check if all ion.nc files are there!"
+        print("Length of basis set build: %i"%nn)
+        print("Size of Hamiltonian: %i"%(lasto[LastAtom]-lasto[FirstAtom-1]))
+        print("Error: Could not build basis set. Check if all ion.nc files are there!")
         sys.exit(1)
 
     # Initiate basis variables
@@ -1437,10 +1439,10 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
                 basis.label.append(ion.label)
                 iorb = iorb+1
 
-    print 'io.siesta.BuildBasis: Generated basis'
-    print '... First atom      = %i (Siesta numbering)'%FirstAtom
-    print '... Last atom       = %i (Siesta numbering)'%LastAtom
-    print '... Basis dimension = %i'%len(basis.L)
+    print('io.siesta.BuildBasis: Generated basis')
+    print('... First atom      = %i (Siesta numbering)'%FirstAtom)
+    print('... Last atom       = %i (Siesta numbering)'%LastAtom)
+    print('... Basis dimension = %i'%len(basis.L))
     return basis
 
 #--------------------------------------------------------------------------------
@@ -1448,7 +1450,7 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
 
 
 def ReadCubeFile(filename):
-    print 'io.siesta.ReadCubeFile: Reading geometry from', filename
+    print('io.siesta.ReadCubeFile: Reading geometry from', filename)
     file = SIO_open(filename, 'r')
     # Read comments (lines 1-2)
     comm1 = file.readline()
@@ -1507,7 +1509,7 @@ def GetSiestaWalltime(infile):
         hours = seconds/60**2
     except:
         hours = 0.0
-        print 'io.siesta.GetSiestaWalltime: Walltime could not be extracted from', infile
+        print('io.siesta.GetSiestaWalltime: Walltime could not be extracted from', infile)
     return hours
 
 
@@ -1584,7 +1586,7 @@ class HS(object):
             sys.exit('io.siesta.HS.__init__: F90helpers do not support reading of gzipped TSHS-files. Please unzip and try again.\n')
 
         if UseF90helpers and F90imported:
-            print 'io.siesta.HS.__init__: Reading', fn
+            print('io.siesta.HS.__init__: Reading', fn)
             self.gamma, self.onlyS, self.nuo, self.no, self.nspin, self.maxnh, self.qtot, \
                 self.temp, self.nua, self.ef, self.cell, self.ts_kscell, self.ts_kdispl, \
                 self.ts_gamma_scf, self.istep, self.ia1 = F90.readtshs.read(fn)
@@ -1631,7 +1633,7 @@ class HS(object):
         self.xij = N.require(self.xij, requirements=['A', 'F'])
         if not self.onlyS:
             self.Hsparse = N.require(self.Hsparse, requirements=['A', 'F'])
-        print "Found %i atoms, (%i, %i) orbitals in super-, unit-cell"%(self.nua, self.no, self.nuo)
+        print("Found %i atoms, (%i, %i) orbitals in super-, unit-cell"%(self.nua, self.no, self.nuo))
         self.N = self.nuo
         self.makeDerivedQuant()
         if not self.gamma and not self.onlyS and self.version == 0:
@@ -1659,7 +1661,7 @@ class HS(object):
         ucell[nr,xyz]  : Unitcell
         xij[nr,xyz]
         """
-        print 'io.siesta.__ReadTSHSFile: Reading', filename
+        print('io.siesta.__ReadTSHSFile: Reading', filename)
         self.version = 0
         # Open binary Fortran file
         fortfile = SIO_open(filename, 'rb')
@@ -1679,7 +1681,7 @@ class HS(object):
             indxuo = N.array(ReadFortranBin(fortfile, fortranLong, nos))
         else:
             # For gamma point make indxuo such that indexes not pointing to unitcell give error, i.e., -1.
-            tmp1 = N.array(range(1, nou+1), N.int)
+            tmp1 = N.array(list(range(1, nou+1)), N.int)
             tmp2 = -N.ones((nos-nou), N.int)
             indxuo = N.concatenate((tmp1, tmp2))
         numhg = N.array(ReadFortranBin(fortfile, fortranLong, nou))
@@ -1794,7 +1796,7 @@ class HS(object):
             VC.Check("same-kpoint", abs(kpoint),
                      "Trying to set non-zero k-point for Gamma point calculation.")
         if N.any(N.abs(self.kpoint-kpoint) > VC.GetCheck("same-kpoint")):
-            if verbose: print "io.siesta.HS.setkpoint: %s k =" % self.fn, kpoint
+            if verbose: print("io.siesta.HS.setkpoint: %s k =" % self.fn, kpoint)
             self.kpoint = kpoint
             self.S = self.setkpointhelper(self.Ssparse, kpoint, UseF90helpers, atype=atype)
             if not self.onlyS:
@@ -1841,7 +1843,7 @@ class HS(object):
                 #        print "hej"
                     Full[iuo, juo] += Sparse[si]*phase[si]
         if not (Full.dtype == atype):
-            print 'io.siesta: Forcing array from %s to %s'%(Full.dtype, atype)
+            print('io.siesta: Forcing array from %s to %s'%(Full.dtype, atype))
         if (atype == N.float) or (atype == N.float32) or (atype == N.float64):
             return N.array(Full.real, atype)
         else:
@@ -1852,7 +1854,7 @@ class HS(object):
 
 def ReadTSHS(fn, **kwargs):
     if os.path.isfile(fn):
-        print 'io.siesta.ReadTSHS: Reading TSHS header from', fn
+        print('io.siesta.ReadTSHS: Reading TSHS header from', fn)
     else:
         raise ValueError('File %s not found'%fn)
     # return dictionary

@@ -8,6 +8,7 @@ Bandstructure and Fermi surface calculator
 .. currentmodule:: Inelastica.BandStruct
 
 """
+from __future__ import print_function
 
 import Inelastica.Symmetry as SYM
 import Inelastica.io.siesta as SIO
@@ -55,17 +56,17 @@ def readxv():
     fns = glob.glob('*.XV')
 
     if len(fns) > 1:
-        print "ERROR: BandStruct: More than one .XV file ... which geometry to choose???"
+        print("ERROR: BandStruct: More than one .XV file ... which geometry to choose???")
         sys.exit(1)
     elif len(fns) < 1:
-        print "ERROR: BandStruct: Error ... No .XV file found!"
+        print("ERROR: BandStruct: Error ... No .XV file found!")
         sys.exit(1)
 
-    print('Reading geometry from "%s" file' % fns[0])
+    print(('Reading geometry from "%s" file' % fns[0]))
     geom = MG.Geom(fns[0])
     geom.sym = SYM.Symmetry(fns[0], onlyLatticeSym=True)
     if geom.sym.NNbasis != geom.natoms:
-        print "ERROR: Siesta cell does not contain one unit cell"
+        print("ERROR: Siesta cell does not contain one unit cell")
         sys.exit(1)
 
 ########################################################
@@ -84,10 +85,10 @@ def readHS():
     global HS
     fn = glob.glob('*.TSHS')
     if len(fn) > 1:
-        print "ERROR: BandStruct: More than one .TSHS file ... which to choose???"
+        print("ERROR: BandStruct: More than one .TSHS file ... which to choose???")
         sys.exit(1)
     if len(fn) < 1:
-        print "ERROR: BandStruct: No .TSHS file ???"
+        print("ERROR: BandStruct: No .TSHS file ???")
         sys.exit(1)
     HS = SIO.HS(fn=fn[0])
 
@@ -200,7 +201,7 @@ def writeBands(ispin, what, bands):
         Nk = general.NNk
 
         f = open(general.DestDir+'/'+txt+sspin+'.dat', 'w')
-        xx = N.array(range(Nk), N.float)/(Nk-1.0)
+        xx = N.array(list(range(Nk)), N.float)/(Nk-1.0)
         iColor, Datasets = 1, []
         for ii in range(len(bands[jj][0, :])):
             # Choose bands within +-5 eV from Ef
@@ -263,24 +264,24 @@ For help use --help!
     parser.add_option_group(EC)
 
     (general, args) = parser.parse_args()
-    print description
+    print(description)
 
     if not os.path.exists(general.fdfFile):
         parser.error("No input fdf file found, specify with --fdf=file.fdf (default RUN.fdf)")
 
-    print args
+    print(args)
     if len(args) != 1:
         parser.error('ERROR: You need to specify destination directory')
     general.DestDir = args[0]
     if not os.path.isdir(general.DestDir):
-        print '\nBandStruct : Creating folder %s' %general.DestDir
+        print('\nBandStruct : Creating folder %s' %general.DestDir)
         os.mkdir(general.DestDir)
     else:
         parser.error('ERROR: destination directory %s already exist!'%general.DestDir)
 
     def myprint(arg, iofile):
         # Save in parameter file
-        print arg
+        print(arg)
         iofile.write(arg+'\n')
 
     class myopen(object):

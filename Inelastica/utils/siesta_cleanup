@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 
 import os
 import sys
@@ -103,11 +104,11 @@ def walktree(top, atime, rmTheFiles):
                 fn, zipped = unzippedname(pathname)
                 rm = rmfileQ(fn)
                 if rm and rmTheFiles:
-                    print 'Removing %s'%pathname
+                    print('Removing %s'%pathname)
                     os.remove(pathname)
                 else:
                     if not zipped:
-                        print 'Gzipping %s'%pathname
+                        print('Gzipping %s'%pathname)
                         tmp=os.popen("gzip -9 '%s' "%pathname)
                         list=tmp.readlines()
                         tmp.close()
@@ -117,7 +118,7 @@ def walktree(top, atime, rmTheFiles):
 
 
 def visitfile(file):
-    print 'visiting', file
+    print('visiting', file)
 
 if __name__ == '__main__':
     days = 30 # default value
@@ -132,27 +133,27 @@ if __name__ == '__main__':
     now=time.time()-days*24*60*60
 
     if len(sys.argv)<2:
-        print "\nUsage: python siesta_cleanup.py <path> [-d <days> (30 is default)]\n"
-        print "   Goes through directories and gzips files more than <days> days old"
-        print "   and removes files older than <days> that begin with:"
-        print rmfileshead
-        print "   contain the following string patterns:"
-        print rmpatterns
-        print "   or end with:"
-        print rmfilestail
-        print "   (NB. it will also remove zipped, gziped etc files with those names)"
+        print("\nUsage: python siesta_cleanup.py <path> [-d <days> (30 is default)]\n")
+        print("   Goes through directories and gzips files more than <days> days old")
+        print("   and removes files older than <days> that begin with:")
+        print(rmfileshead)
+        print("   contain the following string patterns:")
+        print(rmpatterns)
+        print("   or end with:")
+        print(rmfilestail)
+        print("   (NB. it will also remove zipped, gziped etc files with those names)")
     else:
         for thispath in sys.argv[1:]:
-            print "###################################################################"
-            print "Running siesta_cleanup.py on %s"%thispath
-            print "... Deleting files older than %i days that begin with"%days
-            print rmfileshead
-            print "   contain the following string patterns:"
-            print rmpatterns
-            print "   or end with:"
-            print rmfilestail
-            print "###################################################################"
+            print("###################################################################")
+            print("Running siesta_cleanup.py on %s"%thispath)
+            print("... Deleting files older than %i days that begin with"%days)
+            print(rmfileshead)
+            print("   contain the following string patterns:")
+            print(rmpatterns)
+            print("   or end with:")
+            print(rmfilestail)
+            print("###################################################################")
             bigfiles = walktree(thispath, now, rmTheFiles=True)
-            print "Big files (larger than 50 MB) found:"
+            print("Big files (larger than 50 MB) found:")
             for f in bigfiles:
-                print f
+                print(f)

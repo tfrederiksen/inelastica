@@ -3,6 +3,7 @@
 # Thomas Frederiksen
 # January 2018
 #
+from __future__ import print_function
 
 import numpy as N
 import netCDF4 as NC
@@ -23,31 +24,31 @@ def write2file(fn, x, y):
     for i, xi in enumerate(x):
         f.write('%.8f %.8e\n'%(xi, y[i]))
     f.close()
-    print '... Wrote', fn
+    print('... Wrote', fn)
 
 # Loop over arguments
 nout = NC.Dataset(args.output, 'w')
 wkpt = 1./len(args.ncfile)
-print 'Weight factor per kpoint:', wkpt
+print('Weight factor per kpoint:', wkpt)
 
 for i, fin in enumerate(args.ncfile):
     nin = NC.Dataset(fin, 'r')
-    print '\nReading k=', nin.variables['kpoint'][:], 'from', fin
+    print('\nReading k=', nin.variables['kpoint'][:], 'from', fin)
     if i==0:
         # Copy data structures from the first file
         # Set attibutes
         nout.setncatts({k: nin.getncattr(k) for k in nin.ncattrs()})
         # Set dimensions
-        for dname, dim in nin.dimensions.iteritems():
+        for dname, dim in nin.dimensions.items():
             nout.createDimension(dname, len(dim) if not dim.isunlimited() else None)
         # Variables
-        for vname, var in nin.variables.iteritems():
+        for vname, var in nin.variables.items():
             vout = nout.createVariable(vname, var.datatype, var.dimensions[:])
             vout.setncatts({k: var.getncattr(k) for k in var.ncattrs()})
             vout[:] = wkpt*var[:]
     else:
         # Just read data and add to output file
-        for vname, var in nin.variables.iteritems():
+        for vname, var in nin.variables.items():
             nout.variables[vname][:] += wkpt*var[:]
     nin.close()
 

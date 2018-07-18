@@ -32,6 +32,7 @@ Classes
 .. currentmodule:: Inelastica.SupercellPhonons
 
 """
+from __future__ import print_function
 
 import numpy as N
 import glob
@@ -100,8 +101,8 @@ def GetOptions(argv):
                 label = elm[2]
                 PC.PeriodicTable[anr] = label
                 PC.PeriodicTable[label] = anr
-        print 'AtomicMass =', PC.AtomicMass
-        print 'PeriodicTable =', PC.PeriodicTable
+        print('AtomicMass =', PC.AtomicMass)
+        print('PeriodicTable =', PC.PeriodicTable)
 
     return options
 
@@ -116,7 +117,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
     # PHONONIC PART
 
     def CheckSymmetries(self, TSrun=False):
-        print '\nPerforming symmetry analysis'
+        print('\nPerforming symmetry analysis')
         # Check if a smaller basis is present:
         Sym = Symmetry.Symmetry()
         # Find lattice symmetries
@@ -124,7 +125,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         if not TSrun:
             Sym.pointGroup() # Actually this call is only needed if phonons are computed
             #Sym.findIrreducible()
-            self.SetDynamicAtoms(range(1, Sym.basis.NN+1))
+            self.SetDynamicAtoms(list(range(1, Sym.basis.NN+1)))
         Sym.what()
         # Calculate lattice vectors for phase factors
         # The closest cell might be different depending on which atom is moved
@@ -139,14 +140,14 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         self.Sym = Sym
 
     def SymmetrizeFC(self, radius):
-        print '\nComputing symmetrized force constants'
+        print('\nComputing symmetrized force constants')
         self.mean_sym = self.Sym.symmetrizeFC(self.mean, 1, self.Sym.basis.NN, radi=radius)
         self.mean_sym = self.ApplySumRule(self.mean_sym)
 
     def ComputePhononModes_q(self, qpoint, verbose=True):
         # Compute phonon vectors
         if verbose:
-            print '\nSupercellPhonons.ComputePhononModes_q: Computing force constants at q = ', qpoint, '(1/Ang)'
+            print('\nSupercellPhonons.ComputePhononModes_q: Computing force constants at q = ', qpoint, '(1/Ang)')
         NN = self.Sym.basis.NN
         self.q = N.zeros((NN, 3, NN, 3), N.complex)
         # Loop over basis atoms
@@ -204,7 +205,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
             self.s0_k = self.TSHS0.S[:, :]
         else:
             if verbose:
-                print 'SupercellPhonons.ComputeElectronStates: k = ', kpoint, '(1/Ang)'
+                print('SupercellPhonons.ComputeElectronStates: k = ', kpoint, '(1/Ang)')
             # Fold onto primitive cell
             self.h0_k = self.Fold2PrimitiveCell(self.h0, kpoint)
             self.s0_k = self.Fold2PrimitiveCell(self.s0, kpoint)
@@ -253,7 +254,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
 
     def ComputeEPHcouplings_kq(self, kpoint, qpoint, verbose=True):
         if verbose:
-            print 'SupercellPhonons.ComputeEPHcouplings_kq: k = ', kpoint, ' q = ', qpoint, '(1/Ang)'
+            print('SupercellPhonons.ComputeEPHcouplings_kq: k = ', kpoint, ' q = ', qpoint, '(1/Ang)')
         # This assumes that phonon modes UU has been computed at that q
         const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
         M = N.zeros((len(self.hw), self.nspin, self.nao, self.nao), N.complex)
@@ -275,7 +276,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
 
 
 def ReadKpoints(filename):
-    print 'SupercellPhonons.ReadKpoints: Reading from', filename
+    print('SupercellPhonons.ReadKpoints: Reading from', filename)
     if filename.endswith('.nc'):
         return ReadKpoints_netcdf(filename)
     else:
@@ -341,7 +342,7 @@ def WriteKpoints(filename, klist, labels=None):
             f.write(labels[i])
         f.write('\n')
     f.close()
-    print 'SupercellPhonons.WriteKpoints: Wrote %i points to %s'%(len(klist), filename)
+    print('SupercellPhonons.WriteKpoints: Wrote %i points to %s'%(len(klist), filename))
 
 
 def WritePath(filename, path, steps):
@@ -364,15 +365,15 @@ def WritePath(filename, path, steps):
             k1 = path[i][0]
             kpts.append(k1)
             labels.append(path[i][1])
-    print 'High-symmetry path:'
+    print('High-symmetry path:')
     for k in path:
-        print k[1], k[0]
+        print(k[1], k[0])
     WriteKpoints(filename, kpts, labels)
 
 
 def SortBands(ev):
     # Sort bands by curvature minimization
-    print 'SupercellPhonons.SortBands: Minimizing curvature in band structure'
+    print('SupercellPhonons.SortBands: Minimizing curvature in band structure')
     kpts, bands = ev.shape
     # loop over k-points, starting from the third
     for i in range(2, kpts):
@@ -387,7 +388,7 @@ def SortBands(ev):
                     tmp = ev[i:, j].copy()
                     ev[i:, j] = ev[i:, k]
                     ev[i:, k] = tmp
-                    print "   ...@ k(%i): flip indices %i-%i"%(i, j, k)
+                    print("   ...@ k(%i): flip indices %i-%i"%(i, j, k))
     return ev
 
 
@@ -540,7 +541,7 @@ def main(options):
             else:
                 ev, evec = SCDM.ComputeElectronStates(k, verbose=False, TSrun=TSrun)
                 # otherwise something simple
-                if i%100 == 0: print '%i out of %i k-points computed'%(i, len(kpts))
+                if i%100 == 0: print('%i out of %i k-points computed'%(i, len(kpts)))
             if i == 0:
                 ncf.createDimension('nspin', SCDM.nspin)
                 ncf.createDimension('orbs', SCDM.rednao)
@@ -554,10 +555,10 @@ def main(options):
                 evecsRe = ncf.createVariable('eigenvectors.re', 'd', ('gridpts', 'nspin', 'orbs', 'bands'))
                 evecsIm = ncf.createVariable('eigenvectors.im', 'd', ('gridpts', 'nspin', 'orbs', 'bands'))
                 # Check eigenvectors
-                print 'SupercellPhonons: Checking eigenvectors at', k
+                print('SupercellPhonons: Checking eigenvectors at', k)
                 for j in range(SCDM.nspin):
                     ev2 = N.diagonal(MM.mm(MM.dagger(evec[j]), SCDM.h0_k[j], evec[j]))
-                    print ' ... spin %i: Allclose='%j, N.allclose(ev[j], ev2, atol=1e-5, rtol=1e-3)
+                    print(' ... spin %i: Allclose='%j, N.allclose(ev[j], ev2, atol=1e-5, rtol=1e-3))
                 ncf.sync()
             # Write to NetCDF
             evals[i, :] = ev[:, :nbands]
@@ -615,7 +616,7 @@ def main(options):
     if TSrun: # only electronic calculation
         # Ugly hack to get my old code to work again. -Magnus
         if options.FermiSurface == True:
-            import BandStruct as BS
+            from . import BandStruct as BS
             options.fdfFile = 'RUN.fdf'
             options.eMin, options.eMax = -10, 10
             options.NNk = 101
@@ -660,7 +661,7 @@ def main(options):
             else:
                 hw, U = SCDM.ComputePhononModes_q(q, verbose=False)
                 # otherwise something simple
-                if i%100 == 0: print '%i out of %i q-points computed'%(i, len(qpts))
+                if i%100 == 0: print('%i out of %i q-points computed'%(i, len(qpts)))
             if i == 0:
                 ncf.createDimension('bands', len(hw))
                 ncf.createDimension('displ', len(hw))
@@ -669,11 +670,11 @@ def main(options):
                 evecsRe = ncf.createVariable('eigenvectors.re', 'd', ('gridpts', 'bands', 'displ'))
                 evecsIm = ncf.createVariable('eigenvectors.im', 'd', ('gridpts', 'bands', 'displ'))
                 # Check eigenvectors
-                print 'SupercellPhonons.Checking eigenvectors at', q
+                print('SupercellPhonons.Checking eigenvectors at', q)
                 tmp = MM.mm(N.conjugate(U), SCDM.FCtilde, N.transpose(U))
                 const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
                 hw2 = const*N.diagonal(tmp)**0.5 # Units in eV
-                print ' ... Allclose=', N.allclose(hw, N.absolute(hw2), atol=1e-5, rtol=1e-3)
+                print(' ... Allclose=', N.allclose(hw, N.absolute(hw2), atol=1e-5, rtol=1e-3))
                 ncf.sync()
                 # Write only AXSF files for the first q-point
                 PH.WriteAXSFFiles(options.DestDir+'/q%i_re.axsf'%i, SCDM.Sym.basis.xyz, SCDM.Sym.basis.anr, hw, U.real, 1, SCDM.Sym.basis.NN)

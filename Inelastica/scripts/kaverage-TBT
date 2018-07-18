@@ -3,6 +3,7 @@
 # Thomas Frederiksen
 # March 2017
 #
+from __future__ import print_function
 
 import numpy as N
 import netCDF4 as NC
@@ -24,10 +25,10 @@ parser.add_argument('-e', '--ext', dest='ext', default='kavg.nc',
                     help='Output filename termination [default: %(default)s]')
 args = parser.parse_args()
 
-print 'skip =', args.skip
-print 'term =', args.term
-print 'var  =', args.var
-print 'ext  =', args.ext
+print('skip =', args.skip)
+print('term =', args.term)
+print('var  =', args.var)
+print('ext  =', args.ext)
 
 
 def walk(wkpt, E, grpin, grpout, id, label):
@@ -35,15 +36,15 @@ def walk(wkpt, E, grpin, grpout, id, label):
     # Attributes
     grpout.setncatts({k: grpin.getncattr(k) for k in grpin.ncattrs()})
     # Dimensions
-    for dname, dim in grpin.dimensions.iteritems():
+    for dname, dim in grpin.dimensions.items():
         grpout.createDimension(dname, len(dim) if not dim.isunlimited() else None)
     # Variables
-    for vname, var in grpin.variables.iteritems():
+    for vname, var in grpin.variables.items():
         if any(vname.endswith(t) for t in args.skip):
-            print id, 'VAR:%s <-- skipped'%vname
+            print(id, 'VAR:%s <-- skipped'%vname)
         elif vname in args.var or any(vname.endswith(t) for t in args.term):
             # Found a variable to average
-            print id, 'VAR:%s <-- k-averaged'%vname
+            print(id, 'VAR:%s <-- k-averaged'%vname)
             vout = grpout.createVariable(vname, var.datatype, var.dimensions[1:])
             vout.setncatts({k: var.getncattr(k) for k in var.ncattrs()})
             vout[:] = N.tensordot(wkpt, var[:], axes=([0], [0]))
@@ -51,16 +52,16 @@ def walk(wkpt, E, grpin, grpout, id, label):
                 writeascii(id, label+vname, E, vout[:])
         else:
             # Any other variable to be copied
-            print id, 'VAR:%s <-- copied'%vname
+            print(id, 'VAR:%s <-- copied'%vname)
             vout = grpout.createVariable(vname, var.datatype, var.dimensions)
             vout.setncatts({k: var.getncattr(k) for k in var.ncattrs()})
             vout[:] = var[:]
     # Groups
-    for gname, g in grpin.groups.iteritems():
+    for gname, g in grpin.groups.items():
         if gname in args.skip:
-            print id, 'GROUP:%s <-- skipped'%gname
+            print(id, 'GROUP:%s <-- skipped'%gname)
         else:
-            print id, 'GROUP:%s <-- copying'%gname
+            print(id, 'GROUP:%s <-- copying'%gname)
             go = grpout.createGroup(gname)
             # Recursive call
             walk(wkpt, E, g, go, id+'   ', label+'%s.'%g.name)
@@ -76,7 +77,7 @@ def writeascii(id, label, x, y):
     for i, xi in enumerate(x*Ry2eV):
         f.write('%.8f %.8e\n'%(xi, y[i]))
     f.close()
-    print id, '... Wrote', fn
+    print(id, '... Wrote', fn)
 
 
 # Loop over arguments
@@ -85,7 +86,7 @@ for nin in args.ncfiles:
     fin = nin.name
     if '.TBT.' in fin and fin.endswith('.nc') and not fin.endswith(args.ext):
         fout = fin[:-3]+'.'+args.ext
-        print '\nReading', fin
+        print('\nReading', fin)
         # Open NC files
         nin = NC.Dataset(fin, 'r')
         nout = NC.Dataset(fout, 'w')
@@ -99,6 +100,6 @@ for nin in args.ncfiles:
         walk(wkpt, E, nin, nout, '', fin[:-3]+'.')
         nout.close()
         nin.close()
-        print 'Write %s\n'%fout
+        print('Write %s\n'%fout)
     else:
-        print 'Skipping', fin
+        print('Skipping', fin)
