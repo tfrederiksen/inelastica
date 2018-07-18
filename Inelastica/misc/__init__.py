@@ -9,7 +9,7 @@ Miscellaneous functions
 
 """
 
-import multiprocessing
-import valuecheck
+from . import multiproc
+from . import valuecheck
 
 __all__ = [s for s in dir() if not s.startswith('_')]

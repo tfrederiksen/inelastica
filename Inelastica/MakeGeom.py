@@ -16,10 +16,11 @@ Classes
    Geom
 
 """
+from __future__ import print_function
 
 import numpy as N
 import copy
-import math
+from . import math
 import sys
 import netCDF4 as NC4
 import ast
@@ -57,7 +58,7 @@ def interpolateGeom(g0, g1, newlength):
 
     new.pbc = N.array(g0.pbc).copy()
     new.pbc[NN][2] = z0len+dz
-    print 'MakeGeom.interpolateGeom: Electrode separation interpolated to L = %f' %newlength
+    print('MakeGeom.interpolateGeom: Electrode separation interpolated to L = %f' %newlength)
     return new
 
 
@@ -150,7 +151,7 @@ class Geom(object):
     def rmAtom(self, rmnr):
         "Remove the offending atom"
         if rmnr < 0 or rmnr > self.natoms-1:
-            print "ERROR: You tried to remove an atom that isn't there"
+            print("ERROR: You tried to remove an atom that isn't there")
             sys.exit(1)
         self.xyz = self.xyz[0:rmnr]+self.xyz[rmnr+1:self.natoms]
         self.snr = self.snr[0:rmnr]+self.snr[rmnr+1:self.natoms]
@@ -185,7 +186,7 @@ class Geom(object):
         self.natoms += 1
 
     def sort(self):
-        raw_input('Sure you want to sort the structure?')
+        input('Sure you want to sort the structure?')
         new = Geom()
         tmp = []
         for i in range(self.natoms):
@@ -256,7 +257,7 @@ class Geom(object):
         if Degrees:
             angle = 2*N.pi/360.0*angle
         if not RotateSubset:
-            RotateThese = range(self.natoms) # Rotate all atoms
+            RotateThese = list(range(self.natoms)) # Rotate all atoms
         else:
             RotateThese = RotateSubset
         if RotationCenter.any():
@@ -314,7 +315,7 @@ class Geom(object):
     def MoveInsideUnitCell(self):
         # Assuming xyz-basis vectors
         #self.move2origo()
-        print 'MakeGeom.MoveInsideUnitCell: Moving atoms.'
+        print('MakeGeom.MoveInsideUnitCell: Moving atoms.')
         for i in range(self.natoms):
             self.xyz[i][0] = self.xyz[i][0]%self.pbc[0][0]
             self.xyz[i][1] = self.xyz[i][1]%self.pbc[1][1]
@@ -323,7 +324,7 @@ class Geom(object):
     def CalcZmatrix(self, first, last):
         'Calculates the Zmatrix for a molecule (SIESTA numbering)'
         zmat = N.zeros((last-first+1, 6), N.float)
-        print 'MakeGeom.CalcZmatrix: Calculating Zmatrix (from atom %i to %i, SIESTA numbering)...'%(first, last),
+        print('MakeGeom.CalcZmatrix: Calculating Zmatrix (from atom %i to %i, SIESTA numbering)...'%(first, last), end=' ')
         f = first-1 # Python numbering
         # 1st - Cartesian coordinates
         if last-first >= 0:
@@ -355,7 +356,7 @@ class Geom(object):
                 zmat[i-f, 3:] = N.array([GetDist(self.xyz[i-1], self.xyz[i]),
                                          GetAngle(self.xyz[i-2], self.xyz[i-1], self.xyz[i]),
                                          GetDihedral(self.xyz[i-3], self.xyz[i-2], self.xyz[i-1], self.xyz[i])])
-        print 'Done!'
+        print('Done!')
         return zmat
 
     # PURPOSE SPECIFIC FUNCTIONS
@@ -419,26 +420,26 @@ class Geom(object):
         elif len(self.leftContactList) == 0 and len(self.rightContactList) == 0:
             self.zLeftContact = 0.0
             self.ContactSeparation = max([self.pbc[ii][2] for ii in range(3)])
-        print 'MakeGeom.findContactsAndDevice: Electrode separation detected was L = %f' \
-              %self.ContactSeparation
+        print('MakeGeom.findContactsAndDevice: Electrode separation detected was L = %f' \
+              %self.ContactSeparation)
         counts = len(self.leftContactList), len(self.deviceList), \
                  len(self.rightContactList), len(self.xyz)
         if counts[0]+counts[1]+counts[2] != counts[3]:
             raise ValueError("Non conforming")
-        print '   ... Atoms (Left/Device/Right):  %i / %i / %i  =  %i'%counts
-        print '   ... DeviceFirst, DeviceLast = %i, %i  (Siesta numbering)'\
-              %(self.deviceList[0], self.deviceList[-1])
+        print('   ... Atoms (Left/Device/Right):  %i / %i / %i  =  %i'%counts)
+        print('   ... DeviceFirst, DeviceLast = %i, %i  (Siesta numbering)'\
+              %(self.deviceList[0], self.deviceList[-1]))
 
     def stretch2NewContactSeparation(self, NewContactSeparation, AtomsPerLayer,
                                      ListL=None, ListR=None):
         "Stretch system to NewContactSeparation"
         self.findContactsAndDevice(AtomsPerLayer)
-        print 'MakeGeom.stretch2NewContactSeparation:'
-        print '   ... Stretching from L = %f Ang --> L = %f Ang' \
-              %(self.ContactSeparation, NewContactSeparation)
-        if ListL: print '   ... ListL = [%i:%i] (Siesta numbering)'%(ListL[0], ListL[-1])
+        print('MakeGeom.stretch2NewContactSeparation:')
+        print('   ... Stretching from L = %f Ang --> L = %f Ang' \
+              %(self.ContactSeparation, NewContactSeparation))
+        if ListL: print('   ... ListL = [%i:%i] (Siesta numbering)'%(ListL[0], ListL[-1]))
         else: ListL = self.leftContactList
-        if ListR: print '   ... ListR = [%i:%i] (Siesta numbering)'%(ListR[0], ListR[-1])
+        if ListR: print('   ... ListR = [%i:%i] (Siesta numbering)'%(ListR[0], ListR[-1]))
         else: ListR = self.rightContactList
 
         # Scale device coordinates
@@ -469,14 +470,14 @@ class Geom(object):
         LayersPerBlock = BlockSize/AtomsPerLayer
         LayerSep = self.xyz[AtomsPerLayer][2]-self.xyz[0][2]
 
-        print 'MakeGeom.PasteElectrodeLayers:'
-        print '   ... Initial number of atoms      = %i' %len(self.xyz)
-        print '   ... AtomsPerLayer                = %i atoms' %AtomsPerLayer
-        print '   ... Block size                   = %i atoms' %BlockSize
-        print '   ... Block periodicity            = %.4f Ang'%(LayersPerBlock*LayerSep)
-        print '   ... Layer separation             = %.4f Ang'%LayerSep
-        print '   ... Layer(s) pasted to left      = %i' %LayersLeft
-        print '   ... Layer(s) pasted to right     = %i' %LayersRight
+        print('MakeGeom.PasteElectrodeLayers:')
+        print('   ... Initial number of atoms      = %i' %len(self.xyz))
+        print('   ... AtomsPerLayer                = %i atoms' %AtomsPerLayer)
+        print('   ... Block size                   = %i atoms' %BlockSize)
+        print('   ... Block periodicity            = %.4f Ang'%(LayersPerBlock*LayerSep))
+        print('   ... Layer separation             = %.4f Ang'%LayerSep)
+        print('   ... Layer(s) pasted to left      = %i' %LayersLeft)
+        print('   ... Layer(s) pasted to right     = %i' %LayersRight)
 
         # Make block geometry
         pieceR = Geom()
@@ -508,7 +509,7 @@ class Geom(object):
             self.prependAtom(pieceL.xyz[i], pieceL.snr[i], pieceL.anr[i])
         self.pbc[2][2] += (BlocksLeft*LayersPerBlock+ExtraLayersLeft)*LayerSep
 
-        print '   ... Final number of atoms        = %i' %len(self.xyz)
+        print('   ... Final number of atoms        = %i' %len(self.xyz))
 
     def BuildOnlyS(self, displacement=0.02):
         "Returns a new geometry object with 7 times as many atoms"
@@ -523,7 +524,7 @@ class Geom(object):
         return geom
 
     def ShiftPeriodicCellAlongZ(self, IndexShift):
-        print 'MakeGeom.ShiftPeriodicCellAlongZ: Shifting %i atoms from LEFT to RIGHT side of the unit cell'%IndexShift
+        print('MakeGeom.ShiftPeriodicCellAlongZ: Shifting %i atoms from LEFT to RIGHT side of the unit cell'%IndexShift)
         # Find cell vector with largest z-component
         zmax = 0
         for ii in range(3):
@@ -548,7 +549,7 @@ class Geom(object):
             tmp = N.array(geom.xyz)
             minz = min(tmp[:, 2])
             maxz = max(AddLeftList[:, 2])
-            for ii in reversed(range(len(AddLeftList))):
+            for ii in reversed(list(range(len(AddLeftList)))):
                 geom.prependAtom(AddLeftList[ii, :]+
                                  (-maxz+minz-dz)*N.array([0, 0, 1], N.float),
                                  geom.snr[0], geom.anr[0])
@@ -569,7 +570,7 @@ class Geom(object):
         ncfile = NC4.Dataset(ncfilename, 'r')
         hw = ncfile.variables['hw'][modeindex]
         U = ncfile.variables['U'][modeindex]
-        print 'MakeGeom.StretchAlongEigenvector: Stretching %.3e Ang along mode #%i (hw = %.4f eV).'%(displacement, modeindex, hw)
+        print('MakeGeom.StretchAlongEigenvector: Stretching %.3e Ang along mode #%i (hw = %.4f eV).'%(displacement, modeindex, hw))
         d = len(U)/3
         U = N.reshape(U, (d, 3))
         firstdynatom = int(ncfile.variables['DynamicAtoms'][0]-1)
@@ -595,14 +596,14 @@ class Geom(object):
         label, self.anr, self.xyz = SIO.ReadXYZFile(fn)
         self.natoms = len(self.xyz)
         #self.move2origo()
-        self.snr = ast.literal_eval(raw_input('Input snr expression:'))
+        self.snr = ast.literal_eval(input('Input snr expression:'))
         if len(self.xyz) != len(self.snr):
-            print 'Error assigning snr!'
+            print('Error assigning snr!')
         self.pbc = []
         for i in range(3):
-            vec = ast.literal_eval(raw_input('Input cell vector (%i):'%i))
+            vec = ast.literal_eval(input('Input cell vector (%i):'%i))
             if len(vec) != 3:
-                print 'Error assigning cell vector!'
+                print('Error assigning cell vector!')
             else:
                 self.pbc.append(vec)
 
@@ -701,7 +702,7 @@ def convert(infile, outfile, rep=[1, 1, 1], MoveInsideUnitCell=False, RoundOff=F
     geom = Geom(infile)
     if MoveInsideUnitCell: geom.MoveInsideUnitCell()
     if RoundOff:
-        print 'MakeGeom.convert: Performing rounding...'
+        print('MakeGeom.convert: Performing rounding...')
         for i in range(geom.natoms):
             for j in range(3):
                 geom.xyz[i][j] += 1e5
@@ -718,10 +719,10 @@ def convert(infile, outfile, rep=[1, 1, 1], MoveInsideUnitCell=False, RoundOff=F
     elif outfile[-4:] == '.mkl':
         geom.writeMKL(outfile, rep)
     elif outfile[-6:] == 'POSCAR':
-        print 'Repetition not implemented with the POSCAR conversion'
+        print('Repetition not implemented with the POSCAR conversion')
         geom.writePOSCAR(outfile, constrained=geom.constrained)
     else:
-        print 'Error - did not recognize output format in %s' %outfile
+        print('Error - did not recognize output format in %s' %outfile)
 
 
 def repeteANI(ANIinfile, XVinfile, outfile, rep=[1, 1, 1]):

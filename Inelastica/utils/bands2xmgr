@@ -41,6 +41,7 @@ where the optional keyword flags are:
     -l  [int]        : Set last band index in the sorting.
     -P               : Print eps file
 """
+from __future__ import print_function
 
 import sys
 import os.path
@@ -58,7 +59,7 @@ def SortOnce(EvsK, factor, firstband='', lastband=''):
     else: lastband = int(lastband)
     f = 0
     for i in range(2, len(EvsK)):
-        if i%25==0: print ' %i/%i'%(i, len(EvsK))
+        if i%25==0: print(' %i/%i'%(i, len(EvsK)))
         for j in range(firstband, lastband):
             for k in range(j+1, lastband):
                 d2EvsK = abs(EvsK[i, j]+EvsK[i-2, j]-2*EvsK[i-1, j])+abs(EvsK[i, k]+EvsK[i-2, k]-2*EvsK[i-1, k])
@@ -68,8 +69,8 @@ def SortOnce(EvsK, factor, firstband='', lastband=''):
                     tmp = EvsK[i:, j].copy()
                     EvsK[i:, j] = EvsK[i:, k]
                     EvsK[i:, k] = tmp
-                    print "   ...@ k(%i): flip indices %i-%i"%(i, j, k)
-    print "   Total flips = ", f
+                    print("   ...@ k(%i): flip indices %i-%i"%(i, j, k))
+    print("   Total flips = ", f)
     return EvsK, f
 
 
@@ -101,17 +102,17 @@ def SortThis(EvsK):
             lastband=int(sys.argv[i+1])
             break
         else: lastband = len(EvsK[0])-1
-    print "Starting sorting", time.ctime()
+    print("Starting sorting", time.ctime())
     round=1
     flips=100
     while flips>1:
-        print "SORT SCAN %i (with factor=%.8f)"%(round, factor)
+        print("SORT SCAN %i (with factor=%.8f)"%(round, factor))
         if '-R' in sys.argv:
             EvsK, flips = SortOnceReversed(EvsK, factor, firstband, lastband)
         else:
             EvsK, flips = SortOnce(EvsK, factor, firstband, lastband)
         round += 1
-    print "Finished sorting", time.ctime()
+    print("Finished sorting", time.ctime())
     return EvsK
 
 
@@ -158,8 +159,8 @@ if __name__ == '__main__':
     eF, EvsK, labels, spins = SIO.ReadBandsFile(sys.argv[1]+'.bands')
     DOS = SIO.ReadDOSFile(sys.argv[1]+'.DOS')
 
-    print 'Spins: ', spins
-    print 'Fermi energy: %.4f eV'%eF
+    print('Spins: ', spins)
+    print('Fermi energy: %.4f eV'%eF)
     if '-P' in sys.argv:
         epsfile = True
     else:

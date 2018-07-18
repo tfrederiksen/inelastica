@@ -8,6 +8,7 @@ IO interface with VASP
 .. currentmodule:: Inelastica.io.vasp
 
 """
+from __future__ import print_function
 
 import numpy as N
 import string
@@ -34,7 +35,7 @@ def VIO_open(filename, mode='r'):
 
 def ReadCONTCAR(filename):
     "Read CONTCAR file"
-    print 'io.vasp.ReadCONTCAR: Reading', filename
+    print('io.vasp.ReadCONTCAR: Reading', filename)
     ccarfile = VIO_open(filename, 'r')
     label = ccarfile.readline()
     scalefactor = float(ccarfile.readline())
@@ -52,9 +53,9 @@ def ReadCONTCAR(filename):
         speciesnumbers = N.array(firstline, N.int)
         specieslabels = []
         for i, s in enumerate(speciesnumbers):
-            specieslabels += [raw_input('Element label for group %i (%i atoms): '%(i+1, s))]
-    print 'specieslabels =', specieslabels
-    print 'speciesnumbers =', list(speciesnumbers)
+            specieslabels += [input('Element label for group %i (%i atoms): '%(i+1, s))]
+    print('specieslabels =', specieslabels)
+    print('speciesnumbers =', list(speciesnumbers))
     natoms = N.sum(speciesnumbers)
     # Read 'Selective Dynamics' and 'Direct' lines
     dircoor = True # Default is reading direct coordinates
@@ -77,7 +78,7 @@ def ReadCONTCAR(filename):
     # Ignore rest of the file
     ccarfile.close()
     # Convert to cartesian coordinates
-    print 'Read direct coordinates?', dircoor
+    print('Read direct coordinates?', dircoor)
     for ii in range(natoms):
         if dircoor:
             xyz[ii][:3] = xyz[ii, 0]*vectors[0]+xyz[ii, 1]*vectors[1]+xyz[ii, 2]*vectors[2]
@@ -88,7 +89,7 @@ def ReadCONTCAR(filename):
 
 def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LABEL', scalefactor=1.0, constrained=[]):
     "Write POSCAR file"
-    print 'io.vasp.WritePOSCAR: Writing', filename
+    print('io.vasp.WritePOSCAR: Writing', filename)
     pcarfile = open(filename, 'w')
     if label[:-2] != '\n':
         pcarfile.write(label+'\n')
@@ -124,7 +125,7 @@ def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LA
 
 def GetEnergies(OUTCAR):
     ocarfile = VIO_open(OUTCAR, 'r')
-    print 'io.vasp.GetEnergies: Reading', OUTCAR
+    print('io.vasp.GetEnergies: Reading', OUTCAR)
     #
     freeE, Etot, EtotSigma0 = 1e100, 1e100, 1e100
     for line in ocarfile:
@@ -145,7 +146,7 @@ def GetEnergies(OUTCAR):
 
 def GetEnergiesFromOszi(OSZICAR):
     oszicarfile = VIO_open(OSZICAR, 'r')
-    print 'io.vasp.GetEnergiesFromOszi: Reading', OSZICAR
+    print('io.vasp.GetEnergiesFromOszi: Reading', OSZICAR)
     #
     f, e0 = 1e100, 1e100
     for line in oszicarfile:
@@ -158,7 +159,7 @@ def GetEnergiesFromOszi(OSZICAR):
 
 def GetMagnetization(OSZICAR):
     oszicarfile = VIO_open(OSZICAR, 'r')
-    print 'io.vasp.GetMagnetization: Reading', OSZICAR
+    print('io.vasp.GetMagnetization: Reading', OSZICAR)
     #
     mag = 1e100
     for line in oszicarfile:
@@ -170,19 +171,19 @@ def GetMagnetization(OSZICAR):
 
 def GetSpecies(OUTCAR):
     ocarfile = VIO_open(OUTCAR, 'r')
-    print 'io.vasp.GetSpecies: Reading', OUTCAR
+    print('io.vasp.GetSpecies: Reading', OUTCAR)
     atoms = []
     for line in ocarfile:
         if 'TITEL' in line:
             l = line.split()
-            print l
+            print(l)
             atoms += [l[3]]
     return atoms
 
 
 def GetVibModesNoScaling(OUTCAR):
     ocarfile = VIO_open(OUTCAR, 'r')
-    print 'io.vasp.GetVibrations: Reading', OUTCAR
+    print('io.vasp.GetVibrations: Reading', OUTCAR)
     freq = []
     modes = []
     v = []
@@ -197,7 +198,7 @@ def GetVibModesNoScaling(OUTCAR):
             l = line.split()
             if 'meV' in line:
                 # grep frequency
-                print line,
+                print(line, end=' ')
                 if 'f/i' in line: # imaginary as negative
                     freq.append(-float(l[-2]))
                 else:
@@ -213,7 +214,7 @@ def GetVibModesNoScaling(OUTCAR):
 
 def GetVibModesMassScaled(OUTCAR):
     ocarfile = VIO_open(OUTCAR, 'r')
-    print 'io.vasp.GetVibrations: Reading', OUTCAR
+    print('io.vasp.GetVibrations: Reading', OUTCAR)
     freq = []
     modes = []
     v = []
@@ -225,7 +226,7 @@ def GetVibModesMassScaled(OUTCAR):
             l = line.split()
             if 'meV' in line:
                 # grep frequency
-                print line,
+                print(line, end=' ')
                 if 'f/i' in line: # imaginary as negative
                     freq.append(-float(l[-2]))
                 else:
@@ -243,13 +244,13 @@ def GetVibModesMassScaled(OUTCAR):
 
 def ExtractPDOS(filename, outfile, atom_index=[]):
     "Read DOSCAR file and sum over group of atoms (python numbering)"
-    print 'io.vasp.ExtractPDOS: Reading', filename
+    print('io.vasp.ExtractPDOS: Reading', filename)
     f = VIO_open(filename, 'r')
     # Read number of atoms on first line
     s = f.readline()
     s = s.split()
     atoms = int(s[0])
-    print 'Atoms =', atoms
+    print('Atoms =', atoms)
     # skip 4 lines
     for i in range(4):
         f.readline()
@@ -260,11 +261,11 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
     Emin = float(s[1])
     pts = int(s[2])
     eF = float(s[3])
-    print 'Emin,Emax,pts =', Emin, Emax, pts
-    print 'eF = ', eF
+    print('Emin,Emax,pts =', Emin, Emax, pts)
+    print('eF = ', eF)
     # If atom_index not specified take all:
     if atom_index == []:
-        atom_index = range(atoms)
+        atom_index = list(range(atoms))
     # Loop over atom PDOS
     dat = N.zeros((pts, 19), N.float)
     extrablock = 0
@@ -287,9 +288,9 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
                 dat[e, 0] = s[0]-eF
                 dat[e, 1:1+9*spin] += N.array(s[1:1+9*spin])
                 if e == 0:
-                    print '  adding %i'%(j-extrablock),
+                    print('  adding %i'%(j-extrablock), end=' ')
             elif e == 0:
-                print '  skipping %i'%(j-extrablock),
+                print('  skipping %i'%(j-extrablock), end=' ')
         # skip header line
         f.readline()
     if extrablock == 1:
@@ -310,12 +311,12 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
                 dat[e, 0] = s[0]-eF
                 dat[e, 1:1+9*spin] += N.array(s[1:1+9*spin])
                 if e == 0:
-                    print '  adding %i'%(j-extrablock),
+                    print('  adding %i'%(j-extrablock), end=' ')
             elif e == 0:
-                print '  skipping %i'%(j-extrablock),
+                print('  skipping %i'%(j-extrablock), end=' ')
         # skip header line
         f.readline()
-        print
+        print()
     # Make spin=2 negative
     if spin == 2:
         sgn = N.ones(1+9*spin)
@@ -324,7 +325,7 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
         sgn2 = N.array(pts*[sgn])
         dat = dat*sgn2
     # Write output
-    print 'io.vasp.ExtractPDOS: Writing', outfile
+    print('io.vasp.ExtractPDOS: Writing', outfile)
     fout = open(outfile, 'w')
     for i in range(pts):
         s = ''

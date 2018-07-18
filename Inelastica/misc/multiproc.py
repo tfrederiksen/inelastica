@@ -1,16 +1,15 @@
 """
 
-:mod:`Inelastica.misc.multiprocessing`
-======================================
+:mod:`Inelastica.misc.multiproc`
+================================
 
-.. currentmodule:: Inelastica.misc.multiprocessing
+.. currentmodule:: Inelastica.misc.multiproc
 
 """
+from __future__ import print_function
 
-from __future__ import print_function, absolute_import
-
-import sys
 import multiprocessing as MP
+import sys
 import os
 
 

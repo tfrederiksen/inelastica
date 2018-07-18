@@ -16,6 +16,8 @@ Classes
    NCfile
 
 """
+from __future__ import print_function
+
 import numpy as N
 import netCDF4 as NC4
 
@@ -53,11 +55,11 @@ class NCfile(object):
     def write(self, A, label, vartype='d'):
         "Writes numpy array to file"
         dim = self.__checkDimensions(A)
-        print 'io.netcdf: Writing variable %s(%s) to file %s'%(label, vartype, self.fn)
+        print('io.netcdf: Writing variable %s(%s) to file %s'%(label, vartype, self.fn))
         try:
             self.file.createVariable(label, vartype, dim)
         except:
-            print '  ...variable %s already exist. Overwriting!!!'%label
+            print('  ...variable %s already exist. Overwriting!!!'%label)
         self.variables[label][:] = N.array(A, dtype=vartype)
 
     def __checkDimensions(self, A):

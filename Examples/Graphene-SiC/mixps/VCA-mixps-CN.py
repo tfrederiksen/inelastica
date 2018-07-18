@@ -3,6 +3,8 @@ Created on 2016/08/08
 
 @author: Emi Minamitani
 '''
+from __future__ import print_function
+
 import argparse
 import os
 import re

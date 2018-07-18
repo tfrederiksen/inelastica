@@ -9,10 +9,10 @@ Modules for reading/writing in various file formats
 
 """
 
-import siesta
-import vasp
-import xmgrace
-import netcdf
-import log
+from . import siesta
+from . import vasp
+from . import xmgrace
+from . import netcdf
+from . import log
 
 __all__ = [s for s in dir() if not s.startswith('_')]

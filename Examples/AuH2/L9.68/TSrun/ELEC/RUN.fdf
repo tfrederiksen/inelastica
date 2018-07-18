@@ -29,4 +29,6 @@ xc.authors            PBE           # Exchange-correlation version
 
 DM.UseSaveDM          true          # to use continuation files
 
+TS.HS.Save True
+
 %include STRUCT.fdf

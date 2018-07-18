@@ -39,6 +39,7 @@ orthogonal space that is fourier transformed.
 .. currentmodule:: Inelastica.pyTBT
 
 """
+from __future__ import print_function
 
 import numpy as N
 import Inelastica.io.siesta as SIO
@@ -192,7 +193,7 @@ def main(options):
         import scipy.linalg as SLA
         DevGF.setkpoint(N.zeros(2))
         ev0, es0 = SLA.eigh(DevGF.H, DevGF.S)
-        print 'MPSH eigenvalues:', ev0
+        print('MPSH eigenvalues:', ev0)
         #print 'MPSH eigenvector normalizations:',N.diag(MM.mm(MM.dagger(es0),DevGF.S,es0)).real # right
 
     # Loop over spin
@@ -243,7 +244,7 @@ def main(options):
             # Print calculated quantities
             err = (N.abs(Tavg[0, 0]-Tavg[0, 1])+N.abs(Tavg[0, 0]-Tavg[0, 2]))/2
             relerr = err/Tavg[0, 0]
-            print 'ispin= %i, e= %.4f, Tavg= %.8f, RelErr= %.1e'%(iSpin, ee, Tavg[0, 0], relerr)
+            print('ispin= %i, e= %.4f, Tavg= %.8f, RelErr= %.1e'%(iSpin, ee, Tavg[0, 0], relerr))
             transline = '\n%.10f '%ee
             noiseline = '\n%.10f '%ee
             for ichan in range(options.numchan+1):
@@ -263,7 +264,7 @@ def main(options):
                 DOSR[iSpin, ie, :] += N.diag(AavR).real/(2*N.pi)
                 MPSHL[iSpin, ie, :] += N.diag(MM.mm(MM.dagger(es0), AavL, es0)).real/(2*N.pi)
                 MPSHR[iSpin, ie, :] += N.diag(MM.mm(MM.dagger(es0), AavR, es0)).real/(2*N.pi)
-                print 'ispin= %i, e= %.4f, DOSL= %.4f, DOSR= %.4f'%(iSpin, ee, N.sum(DOSL[iSpin, ie, :]), N.sum(DOSR[iSpin, ie, :]))
+                print('ispin= %i, e= %.4f, DOSL= %.4f, DOSR= %.4f'%(iSpin, ee, N.sum(DOSL[iSpin, ie, :]), N.sum(DOSR[iSpin, ie, :])))
         fo.write('\n')
         fo.close()
         foSN.write('\n')

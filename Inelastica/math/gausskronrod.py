@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import numpy as N
 
 
@@ -109,10 +111,10 @@ def _abwe1(n, m, tol, coef2, even, b, x):
 #  Catch non-convergence.
 #
     if ka != 1:
-        print ''
-        print 'ABWE1 - Fatal error!'
-        print '  Iteration limit reached.'
-        print '  Last DELTA was %e' % (delta)
+        print('')
+        print('ABWE1 - Fatal error!')
+        print('  Iteration limit reached.')
+        print('  Last DELTA was %e' % (delta))
         sys.exit('ABWE1 - Fatal error!')
 #
 #  Computation of the weight.
@@ -178,10 +180,10 @@ def _abwe2(n, m, tol, coef2, even, b, x):
         if abs(delta) <= tol:
             ka = 1
     if ka != 1:
-        print ''
-        print 'ABWE2 - Fatal error!'
-        print '  Iteration limit reached.'
-        print '  Last DELTA was %e' % delta
+        print('')
+        print('ABWE2 - Fatal error!')
+        print('  Iteration limit reached.')
+        print('  Last DELTA was %e' % delta)
         sys.exit('ABWE2 - Fatal error!')
     an = n
     w2 = 2.0 / (an * pd2 * p0)

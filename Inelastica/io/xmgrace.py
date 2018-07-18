@@ -65,6 +65,7 @@ Classes
    Plot
 
 """
+from __future__ import print_function
 
 import time
 import math
@@ -102,7 +103,7 @@ def Datafile2XYsets(fn, Sort=False, **keywords):
     """
     Reads an ascii file and applies ``Array2XYsets(...)``
     """
-    print 'io.xmgrace.Datafile2XYsets: reading', fn
+    print('io.xmgrace.Datafile2XYsets: reading', fn)
     f = open(fn, 'r')
     A = []
     for line in f:
@@ -115,11 +116,11 @@ def Datafile2XYsets(fn, Sort=False, **keywords):
     f.close()
     A = N.array(A)
     if Sort:
-        print ' ... sorting along x-values'
+        print(' ... sorting along x-values')
         tmp = N.transpose(A)
         argi = tmp.argsort()[0] # sort x-values
         A = A[argi]
-    print ' ... data shape =', N.shape(A)
+    print(' ... data shape =', N.shape(A))
     return Array2XYsets(A, **keywords)
 
 
@@ -277,7 +278,7 @@ class XYset(Dataset):
         self.x = N.array(x)
         self.y = N.array(y)
         if len(x) != len(y):
-            print 'ERROR: x and y data lists are not of equal length!!!'
+            print('ERROR: x and y data lists are not of equal length!!!')
             error
         self.xmin = float(min(self.x))
         self.ymin = float(min(self.y))
@@ -697,12 +698,12 @@ class Plot(object):
     def AddGraphs(self, *graphs):
         "Append graph object(s) to plot."
         for graph in graphs:
-            print 'Graph %i appended to plot \"%s\"'%(len(self.graphs), self.filename)
+            print('Graph %i appended to plot \"%s\"'%(len(self.graphs), self.filename))
             self.graphs.append(graph)
 
     def ArrangeGraphs(self, nx=1, ny=1, vspace=0.1, hspace=0.1, order=0):
         "Arranges the graphs on the plot frame with nx rows and ny columns."
-        print 'Arranging graphs in format %ix%i using type %i ordering'%(nx, ny, order)
+        print('Arranging graphs in format %ix%i using type %i ordering'%(nx, ny, order))
         x0, y0 = self.frame[0], self.frame[1]
         x1, y1 = self.frame[2], self.frame[3]
         dx = ((self.frame[2]-self.frame[0])-(nx-1)*hspace)/nx
@@ -710,35 +711,35 @@ class Plot(object):
         for i in range(len(self.graphs)):
             graph = self.graphs[i]
             if order == 1:
-                print '... %i: Filling top to down, starting from upper left'%i
+                print('... %i: Filling top to down, starting from upper left'%i)
                 x = x0+(i/ny)*(dx+hspace)
                 y = y1-dy-(i%ny)*(dy+vspace)
             elif order == 2:
-                print '... %i: Filling left to right, starting from lower left'%i
+                print('... %i: Filling left to right, starting from lower left'%i)
                 x = x0+(i%nx)*(dx+hspace)
                 y = y0+(i/nx)*(dy+vspace)
             elif order == 3:
-                print '... %i: Sorting down to top, starting from lower left'%i
+                print('... %i: Sorting down to top, starting from lower left'%i)
                 x = x0+(i/ny)*(dx+hspace)
                 y = y0+(i%ny)*(dy+vspace)
             elif order == 4:
-                print '... %i: Sorting right to left, starting from upper right'%i
+                print('... %i: Sorting right to left, starting from upper right'%i)
                 x = x1-dx-(i%nx)*(dx+hspace)
                 y = y1-dy-(i/nx)*(dy+vspace)
             elif order == 5:
-                print '... %i: Sorting top to down, starting from upper right'%i
+                print('... %i: Sorting top to down, starting from upper right'%i)
                 x = x1-dx-(i/ny)*(dx+hspace)
                 y = y1-dy-(i%ny)*(dy+vspace)
             elif order == 6:
-                print '... %i: Sorting right to left, starting from lower right'%i
+                print('... %i: Sorting right to left, starting from lower right'%i)
                 x = x1-dx-(i%nx)*(dx+hspace)
                 y = y0+(i/nx)*(dy+vspace)
             elif order == 7:
-                print '... %i: Sorting down to top, starting from lower right'%i
+                print('... %i: Sorting down to top, starting from lower right'%i)
                 x = x1-dx-(i/ny)*(dx+hspace)
                 y = y0+(i%ny)*(dy+vspace)
             else:
-                print '...%i: Filling left to right, starting from upper left (default)'%i
+                print('...%i: Filling left to right, starting from upper left (default)'%i)
                 x = x0+(i%nx)*(dx+hspace)
                 y = y1-dy-(i/nx)*(dy+vspace)
             graph.view = [x, y, x+dx, y+dy]
@@ -801,7 +802,7 @@ class Plot(object):
     def WriteFile(self, filename=''):
         "Writes the GRACE commands that describe the whole plot to a file."
         if filename == '': filename = self.filename
-        print 'Writing plot to file \"%s\"'%(filename)
+        print('Writing plot to file \"%s\"'%(filename))
         f = open(filename, 'w')
         f.write(self.string)
         for i in range(len(self.graphs)):
@@ -826,14 +827,14 @@ class Plot(object):
         if printfile.endswith('.png'): dev += 'PNG'
         if printfile.endswith('.gmf'): dev += 'Metafile'
         os.system('%s %s -hardcopy %s -printfile %s' %(path2grace, self.filename, dev, printfile))
-        print 'Printing plot to file \"%s\"'%printfile
+        print('Printing plot to file \"%s\"'%printfile)
 
     def Print(self, printcmd='lp -c', path2grace='xmgrace'):
         "Sends plot to printer."
         tmpfile = 'tmp.xmgr.ps'
         self.Print2File(tmpfile, path2grace)
         os.system(printcmd+tmpfile)
-        print 'Plot send to printer (\"%s %s\")'%(printcmd, tmpfile)
+        print('Plot send to printer (\"%s %s\")'%(printcmd, tmpfile))
 
 
 def demo():

@@ -20,6 +20,7 @@ Classes
 =======================
 https://doi.org/10.1142/9789812839664_0016
 """
+from __future__ import print_function
 
 import numpy as N
 import numpy.linalg as LA
@@ -239,7 +240,7 @@ class step(object):
             try:
                 os.remove(self.dirr+"/RUN.out")
             except Exception as e:
-                print e
+                print(e)
             fns = glob.glob(self.dirr+'/*.XV')
             for fn in fns:
                 os.remove(fn)
@@ -324,7 +325,7 @@ class step(object):
 
 def checkConst(a,b):
     if not N.allclose(a.const, b.const):
-        print "Error: NEB: constraints on initial and final states not the same"
+        print("Error: NEB: constraints on initial and final states not the same")
         sys.exit(1)
     for ii in a.const:
         if not N.allclose(a.FDFgeom.xyz[ii[0]:ii[1]+1],b.FDFgeom.xyz[ii[0]:ii[1]+1]):
@@ -350,12 +351,12 @@ def readxv(dirpath):
     fns = glob.glob(dirpath+'/*.XV')
 
     if len(fns) > 1:
-        print "ERROR: NEB: More than one .XV file in dir:%s"%dirpath
+        print("ERROR: NEB: More than one .XV file in dir:%s"%dirpath)
         sys.exit(1)
     elif len(fns) < 1:
         return None
 
-    print('Reading geometry from "%s" file' % fns[0])
+    print(('Reading geometry from "%s" file' % fns[0]))
     geom = MG.Geom(fns[0])
     return geom
 
@@ -378,10 +379,10 @@ For help use --help!
     import argparse
 
     # if text string is specified, convert to list
-    print argv
+    print(argv)
     if isinstance(argv, VC.string_types):
         argv = argv.split()
-    print argv
+    print(argv)
     p = argparse.ArgumentParser(description=description)
     p.add_argument('initial', help='Initial geometry')
     p.add_argument('final', help='Final geometry')
@@ -428,13 +429,13 @@ For help use --help!
 
     print('##################################################################################')
     print('## NEB options')
-    print('Number of intermediate steps  : %i'%opts.NNEB)
-    print('Tangent mixing                : %f'%opts.tMix)
-    print('Processors                    : %i'%opts.proc)
-    print('Acceleration [A/(eV/A)/step]  : %f'%opts.moveK)
-    print('Max move distance/coord [A]   : %f'%opts.maxDist)
-    print('Convergence criteria [eV/A]   : %f'%opts.convCrit)
-    print('Constraints                   : ',opts.const2)
+    print(('Number of intermediate steps  : %i'%opts.NNEB))
+    print(('Tangent mixing                : %f'%opts.tMix))
+    print(('Processors                    : %i'%opts.proc))
+    print(('Acceleration [A/(eV/A)/step]  : %f'%opts.moveK))
+    print(('Max move distance/coord [A]   : %f'%opts.maxDist))
+    print(('Convergence criteria [eV/A]   : %f'%opts.convCrit))
+    print(('Constraints                   : ',opts.const2))
     print('##################################################################################')
 
     if opts.const2!=None: # Internal numbering

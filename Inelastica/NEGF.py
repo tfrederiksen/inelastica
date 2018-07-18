@@ -19,6 +19,7 @@ Classes
    GF
 
 """
+from __future__ import print_function
 
 import numpy as N
 import numpy.linalg as LA
@@ -37,15 +38,15 @@ try:
     F90_lapack_imp = True
 except:
     F90_lapack_imp = False
-    print "########################################################"
-    print "Problems encountered with F90_lapack.so"
-    print "The linking/finding of LAPACK routines does not work"
-    print "Ensure the placement of LAPACK in your LD_LIBRARY_PATH"
-    print "Try compiling manually following these steps:"
-    print " $ cd Inelastica/fortran"
-    print " $ source compile.bat (or compile_alternative.bat)"
-    print " $ cp F90_lapack.so <python>/site-packages/Inelastica/fortran/"
-    print "########################################################"
+    print("########################################################")
+    print("Problems encountered with F90_lapack.so")
+    print("The linking/finding of LAPACK routines does not work")
+    print("Ensure the placement of LAPACK in your LD_LIBRARY_PATH")
+    print("Try compiling manually following these steps:")
+    print(" $ cd Inelastica/fortran")
+    print(" $ source compile.bat (or compile_alternative.bat)")
+    print(" $ cp F90_lapack.so <python>/site-packages/Inelastica/fortran/")
+    print("########################################################")
 
 #try:
 #    import scipy.linalg as SLA
@@ -83,19 +84,19 @@ class SigDir(object):
         self.path, self.data = path, {}
         self.files, self.newFile = [], None
         for ii in glob.glob(path+'/Sig*.nc'):
-            print ii
+            print(ii)
             self.add(ii)
 
     def add(self, fn):
         ncfile = NC4.Dataset(fn, 'r')
         if 'Done' in ncfile.variables:
-            print "Read ", fn
+            print("Read ", fn)
             ncv = ncfile.variables
             hash1, hash2l, reE, imE, LR, ispin, etaLead = ncv['hash'][:], ncv['hash2'][:], ncv['reE'][:], ncv['imE'][:], ncv['left'][:], ncv['ispin'][:], ncv['etaLead'][:]
             hash1 = [dec2hash(ii) for ii in hash1]
             for ii in range(len(reE)):
                 hash2 = dec2hash(hash2l[ii])
-                print "Found ", hash2
+                print("Found ", hash2)
                 self.data[hash2] = [ncfile, ii]
             self.files += [ncfile]
         else:
@@ -107,9 +108,9 @@ class SigDir(object):
         else:
             left = 0
         hash2 = myHash([N.array(hash), N.array(ee.real), N.array(ee.imag), N.array(kp), N.array(left), N.array(ispin), N.array(etaLead)])
-        print "Get ", hash2
+        print("Get ", hash2)
         if hash2 in self.data:
-            print "Found"
+            print("Found")
             ncf, ii = self.data[hash2]
             return True, ncf.variables['reSig'][ii, :, :]+1j*ncf.variables['imSig'][ii, :, :]
         else:
@@ -148,7 +149,7 @@ class SigDir(object):
         nfv['hash2'][NN, :] = hash2dec(hash2)
         nfv['kp'][NN, :], nfv['left'][NN], nfv['ispin'][NN], nfv['etaLead'][NN] = kp, left, ispin, etaLead
         nfv['reSig'][NN, :, :], nfv['imSig'][NN, :, :] = Sig.real, Sig.imag
-        print "Put ", hash2
+        print("Put ", hash2)
         self.data[hash2] = [self.newFile, NN]
         self.newFileIndx += 1
 
@@ -234,12 +235,12 @@ class ElectrodeSelfEnergy(object):
             Found, Sig = SavedSig.getSig(self.path, self.hash, eeshifted, qp, left*1, ispin, etaLead)
             if Found:
                 if self.scaling != 1.0:
-                    print 'NEGF.getSig: Scaling self-energy with a factor', self.scaling
+                    print('NEGF.getSig: Scaling self-energy with a factor', self.scaling)
                 return Sig*self.scaling
 
         if ispin >= self.HS.nspin:
             ispin = 0
-            print "Warning: Non-spinpolarized electrode calculation used for both spin up and down"
+            print("Warning: Non-spinpolarized electrode calculation used for both spin up and down")
 
         NA1, NA2 = self.NA1, self.NA2
         nuo = self.HS.nuo
@@ -327,7 +328,7 @@ class ElectrodeSelfEnergy(object):
         if useSigNCfiles:
             SavedSig.addSig(self.path, self.hash, eeshifted, qp, left, ispin, etaLead, Sig)
         if self.scaling != 1.0:
-            print 'NEGF.getSig: Scaling self-energy with a factor', self.scaling
+            print('NEGF.getSig: Scaling self-energy with a factor', self.scaling)
         return Sig*self.scaling
 
     def getg0(self, ee, kpoint, left=True, ispin=0, UseF90=True):
@@ -383,9 +384,9 @@ class ElectrodeSelfEnergy(object):
         err = N.max(N.abs(g00-LA.inv(ee*s00-h00-\
                                      MM.mm(h01-ee*s01, g00, MM.dagger(h01)-ee*MM.dagger(s01)))))
         if err > 1.0e-8 and left:
-            print "WARNING: Lopez-scheme not-so-well converged for LEFT electrode at E = %.4f eV:"%ee, err
+            print("WARNING: Lopez-scheme not-so-well converged for LEFT electrode at E = %.4f eV:"%ee, err)
         if err > 1.0e-8 and not left:
-            print "WARNING: Lopez-scheme not-so-well converged for RIGHT electrode at E = %.4f eV:"%ee, err
+            print("WARNING: Lopez-scheme not-so-well converged for RIGHT electrode at E = %.4f eV:"%ee, err)
         return g00
 
     def F90calcg0(self, ee, ispin=0, left=True):
@@ -473,7 +474,7 @@ class ElectrodeSelfEnergy(object):
                     if myConvTest > VC.GetCheck("Lopez-Sancho-warning"):
                         v = "RIGHT"
                         if left: v = "LEFT"
-                        print "WARNING: Lopez-scheme not-so-well converged for "+v+" electrode at E = %.4f eV:"%ee, myConvTest
+                        print("WARNING: Lopez-scheme not-so-well converged for "+v+" electrode at E = %.4f eV:"%ee, myConvTest)
                 else:
                     VC.Check("Lopez-Sancho", myConvTest,
                              "Error: gs iteration {0}".format(iteration))
@@ -539,7 +540,7 @@ class GF(object):
         """
         self.elecL, self.elecR, self.Bulk = elecL, elecR, Bulk
         self.HS = SIO.HS(TSHSfile, BufferAtoms=BufferAtoms)
-        print 'GF: UseBulk=', Bulk
+        print('GF: UseBulk=', Bulk)
         self.DeviceAtoms=DeviceAtoms
         if DeviceAtoms[0] <= 1:
             self.DeviceAtoms[0] = 1
@@ -557,12 +558,12 @@ class GF(object):
         self.nuo = self.DeviceOrbs[1]-self.DeviceOrbs[0]+1
         self.nuoL, self.nuoR = self.nuoL0, self.nuoR0 # Not folded, for folded case changed below
 
-        print "GF:", TSHSfile
-        print "Device atoms %i-%i, orbitals %i-%i"%(tuple(self.DeviceAtoms+self.DeviceOrbs))
+        print("GF:", TSHSfile)
+        print("Device atoms %i-%i, orbitals %i-%i"%(tuple(self.DeviceAtoms+self.DeviceOrbs)))
         if not self.FoldedL:
-            print "Suggest left folding to atom : ", self.elecL.HS.nua*self.elecL.NA1*self.elecL.NA2+1
+            print("Suggest left folding to atom : ", self.elecL.HS.nua*self.elecL.NA1*self.elecL.NA2+1)
         if not self.FoldedR:
-            print "Suggest right folding to atom : ", self.HS.nua-self.elecR.HS.nua*self.elecR.NA1*self.elecR.NA2
+            print("Suggest right folding to atom : ", self.HS.nua-self.elecR.HS.nua*self.elecR.NA1*self.elecR.NA2)
 
         if self.FoldedL or self.FoldedR:
             # Check that device region is large enough!
@@ -584,7 +585,7 @@ class GF(object):
             while coupling[ii] < 1e-10: ii = ii-1
             self.devEndL = max(ii+1, self.nuoL0)
             self.nuoL = self.devEndL-devSt+1
-            print "Left self energy on orbitals %i-%i"%(devSt, self.devEndL)
+            print("Left self energy on orbitals %i-%i"%(devSt, self.devEndL))
         if self.FoldedR:
             tau = abs(self.S0[devEnd-1:self.nuo0, 0:self.nuo0])
             coupling = N.sum(tau, axis=0)
@@ -592,7 +593,7 @@ class GF(object):
             while coupling[ii] < 1e-10: ii = ii+1
             self.devStR = min(ii+1, self.nuo0-self.nuoR0+1)
             self.nuoR = devEnd-self.devStR+1
-            print "Right self energy on orbitals %i-%i"%(self.devStR, devEnd)
+            print("Right self energy on orbitals %i-%i"%(self.devStR, devEnd))
         # Quantities expressed in nonorthogonal basis:
         self.OrthogonalDeviceRegion = False
 
@@ -682,10 +683,10 @@ class GF(object):
                 self.SigAvg = [False, -1]
             if self.SigAvg[0] == ee and self.SigAvg[1] == ispin:
                 # We have already the averaged self-energies
-                print 'NEGF: Reusing sampled electrode self-energies', mesh.Nk, mesh.type, 'for ispin= %i e= %f'%(ispin, ee)
+                print('NEGF: Reusing sampled electrode self-energies', mesh.Nk, mesh.type, 'for ispin= %i e= %f'%(ispin, ee))
             else:
                 # k-sampling performed over folded electrode self-energies
-                print 'NEGF: Sampling electrode self-energies', mesh.Nk, mesh.type, 'for ispin= %i e= %f'%(ispin, ee)
+                print('NEGF: Sampling electrode self-energies', mesh.Nk, mesh.type, 'for ispin= %i e= %f'%(ispin, ee))
                 self.calcSigLR(ee, mesh.k[0, :2], ispin, etaLead, useSigNCfiles, SpectralCutoff)
                 AvgSigL = mesh.w[0, 0]*self.SigL
                 AvgSigR = mesh.w[0, 0]*self.SigR
@@ -740,8 +741,8 @@ class GF(object):
             # transmission matrix AL.GamR
             self.TT = MM.mm(self.AL[nuo-nuoR:nuo, nuo-nuoR:nuo], self.GamR)
 
-        print 'NEGF.calcGF: Shape of transmission matrix (TT):', self.TT.shape
-        print 'NEGF.calcGF: Energy and total transmission Tr[TT].real:', ee, N.trace(self.TT).real
+        print('NEGF.calcGF: Shape of transmission matrix (TT):', self.TT.shape)
+        print('NEGF.calcGF: Energy and total transmission Tr[TT].real:', ee, N.trace(self.TT).real)
         # Write also the Gammas in the full space of Gr/Ga/A
         # (needed for the inelastic shot noise)
         self.GammaL = N.zeros(self.Gr.shape, N.complex)
@@ -773,14 +774,14 @@ class GF(object):
                 if kpoint[0] == 0.0:
                     kpoint3[0] = 0.5
                 else:
-                    print 'Specified 2D k-point=', kpoint
+                    print('Specified 2D k-point=', kpoint)
                     raise IOError('Incompatible 2D k-point - use z as transport direction')
             elif self.elecL.semiinf == 1 and self.elecR.semiinf == 1:
                 # Periodicity along A1
                 if kpoint[1] == 0.0:
                     kpoint3[1] = 0.5
                 else:
-                    print 'Specified 2D k-point=', kpoint
+                    print('Specified 2D k-point=', kpoint)
                     raise IOError('Incompatible 2D k-point - use z as transport direction')
             else:
                 # Default is along A3
@@ -823,7 +824,7 @@ class GF(object):
         return T, SN
 
     def orthogonalize(self):
-        print 'NEGF.GF.orthogonalize: Orthogonalizing device region quantities'
+        print('NEGF.GF.orthogonalize: Orthogonalizing device region quantities')
         self.OrthogonalDeviceRegion = True
         self.HNO = self.H.copy() # nonorthogonal device Hamiltonian (needed)
 
@@ -883,7 +884,7 @@ class GF(object):
     def calcEigChan(self, channels=10):
         # Calculate Eigenchannels from left
         self.ECleft, self.EigTleft = self.__calcEigChan(self.AL, self.GamR, True, channels)
-        print 'NEGF.calcEigChan: Left eigenchannel transmissions [T1, ..., Tn]:\n', self.EigTleft[:channels]
+        print('NEGF.calcEigChan: Left eigenchannel transmissions [T1, ..., Tn]:\n', self.EigTleft[:channels])
         # Calculate Eigenchannels from right
         self.ECright, self.EigTright = self.__calcEigChan(self.AR, self.GamL, False, channels)
-        print 'NEGF.calcEigChan: Right eigenchannel transmissions [T1, ..., Tn]:\n', self.EigTright[:channels]
+        print('NEGF.calcEigChan: Right eigenchannel transmissions [T1, ..., Tn]:\n', self.EigTright[:channels])

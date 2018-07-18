@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import sys
 import Inelastica.io.vasp as VIO
@@ -22,15 +23,15 @@ for i in range(len(speciesnumbers)):
         snr.append(sn)
     sn += 1
 
-print 'anr ='
-print anr
-print 'snr'
-print snr
+print('anr =')
+print(anr)
+print('snr')
+print(snr)
 
 # Move atoms inside unit cell
-dx = raw_input('Shift along x-axis [default=0.0] (Ang)? ')
-dy = raw_input('Shift along y-axis [default=0.0] (Ang)? ')
-dz = raw_input('Shift along z-axis [default=0.0] (Ang)? ')
+dx = input('Shift along x-axis [default=0.0] (Ang)? ')
+dy = input('Shift along y-axis [default=0.0] (Ang)? ')
+dz = input('Shift along z-axis [default=0.0] (Ang)? ')
 if len(dx)>0: dx = float(dx)
 else: dx = 0.0
 if len(dy)>0: dy = float(dy)

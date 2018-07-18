@@ -15,8 +15,6 @@ be in a wrapper call which emulates the options.
 .. currentmodule:: Inelastica.misc.valuecheck
 
 """
-
-# Simple case for allowing the newer print function (Python3 compliant)
 from __future__ import print_function
 
 import sys as s
@@ -28,7 +26,7 @@ import numpy as _np
 if s.version_info[0] == 3:
     string_types = str,
 else:
-    string_types = basestring,
+    string_types = str,
 
 # Place holder for checks
 _check = {}

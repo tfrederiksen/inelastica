@@ -8,6 +8,7 @@
 .. currentmodule:: Inelastica.STMFD
 
 """
+from __future__ import print_function
 
 import numpy               as N
 import scipy.linalg        as SLA
@@ -27,9 +28,9 @@ def main(options, kpoint, ikpoint):
     Ef = SIO.HS(options.systemlabel+'.TSHS').ef/PC.Rydberg2eV
     kpt = ikpoint
     pathkpt = './'+options.DestDir+'/'+str(kpt)+'/'
-    print 'k-point: '+str(ikpoint)+'/'
-    print '(k1,k2): ('+str(kpoint[0])+','+str(kpoint[1])+')'
-    print 'Fermi energy ('+str(options.systemlabel)+'.TSHS):', N.round(Ef, 4), 'Ry =', N.round(Ef*PC.Rydberg2eV, 4), 'eV'
+    print('k-point: '+str(ikpoint)+'/')
+    print('(k1,k2): ('+str(kpoint[0])+','+str(kpoint[1])+')')
+    print('Fermi energy ('+str(options.systemlabel)+'.TSHS):', N.round(Ef, 4), 'Ry =', N.round(Ef*PC.Rydberg2eV, 4), 'eV')
 
     #Determine substrate layers and tip height
     posZMol, posZTip = LayersAndTipheight(options, kpoint, ikpoint)
@@ -44,21 +45,21 @@ def main(options, kpoint, ikpoint):
     NN = Nx*Ny*Nz
     a1, a2, a3 = ucSize[0], ucSize[1], ucSize[2]
     if options.samplingscale != 1:
-        print '\nReal-space sampling in xy plane coarser by factor', options.samplingscale, '...'
+        print('\nReal-space sampling in xy plane coarser by factor', options.samplingscale, '...')
         tmp = sampling(options, Nx, Ny, Nz, Subwfs, Tipwfs, SubChans, TipChans, SubPot, TipPot, SubRho, TipRho)
         Nx, Ny, Nz = tmp[0], tmp[1], tmp[2]
         NN = Nx*Ny*Nz
         a1, a2 = a1*options.samplingscale, a2*options.samplingscale
         ucSize = [a1, a2, a3]
         Subwfs, Tipwfs, Vsub, Vtip, SubRho, TipRho = tmp[3], tmp[4], tmp[5], tmp[6], tmp[7], tmp[8]
-        print 'New lattice in xy plane obtained (corresponding to '+str(MeshCutoff/options.samplingscale**2)+' Ry):'
-        print '          [Nx Ny Nz] = ['+str(Nx), str(Ny), str(Nz)+']'
-        print '          [a1 a2 a3] = ['+str(N.round(a1*PC.Bohr2Ang, 4)), str(N.round(a2*PC.Bohr2Ang, 4)), str(N.round(a3*PC.Bohr2Ang, 4))+'] Ang'
+        print('New lattice in xy plane obtained (corresponding to '+str(MeshCutoff/options.samplingscale**2)+' Ry):')
+        print('          [Nx Ny Nz] = ['+str(Nx), str(Ny), str(Nz)+']')
+        print('          [a1 a2 a3] = ['+str(N.round(a1*PC.Bohr2Ang, 4)), str(N.round(a2*PC.Bohr2Ang, 4)), str(N.round(a3*PC.Bohr2Ang, 4))+'] Ang')
     else:
-        print '\nReal-space sampling omitted (same grid as TranSiesta).\n'
+        print('\nReal-space sampling omitted (same grid as TranSiesta).\n')
 
     #Substrate part
-    print '\nCalculation from substrate side:'
+    print('\nCalculation from substrate side:')
     WFs, Chans, rho = Subwfs, SubChans, SubRho
     inda, indb = reindexing(options, Nx, Ny, Nz, NN, WFs, Chans, rho, ucSize, theta)
     Pot = Vsub
@@ -68,7 +69,7 @@ def main(options, kpoint, ikpoint):
     propSubModes = LinearSolve(options, WFs, inda, indb, Ef, Tau, Hb, NN, Nx, Ny, Nz, Chans)
 
     #Tip part
-    print '\nCalculation from tip side:'
+    print('\nCalculation from tip side:')
     WFs, Chans, rho = Tipwfs, TipChans, TipRho
     inda, indb = reindexing(options, Nx, Ny, Nz, NN, WFs, Chans, rho, ucSize, theta)
     Pot = Vtip
@@ -97,7 +98,7 @@ def LayersAndTipheight(options, kpoint, ikpoint):
         if N.abs(N.sum(atomlayer1)/(ii+1)-atomlayer1[ii]) > 0.5:
             break
     Layer1 = ii
-    print '\nThe atomic layers seem to consist of '+str(ii)+' atoms.'
+    print('\nThe atomic layers seem to consist of '+str(ii)+' atoms.')
     zSurfLayer1 = N.sum(atomlayer1[0:ii])/ii
     #Second substrate layer?
     atomlayer2 = N.zeros(len(xyz))
@@ -114,16 +115,16 @@ def LayersAndTipheight(options, kpoint, ikpoint):
             break
     Layer3 = kk
     if Layer2-Layer1 < Layer1:
-        print 'The substrate seems to consist a single atomic layer.'
+        print('The substrate seems to consist a single atomic layer.')
     elif Layer3-Layer2 < Layer1:
-        print 'The substrate seems to consist of two atomic layers.'
+        print('The substrate seems to consist of two atomic layers.')
     else:
-        print 'The substrate seems to consist of at three (or more) atomic layers.'
-        print '(One or two layers are enough. Check your -F and -L flags!)'
+        print('The substrate seems to consist of at three (or more) atomic layers.')
+        print('(One or two layers are enough. Check your -F and -L flags!)')
     for ii in range(len(xyz)-1):
         if xyz[ii+1][2]-xyz[ii][2] > 5/PC.Bohr2Ang: #Minimum gap: 5 Ang!
             TipHeightMol = N.round(N.abs(xyz[ii+1][2]-xyz[ii][2])*PC.Bohr2Ang, 3)
-            print 'Vacuum gap along z appears to be '+str(TipHeightMol)+' Ang'
+            print('Vacuum gap along z appears to be '+str(TipHeightMol)+' Ang')
             break
     Molidx = ii
     Tipidx = ii+1
@@ -131,25 +132,25 @@ def LayersAndTipheight(options, kpoint, ikpoint):
     posZTip = xyz[Tipidx][2]
     TipHeightLayer1 = N.round(N.abs(posZTip-zSurfLayer1)*PC.Bohr2Ang, 3)
     if Layer2-Layer1 < Layer1:
-        print 'Substrate surface  --- tip-apex distance: '+str(TipHeightLayer1)+' Ang'
+        print('Substrate surface  --- tip-apex distance: '+str(TipHeightLayer1)+' Ang')
     if Layer2-Layer1 == Layer1:
         zSurfLayer2 = N.sum(atomlayer2[Layer1:Layer2])/(Layer2-Layer1)
         TipHeightLayer2 = N.round(N.abs(posZTip-zSurfLayer2)*PC.Bohr2Ang, 3)
-        print 'Substrate surface (1st) --- tip-apex distance: '+str(TipHeightLayer1)+' Ang'
-        print 'Substrate surface (2nd) --- tip-apex distance: '+str(TipHeightLayer2)+' Ang'
+        print('Substrate surface (1st) --- tip-apex distance: '+str(TipHeightLayer1)+' Ang')
+        print('Substrate surface (2nd) --- tip-apex distance: '+str(TipHeightLayer2)+' Ang')
     if Layer3-Layer2 == Layer1:
         zSurfLayer3 = N.sum(atomlayer3[Layer2:Layer3])/(Layer3-Layer2)
         TipHeightLayer3 = N.round(N.abs(posZTip-zSurfLayer3)*PC.Bohr2Ang, 3)
-        print 'Substrate surface (3rd) --- tip-apex distance: '+str(TipHeightLayer3)+' Ang'
+        print('Substrate surface (3rd) --- tip-apex distance: '+str(TipHeightLayer3)+' Ang')
     return posZMol, posZTip
 
 
 def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     ncfile = NC.Dataset('TotalPotential.grid.nc', 'r')
-    print '\nReading potential from:    TotalPotential.grid.nc'
+    print('\nReading potential from:    TotalPotential.grid.nc')
     pot = N.array(ncfile.variables['gridfunc'][:], N.float)[0]
 
-    print 'Reading DFT density from:  Rho.grid.nc'
+    print('Reading DFT density from:  Rho.grid.nc')
     ncfile = NC.Dataset('Rho.grid.nc', 'r')
     rho = N.array(ncfile.variables['gridfunc'][:], N.float)[0]
 
@@ -165,19 +166,19 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     Subwfs = N.zeros((SubChans, dim[0], dim[1], dim[2]), N.complex)
     Tipwfs = N.zeros((TipChans, dim[0], dim[1], dim[2]), N.complex)
 
-    print '\nReading localized-basis wave functions from substrate side...'
+    print('\nReading localized-basis wave functions from substrate side...')
     for ii in range(SubChans):
         ncfile = NC.Dataset(pathkpt+options.systemlabel+'.AL'+N.str(ii)+'.nc', 'r')
-        print options.systemlabel+'.AL'+N.str(ii)+'.nc'
+        print(options.systemlabel+'.AL'+N.str(ii)+'.nc')
         Re_AL = N.array(ncfile.variables['Re-Psi'][:], N.float)
         Im_AL = N.array(ncfile.variables['Im-Psi'][:], N.float)
         Subwfs[ii, :, :, :] = Re_AL+1j*Im_AL
         ncfile.close()
 
-    print 'Reading localized-basis wave functions from tip side ...'
+    print('Reading localized-basis wave functions from tip side ...')
     for ii in range(TipChans):
         ncfile = NC.Dataset(pathkpt+options.systemlabel+'.AR'+N.str(ii)+'.nc', 'r')
-        print options.systemlabel+'.AR'+N.str(ii)+'.nc'
+        print(options.systemlabel+'.AR'+N.str(ii)+'.nc')
         Re_AR = N.array(ncfile.variables['Re-Psi'][:], N.float)
         Im_AR = N.array(ncfile.variables['Im-Psi'][:], N.float)
         Tipwfs[ii, :, :, ::-1] = Re_AR+1j*Im_AR
@@ -197,7 +198,7 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     PotDev = SubPot.copy()
     SubRho = N.transpose(rho[Nzi:Nzf, :, :], [2, 1, 0])
     TipRho = SubRho[:, :, ::-1].copy()
-    print '\nPotential is cut out to fit the real-space projected localized-basis grid'
+    print('\nPotential is cut out to fit the real-space projected localized-basis grid')
 
     try:
         for line in open('RUN.fdf').readlines():
@@ -212,32 +213,32 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
 
     MeshCutoff = ast.literal_eval(line.split()[1])
 
-    print 'Lattice obtained by using DFT energy cutoff '+str(MeshCutoff)+' Ry:'
-    print '          [Nx Ny Nz] = ['+str(Nx), str(Ny), str(Nz)+']'
-    print '          [a1 a2 a3] = ['+str(N.round(a1*PC.Bohr2Ang, 4)), str(N.round(a2*PC.Bohr2Ang, 4)), str(N.round(a3*PC.Bohr2Ang, 4))+'] Ang'
-    print 'Angle spanned by the lateral unit vectors a1 and a2: '+str(N.round(theta, 5))+' rad (Pi/'+str(N.round(N.pi/theta, 3))+')'
-    print '\nPositioning the separation plane on which the wave functions are evaluated:'
+    print('Lattice obtained by using DFT energy cutoff '+str(MeshCutoff)+' Ry:')
+    print('          [Nx Ny Nz] = ['+str(Nx), str(Ny), str(Nz)+']')
+    print('          [a1 a2 a3] = ['+str(N.round(a1*PC.Bohr2Ang, 4)), str(N.round(a2*PC.Bohr2Ang, 4)), str(N.round(a3*PC.Bohr2Ang, 4))+'] Ang')
+    print('Angle spanned by the lateral unit vectors a1 and a2: '+str(N.round(theta, 5))+' rad (Pi/'+str(N.round(N.pi/theta, 3))+')')
+    print('\nPositioning the separation plane on which the wave functions are evaluated:')
     iShiftSep = N.int(options.ShiftSeparationPlane/PC.Bohr2Ang/a3)
     usedPlane = iShiftSep*a3*PC.Bohr2Ang
     if options.ShiftSeparationPlane != 0:
-        print 'Requested separation-plane shift: '+str(options.ShiftSeparationPlane)+' Ang. Used: '+str(N.round(usedPlane, 4))+' Ang.'
+        print('Requested separation-plane shift: '+str(options.ShiftSeparationPlane)+' Ang. Used: '+str(N.round(usedPlane, 4))+' Ang.')
     tmp = [N.sum(PotDev[:, :, ii]) for ii in range(Nz)]
     MaxPot = N.max(tmp)
     MaxIdx = tmp.index(MaxPot)+iShiftSep
-    print 'Maximum potential at slice', MaxIdx, 'from left contact ('+str(Nz-MaxIdx)+' from right)'
+    print('Maximum potential at slice', MaxIdx, 'from left contact ('+str(Nz-MaxIdx)+' from right)')
     posZSepSurf = MaxIdx*a3
-    print 'Position, separation plane: '+str(N.round(N.abs(posZSepSurf-posZMol)*PC.Bohr2Ang, 3))+' Ang above uppermost substrate atom'
-    print '                            '+str(N.round(N.abs(posZTip-posZSepSurf)*PC.Bohr2Ang, 3))+' Ang below the tip apex'
+    print('Position, separation plane: '+str(N.round(N.abs(posZSepSurf-posZMol)*PC.Bohr2Ang, 3))+' Ang above uppermost substrate atom')
+    print('                            '+str(N.round(N.abs(posZTip-posZSepSurf)*PC.Bohr2Ang, 3))+' Ang below the tip apex')
 
     if N.abs(posZMol-posZSepSurf) < 1./PC.Bohr2Ang:
-        print 'Warning: The separation plane seems to be too close to the substrate.'
-        print '(Should be at least 2 Ang. Change with flag --ssp)'
+        print('Warning: The separation plane seems to be too close to the substrate.')
+        print('(Should be at least 2 Ang. Change with flag --ssp)')
     if N.abs(posZSepSurf-posZTip) < 1./PC.Bohr2Ang:
-        print 'Warning: The separation plane seems to be too close to the tip.'
-        print '(Should be at least 2 Ang. Change with flag --ssp)'
+        print('Warning: The separation plane seems to be too close to the tip.')
+        print('(Should be at least 2 Ang. Change with flag --ssp)')
 
     VacPot = N.mean(SubPot[:, :, MaxIdx])
-    print '\nVacuum potential at (and away from) the separation plane:', N.round(VacPot, 4), 'Ry =', N.round(VacPot*PC.Rydberg2eV, 4), 'eV'
+    print('\nVacuum potential at (and away from) the separation plane:', N.round(VacPot, 4), 'Ry =', N.round(VacPot*PC.Rydberg2eV, 4), 'eV')
     SubPot[:, :, MaxIdx:] = VacPot
     TipPot[:, :, Nz-1-MaxIdx:] = VacPot
     #Flatten potential to fit FD Hamiltonian
@@ -311,7 +312,7 @@ def reindexing(options, Nx, Ny, Nz, NN, WFs, Chans, rho, ucSize, theta):
 
 
 def Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint):
-    print 'Creating the finite-difference Laplacian including the total DFT potential'
+    print('Creating the finite-difference Laplacian including the total DFT potential')
     kx = -kpoint[0]*2.0*N.pi
     ky = -kpoint[1]*2.0*N.pi
     #Determine the coefficients of nabla^2, A dx^2 + B dy^2 + C dxdy: (C!=0 in skew system)
@@ -320,7 +321,7 @@ def Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint):
     mixY = mat[0, 1]**2 + mat[1, 1]**2
     mixXY = 2*mat[0, 0]*mat[0, 1] + 2*mat[1, 0]*mat[1, 1]
     mixX, mixY, mixXY = N.round(mixX, 8), N.round(mixY, 8), N.round(mixXY, 8)
-    print 'nabla^2_{xy} = '+str(mixX)+'d^2/dx^2+'+str(mixY)+'d^2/dy^2+'+str(mixXY)+'d^2/dxdy'
+    print('nabla^2_{xy} = '+str(mixX)+'d^2/dx^2+'+str(mixY)+'d^2/dy^2+'+str(mixXY)+'d^2/dxdy')
     #print 'd^2x:',mixX,',d2^y:',mixY,',dxdy:',mixXY
     bx = mixX/a1**2
     by = mixY/a2**2
@@ -405,18 +406,18 @@ def Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint):
 
 
 def SplitHam(Ham, inda, indb):
-    print 'Splitting FD Hamiltonian in regions w.r.t. the iso surface:'
-    print '      -                 -'
-    print '     |  Ha           tau |'
-    print 'H -> |                   |'
-    print '     | tau^\dagger    Hb |'
-    print '      -                 -'
+    print('Splitting FD Hamiltonian in regions w.r.t. the iso surface:')
+    print('      -                 -')
+    print('     |  Ha           tau |')
+    print('H -> |                   |')
+    print('     | tau^\dagger    Hb |')
+    print('      -                 -')
     Na, Nb = len(inda), len(indb)
     Tau = Ham[indb[0:Nb]][:, inda[:Na]]
     Hb = Ham[indb[0:Nb]][:, indb[0:Nb]]
-    print 'Linear system of equations: (E-Hb).phi = tau^{\dagger}.psi, where'
-    print 'dim(Hb)  = ('+str(Nb)+'x'+str(Nb)+') lattice points'
-    print 'dim(psi) = ('+str(Nb)+'x1) lattice points'
+    print('Linear system of equations: (E-Hb).phi = tau^{\dagger}.psi, where')
+    print('dim(Hb)  = ('+str(Nb)+'x'+str(Nb)+') lattice points')
+    print('dim(psi) = ('+str(Nb)+'x1) lattice points')
     return Tau, Hb
 
 
@@ -424,7 +425,7 @@ def LinearSolve(options, WFs, inda, indb, Ef, Tau, Hb, NN, Nx, Ny, Nz, Chans):
     Na, Nb = len(inda), len(indb)
     pmodes = N.zeros((Chans, NN), N.complex)
     timemodeprop = time.clock()
-    print '\nMode propagation starts'
+    print('\nMode propagation starts')
     for mode in range(Chans):
         #Mode at iso surface to propagate (flattened and indexed)
         psiEC = [WFs[mode, ii, jj, kk] for kk in range(Nz) \
@@ -435,7 +436,7 @@ def LinearSolve(options, WFs, inda, indb, Ef, Tau, Hb, NN, Nx, Ny, Nz, Chans):
         lhs = EfI-Hb
         timesolve = time.clock()
         sol = isolve.gmres(lhs, rhs, tol=options.tolsolve)
-        print 'Mode %s found in:'%mode, N.round(time.clock()-timesolve, 2), 's'
+        print('Mode %s found in:'%mode, N.round(time.clock()-timesolve, 2), 's')
         index = N.zeros(NN)
         index[0:Na] = inda
         index[Na:NN] = indb
@@ -447,14 +448,14 @@ def LinearSolve(options, WFs, inda, indb, Ef, Tau, Hb, NN, Nx, Ny, Nz, Chans):
         pmodes[mode, :] = phi
         times = N.round(time.clock()-timemodeprop, 2)
         timem = N.round(times/60, 2)
-    print 'Finished in', times, 's =', timem, 'min'
+    print('Finished in', times, 's =', timem, 'min')
     return pmodes
 
 
 def Current(options, propSubModes, propTipModes, Nx, Ny, Nz, Max, ucSize, ChansL, ChansR, dS, kpoint, pathkpt, ikpoint):
     Ltmp, Rtmp = propSubModes, propTipModes
     a3 = ucSize[2]
-    print '\nComputing wave functions and gradients at separation surface ...'
+    print('\nComputing wave functions and gradients at separation surface ...')
     L = N.zeros((ChansL, Nx, Ny), N.complex)
     R = N.zeros((ChansR, Nx, Ny), N.complex)
     dL = N.zeros((ChansL, Nx, Ny), N.complex)
@@ -489,7 +490,7 @@ def Current(options, propSubModes, propTipModes, Nx, Ny, Nz, Max, ucSize, ChansL
     L, R, dL, dR = L2, R2, dL2, dR2
     Nx, Ny = 2*Nx, 2*Ny
     scale = 4*N.pi**2*7.748e-5*1e9*dS**2*options.samplingscale**4
-    print '\nSimulating tip scanning by fast Fourier transform ...'
+    print('\nSimulating tip scanning by fast Fourier transform ...')
     tot = N.zeros((Nx, Ny))
     currmat = N.zeros((ChansL, ChansR))
     for ii in range(ChansL):
@@ -505,7 +506,7 @@ def Current(options, propSubModes, propTipModes, Nx, Ny, Nz, Max, ucSize, ChansL
     n.write(kpoint, 'kpnt')
     n.close()
     MaxCurr, MinCurr = N.max(STMcurrent[:Nx]), N.min(STMcurrent)
-    print '\nMax conductance:', N.round(MaxCurr, 10), 'nA/V'
-    print 'Min conductance:', N.round(MinCurr, 10), 'nA/V'
-    print 'Min/Max:', N.round(MinCurr/MaxCurr*100, 3), '%\n'
+    print('\nMax conductance:', N.round(MaxCurr, 10), 'nA/V')
+    print('Min conductance:', N.round(MinCurr, 10), 'nA/V')
+    print('Min/Max:', N.round(MinCurr/MaxCurr*100, 3), '%\n')
     return STMcurrent, currmat

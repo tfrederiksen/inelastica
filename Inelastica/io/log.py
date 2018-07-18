@@ -8,8 +8,7 @@ This module provides the functions to generate logfiles in the `Inelastica` pack
 .. currentmodule:: Inelastica.io.log
 
 """
-
-from __future__ import print_function, absolute_import
+from __future__ import print_function
 
 import sys
 import time

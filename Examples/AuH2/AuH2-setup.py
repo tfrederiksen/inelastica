@@ -7,7 +7,7 @@ Example: How to use the SetupRuns functions to handle:
   Phonons                  : PHrun
   Inelastica               : INrun
 """
-
+from __future__ import print_function
 
 from Inelastica.SetupRuns import *
 from Inelastica.Phonons import *
@@ -74,9 +74,9 @@ if TS:
                overwrite=False, submitJob=submitJob, PBSsubs=TSPBSsubs)
 
 if PH:
-    print "Try:"
-    print "Phonons -c -F 9 -L 14 --FCfirst=11 --FClast=12 --EPHfirst=11 --EPHlast=12 PHrun"
+    print("Try:")
+    print("Phonons -c -F 9 -L 14 --FCfirst=11 --FClast=12 --EPHfirst=11 --EPHlast=12 PHrun")
 
 if IN:
-    print "Try:"
-    print "Inelastica -F 10 -L 15 -p ../PHrun/Output.nc --LOEscale=0.0 INrun"
+    print("Try:")
+    print("Inelastica -F 10 -L 15 -p ../PHrun/Output.nc --LOEscale=0.0 INrun")

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import numpy as N
 import numpy.linalg as LA
 
@@ -116,7 +118,7 @@ class SpectralMatrix(object):
             # Drop eigenvalues
             indx = N.where(N.abs(ev) > cutoff)[0]
             ev, evec = ev[indx], evec[:, indx]
-            print "SpectralMatrix: Fraction of eigenvalues above cutoff (%.1e) is %i/%i"%(cutoff, len(indx), len(A))
+            print("SpectralMatrix: Fraction of eigenvalues above cutoff (%.1e) is %i/%i"%(cutoff, len(indx), len(A)))
             self.L = N.dot(evec, N.diag(ev))
             self.R = dagger(evec)
             # print N.allclose(A, N.dot(self.L, self.R))
@@ -136,7 +138,7 @@ class SpectralMatrix(object):
             Na, Nb = self.L.shape[1], b.L.shape[1]
             if Na+Nb > 0.3*NN:
                 # Too many eigenvalues
-                print "Too many eigenvalues"
+                print("Too many eigenvalues")
                 if not subtract:
                     return self.full()+b.full()
                 else:

@@ -19,6 +19,7 @@ to create all the other calculation directories needed.
 
 
 """
+from __future__ import print_function
 
 import glob
 import string
@@ -73,18 +74,18 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
     # Make new directories
     head = os.path.split(newCGrun)[0]
     if not os.path.isdir(head):
-        print '\nSetupRuns.SetupCGrun: Creating folder %s' %head
+        print('\nSetupRuns.SetupCGrun: Creating folder %s' %head)
         os.mkdir(head)
     if not os.path.isdir(newCGrun):
-        print '\nSetupRuns.SetupCGrun: Creating folder %s' %newCGrun
+        print('\nSetupRuns.SetupCGrun: Creating folder %s' %newCGrun)
         os.mkdir(newCGrun)
     elif not overwrite:
-        print '\nSetupRuns.SetupCGrun: %s already exists. No further actions taken.'\
-              %newCGrun
+        print('\nSetupRuns.SetupCGrun: %s already exists. No further actions taken.'\
+              %newCGrun)
         return '' # Quit script
     else:
-        print '\nSetupRuns.SetupCGrun: %s already exists. OVERWRITING FILES!!!'\
-              %newCGrun
+        print('\nSetupRuns.SetupCGrun: %s already exists. OVERWRITING FILES!!!'\
+              %newCGrun)
     # Copy template files
     CopyInputFiles(templateCGrun, newCGrun, ['.fdf', '.vps', '.psf', 'pbs'])
     # Read relaxed geometry
@@ -92,30 +93,30 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
     if len(XVfiles) == 1:
         geom = MG.Geom(XVfiles[0])
     elif len(XVfiles) > 1:
-        print 'More than one XV file was found in folder %s:'%templateCGrun
+        print('More than one XV file was found in folder %s:'%templateCGrun)
         for i, xvfile in enumerate(XVfiles):
-            print '   No. %i :'%i, xvfile
-        select = raw_input('   ... select file:')
+            print('   No. %i :'%i, xvfile)
+        select = input('   ... select file:')
         geom = MG.Geom(XVfiles[int(select)])
     else:
-        print 'No XV file was found in folder %s:'%templateCGrun
-        raw_input('   ... Continue reading geometry from RUN.fdf?')
+        print('No XV file was found in folder %s:'%templateCGrun)
+        input('   ... Continue reading geometry from RUN.fdf?')
         geom = MG.Geom(templateCGrun+'/RUN.fdf')
     # Rotate via indexshift?
     if IndexShift > 0:
-        print 'SetupRuns.SetupCGrun: Applying IndexShift =', IndexShift
+        print('SetupRuns.SetupCGrun: Applying IndexShift =', IndexShift)
         for ii in range(IndexShift):
             geom.xyz[0][2] += geom.pbc[2][2]
             geom.addAtom(geom.xyz[0], geom.snr[0], geom.anr[0])
             geom.rmAtom(0)
     # Rotation?
     if RotationAngle and RotationCenter and RotationAxis:
-        print 'SetupRuns.SetupCGrun: Rotation applied:'
-        print '   ... Rotation angle  =', RotationAngle, ' deg'
-        print '   ... Rotation center = atom %i (SIESTA numbering)'%RotationCenter
-        print '   ... Rotation axis   =', RotationAxis
+        print('SetupRuns.SetupCGrun: Rotation applied:')
+        print('   ... Rotation angle  =', RotationAngle, ' deg')
+        print('   ... Rotation center = atom %i (SIESTA numbering)'%RotationCenter)
+        print('   ... Rotation axis   =', RotationAxis)
         if RotationSubset:
-            print '   ... RotationSubset  =', RotationSubset, ' (SIESTA numbering)'
+            print('   ... RotationSubset  =', RotationSubset, ' (SIESTA numbering)')
             # Change from SIESTA numbering to Python indices
             RotationSubset = [x-1 for x in RotationSubset]
         center = N.array(geom.xyz[RotationCenter-1])
@@ -158,15 +159,15 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
     """
     # Make new directory
     if not os.path.isdir(newFCrun):
-        print '\nSetupRuns.SetupFCrun: Creating folder %s' %newFCrun
+        print('\nSetupRuns.SetupFCrun: Creating folder %s' %newFCrun)
         os.mkdir(newFCrun)
     elif not overwrite:
-        print '\nSetupRuns.SetupFCrun: %s already exists. No further actions taken.'\
-              %newFCrun
+        print('\nSetupRuns.SetupFCrun: %s already exists. No further actions taken.'\
+              %newFCrun)
         return '' # Quit script
     else:
-        print '\nSetupRuns.SetupFCrun: %s already exists. OVERWRITING FILES!!!'\
-              %newFCrun
+        print('\nSetupRuns.SetupFCrun: %s already exists. OVERWRITING FILES!!!'\
+              %newFCrun)
     # Copy template files
     CopyInputFiles(CGrun, newFCrun, ['.fdf', '.vps', '.psf', '.DM', '.XV', '.pbs', '.TSDE'])
     # Read relaxed geometry and overwrite STRUCT files
@@ -174,14 +175,14 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
     if len(XVfiles) == 1:
         geom = MG.Geom(XVfiles[0])
     elif len(XVfiles) > 1:
-        print 'More than one XV file was found in folder %s:'%CGrun
+        print('More than one XV file was found in folder %s:'%CGrun)
         for i, xvfile in enumerate(XVfiles):
-            print '   No. %i :'%i, xvfile
-        select = raw_input('   ... select file:')
+            print('   No. %i :'%i, xvfile)
+        select = input('   ... select file:')
         geom = MG.Geom(XVfiles[int(select)])
     else:
-        print 'No XV file was found in folder %s:'%CGrun
-        raw_input('   ... Continue reading geometry from RUN.fdf?')
+        print('No XV file was found in folder %s:'%CGrun)
+        input('   ... Continue reading geometry from RUN.fdf?')
         geom = MG.Geom(CGrun+'/RUN.fdf')
     geom.writeFDF(newFCrun+'/STRUCT.fdf')
     geom.writeXYZ(newFCrun+'/STRUCT.xyz')
@@ -189,7 +190,7 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
     # Prepend lines to RUN.fdf
     for elm in glob.glob(newFCrun+'/RUN.fdf'):
         if os.path.isfile(elm):
-            print 'SetupRuns.SetupFCrun: Modifying %s' %elm
+            print('SetupRuns.SetupFCrun: Modifying %s' %elm)
             f = open(elm, 'r')
             lines = f.readlines()
             f.close()
@@ -230,15 +231,15 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
     """
     # Make new directory
     if not os.path.isdir(newOSrun):
-        print '\nSetupRuns.SetupOSrun: Creating folder %s' %newOSrun
+        print('\nSetupRuns.SetupOSrun: Creating folder %s' %newOSrun)
         os.mkdir(newOSrun)
     elif not overwrite:
-        print '\nSetupRuns.SetupOSrun: %s already exists. No further actions taken.'\
-              %newOSrun
+        print('\nSetupRuns.SetupOSrun: %s already exists. No further actions taken.'\
+              %newOSrun)
         return '' # Quit script
     else:
-        print '\nSetupRuns.SetupOSrun: %s already exists. OVERWRITING FILES!!!'\
-              %newOSrun
+        print('\nSetupRuns.SetupOSrun: %s already exists. OVERWRITING FILES!!!'\
+              %newOSrun)
     # Copy files from CGrun
     CopyInputFiles(CGrun, newOSrun, ['.fdf', '.vps', '.psf'])
     # Read original RUN.fdf file
@@ -250,14 +251,14 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
     if len(XVfiles) == 1:
         infile = XVfiles[0]
     elif len(XVfiles) > 1:
-        print 'More than one XV file was found in folder %s:'%CGrun
+        print('More than one XV file was found in folder %s:'%CGrun)
         for i, xvfile in enumerate(XVfiles):
-            print '   No. %i :'%i, xvfile
-        select = raw_input('   ... select file:')
+            print('   No. %i :'%i, xvfile)
+        select = input('   ... select file:')
         infile = XVfiles[int(select)]
     else:
-        print 'No XV file was found in folder %s:'%CGrun
-        raw_input('   ... Continue reading geometry from RUN.fdf?')
+        print('No XV file was found in folder %s:'%CGrun)
+        input('   ... Continue reading geometry from RUN.fdf?')
         infile = CGrun+'/RUN.fdf'
     # Multiply structure
     BuildOSstruct(infile, newOSrun+'/STRUCT_1.fdf', axes=[0], direction=[-1], displacement=displacement)
@@ -271,7 +272,7 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
     inputfiles = ['RUN_1.fdf', 'RUN_2.fdf', 'RUN_3.fdf', 'RUN_4.fdf', 'RUN_5.fdf', 'RUN_6.fdf']
     # Write input files
     for i, inputfile in enumerate(inputfiles):
-        print 'SetupRuns.SetupOSrun: Writing %s' %(newOSrun+'/'+inputfile)
+        print('SetupRuns.SetupOSrun: Writing %s' %(newOSrun+'/'+inputfile))
         f = open((newOSrun+'/'+inputfile), 'w')
         f.write('### Lines written %s \n' %time.ctime())
         #f.write('MD.NumCGSteps 0\n')
@@ -343,15 +344,15 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
     """
     # Make new directory
     if not os.path.isdir(newTSrun):
-        print '\nSetupRuns.SetupTSrun: Creating folder %s' %newTSrun
+        print('\nSetupRuns.SetupTSrun: Creating folder %s' %newTSrun)
         os.mkdir(newTSrun)
     elif not overwrite:
-        print '\nSetupRuns.SetupTSrun: %s already exists. No further actions taken.'\
-              %newTSrun
+        print('\nSetupRuns.SetupTSrun: %s already exists. No further actions taken.'\
+              %newTSrun)
         return '' # Quit script
     else:
-        print '\nSetupRuns.SetupTSrun: %s already exists. OVERWRITING FILES!!!'\
-              %newTSrun
+        print('\nSetupRuns.SetupTSrun: %s already exists. OVERWRITING FILES!!!'\
+              %newTSrun)
     # Copy all sub-directories
     for elm in glob.glob(templateTSrun+'/*'):
         tail = os.path.split(elm)[1]
@@ -364,30 +365,30 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
     if len(XVfiles) == 1:
         geom = MG.Geom(XVfiles[0])
     elif len(XVfiles) > 1:
-        print 'More than one XV file was found in folder %s:'%CGrun
+        print('More than one XV file was found in folder %s:'%CGrun)
         for i, xvfile in enumerate(XVfiles):
-            print '   No. %i :'%i, xvfile
-        select = raw_input('   ... select file:')
+            print('   No. %i :'%i, xvfile)
+        select = input('   ... select file:')
         geom = MG.Geom(XVfiles[int(select)])
     else:
-        print 'No XV file was found in folder %s:'%CGrun
-        raw_input('   ... Continue reading geometry from RUN.fdf?')
+        print('No XV file was found in folder %s:'%CGrun)
+        input('   ... Continue reading geometry from RUN.fdf?')
         geom = MG.Geom(CGrun+'/RUN.fdf')
     # Rotate via indexshift?
     if IndexShift > 0:
-        print 'SetupRuns.SetupTSrun: Applying IndexShift =', IndexShift
+        print('SetupRuns.SetupTSrun: Applying IndexShift =', IndexShift)
         for ii in range(IndexShift):
             geom.xyz[0][2] += geom.pbc[2][2]
             geom.addAtom(geom.xyz[0], geom.snr[0], geom.anr[0])
             geom.rmAtom(0)
     # Overwrite STRUCT files
     if RotationAngle and RotationCenter and RotationAxis:
-        print 'SetupRuns.SetupTSrun: Rotation applied:'
-        print '   ... Rotation angle  =', RotationAngle, ' deg'
-        print '   ... Rotation center = atom %i (SIESTA numbering)'%RotationCenter
-        print '   ... Rotation axis   =', RotationAxis
+        print('SetupRuns.SetupTSrun: Rotation applied:')
+        print('   ... Rotation angle  =', RotationAngle, ' deg')
+        print('   ... Rotation center = atom %i (SIESTA numbering)'%RotationCenter)
+        print('   ... Rotation axis   =', RotationAxis)
         if RotationSubset:
-            print '   ... RotationSubset  =', RotationSubset, ' (SIESTA numbering)'
+            print('   ... RotationSubset  =', RotationSubset, ' (SIESTA numbering)')
             # Change from SIESTA numbering to Python indices
             RotationSubset = [x-1 for x in RotationSubset]
         center = N.array(geom.xyz[RotationCenter-1])
@@ -403,7 +404,7 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
         tmp = N.array(geom.xyz)
         minz = min(tmp[:, 2])
         maxz = max(AddLeftList[:, 2])
-        for ii in reversed(range(len(AddLeftList))):
+        for ii in reversed(list(range(len(AddLeftList)))):
             tmp = list(AddLeftList[ii, :]+(-maxz+minz-dz)*N.array([0.0, 0.0, 1.0], N.float))
             geom.prependAtom(tmp,
                          geom.snr[0], geom.anr[0])
@@ -430,8 +431,8 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
     # Prepend lines to TBTRANS.fdf
     for elm in glob.glob(newTSrun+'/TBTRANS.fdf'):
         if os.path.isfile(elm):
-            print 'SetupRuns.SetupTSrun: Prepending PDOS = [%i,%i] to %s' \
-                  %(PDOSfirst, PDOSlast, elm)
+            print('SetupRuns.SetupTSrun: Prepending PDOS = [%i,%i] to %s' \
+                  %(PDOSfirst, PDOSlast, elm))
             f = open(elm, 'r')
             lines = f.readlines()
             f.close()
@@ -462,9 +463,9 @@ def RunTBT(TSrun, Emin, Emax, NPoints, NumKxy_A1=1, NumKxy_A2=1,
     """
     # Remove old Green's functions
     for elm in glob.glob(TSrun+'/*GF'):
-        print 'SetupRuns.RunTBT: Removing *.GF'
+        print('SetupRuns.RunTBT: Removing *.GF')
         if os.path.isfile(elm):
-            print '   Deleting %s'%elm
+            print('   Deleting %s'%elm)
             os.remove(elm)
     # Determine Device PDOS?
     if AtomsPerLayer > 0:
@@ -484,12 +485,12 @@ def RunTBT(TSrun, Emin, Emax, NPoints, NumKxy_A1=1, NumKxy_A2=1,
     f = open(tbtfile, 'w')
     f.write('### Lines appended %s \n' %time.ctime())
     if PDOSfirst > 0 and PDOSlast > 0:
-        print 'SetupRuns.RunTBT: Prepending PDOS = [%i,%i] to %s' \
-            %(PDOSfirst, PDOSlast, tbtfile)
+        print('SetupRuns.RunTBT: Prepending PDOS = [%i,%i] to %s' \
+            %(PDOSfirst, PDOSlast, tbtfile))
         f.write('TS.TBT.PDOSFrom   %i\n' %PDOSfirst)
         f.write('TS.TBT.PDOSTo     %i\n' %PDOSlast)
-    print 'SetupRuns.RunTBT: Writing Emin=%f, Emax=%f, NPoints=%i to %s' \
-        %(Emin, Emax, NPoints, tbtfile)
+    print('SetupRuns.RunTBT: Writing Emin=%f, Emax=%f, NPoints=%i to %s' \
+        %(Emin, Emax, NPoints, tbtfile))
     f.write('TS.TBT.Emin       %f  eV\n' %Emin)
     f.write('TS.TBT.Emax       %f  eV\n' %Emax)
     f.write('TS.TBT.NPoints    %i\n' %NPoints)
@@ -536,15 +537,15 @@ def SetupPHrun(newPHrun, wildcard, onlySdir='../OSrun',
 
     ### Make directory for output files etc.
     if not os.path.isdir(newPHrun):
-        print 'SetupRuns.SetupPHrun: Creating', newPHrun
+        print('SetupRuns.SetupPHrun: Creating', newPHrun)
         os.mkdir(newPHrun)
     else:
         if not overwrite:
-            print "Error: directory already exist ", newPHrun
+            print("Error: directory already exist ", newPHrun)
             sys.exit(1)
 
     # find device?
-    print 'SetupRuns.SetupPHrun: Writing', newPHrun+'/PHrun.py'
+    print('SetupRuns.SetupPHrun: Writing', newPHrun+'/PHrun.py')
     phfile = open(newPHrun+'/PHrun.py', 'w')
     phfile.write('from Inelastica.Phonons import *\n\n')
     phfile.write('\nAnalyze(FCwildcard=\'%s\',onlySdir=\'%s\',\n' %(wildcard, onlySdir))
@@ -599,7 +600,7 @@ def SetupInelastica(templateInelastica, newInelastica, TSrun,
                               any JOBNAME string with newjobname)
     submitJob            : (True/False) Submit to batch queue via qsub command?
     """
-    print 'SetupRuns.SetupInelastica: Creating', newInelastica
+    print('SetupRuns.SetupInelastica: Creating', newInelastica)
     CopyTree(templateInelastica, newInelastica, overwrite=False)
 
     name, ext = os.path.splitext(newInputFilename)
@@ -616,7 +617,7 @@ def SetupInelastica(templateInelastica, newInelastica, TSrun,
         # Convert TBT nc-files to Inelastica folder
         if not os.path.isfile(newInelastica+Mod_NCfile) or overwrite:
             UnitConvertTBOutput(TSrun+TBT_NCfile, newInelastica+Mod_NCfile)
-        print 'SetupRuns.SetupInelastica: Creating', newInelastica+'/'+inputfile
+        print('SetupRuns.SetupInelastica: Creating', newInelastica+'/'+inputfile)
         shutil.copy(templateInputFile, newInelastica+'/'+inputfile)
         infile = open(newInelastica+'/'+inputfile, 'a')
         infile.write('\n# AUTOMATICALLY APPENDED LINES: \n')
@@ -633,7 +634,7 @@ def SetupInelastica(templateInelastica, newInelastica, TSrun,
 # -----------------------------------------------------------------------------------------------------
 
 def RemoveOutputFiles(folder, suffixes=[], DryRun=True, FullCleanup=False):
-    print 'SetupRuns.RemoveOutputFiles: Cleaning up %s'%folder
+    print('SetupRuns.RemoveOutputFiles: Cleaning up %s'%folder)
     # These suffixes can always be deleted
     suffixes += ['.ion', '.ion.xml', '.POT.CONF', 'INPUT_TMP', 'out.fdf',
                  '.alloc', '.Au_pbr', 'WALLTIME', 'fort.66',
@@ -643,7 +644,7 @@ def RemoveOutputFiles(folder, suffixes=[], DryRun=True, FullCleanup=False):
     for elm in glob.glob(folder+'/*'):
         for s in suffixes:
             if elm.endswith(s) and os.path.isfile(elm):
-                print '   Deleting %s'%elm
+                print('   Deleting %s'%elm)
                 if not DryRun: os.remove(elm)
 
     if FullCleanup:
@@ -652,15 +653,15 @@ def RemoveOutputFiles(folder, suffixes=[], DryRun=True, FullCleanup=False):
         for elm in glob.glob(folder+'/*'):
             for s in keepSuffixes:
                 if elm.endswith(s) and os.path.isfile(elm):
-                    print '   Keeping %s'%elm
+                    print('   Keeping %s'%elm)
                 else:
-                    print '   Deleting %s'%elm
+                    print('   Deleting %s'%elm)
                     if not DryRun: os.remove(elm)
                     break
 
 
 def ZipFolder(folder):
-    print 'SetupRuns: Zipping ', folder
+    print('SetupRuns: Zipping ', folder)
     head, tail = os.path.split(folder)
     cwd = os.getcwd()
     os.chdir(head)
@@ -672,7 +673,7 @@ def ZipFolder(folder):
 
 
 def UnzipFolder(zfile):
-    print 'SetupRuns: Unzipping', zfile
+    print('SetupRuns: Unzipping', zfile)
     os.system('gunzip %s'%zfile)
     head, tail = os.path.split(zfile)
     cwd = os.getcwd()
@@ -683,16 +684,16 @@ def UnzipFolder(zfile):
 
 
 def CopyInputFiles(infolder, outfolder, suffixes):
-    print 'SetupRuns.CopyInputFiles:'
+    print('SetupRuns.CopyInputFiles:')
     for elm in glob.glob(infolder+'/*'):
         for s in suffixes:
             if elm.endswith(s) and os.path.isfile(elm):
-                print '   %s  -->  %s'%(elm, outfolder)
+                print('   %s  -->  %s'%(elm, outfolder))
                 shutil.copy(elm, outfolder)
 
 
 def BuildOSstruct(infile, outfile, axes=[0, 1, 2], direction=[-1, 1], displacement=0.04*PC.Bohr2Ang):
-    print 'BuildOSstruct: displacement = %.6f Ang'%displacement
+    print('BuildOSstruct: displacement = %.6f Ang'%displacement)
     geom = MG.Geom(infile)
     for i in axes:
         for displdir in direction:
@@ -708,20 +709,20 @@ def CopyTree(templateFolder, newFolder, overwrite=False):
     # Make new directory
     if os.path.isdir(newFolder):
         if overwrite:
-            print 'SetupRuns.CopyTree: %s already exists. REMOVING EXISTING FOLDER!!!' %newFolder
+            print('SetupRuns.CopyTree: %s already exists. REMOVING EXISTING FOLDER!!!' %newFolder)
             shutil.rmtree(newFolder, ignore_errors=True)
         else:
-            print 'SetupRuns.CopyTree: %s already exists. No further actions taken.' %newFolder
+            print('SetupRuns.CopyTree: %s already exists. No further actions taken.' %newFolder)
             return
     # Copy tree
-    print 'SetupRuns.CopyTree: Copying'
-    print '   %s  -->  %s'%(templateFolder, newFolder)
+    print('SetupRuns.CopyTree: Copying')
+    print('   %s  -->  %s'%(templateFolder, newFolder))
     shutil.copytree(templateFolder, newFolder)
 
 
 def UnitConvertTBOutput(TBncfile, newTBncfile):
     # This function is copied from "netcdf_transiestaInterpol.py"
-    print 'SetupRuns.UnitConvertTBOutput: %s  -->  %s' %(TBncfile, newTBncfile)
+    print('SetupRuns.UnitConvertTBOutput: %s  -->  %s' %(TBncfile, newTBncfile))
 
     # Read TBncfile (infile)
     infile = NC4.Dataset(TBncfile, 'r')
@@ -735,7 +736,7 @@ def UnitConvertTBOutput(TBncfile, newTBncfile):
         ImHSexist = True
     except:
         ImHSexist = False
-        print 'UnitConvertTBOutput: No imaginary parts of H and S found.'
+        print('UnitConvertTBOutput: No imaginary parts of H and S found.')
     x = len(En)
     dim = len(H)
 
@@ -791,24 +792,24 @@ def UnitConvertTBOutput(TBncfile, newTBncfile):
 
 
 def CheckIfFinished(outfile):
-    print
+    print()
     try:
         f = open(outfile, 'r')
         for line in f.readlines(): pass
         if line[:6] == '>> End' or line[:6] == '======':
-            print 'CheckIfFinished: %s is done.'%outfile
+            print('CheckIfFinished: %s is done.'%outfile)
             return True
         else:
-            print 'CheckIfFinished: %s is NOT done.'%outfile
+            print('CheckIfFinished: %s is NOT done.'%outfile)
             return False
     except:
-        print 'CheckIfFinished: %s does NOT exist!'%outfile
+        print('CheckIfFinished: %s does NOT exist!'%outfile)
         return False
 
 
 def FindElectrodeSep(directory, AtomsPerLayer):
     for xvfile in glob.glob(directory+'/*.XV*'):
-        print xvfile
+        print(xvfile)
         g = MG.Geom(xvfile)
         g.findContactsAndDevice(AtomsPerLayer)
         DeviceFirst, DeviceLast = g.deviceList[0], g.deviceList[-1]
@@ -828,16 +829,16 @@ def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, rtype='TS'):
     if os.path.exists(PBStemplate):
         WritePBS(PBStemplate, PBSout, PBSsubs)
         if submitJob:
-            print PBStemplate
+            print(PBStemplate)
             workingFolder, PBSfile = os.path.split(os.path.abspath(PBSout))
             SubmitPBS(workingFolder, PBSfile)
     else:
-        print "WARNING: Could not find PBS template file", PBStemplate
+        print("WARNING: Could not find PBS template file", PBStemplate)
 
 
 def WritePBS(PBStemplate, PBSout, PBSsubs):
-    print 'SetupRuns.WritePBS: Reading', PBStemplate
-    print 'SetupRuns.WritePBS: Writing', PBSout
+    print('SetupRuns.WritePBS: Reading', PBStemplate)
+    print('SetupRuns.WritePBS: Writing', PBSout)
 
     # Make default job name
     fullPath = os.path.split(os.path.abspath(PBSout))[0]
@@ -846,7 +847,7 @@ def WritePBS(PBStemplate, PBSout, PBSsubs):
         tmp = int(last2dir[0][0])+1
         last2dir[0] = 'a'+last2dir[0]
     except Exception as e:
-        print e
+        print(e)
     if not PBSsubs: PBSsubs = []
     newPBSsub = PBSsubs+[['$DEFJOBNAME$', last2dir[0]+'-'+last2dir[1]]]
     infile = open(PBStemplate)
@@ -864,4 +865,4 @@ def SubmitPBS(workingfolder, pbsfile):
     os.chdir(workingfolder)
     os.system('qsub '+pbsfile)
     os.chdir(cwd)
-    print '   ...and submitted!!!'
+    print('   ...and submitted!!!')

@@ -28,9 +28,7 @@ averaged STM image and the STM images of individual k points are saved in
 .. currentmodule:: Inelastica.STM
 
 """
-
-
-from __future__ import absolute_import, print_function
+from __future__ import print_function
 
 import numpy as N
 import numpy.linalg as LA
@@ -51,7 +49,7 @@ import Inelastica.MakeGeom as MG
 import Inelastica.math as MM
 import Inelastica.physics.constants as PC
 import Inelastica.physics.mesh as Kmesh
-import Inelastica.misc.multiprocessing as multiprocessing
+import Inelastica.misc.multiproc as MP
 
 #Units: Bohr and Rydberg!
 
@@ -63,7 +61,7 @@ DEBUGPDE = False
 
 def GetOptions(argv):
     # if text string is specified, convert to list
-    if isinstance(argv, basestring): argv = argv.split()
+    if isinstance(argv, str): argv = argv.split()
 
     import optparse as o
 
@@ -196,7 +194,7 @@ def main(options):
         else:
             print('STM calculation starts.')
     args = [(options, ik) for ik in doK]
-    tmp = multiprocessing.runParallel(calcTSWFPar, args, nCPU=options.nCPU)
+    tmp = MP.runParallel(calcTSWFPar, args, nCPU=options.nCPU)
 
     print('Calculating k-point averaged STM image')
 

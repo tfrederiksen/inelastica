@@ -30,10 +30,12 @@ xc.authors            PBE           # Exchange-correlation version
 
 DM.UseSaveDM          true          # to use continuation files
 
+%include ELEC.fdf
+%include STRUCT.fdf
+%include TBTRANS.fdf
+
+# The following kept for compatibility with transiesta versions < 4.1.
 TS.HSFileLeft     ELEC/Electrode.TSHS
 TS.HSFileRight    ELEC/Electrode.TSHS
 TS.NumUsedAtomsLeft 4
 TS.NumUsedAtomsRight 4
-
-%include STRUCT.fdf
-%include TBTRANS.fdf
