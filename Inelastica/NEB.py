@@ -91,7 +91,7 @@ def runNEB():
         for ii in range(len(steps)-1):
             checkConst(steps[ii],steps[ii+1])
 
-    done=opts.onlyInit
+    done = opts.onlyInit
 
     while not done:
         # Start calculations
@@ -113,14 +113,14 @@ def runNEB():
 
         overShoot = False
         for ii, jj in enumerate(steps[:-1]):
-            if ii!=0: # Skip first and last
+            if ii != 0: # Skip first and last
                 overShoot = overShoot or jj.shootOver(savedData.geom[-1][ii-1], savedData.geom[-1][ii+1])
         if overShoot: # Kill speed if one image overshoot ... otherwise kinks will appear
             for ii in steps:
                 ii.v = ii.v*0
 
         for ii, jj in enumerate(steps[:-1]):
-            if ii!=0: # Skip first and last
+            if ii != 0: # Skip first and last
                 jj.update(savedData.geom[-1][ii-1], savedData.geom[-1][ii+1])
 
         # Write status
@@ -129,13 +129,13 @@ def runNEB():
         for ii in range(1, len(steps)-1):
             geoms = [savedData.geom[jj][ii] for jj in range(len(savedData.geom))]
             Fmax = [savedData.Fmax[jj][ii] for jj in range(len(savedData.geom))]
-            Fs    = [savedData.F[jj][ii] for jj in range(len(savedData.geom))]
+            Fs = [savedData.F[jj][ii] for jj in range(len(savedData.geom))]
             SIO.WriteANIFile('NEB_%i/Steps.ANI'%(ii-1), geoms, Fmax)
             SIO.WriteAXSFFiles('NEB_%i/Steps.XASF'%(ii-1), geoms, forces=Fs)
 
         geoms = [ii.XVgeom for ii in steps]
-        Fmax  = [ii.Fmax for ii in steps]
-        F  = [ii.F for ii in steps]
+        Fmax = [ii.Fmax for ii in steps]
+        F = [ii.F for ii in steps]
         SIO.WriteANIFile('NextStep.ANI', geoms, \
                          [ii-savedData.E[-1][0] for ii in savedData.E[-1]])
         SIO.WriteAXSFFiles('NextStep.XASF', geoms, forces=F)
@@ -171,7 +171,7 @@ class step(object):
 
         if restart or self.fixed:
             self.FDFgeom = MG.Geom(self.dirr+"/"+opts.fn)
-            self.XVgeom =  readxv(self.dirr)
+            self.XVgeom = readxv(self.dirr)
             self.v = N.array(self.FDFgeom.xyz)*0
 
         if not restart and not self.fixed:
@@ -205,7 +205,7 @@ class step(object):
 
         self.done = self.checkDone()
         const = SIO.GetFDFblock(dirr+"/"+opts.fn, "GeometryConstraints")
-        if opts.const2!=None:
+        if opts.const2 != None:
             self.const = [[opts.const2[0],opts.const2[0]]]
         else:
             self.const = []
@@ -253,7 +253,7 @@ class step(object):
                         True, rtype = 'TS')
 
     def shootOver(self, left, right):
-        if self.ii==0 or self.ii==opts.NNEB+1: return False
+        if self.ii == 0 or self.ii == opts.NNEB+1: return False
 
         xyz, F = N.array(self.XVgeom.xyz), N.array(self.forces)
         F = F[:, 1:4]
@@ -262,22 +262,22 @@ class step(object):
         tangent = rxyz-lxyz
         tangent = tangent/LA.norm(tangent) # Normalize
 
-        F  = F-N.sum(F*tangent)*tangent  # orthogonal to tangent
+        F = F-N.sum(F*tangent)*tangent  # orthogonal to tangent
 
         # Apply constraints
         for s, f in self.const:
             for ii in range(s, f+1):
-                F[ii, :]=0
-        if opts.const2!=None: # constraints 2
+                F[ii, :] = 0
+        if opts.const2 != None: # constraints 2
             indx, vec = opts.const2[1], opts.const2[2]
-            F[indx,:]=N.dot(F[indx,:],vec)*vec # Allow along vec 
+            F[indx,:] = N.dot(F[indx,:],vec)*vec # Allow along vec 
             indx, vec = opts.const2[3], opts.const2[4]
-            F[indx,:]=F[indx,:]-N.dot(F[indx,:],vec)*vec # Plane perp to vec      
+            F[indx,:] = F[indx,:]-N.dot(F[indx,:],vec)*vec # Plane perp to vec      
 
-        return N.sum(F*self.v)<0
+        return N.sum(F*self.v) < 0
 
     def update(self, left, right):
-        if self.ii==0 or self.ii==opts.NNEB+1: return
+        if self.ii == 0 or self.ii == opts.NNEB+1: return
         # calculate new geometry
         xyz, F = N.array(self.XVgeom.xyz), N.array(self.forces)
         F = F[:, 1:4]
@@ -293,22 +293,22 @@ class step(object):
         if steplen > opts.maxDist:
             dxyz = dxyz/steplen*opts.maxDist
         
-        F  = F-N.sum(F*tangent)*tangent  # orthogonal to tangent
+        F = F-N.sum(F*tangent)*tangent  # orthogonal to tangent
 
         # Apply constraints
         for s, f in self.const:
             for ii in range(s, f+1):
-                F[ii, :]=0
-        if opts.const2!=None: # constraints 2
+                F[ii, :] = 0
+        if opts.const2 != None: # constraints 2
             indx, vec = opts.const2[1], opts.const2[2]
-            F[indx,:]=N.dot(F[indx,:],vec)*vec # Allow along vec 
+            F[indx,:] = N.dot(F[indx,:],vec)*vec # Allow along vec 
             indx, vec = opts.const2[3], opts.const2[4]
-            F[indx,:]=F[indx,:]-N.dot(F[indx,:],vec)*vec # Plane perp to vec      
+            F[indx,:] = F[indx,:]-N.dot(F[indx,:],vec)*vec # Plane perp to vec      
             
         self.F = F
 
         self.Fmax = N.max(N.sqrt(N.sum(F*F, 1)))
-        self.converged = self.Fmax<opts.convCrit
+        self.converged = self.Fmax < opts.convCrit
 
         v = self.v + F*opts.moveK
         steplen = N.sqrt(N.sum(v*v))
@@ -330,15 +330,15 @@ def checkConst(a,b):
     for ii in a.const:
         if not N.allclose(a.FDFgeom.xyz[ii[0]:ii[1]+1],b.FDFgeom.xyz[ii[0]:ii[1]+1]):
             sys.exit('Constrained atoms '+str([ii[0]+1,ii[1]+1])+'does not match for all geometries')
-    if opts.const2!=None:
+    if opts.const2 != None:
         # constraints 2
         indx, vec = opts.const2[1], opts.const2[2]
         dxyz = N.array(a.FDFgeom.xyz[indx])-N.array(b.FDFgeom.xyz[indx])
-        if LA.norm(dxyz-N.dot(dxyz,vec)*vec)>1e-6:
+        if LA.norm(dxyz-N.dot(dxyz,vec)*vec) > 1e-6:
             sys.exit('Constraints not fullfilled for Atom %i along [%f,%f,%f]'%(indx+1,vec[0],vec[1],vec[2]))
         indx, vec = opts.const2[3], opts.const2[4]
         dxyz = N.array(a.FDFgeom.xyz[indx])-N.array(b.FDFgeom.xyz[indx])
-        if N.abs(N.dot(dxyz,vec))>1e-6:
+        if N.abs(N.dot(dxyz,vec)) > 1e-6:
             sys.exit('Constraints not fullfilled for Atom %i in plane with tangent [%f,%f,%f]'%(indx+1,vec[0],vec[1],vec[2]))
     return
 
@@ -356,7 +356,7 @@ def readxv(dirpath):
     elif len(fns) < 1:
         return None
 
-    print(('Reading geometry from "%s" file' % fns[0]))
+    print('Reading geometry from "%s" file' % fns[0])
     geom = MG.Geom(fns[0])
     return geom
 
@@ -387,38 +387,38 @@ For help use --help!
     p.add_argument('initial', help='Initial geometry')
     p.add_argument('final', help='Final geometry')
 
-    p.add_argument("-n", "--NumNEB", dest="NNEB",\
-                   help="Number of intermediate steps [%(default)i]",\
+    p.add_argument("-n", "--NumNEB", dest="NNEB",
+                   help="Number of intermediate steps [%(default)i]",
                    type=int, default=9)
     p.add_argument("-f", "--fdf", dest='fn', default='RUN.fdf', type=str,
                    help='Input fdf-file for SIESTA calculations [%(default)s]')
-    p.add_argument("-p", "--Proc", dest="proc",\
-                   help="Number of processors [%(default)i]",\
-                  type=int, default=1)
-    p.add_argument("-d", "--MoveK", dest="moveK",\
-                   help="Acceleration velocity/force/step [A/(eV/A)/step] [%(default)f]",\
+    p.add_argument("-p", "--Proc", dest="proc",
+                   help="Number of processors [%(default)i]",
+                   type=int, default=1)
+    p.add_argument("-d", "--MoveK", dest="moveK",
+                   help="Acceleration velocity/force/step [A/(eV/A)/step] [%(default)f]",
                    type=float, default=0.006)
-    p.add_argument("-t", "--tangent", dest="tMix",\
-                   help="Mixing along the trajectory, i.e., move points to \
-                   midpoint along tangent [%(default)f]",\
+    p.add_argument("-t", "--tangent", dest="tMix",
+                   help="Mixing along the trajectory, i.e., move points to midpoint along tangent [%(default)f]",
                    type=float, default=.8)
-    p.add_argument("-m", "--MaxDist", dest="maxDist",\
-                   help="Maximum distance moved (separately enforced along/perpendicular to tangent) [Ang] [%(default)f]",\
-                  type=float, default=0.04)
-    p.add_argument("-e", "--ConvCrit", dest="convCrit",\
-                   help="Convergence criteria, max force on atom [eV/A] [%(default)f]",\
-                  type=float, default=0.08)
-    p.add_argument("-s", "--Start", dest="onlyInit",\
-                   help="Only make the initial structures [%(default)s]",\
-                   default=False,action='store_true')
-    p.add_argument("-c","--Constraint",dest="const2",
-                   help="Constraints string 'n1, n2, x,y,z, n3, x,y,z': where atom n1 is fully constrained, n2 can move along the vector (x,y,z), and n3 in the plane perpendicular to the vector. [%(default)s]",type=str,default=None)
+    p.add_argument("-m", "--MaxDist", dest="maxDist",
+                   help="Maximum distance moved (separately enforced along/perpendicular to tangent) [Ang] [%(default)f]",
+                   type=float, default=0.04)
+    p.add_argument("-e", "--ConvCrit", dest="convCrit",
+                   help="Convergence criteria, max force on atom [eV/A] [%(default)f]",
+                   type=float, default=0.08)
+    p.add_argument("-s", "--Start", dest="onlyInit",
+                   help="Only make the initial structures [%(default)s]",
+                   default=False, action='store_true')
+    p.add_argument("-c","--Constraint", dest="const2",
+                   help="Constraints string 'n1, n2, x,y,z, n3, x,y,z': where atom n1 is fully constrained, n2 can move along the vector (x,y,z), and n3 in the plane perpendicular to the vector. [%(default)s]",
+                   type=str, default=None)
 
     opts = p.parse_args()
     opts.module = 'NEB'
 
     # Parse constraints
-    if opts.const2!=None:
+    if opts.const2 != None:
         strings = string.split(opts.const2,',')
         opts.const2 = [int(strings[0]), int(strings[1]), N.array([float(strings[2]),float(strings[3]),float(strings[4])]),
                        int(strings[5]), N.array([float(strings[6]),float(strings[7]),float(strings[8])])]
@@ -438,7 +438,7 @@ For help use --help!
     print(('Constraints                   : ',opts.const2))
     print('##################################################################################')
 
-    if opts.const2!=None: # Internal numbering
+    if opts.const2 != None: # Internal numbering
         opts.const2[0] -= 1
         opts.const2[1] -= 1
         opts.const2[3] -= 1

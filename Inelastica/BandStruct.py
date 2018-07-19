@@ -15,7 +15,6 @@ import Inelastica.io.siesta as SIO
 import Inelastica.MakeGeom as MG
 import Inelastica.math as MM
 import numpy as N
-import numpy.linalg as LA
 import scipy.linalg as SLA
 import sys
 import glob

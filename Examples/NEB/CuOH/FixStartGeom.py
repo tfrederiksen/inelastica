@@ -36,8 +36,8 @@ def redist(L,C,R):
 print([LA.norm(xyz[ii]-xyz[ii+1]) for ii in range(len(fns)-1)])
 
 for ii in range(100): 
-    for jj in range(1,len(fns)-1):
-        nxyz[jj] += 0.8*redist(xyz[jj-1],xyz[jj],xyz[jj+1])
+    for jj in range(1, len(fns)-1):
+        nxyz[jj] += 0.8*redist(xyz[jj-1], xyz[jj], xyz[jj+1])
     xyz = 1.0*nxyz
 
 # Write output
