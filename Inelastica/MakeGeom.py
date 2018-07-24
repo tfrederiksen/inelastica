@@ -655,8 +655,8 @@ class Geom(object):
     def readCONTCAR(self, fn):
         "Read geometry from VASP CONTCAR file"
         label, scalefactor, vectors, specieslabels, speciesnumbers, xyz = VIO.ReadCONTCAR(fn)
-        self.pbc = N.array(vectors)
-        self.xyz = N.array(xyz[:, :3])
+        self.pbc = N.array(vectors)*scalefactor
+        self.xyz = N.array(xyz[:, :3])*scalefactor
         self.constrained = N.array(xyz[:, 3:])
         self.natoms = len(xyz)
         self.snr = []
