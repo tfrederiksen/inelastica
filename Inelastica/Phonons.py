@@ -105,6 +105,8 @@ def GetOptions(argv):
 
     p = argparse.ArgumentParser(description='Methods to calculate vibrations and e-ph couplings from SIESTA output')
     p.add_argument('DestDir', help='Destination directory')
+    p.add_argument('-f', '--fdf', dest='fdf', default='./RUN.fdf', type=str,
+                 help='Input fdf-file for SIESTA/TranSIESTA calculation [%(default)s]')
     p.add_argument('-c', '--CalcCoupl', dest='CalcCoupl', action='store_true', default=False,
                    help='Calculate e-ph couplings [default=%(default)s]')
     p.add_argument('-r', '--Restart', dest='Restart', action='store_true', default=False,
@@ -115,20 +117,20 @@ def GetOptions(argv):
                    help='Calculate e-ph couplings using single precision arrays [default=%(default)s]')
     p.add_argument('-F', '--DeviceFirst', dest='DeviceFirst', type=int, default=1,
                    help='First device atom index (in the electronic basis) [default=%(default)s]')
-    p.add_argument('-L', '--DeviceLast', dest='DeviceLast', type=int, default=1000,
-                   help='Last device atom index (in the electronic basis) [default=%(default)s]')
+    p.add_argument('-L', '--DeviceLast', dest='DeviceLast', type=int, default=0,
+                   help='Last device atom index (in the electronic basis) [default=NumberOfAtoms]')
     p.add_argument('--FCfirst', dest='FCfirst', type=int, default=1,
                    help='First FC atom index [default=%(default)s]')
-    p.add_argument('--FClast', dest='FClast', type=int, default=1000,
-                   help='Last FC atom index [default=%(default)s]')
+    p.add_argument('--FClast', dest='FClast', type=int, default=0,
+                   help='Last FC atom index [default=NumberOfAtoms]')
     p.add_argument('--EPHfirst', dest='EPHfirst', type=int, default=1,
                    help='First atom index for which the e-ph. couplings are evaluated [default=FCfirst]')
-    p.add_argument('--EPHlast', dest='EPHlast', type=int, default=1000,
+    p.add_argument('--EPHlast', dest='EPHlast', type=int, default=0,
                    help='Last atom index for which the e-ph. couplings are evaluated [default=FClast]')
     p.add_argument('--PBCFirst', dest='PBCFirst', type=int, default=1,
                    help='For eliminating interactions through periodic boundary conditions in z-direction [default=%(default)s]')
-    p.add_argument('--PBCLast', dest='PBCLast', type=int, default=1000,
-                   help='For eliminating interactions through periodic boundary conditions in z-direction [default=%(default)s]')
+    p.add_argument('--PBCLast', dest='PBCLast', type=int, default=0,
+                   help='For eliminating interactions through periodic boundary conditions in z-direction [default=NumberOfAtoms]')
     p.add_argument('--FCwildcard', dest='FCwildcard', type=str, default='./FC*',
                    help='Wildcard for FC directories [default=%(default)s]')
     p.add_argument('--OSdir', dest='onlySdir', type=str, default='./OSrun',
@@ -167,6 +169,20 @@ def GetOptions(argv):
             options.atype = N.complex64
         else:
             options.atype = N.complex128
+
+    # Check if we need to set the last atom(s)
+    if options.FClast*options.DeviceLast*options.EPHlast*options.PBCLast == 0:
+        # We need NumberOfAtoms
+        fdf = glob.glob(options.FCwildcard+'/'+options.fdf)
+        natoms = SIO.GetFDFlineWithDefault(fdf[0], 'NumberOfAtoms', int, 1000, 'Phonons')
+    if options.FClast == 0:
+        options.FClast = natoms
+    if options.DeviceLast == 0:
+        options.DeviceLast = natoms
+    if options.EPHlast == 0:
+        options.EPHlast = natoms
+    if options.PBCLast == 0:
+        options.PBCLast = natoms
 
     # Dynamic atoms
     options.DynamicAtoms = list(range(options.FCfirst, options.FClast+1))
@@ -869,7 +885,7 @@ def main(options):
     Log.PrintMainHeader(options)
 
     # Determine SIESTA input fdf files in FCruns
-    fdf = glob.glob(options.FCwildcard+'/RUN.fdf')
+    fdf = glob.glob(options.FCwildcard+'/'+options.fdf)
 
     print('Phonons.Analyze: This run uses')
     FCfirst, FClast = min(options.DynamicAtoms), max(options.DynamicAtoms)
