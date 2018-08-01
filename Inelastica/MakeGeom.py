@@ -261,8 +261,8 @@ class Geom(object):
         else:
             RotateThese = RotateSubset
         if RotationCenter.any():
-            # Move origo to center of rotation
-            self.move([-x for x in RotationCenter])
+            RotationCenter = N.array(RotationCenter) # Avoid changes, if reference to an atom
+            self.move(-RotationCenter)
         for i in RotateThese:
             r0 = N.array(self.xyz[i])
             r = r0*math.cos(angle) \
