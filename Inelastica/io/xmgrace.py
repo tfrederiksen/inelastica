@@ -294,7 +294,7 @@ class XYset(Dataset):
         string = '# ------------------ Dataset %i.%i ----------------- \n'%(graphnr, setnr)
         string += '@ target g%i.s%i \n@ type xy \n'%(graphnr, setnr)
         string += self.__GetXMGRstring__(graphnr, setnr)
-        for i in range(len(self.x)):
+        for i, xi in enumerate(self.x):
             string += '   %.8f  %.8f \n'%(self.x[i], self.y[i])
         return string
 
@@ -315,7 +315,7 @@ class XYDXset(XYset):
         string = '# ------------------ Dataset %i.%i ----------------- \n'%(graphnr, setnr)
         string += '@ target g%i.s%i \n@ type xydx \n'%(graphnr, setnr)
         string += self.__GetXMGRstring__(graphnr, setnr)
-        for i in range(len(self.x)):
+        for i, xi in enumerate(self.x):
             string += '   %.8f  %.8f  %.8f \n'%(self.x[i], self.y[i], self.dx[i])
         return string
 
@@ -336,7 +336,7 @@ class XYDYset(XYset):
         string = '# ------------------ Dataset %i.%i ----------------- \n'%(graphnr, setnr)
         string += '@ target g%i.s%i \n@ type xydy \n'%(graphnr, setnr)
         string += self.__GetXMGRstring__(graphnr, setnr)
-        for i in range(len(self.x)):
+        for i, xi in enumerate(self.x):
             string += '   %.8f  %.8f  %.8f \n'%(self.x[i], self.y[i], self.dy[i])
         return string
 
@@ -358,7 +358,7 @@ class XYDXDYset(XYset):
         string = '# ------------------ Dataset %i.%i ----------------- \n'%(graphnr, setnr)
         string += '@ target g%i.s%i \n@ type xydxdy \n'%(graphnr, setnr)
         string += self.__GetXMGRstring__(graphnr, setnr)
-        for i in range(len(self.x)):
+        for i, xi in enumerate(self.x):
             string += '   %.8f  %.8f  %.8f  %.8f \n'%(self.x[i], self.y[i], self.dx[i], self.dy[i])
         return string
 
@@ -379,7 +379,7 @@ class XYSIZEset(XYset):
         string = '# ------------------ Dataset %i.%i ----------------- \n'%(graphnr, setnr)
         string += '@ target g%i.s%i \n@ type xysize \n'%(graphnr, setnr)
         string += self.__GetXMGRstring__(graphnr, setnr)
-        for i in range(len(self.x)):
+        for i, xi in enumerate(self.x):
             string += '   %.8f  %.8f  %.8f \n'%(self.x[i], self.y[i], self.size[i])
         return string
 

@@ -563,8 +563,8 @@ def calcIETS(options, GFp, GFm, basis, hw):
     NPow=N.zeros((len(Pow), len(V)), N.float)
     NnPh=N.zeros((len(Pow), len(V)), N.float)
     for ii in range(len(Pow)):
-        NPow[ii]=MM.interpolate(V, Vl, Pow[ii])
-        NnPh[ii]=MM.interpolate(V, Vl, nPh[ii])
+        NPow[ii] = MM.interpolate(V, Vl, Pow[ii])
+        NnPh[ii] = MM.interpolate(V, Vl, nPh[ii])
 
     # Interpolate inelastic noise
     NV, NI, NdI, NddI, NBdI, NBddI = Broaden(options, Vl, GFp.TeF*Vl+Inew)
@@ -627,15 +627,15 @@ def calcIETS(options, GFp, GFm, basis, hw):
     write2NCfile(outNC, ddIa, 'ddIa', 'ddIasym function')
     # Write energy reference where Greens functions are evaluated
     outNC.createDimension('number', 1)
-    tmp=outNC.createVariable('EnergyRef', 'd', ('number',))
-    tmp[:]=N.array(options.energy)
+    tmp = outNC.createVariable('EnergyRef', 'd', ('number',))
+    tmp[:] = N.array(options.energy)
     # Write LOEscale
-    tmp=outNC.createVariable('LOEscale', 'd', ('number',))
-    tmp[:]=N.array(options.LOEscale)
+    tmp = outNC.createVariable('LOEscale', 'd', ('number',))
+    tmp[:] = N.array(options.LOEscale)
     # Write k-point
     outNC.createDimension('vector', 3)
-    tmp=outNC.createVariable('kpoint', 'd', ('vector',))
-    tmp[:]=N.array(options.kpoint)
+    tmp = outNC.createVariable('kpoint', 'd', ('vector',))
+    tmp[:] = N.array(options.kpoint)
     outNC.close()
 
     return V, I, dI, ddI, BdI, BddI

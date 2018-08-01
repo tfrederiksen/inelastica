@@ -89,7 +89,7 @@ def runNEB():
     checkConst(i, f)
     if restart:
         for ii in range(len(steps)-1):
-            checkConst(steps[ii],steps[ii+1])
+            checkConst(steps[ii], steps[ii+1])
 
     done = opts.onlyInit
 
@@ -144,7 +144,7 @@ def runNEB():
             done = done and ii.converged
         pickle.dump((savedData.E, savedData.F, savedData.Fmax, savedData.geom),\
                     open('NEB_%i/savedData.pickle'%0, 'w'))
-        f = open('Convergence','a')
+        f = open('Convergence', 'a')
         f.write(('####### Iteration %i #######\n#Fmax '+('%2.3f '*(opts.NNEB+2))+'\n')%\
                 tuple([len(savedData.Fmax),]+savedData.Fmax[-1]))
         f.write(('#step length '+(('%2.4f ')*(opts.NNEB+2))+'\n')%\
@@ -206,7 +206,7 @@ class step(object):
         self.done = self.checkDone()
         const = SIO.GetFDFblock(dirr+"/"+opts.fn, "GeometryConstraints")
         if opts.const2 != None:
-            self.const = [[opts.const2[0],opts.const2[0]]]
+            self.const = [[opts.const2[0], opts.const2[0]]]
         else:
             self.const = []
         for ii in const:
@@ -270,9 +270,9 @@ class step(object):
                 F[ii, :] = 0
         if opts.const2 != None: # constraints 2
             indx, vec = opts.const2[1], opts.const2[2]
-            F[indx,:] = N.dot(F[indx,:],vec)*vec # Allow along vec 
+            F[indx,:] = N.dot(F[indx,:], vec)*vec # Allow along vec 
             indx, vec = opts.const2[3], opts.const2[4]
-            F[indx,:] = F[indx,:]-N.dot(F[indx,:],vec)*vec # Plane perp to vec      
+            F[indx,:] = F[indx,:]-N.dot(F[indx,:], vec)*vec # Plane perp to vec      
 
         return N.sum(F*self.v) < 0
 
@@ -410,7 +410,7 @@ For help use --help!
     p.add_argument("-s", "--Start", dest="onlyInit",
                    help="Only make the initial structures [%(default)s]",
                    default=False, action='store_true')
-    p.add_argument("-c","--Constraint", dest="const2",
+    p.add_argument("-c", "--Constraint", dest="const2",
                    help="Constraints string 'n1, n2, x,y,z, n3, x,y,z': where atom n1 is fully constrained, n2 can move along the vector (x,y,z), and n3 in the plane perpendicular to the vector. [%(default)s]",
                    type=str, default=None)
 

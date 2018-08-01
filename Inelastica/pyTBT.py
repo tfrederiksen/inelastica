@@ -449,5 +449,5 @@ def xmladd(doc, parent, name, values):
     # Who came up with xml ... accountant moroons?
     elem = doc.createElement(name)
     parent.appendChild(elem)
-    txt=doc.createTextNode(values)
+    txt = doc.createTextNode(values)
     elem.appendChild(txt)

@@ -48,7 +48,7 @@ def compare_H(HS1, HS2, not_checks={}):
         print("Failed to give same results between python and fortran code for xij!!!")
         kuk
     if not HS1.onlyS: # Not reading onlyS files
-        if N.sum(N.abs(HS1.Hsparse-HS2.Hsparse))>tol:
+        if N.sum(N.abs(HS1.Hsparse-HS2.Hsparse)) > tol:
             print("Failed to give same results between python and fortran code for Hamiltonian!!!")
             kuk
 

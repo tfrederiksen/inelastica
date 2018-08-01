@@ -177,18 +177,18 @@ def WriteAXSFFiles(filename, geoms, forces=None):
     'Writes [geom1, geom2 ...] to AXSF format'
     f = open(filename, 'w')
     f.write('ANIMSTEPS %i\nCRYSTAL\n'%len(geoms))
-    for i in range(len(geoms)):
+    for i, gi in enumerate(geoms):
         f.write('PRIMVEC %i\n'%(i+1))
-        f.write('%.6f %.6f %.6f\n'%(geoms[i].pbc[0][0], geoms[i].pbc[0][1], geoms[i].pbc[0][2]))
-        f.write('%.6f %.6f %.6f\n'%(geoms[i].pbc[1][0], geoms[i].pbc[1][1], geoms[i].pbc[1][2]))
-        f.write('%.6f %.6f %.6f\n'%(geoms[i].pbc[2][0], geoms[i].pbc[2][1], geoms[i].pbc[2][2]))
+        f.write('%.6f %.6f %.6f\n'%(gi.pbc[0][0], gi.pbc[0][1], gi.pbc[0][2]))
+        f.write('%.6f %.6f %.6f\n'%(gi.pbc[1][0], gi.pbc[1][1], gi.pbc[1][2]))
+        f.write('%.6f %.6f %.6f\n'%(gi.pbc[2][0], gi.pbc[2][1], gi.pbc[2][2]))
         f.write('PRIMCOORD %i\n'%(i+1))
-        f.write('%i 1\n'%(len(geoms[i].xyz)))
+        f.write('%i 1\n'%(len(gi.xyz)))
 
-        for j in range(len(geoms[i].xyz)):
-            ln = ' %i'%geoms[i].anr[j]
+        for j, xyzj in enumerate(gi.xyz):
+            ln = ' %i'%gi.anr[j]
             for k in range(3):
-                ln += ' %.6f'%geoms[i].xyz[j][k]
+                ln += ' %.6f'%gi.xyz[j][k]
             if not isinstance(forces, bool):
                 for k in range(3):
                     ln += ' %.6f'%forces[i][j][k]
@@ -208,15 +208,15 @@ def WriteANIFile(filename, Geom, Energy, InUnits='Ang', OutUnits='Ang'):
           or ((InUnits == 'Bohr') and (OutUnits == 'Bohr'))): convFactor = 1
     else: print('io.siesta.WriteANIFile: Unit conversion error!')
     anifile = open(filename, 'w')
-    for ii, iGeom in enumerate(Geom):
-        anifile.write('%i \n'%iGeom.natoms)
+    for i, gi in enumerate(Geom):
+        anifile.write('%i \n'%gi.natoms)
         anifile.write('%f \n'%Energy[ii])
-        for iixyz in range(iGeom.natoms):
+        for iixyz in range(gi.natoms):
             anifile.write('%s %2.6f %2.6f %2.6f\n'%\
-                          (PC.PeriodicTable[abs(iGeom.anr[iixyz])],\
-                           convFactor*iGeom.xyz[iixyz][0],\
-                           convFactor*iGeom.xyz[iixyz][1],\
-                           convFactor*iGeom.xyz[iixyz][2]))
+                          (PC.PeriodicTable[abs(gi.anr[iixyz])],\
+                           convFactor*gi.xyz[iixyz][0],\
+                           convFactor*gi.xyz[iixyz][1],\
+                           convFactor*gi.xyz[iixyz][2]))
     anifile.close()
 
 
@@ -422,7 +422,7 @@ def WriteXYZFile(filename, atomnumber, xyz, write_ghosts=False):
             print('... skipped %i ghost atoms'%nga)
         xyzfile.write(str(len(xyz)-nga))
     xyzfile.write('\n\n')
-    for i in range(len(xyz)):
+    for i, xi in enumerate(xyz):
         try:
             element = PC.PeriodicTable[abs(atomnumber[i])]
         except:
@@ -465,11 +465,11 @@ def WriteFDFFile(filename, vectors, speciesnumber, atomnumber, xyz):
         fdffile.write('\n')
     fdffile.write('%endblock LatticeVectors\nAtomicCoordinatesFormat  Ang'+
                '\n%block AtomicCoordinatesAndAtomicSpecies\n')
-    for ii in range(len(xyz)):
-        line = string.rjust('%.9f'%xyz[ii][0], 16)+' '
-        line += string.rjust('%.9f'%xyz[ii][1], 16)+' '
-        line += string.rjust('%.9f'%xyz[ii][2], 16)+' '
-        line += str(int(speciesnumber[ii]))+' # %i\n'%(ii+1)
+    for i, xi in enumerate(xyz):
+        line = string.rjust('%.9f'%xi[0], 16)+' '
+        line += string.rjust('%.9f'%xi[1], 16)+' '
+        line += string.rjust('%.9f'%xi[2], 16)+' '
+        line += str(int(speciesnumber[i]))+' # %i\n'%(i+1)
         fdffile.write(line)
     fdffile.write('%endblock AtomicCoordinatesAndAtomicSpecies\n')
 
@@ -499,13 +499,13 @@ def WriteFDFFileZmat(filename, vectors, speciesnumber, atomnumber, xyz, first=0,
                    '\n%block Zmatrix\n')
     if first != 1:
         zmatfile.write('cartesian\n')
-    for ii in range(len(xyz)):
-        if ii+1 == first:
+    for i, xi in enumerate(xyz):
+        if i+1 == first:
             zmatfile.write('molecule\n')
-        if ii+1 >= first and ii+1 <= last:
+        if i+1 >= first and i+1 <= last:
             # We are within the molecular block
-            line = string.rjust('%i'%speciesnumber[ii], 2)
-            a, b, c, d, e, f = zmat[ii+1-first]
+            line = string.rjust('%i'%speciesnumber[i], 2)
+            a, b, c, d, e, f = zmat[i+1-first]
             line += ' %i %i %i '%(a, b, c)
             line += string.rjust('%.9f'%d, 16)
             line += string.rjust('%.9f'%e, 16)
@@ -513,13 +513,13 @@ def WriteFDFFileZmat(filename, vectors, speciesnumber, atomnumber, xyz, first=0,
             line += '   0 0 0\n'
             zmatfile.write(line)
         else:
-            line = string.rjust('%i'%speciesnumber[ii], 2)
-            line += string.rjust('%.9f'%xyz[ii][0], 16)
-            line += string.rjust('%.9f'%xyz[ii][1], 16)
-            line += string.rjust('%.9f'%xyz[ii][2], 16)
+            line = string.rjust('%i'%speciesnumber[i], 2)
+            line += string.rjust('%.9f'%xi[0], 16)
+            line += string.rjust('%.9f'%xi[1], 16)
+            line += string.rjust('%.9f'%xi[2], 16)
             line += '   0 0 0\n'
             zmatfile.write(line)
-        if ii+1 == last:
+        if i+1 == last:
             zmatfile.write('cartesian\n')
     zmatfile.write('constants\n')
     zmatfile.write('variables\n')
@@ -552,8 +552,8 @@ def ReadSTRUCT_OUTFile(filename):
         print('io.siesta.ReadSTRUCT_OUTFile: Inconstency in %s detected!' %filename)
     xyz = N.array(xyz, N.float)
     vectors = N.array(vectors, N.float)
-    for i in range(len(xyz)):
-        xyz[i] = N.dot(vectors, xyz[i])
+    for i, xi in enumerate(xyz):
+        xyz[i] = N.dot(vectors, xi)
     return vectors, speciesnumber, atomnumber, xyz
 
 #--------------------------------------------------------------------------------
@@ -597,11 +597,11 @@ def ReadFDFLines(infile, head='', printAlot=True):
             tmp = tmp.replace(':', ' ') # Remove ':' from fdf
             tmp = tmp.replace('=', ' ') # Remove '=' from fdf
             tmp = string.split(tmp)
-            for ii, s in enumerate(tmp):  # Remove comments
+            for i, s in enumerate(tmp):  # Remove comments
                 if s[0] == "#":
                     break
             if s[0] == '#':
-                tmp = tmp[0:ii]
+                tmp = tmp[0:i]
             if len(tmp) > 0:
                 if tmp[0] == '%include':
                     subfile = head+'/'+tmp[1]
@@ -635,17 +635,17 @@ def Getxyz(infile, pbc=[]):
     data = GetFDFblock(infile, 'AtomicCoordinatesAndAtomicSpecies')
     xyz = []
     if AC_format[0] == 'Ang' or AC_format[0] == 'NotScaledCartesianAng':
-        for i in range(len(data)):
-            xyz.append([string.atof(data[i][j]) for j in range(3)])
+        for i, di in enumerate(data):
+            xyz.append([string.atof(di[j]) for j in range(3)])
     elif AC_format[0] == 'Bohr' or AC_format[0] == 'NotScaledCartesianBohr':
-        for i in range(len(data)):
-            xyz.append([string.atof(data[i][j])*PC.Bohr2Ang for j in range(3)])
+        for i, di in enumerate(data):
+            xyz.append([string.atof(di[j])*PC.Bohr2Ang for j in range(3)])
     elif AC_format[0] == 'ScaledCartesian':
-        for i in range(len(data)):
-            xyz.append([string.atof(data[i][j])*latt_const for j in range(3)])
+        for i, di in enumerate(data):
+            xyz.append([string.atof(di[j])*latt_const for j in range(3)])
     elif AC_format[0] == 'Fractional' or AC_format[0] == 'ScaledByLatticeVectors':
-        for i in range(len(data)):
-            xyz.append([string.atof(data[i][0])*pbc[0][j]+string.atof(data[i][1])*pbc[1][j]+string.atof(data[i][2])*pbc[2][j] for j in range(3)])
+        for i, di in enumerate(data):
+            xyz.append([string.atof(di[0])*pbc[0][j]+string.atof(di[1])*pbc[1][j]+string.atof(di[2])*pbc[2][j] for j in range(3)])
     else:
         print("Give correct AtomicCoordinates Format")
         sys.exit(1)
@@ -662,8 +662,8 @@ def Getpbc(infile):
         latt_const = float(latt_const[0])*PC.Bohr2Ang
     else:
         latt_const = float(latt_const[0])
-    for i in range(len(data)):
-        pbc.append([string.atof(data[i][j])*latt_const for j in range(3)])
+    for i, di in enumerate(data):
+        pbc.append([string.atof(di[j])*latt_const for j in range(3)])
     return pbc
 
 
@@ -672,8 +672,8 @@ def Getsnr(infile):
         infile = FDF input file"""
     data = GetFDFblock(infile, 'AtomicCoordinatesAndAtomicSpecies')
     snr = []
-    for i in range(len(data)):
-        snr.append(string.atoi(data[i][3]))
+    for i, di in enumerate(data):
+        snr.append(string.atoi(di[3]))
     return snr
 
 
@@ -683,8 +683,8 @@ def Getanr(infile):
     data = GetFDFblock(infile, 'ChemicalSpeciesLabel')
     tmp = []
     table = {}
-    for i in range(len(data)):
-        tmp.append([string.atoi(data[i][j]) for j in range(2)])
+    for i, di in enumerate(data):
+        tmp.append([string.atoi(di[j]) for j in range(2)])
         table[tmp[i][0]] = tmp[i][1]
     snr = Getsnr(infile)
     anr = []
@@ -987,11 +987,11 @@ def ReadBlock(file, lines, type='float'):
     for i in range(lines):
         data += file.readline()
     data = data.split()
-    for i in range(len(data)):
+    for i, di in enumerate(data):
         if type == 'int':
-            data[i] = int(data[i])
+            data[i] = int(di)
         elif type == 'float':
-            data[i] = float(data[i])
+            data[i] = float(di)
         elif type == 'str':
             pass
     return data
@@ -1040,10 +1040,10 @@ def WriteBandsFile(filename, eF, EvsK, labels, spins):
     f.write('   %.9f  %.9f \n'%(xmin, xmax))
     f.write('   %.9f  %.9f \n'%(ymin, ymax))
     f.write('   %i    %i    %i\n'%(len(EvsK[0])-1, spins, len(EvsK)))
-    for i in range(len(EvsK)):
-        f.write('%.6f '%EvsK[i, 0])
-        for j in range(1, len(EvsK[0])):
-            f.write('%.6f '%EvsK[i, j])
+    for i, eki in enumerate(EvsK):
+        f.write('%.6f '%eki[0])
+        for j in range(1, len(eki)):
+            f.write('%.6f '%eki[j])
             if (j)%10 == 0: f.write('\n            ')
         f.write('\n')
     f.write('  %i \n'%len(labels))
@@ -1056,8 +1056,8 @@ def ConvertBandsFile(filename):
     print('io.siesta.ConvertBandsFile: Writing', filename+'.dat')
     f = open(filename+'.dat', 'w')
     for j in range(1, len(EvsK[0])):
-        for i in range(len(EvsK)):
-            f.write('%.6f   %.6f\n'%(EvsK[i][0], EvsK[i][j]-eF))
+        for i, eki in enumerate(EvsK):
+            f.write('%.6f   %.6f\n'%(eki[0], eki[j]-eF))
         f.write('\n')
     f.close()
 
@@ -1069,8 +1069,8 @@ def ReadDOSFile(filename):
     DOS = []
     for line in f.readlines():
         data = line.split()
-        for i in range(len(data)):
-            data[i] = float(data[i])
+        for i, di in enumerate(data):
+            data[i] = float(di)
         DOS.append(data)
     f.close()
     return N.array(DOS)
@@ -1109,8 +1109,8 @@ def GetPDOSenergyValues(dom):
     # Read energy values
     node = dom.getElementsByTagName('energy_values')[0] # First (and only) entry
     data = node.childNodes[0].data.split()
-    for i in range(len(data)):
-        data[i] = float(data[i])
+    for i, di in enumerate(data):
+        data[i] = float(di)
     return N.array(data)
 
 
@@ -1143,8 +1143,8 @@ def GetPDOSfromOrbitals(dom, index=[], atom_index=[], species=[], nlist=[], llis
             usedOrbitals.append([i, ai, s, n, l])
             data = node.getElementsByTagName('data')[0] # First (and only) entry
             data = data.childNodes[0].data.split()
-            for i in range(len(data)):
-                data[i] = float(data[i])
+            for i, di in enumerate(data):
+                data[i] = float(di)
             pdos += N.array(data)
     # Generate some output-related information
     if atom_index != []: print('... Atom indices =', atom_index)
@@ -1196,14 +1196,14 @@ def ExtractPDOS(filename, outfile, index=[], atom_index=[], species=[], nlist=[]
         if nspin == 1: # No spin
             print('io.siesta.ExtractPDOS: Writing', outfile)
             f = open(outfile, 'w')
-            for i in range(len(ev)):
-                f.write('%.6f %.9f\n'%(ev[i]-eF, pdos[i]))
+            for i, ei in enumerate(ev):
+                f.write('%.6f %.9f\n'%(ei-eF, pdos[i]))
             f.close()
         elif nspin == 2: # Spin polarized
             print('io.siesta.ExtractPDOS: Writing', outfile)
             f = open(outfile, 'w')
-            for i in range(len(ev)):
-                f.write('%.6f %.9f %.9f\n'%(ev[i]-eF, pdos[2*i], -pdos[2*i+1]))
+            for i, ei in enumerate(ev):
+                f.write('%.6f %.9f %.9f\n'%(ei-eF, pdos[2*i], -pdos[2*i+1]))
             f.close()
     else:
         if nspin == 2:
@@ -1244,8 +1244,8 @@ def GetPROJBANDSenergies(dom):
     energies = []
     for node in nodes:
         data = node.childNodes[0].data.split()
-        for i in range(len(data)):
-            data[i] = float(data[i])
+        for i, di in enumerate(data):
+            data[i] = float(di)
         data = N.array(data)
         data = N.reshape(data, (nbands, nspin))
         energies.append(data)
@@ -1287,8 +1287,8 @@ def GetPROJBANDSfromOrbitals(dom, index=[], atom_index=[], species=[], nlist=[],
             print('Adding PDOS from (k=%i,i=%i,ai=%i,s=%s,n=%i,l=%i)'%(k, i, ai, s, n, l))
             data = node.getElementsByTagName('bandproj')[0] # First (and only) entry
             data = data.childNodes[0].data.split()
-            for i in range(len(data)):
-                data[i] = float(data[i])
+            for i, di in enumerate(data):
+                data[i] = float(di)
             data = N.array(data)
             data = N.reshape(data, (nbands, nspin))
             pdos[k] += N.array(data)
@@ -1317,10 +1317,10 @@ def ExtractPROJBANDS(filename, outfile, index=[], atom_index=[], species=[], nli
     if nspin == 1: # No spin
         points = 0
         f = open(outfile+'.dx.dat', 'w')
-        for i in range(len(kpts)):
-            for j in range(len(energies[i])):
-                if energies[i][j]-eF >= emin and energies[i][j]-eF <= emax:
-                    f.write('%i %.6f %.9f\n'%(i, energies[i][j][0]-eF, kresPDOS[i][j][0]))
+        for i, ki in enumerate(kpts):
+            for j, ej in enumerate(energies[i]):
+                if ej-eF >= emin and ej-eF <= emax:
+                    f.write('%i %.6f %.9f\n'%(i, ej[0]-eF, kresPDOS[i][j][0]))
                     points += 1
         f.close()
     else:
@@ -1364,7 +1364,7 @@ def ReadIonNCFile(filename, printnorm=False):
     ion.delta = N.array(file.variables['delta'][:], N.float)
 
     print('   Element: %s   Atom number: %i,  L-orbs '% (ion.element, ion.atomnum), ion.L)
-    for i in range(len(ion.L)):
+    for i, l in enumerate(ion.L):
         rr = ion.delta[i] * N.array(list(range(len(ion.orb[i]))), N.float)
         ion.orb[i] = ion.orb[i]*(rr**ion.L[i])/(PC.Bohr2Ang**(3./2.))
         rr = rr*PC.Bohr2Ang
@@ -1394,9 +1394,9 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
     except:
         vectors, xyz, speciesnumber, atomnumber, natoms = ReadFDFFile(FDFfile)
     ions = {}
-    for i in range(len(CSL)):
+    for i, csl in enumerate(CSL):
         # Read ion-nc file for each SIESTA species
-        ions[int(CSL[i][0])] = ReadIonNCFile(head+'/%s.ion.nc'%CSL[i][2])
+        ions[int(csl[0])] = ReadIonNCFile(head+'/%s.ion.nc'%csl[2])
 
     # Determine the basis dimension nn
     nn = 0
@@ -1425,11 +1425,11 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
     for ii in range(FirstAtom-1, LastAtom):
         an = atomnumber[ii]
         ion = ions[speciesnumber[ii]]
-        for jj in range(len(ion.L)):
-            for kk in range(-ion.L[jj], ion.L[jj]+1):
+        for jj, ll in enumerate(ion.L):
+            for kk in range(-ll, ll+1):
                 basis.ii[iorb] = ii+1
                 basis.atomnum[iorb] = an
-                basis.L[iorb] = ion.L[jj]
+                basis.L[iorb] = ll
                 basis.M[iorb] = kk
                 basis.N[iorb] = ion.N[jj]
                 basis.xyz[iorb, :] = xyz[ii]
