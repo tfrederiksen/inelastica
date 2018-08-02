@@ -188,7 +188,7 @@ def WriteAXSFFiles(filename, geoms, forces=None):
         for j, xyzj in enumerate(gi.xyz):
             ln = ' %i'%gi.anr[j]
             for k in range(3):
-                ln += ' %.6f'%gi.xyz[j][k]
+                ln += ' %.6f'%xyzj[k]
             if not isinstance(forces, bool):
                 for k in range(3):
                     ln += ' %.6f'%forces[i][j][k]
@@ -210,13 +210,13 @@ def WriteANIFile(filename, Geom, Energy, InUnits='Ang', OutUnits='Ang'):
     anifile = open(filename, 'w')
     for i, gi in enumerate(Geom):
         anifile.write('%i \n'%gi.natoms)
-        anifile.write('%f \n'%Energy[ii])
-        for iixyz in range(gi.natoms):
+        anifile.write('%f \n'%Energy[i])
+        for j in range(gi.natoms):
             anifile.write('%s %2.6f %2.6f %2.6f\n'%\
-                          (PC.PeriodicTable[abs(gi.anr[iixyz])],\
-                           convFactor*gi.xyz[iixyz][0],\
-                           convFactor*gi.xyz[iixyz][1],\
-                           convFactor*gi.xyz[iixyz][2]))
+                          (PC.PeriodicTable[abs(gi.anr[j])],\
+                           convFactor*gi.xyz[j][0],\
+                           convFactor*gi.xyz[j][1],\
+                           convFactor*gi.xyz[j][2]))
     anifile.close()
 
 
@@ -429,7 +429,7 @@ def WriteXYZFile(filename, atomnumber, xyz, write_ghosts=False):
             element = 'X'
         line = string.ljust(element, 5)
         for j in range(3):
-            line += string.rjust('%.9f'%xyz[i][j], 16)
+            line += string.rjust('%.9f'%xi[j], 16)
         line += '\n'
         if atomnumber[i] > 0 or write_ghosts:
             xyzfile.write(line)
@@ -635,16 +635,16 @@ def Getxyz(infile, pbc=[]):
     data = GetFDFblock(infile, 'AtomicCoordinatesAndAtomicSpecies')
     xyz = []
     if AC_format[0] == 'Ang' or AC_format[0] == 'NotScaledCartesianAng':
-        for i, di in enumerate(data):
+        for di in data:
             xyz.append([string.atof(di[j]) for j in range(3)])
     elif AC_format[0] == 'Bohr' or AC_format[0] == 'NotScaledCartesianBohr':
-        for i, di in enumerate(data):
+        for di in data:
             xyz.append([string.atof(di[j])*PC.Bohr2Ang for j in range(3)])
     elif AC_format[0] == 'ScaledCartesian':
-        for i, di in enumerate(data):
+        for di in data:
             xyz.append([string.atof(di[j])*latt_const for j in range(3)])
     elif AC_format[0] == 'Fractional' or AC_format[0] == 'ScaledByLatticeVectors':
-        for i, di in enumerate(data):
+        for di in data:
             xyz.append([string.atof(di[0])*pbc[0][j]+string.atof(di[1])*pbc[1][j]+string.atof(di[2])*pbc[2][j] for j in range(3)])
     else:
         print("Give correct AtomicCoordinates Format")
@@ -662,7 +662,7 @@ def Getpbc(infile):
         latt_const = float(latt_const[0])*PC.Bohr2Ang
     else:
         latt_const = float(latt_const[0])
-    for i, di in enumerate(data):
+    for di in data:
         pbc.append([string.atof(di[j])*latt_const for j in range(3)])
     return pbc
 
@@ -672,7 +672,7 @@ def Getsnr(infile):
         infile = FDF input file"""
     data = GetFDFblock(infile, 'AtomicCoordinatesAndAtomicSpecies')
     snr = []
-    for i, di in enumerate(data):
+    for di in data:
         snr.append(string.atoi(di[3]))
     return snr
 
@@ -753,7 +753,7 @@ def GetFDFblock(infile, KeyWord = ''):
                 start = i+1
                 break
     if start > 0: # Only append data if block was found
-        for i in range(len(lines)):
+        for i, line in enumerate(lines):
             tmp = lines[i+start]
             if tmp[0].lower() != '%endblock':
                 data.append(tmp)
@@ -1040,7 +1040,7 @@ def WriteBandsFile(filename, eF, EvsK, labels, spins):
     f.write('   %.9f  %.9f \n'%(xmin, xmax))
     f.write('   %.9f  %.9f \n'%(ymin, ymax))
     f.write('   %i    %i    %i\n'%(len(EvsK[0])-1, spins, len(EvsK)))
-    for i, eki in enumerate(EvsK):
+    for eki in EvsK:
         f.write('%.6f '%eki[0])
         for j in range(1, len(eki)):
             f.write('%.6f '%eki[j])
@@ -1056,7 +1056,7 @@ def ConvertBandsFile(filename):
     print('io.siesta.ConvertBandsFile: Writing', filename+'.dat')
     f = open(filename+'.dat', 'w')
     for j in range(1, len(EvsK[0])):
-        for i, eki in enumerate(EvsK):
+        for eki in EvsK:
             f.write('%.6f   %.6f\n'%(eki[0], eki[j]-eF))
         f.write('\n')
     f.close()

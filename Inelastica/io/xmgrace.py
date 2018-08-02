@@ -295,7 +295,7 @@ class XYset(Dataset):
         string += '@ target g%i.s%i \n@ type xy \n'%(graphnr, setnr)
         string += self.__GetXMGRstring__(graphnr, setnr)
         for i, xi in enumerate(self.x):
-            string += '   %.8f  %.8f \n'%(self.x[i], self.y[i])
+            string += '   %.8f  %.8f \n'%(xi, self.y[i])
         return string
 
 
@@ -316,7 +316,7 @@ class XYDXset(XYset):
         string += '@ target g%i.s%i \n@ type xydx \n'%(graphnr, setnr)
         string += self.__GetXMGRstring__(graphnr, setnr)
         for i, xi in enumerate(self.x):
-            string += '   %.8f  %.8f  %.8f \n'%(self.x[i], self.y[i], self.dx[i])
+            string += '   %.8f  %.8f  %.8f \n'%(xi, self.y[i], self.dx[i])
         return string
 
 
@@ -337,7 +337,7 @@ class XYDYset(XYset):
         string += '@ target g%i.s%i \n@ type xydy \n'%(graphnr, setnr)
         string += self.__GetXMGRstring__(graphnr, setnr)
         for i, xi in enumerate(self.x):
-            string += '   %.8f  %.8f  %.8f \n'%(self.x[i], self.y[i], self.dy[i])
+            string += '   %.8f  %.8f  %.8f \n'%(xi, self.y[i], self.dy[i])
         return string
 
 
@@ -359,7 +359,7 @@ class XYDXDYset(XYset):
         string += '@ target g%i.s%i \n@ type xydxdy \n'%(graphnr, setnr)
         string += self.__GetXMGRstring__(graphnr, setnr)
         for i, xi in enumerate(self.x):
-            string += '   %.8f  %.8f  %.8f  %.8f \n'%(self.x[i], self.y[i], self.dx[i], self.dy[i])
+            string += '   %.8f  %.8f  %.8f  %.8f \n'%(xi, self.y[i], self.dx[i], self.dy[i])
         return string
 
 
@@ -380,7 +380,7 @@ class XYSIZEset(XYset):
         string += '@ target g%i.s%i \n@ type xysize \n'%(graphnr, setnr)
         string += self.__GetXMGRstring__(graphnr, setnr)
         for i, xi in enumerate(self.x):
-            string += '   %.8f  %.8f  %.8f \n'%(self.x[i], self.y[i], self.size[i])
+            string += '   %.8f  %.8f  %.8f \n'%(xi, self.y[i], self.size[i])
         return string
 
 

@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import glob
 import string
-import os 
+import os
 import Inelastica.MakeGeom as MG
 import numpy as N
 import numpy.linalg as LA
