@@ -24,7 +24,13 @@ from __future__ import print_function
 
 import numpy as N
 import numpy.linalg as LA
-import sys, glob, os, copy, time, pickle, string
+import sys
+import glob
+import os
+import copy
+import time
+import pickle
+import string
 import Inelastica.io.siesta as SIO
 import Inelastica.SetupRuns as SUR
 import Inelastica.MakeGeom as MG
@@ -145,7 +151,7 @@ def runNEB():
                     open('NEB_%i/savedData.pickle'%0, 'w'))
         f = open('Convergence', 'a')
         f.write(('####### Iteration %i #######\n#Fmax '+('%2.3f '*(opts.NNEB+2))+'\n')%\
-                tuple([len(savedData.Fmax),]+savedData.Fmax[-1]))
+                tuple([len(savedData.Fmax), ]+savedData.Fmax[-1]))
         f.write(('#step length '+(('%2.4f ')*(opts.NNEB+2))+'\n')%\
                 tuple([LA.norm(ii.v) for ii in steps]))
         f.write('# Barrier [meV]:\n')
@@ -300,9 +306,9 @@ class step(object):
                 F[ii, :] = 0
         if opts.const2 != None: # constraints 2
             indx, vec = opts.const2[1], opts.const2[2]
-            F[indx, :] = N.dot(F[indx, :],vec)*vec # Allow along vec
+            F[indx, :] = N.dot(F[indx, :], vec)*vec # Allow along vec
             indx, vec = opts.const2[3], opts.const2[4]
-            F[indx, :] = F[indx, :]-N.dot(F[indx, :],vec)*vec # Plane perp to vec
+            F[indx, :] = F[indx, :]-N.dot(F[indx, :], vec)*vec # Plane perp to vec
 
         self.F = F
 
@@ -322,6 +328,7 @@ class step(object):
 
         self.done = False
 
+
 def checkConst(a, b):
     if not N.allclose(a.const, b.const):
         print("Error: NEB: constraints on initial and final states not the same")
@@ -333,11 +340,11 @@ def checkConst(a, b):
         # constraints 2
         indx, vec = opts.const2[1], opts.const2[2]
         dxyz = N.array(a.FDFgeom.xyz[indx])-N.array(b.FDFgeom.xyz[indx])
-        if LA.norm(dxyz-N.dot(dxyz,vec)*vec) > 1e-6:
+        if LA.norm(dxyz-N.dot(dxyz, vec)*vec) > 1e-6:
             sys.exit('Constraints not fullfilled for Atom %i along [%f,%f,%f]'%(indx+1, vec[0], vec[1], vec[2]))
         indx, vec = opts.const2[3], opts.const2[4]
         dxyz = N.array(a.FDFgeom.xyz[indx])-N.array(b.FDFgeom.xyz[indx])
-        if N.abs(N.dot(dxyz,vec)) > 1e-6:
+        if N.abs(N.dot(dxyz, vec)) > 1e-6:
             sys.exit('Constraints not fullfilled for Atom %i in plane with tangent [%f,%f,%f]'%(indx+1, vec[0], vec[1], vec[2]))
     return
 
@@ -421,6 +428,7 @@ For help use --help!
         strings = string.split(opts.const2, ',')
         opts.const2 = [int(strings[0]), int(strings[1]), N.array([float(strings[2]), float(strings[3]), float(strings[4])]),
                        int(strings[5]), N.array([float(strings[6]), float(strings[7]), float(strings[8])])]
+
         def normalize(x):
             return x/LA.norm(x)
         opts.const2[2] = normalize(opts.const2[2])
@@ -450,4 +458,3 @@ outerAdd = MM.outerAdd
 dist = MM.dist
 mysqrt = MM.mysqrt
 dagger = MM.dagger
-

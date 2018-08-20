@@ -21,7 +21,7 @@ parser.add_argument('-y', '--A2', type=int, default=1,
                     help='Repeat unitcell along lattice vector A2')
 parser.add_argument('-z', '--A3', type=int, default=1,
                     help='Repeat unitcell along lattice vector A3')
-parser.add_argument('-v','--version', action='version', version='Inelastica %s' %info.version)
+parser.add_argument('-v', '--version', action='version', version='Inelastica %s' %info.version)
 args = parser.parse_args()
 
 rep = [args.A1, args.A2, args.A3]
