@@ -448,7 +448,7 @@ class DynamicalMatrix(object):
             for j in range(3):
                 FC[i, j, v-1, :] = 0.0
                 FC[i, j, v-1, :] = -N.sum(FC[i, j], axis=0)
-        print('Total sumrule change in FC: %.3e eV/Ang' % N.sum(abs(FC0)-abs(FC)))
+        print('Total sumrule change in FC: %.3e eV/Ang^2' % N.sum(abs(FC0)-abs(FC)))
         return FC
 
     def ComputePhononModes(self, FC, verbose=True):
@@ -707,7 +707,7 @@ class DynamicalMatrix(object):
         ncdf.createVariable('FC', 'd', ('dyn_atoms', 'xyz','natoms','xyz'))
         ncdf.variables['FC'][:] = self.mean
         ncdf.variables['FC'].info = 'Force matrix'
-        ncdf.variables['FC'].unit = 'ev/Ang^2'
+        ncdf.variables['FC'].unit = 'eV/Ang^2'
         ncdf.createVariable('AtomNumbers', 'i', ('natoms',))
         ncdf.variables['AtomNumbers'][:] = self.geom.anr
         ncdf.variables['AtomNumbers'].info = 'Element number for each atom (anr)'
@@ -759,7 +759,7 @@ class DynamicalMatrix(object):
             ncdf.createVariable('He_ph', atype, ('modes', 'nspin', 'norb', 'norb'))
             ncdf.variables['He_ph'][:] = self.heph.real
             ncdf.variables['He_ph'].info = 'Real part of EPH couplings'
-            ncdf.variables['He_ph'].unit = 'eV/Ang'
+            ncdf.variables['He_ph'].unit = 'eV'
             if not GammaPoint:
                 ncdf.createVariable('ImHe_ph', atype, ('modes', 'nspin', 'norb', 'norb'))
                 ncdf.variables['ImHe_ph'][:] = self.heph.imag
