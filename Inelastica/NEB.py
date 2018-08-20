@@ -29,7 +29,6 @@ import Inelastica.io.siesta as SIO
 import Inelastica.SetupRuns as SUR
 import Inelastica.MakeGeom as MG
 import Inelastica.math as MM
-import Inelastica.physics.constants as PC
 import Inelastica.misc.valuecheck as VC
 
 
@@ -151,7 +150,7 @@ def runNEB():
                 tuple([LA.norm(ii.v) for ii in steps]))
         f.write('# Barrier [meV]:\n')
         f.write((('%4.1f '*(opts.NNEB+2))+'\n')%tuple([1000*(savedData.E[-1][ii]-savedData.E[-1][0])\
-                                                       for ii in range(opts.NNEB+2)]))     
+                                                       for ii in range(opts.NNEB+2)]))
         f.write('# delta E compared to start/restart [meV]:\n')
         f.write((('%4.1f '*(opts.NNEB+2))+'\n')%tuple([1000*(savedData.E[0][ii]-savedData.E[-1][ii])\
                                                        for ii in range(opts.NNEB+2)]))
@@ -250,7 +249,7 @@ class step(object):
             self.FDFgeom.writeFDF(self.dirr+"/STRUCT.fdf")
             SUR.MakePBS(None, self.dirr+"/RUN.pbs",\
                         [['$NODES$', '1:ppn=%i'%opts.proc]],\
-                        True, rtype = 'TS')
+                        True, rtype='TS')
 
     def shootOver(self, left, right):
         if self.ii == 0 or self.ii == opts.NNEB+1: return False
@@ -270,9 +269,9 @@ class step(object):
                 F[ii, :] = 0
         if opts.const2 != None: # constraints 2
             indx, vec = opts.const2[1], opts.const2[2]
-            F[indx,:] = N.dot(F[indx,:], vec)*vec # Allow along vec 
+            F[indx, :] = N.dot(F[indx, :], vec)*vec # Allow along vec
             indx, vec = opts.const2[3], opts.const2[4]
-            F[indx,:] = F[indx,:]-N.dot(F[indx,:], vec)*vec # Plane perp to vec      
+            F[indx, :] = F[indx, :]-N.dot(F[indx, :], vec)*vec # Plane perp to vec
 
         return N.sum(F*self.v) < 0
 
@@ -292,7 +291,7 @@ class step(object):
         steplen = N.sqrt(N.sum(dxyz*dxyz))
         if steplen > opts.maxDist:
             dxyz = dxyz/steplen*opts.maxDist
-        
+
         F = F-N.sum(F*tangent)*tangent  # orthogonal to tangent
 
         # Apply constraints
@@ -301,10 +300,10 @@ class step(object):
                 F[ii, :] = 0
         if opts.const2 != None: # constraints 2
             indx, vec = opts.const2[1], opts.const2[2]
-            F[indx,:] = N.dot(F[indx,:],vec)*vec # Allow along vec 
+            F[indx, :] = N.dot(F[indx, :],vec)*vec # Allow along vec
             indx, vec = opts.const2[3], opts.const2[4]
-            F[indx,:] = F[indx,:]-N.dot(F[indx,:],vec)*vec # Plane perp to vec      
-            
+            F[indx, :] = F[indx, :]-N.dot(F[indx, :],vec)*vec # Plane perp to vec
+
         self.F = F
 
         self.Fmax = N.max(N.sqrt(N.sum(F*F, 1)))
@@ -323,23 +322,23 @@ class step(object):
 
         self.done = False
 
-def checkConst(a,b):
+def checkConst(a, b):
     if not N.allclose(a.const, b.const):
         print("Error: NEB: constraints on initial and final states not the same")
         sys.exit(1)
     for ii in a.const:
-        if not N.allclose(a.FDFgeom.xyz[ii[0]:ii[1]+1],b.FDFgeom.xyz[ii[0]:ii[1]+1]):
-            sys.exit('Constrained atoms '+str([ii[0]+1,ii[1]+1])+'does not match for all geometries')
+        if not N.allclose(a.FDFgeom.xyz[ii[0]:ii[1]+1], b.FDFgeom.xyz[ii[0]:ii[1]+1]):
+            sys.exit('Constrained atoms '+str([ii[0]+1, ii[1]+1])+'does not match for all geometries')
     if opts.const2 != None:
         # constraints 2
         indx, vec = opts.const2[1], opts.const2[2]
         dxyz = N.array(a.FDFgeom.xyz[indx])-N.array(b.FDFgeom.xyz[indx])
         if LA.norm(dxyz-N.dot(dxyz,vec)*vec) > 1e-6:
-            sys.exit('Constraints not fullfilled for Atom %i along [%f,%f,%f]'%(indx+1,vec[0],vec[1],vec[2]))
+            sys.exit('Constraints not fullfilled for Atom %i along [%f,%f,%f]'%(indx+1, vec[0], vec[1], vec[2]))
         indx, vec = opts.const2[3], opts.const2[4]
         dxyz = N.array(a.FDFgeom.xyz[indx])-N.array(b.FDFgeom.xyz[indx])
         if N.abs(N.dot(dxyz,vec)) > 1e-6:
-            sys.exit('Constraints not fullfilled for Atom %i in plane with tangent [%f,%f,%f]'%(indx+1,vec[0],vec[1],vec[2]))
+            sys.exit('Constraints not fullfilled for Atom %i in plane with tangent [%f,%f,%f]'%(indx+1, vec[0], vec[1], vec[2]))
     return
 
 ########################################################
@@ -419,10 +418,10 @@ For help use --help!
 
     # Parse constraints
     if opts.const2 != None:
-        strings = string.split(opts.const2,',')
-        opts.const2 = [int(strings[0]), int(strings[1]), N.array([float(strings[2]),float(strings[3]),float(strings[4])]),
-                       int(strings[5]), N.array([float(strings[6]),float(strings[7]),float(strings[8])])]
-        def normalize(x): 
+        strings = string.split(opts.const2, ',')
+        opts.const2 = [int(strings[0]), int(strings[1]), N.array([float(strings[2]), float(strings[3]), float(strings[4])]),
+                       int(strings[5]), N.array([float(strings[6]), float(strings[7]), float(strings[8])])]
+        def normalize(x):
             return x/LA.norm(x)
         opts.const2[2] = normalize(opts.const2[2])
         opts.const2[4] = normalize(opts.const2[4])
@@ -435,7 +434,7 @@ For help use --help!
     print(('Acceleration [A/(eV/A)/step]  : %f'%opts.moveK))
     print(('Max move distance/coord [A]   : %f'%opts.maxDist))
     print(('Convergence criteria [eV/A]   : %f'%opts.convCrit))
-    print(('Constraints                   : ',opts.const2))
+    print(('Constraints                   : ', opts.const2))
     print('##################################################################################')
 
     if opts.const2 != None: # Internal numbering

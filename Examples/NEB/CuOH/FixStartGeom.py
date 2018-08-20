@@ -29,9 +29,9 @@ for ii in xyz:
 
 xyz, nxyz = N.array(xyz), N.array(xyz) # Two copies
 
-def redist(L,C,R):
+def redist(L, C, R):
     t = (R-L)/LA.norm(L-R)
-    dx = ((R-C)-(C-L))/2 # Shift to midpoint 
+    dx = ((R-C)-(C-L))/2 # Shift to midpoint
     dx = N.sum(dx*t)*t # Project along tangent
     return dx
 

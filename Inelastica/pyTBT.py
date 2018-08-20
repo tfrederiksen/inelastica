@@ -273,7 +273,7 @@ def main(options):
         foFF.close()
 
         # Write k-point-resolved transmission
-        fo=open(thisspinlabel+'.TRANS', 'write')
+        fo = open(thisspinlabel+'.TRANS', 'write')
         for ik in range(mesh.NNk):
             w = mesh.w[:, ik]
             fo.write('\n\n# k = %f, %f    w = %f %f %f %f'%(mesh.k[ik, 0], mesh.k[ik, 1], w[0], w[1], w[2], w[3]))
@@ -289,7 +289,7 @@ def main(options):
         fo.close()
 
         # Write k-point-resolved shot noise
-        fo=open(thisspinlabel+'.NOISE', 'write')
+        fo = open(thisspinlabel+'.NOISE', 'write')
         for ik in range(mesh.NNk):
             w = mesh.w[:, ik]
             fo.write('\n\n# k = %f, %f    w = %f %f %f %f'%(mesh.k[ik, 0], mesh.k[ik, 1], w[0], w[1], w[2], w[3]))
@@ -342,7 +342,6 @@ def WritePDOS(fn, options, DevGF, DOS, basis):
 
     # First, last orbital in full space and pyTBT folded space.
     devOrbSt = DevGF.HS.lasto[options.DeviceAtoms[0]-1]
-    pyTBTdevOrbSt = devOrbSt-DevGF.HS.lasto[options.DeviceAtoms[0]-1]
     devOrbEnd = DevGF.HS.lasto[options.DeviceAtoms[1]]-1
 
     doc = xml.Document()
@@ -368,7 +367,7 @@ def WritePDOS(fn, options, DevGF, DOS, basis):
 
     # Make plot
     atoms = list(set(basis.label))
-    lVals  = list(set(basis.L))
+    lVals = list(set(basis.L))
     plots = [[atoms, lVals, 'Tot']]
     plots += [[atoms, [lVal], 'Tot L=%i'%lVal] for lVal in lVals]
     plots += [[[atom], lVals, atom+' Tot'] for atom in atoms]

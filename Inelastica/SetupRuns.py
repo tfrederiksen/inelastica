@@ -844,7 +844,7 @@ def WritePBS(PBStemplate, PBSout, PBSsubs):
     fullPath = os.path.split(os.path.abspath(PBSout))[0]
     last2dir = string.split(fullPath, '/')[-2:]
     try: # Check for numbers at start ... not liked by PBS
-        tmp = int(last2dir[0][0])+1
+        int(last2dir[0][0])+1
         last2dir[0] = 'a'+last2dir[0]
     except Exception as e:
         print(e)

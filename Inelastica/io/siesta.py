@@ -586,7 +586,7 @@ def ReadFDFLines(infile, head='', printAlot=True):
         infile = input file"""
     infile = os.path.abspath(infile)
     if head == '':
-        head =  os.path.split(infile)[0]
+        head = os.path.split(infile)[0]
     if printAlot:
         print('io.siesta.ReadFDFLines: Reading', infile)
     fdffile = SIO_open(infile, 'r')
@@ -693,7 +693,7 @@ def Getanr(infile):
     return anr
 
 
-def GetFDFline(infile, KeyWord = '', printAlot=True):
+def GetFDFline(infile, KeyWord='', printAlot=True):
     """ Finds a line and gives the value as a string
         infile = FDF input file
         KeyWord = line to find"""
@@ -736,7 +736,7 @@ def GetFDFlineWithDefault(infile, key, type, default, error):
                                 '"{}" to boolean from key "{}" in file {}.'.format(data, key, infile))
 
 
-def GetFDFblock(infile, KeyWord = ''):
+def GetFDFblock(infile, KeyWord=''):
     """Finds the values in a block as strings
        infile = FDF input file
        KeyWord = block to find"""
@@ -1176,7 +1176,7 @@ def ReadPDOSFile(filename, index=[], atom_index=[], species=[], nlist=[], llist=
 
 def ExtractPDOS(filename, outfile, index=[], atom_index=[], species=[], nlist=[], llist=[], mlist=[], FermiRef=True, Normalize=False):
     print('io.siesta.ExtractPDOS: Reading', filename)
-    head, tail =  os.path.split(filename)
+    head, tail = os.path.split(filename)
     nspin, norb, ev, pdos, usedOrbitals, usedAtoms, eF = ReadPDOSFile(filename, index, atom_index, species, nlist, llist, mlist)
     if FermiRef:
         # Set energy reference to the Fermi energy
@@ -1192,7 +1192,7 @@ def ExtractPDOS(filename, outfile, index=[], atom_index=[], species=[], nlist=[]
     if Normalize and len(usedAtoms) > 0:
         pdos = pdos/len(usedAtoms)
         print('io.siesta.ExtractPDOS: Normalizing PDOS to states/atom/eV')
-    if outfile!=None: # Write to file or return lists
+    if outfile != None: # Write to file or return lists
         if nspin == 1: # No spin
             print('io.siesta.ExtractPDOS: Writing', outfile)
             f = open(outfile, 'w')
@@ -1842,7 +1842,7 @@ class HS(object):
                 #    if phase[si]!=1.0+0.0j:
                 #        print "hej"
                     Full[iuo, juo] += Sparse[si]*phase[si]
-        if not (Full.dtype == atype):
+        if not Full.dtype == atype:
             print('io.siesta: Forcing array from %s to %s'%(Full.dtype, atype))
         if (atype == N.float) or (atype == N.float32) or (atype == N.float64):
             return N.array(Full.real, atype)

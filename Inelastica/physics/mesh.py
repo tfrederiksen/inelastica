@@ -185,7 +185,6 @@ def test():
     print('   f(x,y,z)=x*y*z => \int f dxdydz =', N.sum(f*mesh.w[0]))
     f = (mesh.k[:, 0]+1)*(mesh.k[:, 1]+1)*(mesh.k[:, 2]+1)
     print('   f(x,y,z)=(x+1)*(y+1)*(z+1) => \int f dxdydz =', N.sum(f*mesh.w[0]))
-    import math
     for i, s in enumerate(['x', 'y', 'z']):
         f = N.cos(2*mesh.k[:, i])
         print('   f(x,y,z)=cos(2%s) => \int f dxdydz ='%s, N.sum(f*mesh.w[0]), '[exact: sin(1) ~ 0.841470984807897]')

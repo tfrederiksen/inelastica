@@ -165,7 +165,7 @@ def calcBands(ispin):
 
     bands = []
     for ii in range(len(what)-1):
-        txt = what[ii][1]+'-'+what[ii+1][1]
+        #txt = what[ii][1]+'-'+what[ii+1][1]
         f, t = what[ii][0]/(2.0*N.pi), what[ii+1][0]/(2.0*N.pi)
         korig, kdir = f, t-f
         Nk = general.NNk

@@ -155,7 +155,7 @@ class SigDir(object):
 
     def close(self):
         if not self.newFile == None:
-            var = self.newFile.createVariable('Done', 'i', ('One',))
+            self.newFile.createVariable('Done', 'i', ('One',))
         for f in self.files:
             f.close()
 
@@ -541,7 +541,7 @@ class GF(object):
         self.elecL, self.elecR, self.Bulk = elecL, elecR, Bulk
         self.HS = SIO.HS(TSHSfile, BufferAtoms=BufferAtoms)
         print('GF: UseBulk=', Bulk)
-        self.DeviceAtoms=DeviceAtoms
+        self.DeviceAtoms = DeviceAtoms
         if DeviceAtoms[0] <= 1:
             self.DeviceAtoms[0] = 1
             self.FoldedL = False

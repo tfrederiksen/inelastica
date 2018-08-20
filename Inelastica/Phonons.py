@@ -78,7 +78,6 @@ import sys
 import string
 import ast
 import Inelastica.io.siesta as SIO
-import Inelastica.Symmetry as Symmetry
 import Inelastica.io.log as Log
 import Inelastica.MakeGeom as MG
 import Inelastica.physics.constants as PC
@@ -314,8 +313,6 @@ class OTSrun(FCrun): # Only TranSiesta run
         self.geom = MG.Geom(runfdf)
         # Compare with XV file corrected for last displacement
         XV = self.directory+'/%s.XV'%self.systemlabel
-        geomXV = MG.Geom(XV)
-        natoms = self.geom.natoms
         # Determine TSHS files
         files = glob.glob(self.directory+'/%s*.TSHS'%self.systemlabel)
         # Build dictionary over TSHS files and corresponding displacement amplitudes
@@ -704,7 +701,7 @@ class DynamicalMatrix(object):
         ncdf.variables['GeometryXYZ'][:] = self.geom.xyz
         ncdf.variables['GeometryXYZ'].info = 'Atomic coordinates of all atoms in cell'
         ncdf.variables['GeometryXYZ'].unit = 'Ang'
-        ncdf.createVariable('FC', 'd', ('dyn_atoms', 'xyz','natoms','xyz'))
+        ncdf.createVariable('FC', 'd', ('dyn_atoms', 'xyz', 'natoms', 'xyz'))
         ncdf.variables['FC'][:] = self.mean
         ncdf.variables['FC'].info = 'Force matrix'
         ncdf.variables['FC'].unit = 'eV/Ang^2'

@@ -4,7 +4,6 @@ import sys
 import profile
 sys.path += ['..']
 
-import Inelastica.pyTBT as pyTBT
 import Inelastica.io.siesta as SIO
 import Inelastica.NEGF as NEGF
 import numpy as N
@@ -51,7 +50,7 @@ def compare_H(HS1, HS2, not_checks={}):
         if N.sum(N.abs(HS1.Hsparse-HS2.Hsparse)) > tol:
             print("Failed to give same results between python and fortran code for Hamiltonian!!!")
             kuk
-
+        """
         if False:
             for ii in range(2):
                 k = N.array(RA.random(3), N.float)
@@ -68,6 +67,7 @@ def compare_H(HS1, HS2, not_checks={}):
                 if max(tmp1, tmp2) > 1e-9:
                     print("ERROR!")
                     kuk
+        """
 
     print('Reading of file %s vs. %s'%(HS1.fn, HS2.fn))
     print('PASSED!\n')

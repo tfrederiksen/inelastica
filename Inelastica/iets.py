@@ -199,36 +199,34 @@ def main(options):
     # Pad lasto with zeroes to enable basis generation...
     lasto = N.zeros((GFp.HS.nua+L+1,), N.int)
     lasto[L:] = GFp.HS.lasto
-    basis = SIO.BuildBasis(options.fn,
-                           options.DeviceAtoms[0]+L,
-                           options.DeviceAtoms[1]+L, lasto)
+    basis = SIO.BuildBasis(options.fn, options.DeviceAtoms[0]+L, options.DeviceAtoms[1]+L, lasto)
     basis.ii -= L
     TeF = MM.trace(GFp.TT).real
     GFp.TeF = TeF
     GFm.TeF = TeF
     # Check consistency of PHrun vs TSrun inputs
-    IntegrityCheck(options, GFp, basis, NCfile)
+    IntegrityCheck(options, GFp, NCfile)
     # Calculate trace factors one mode at a time
     print('Inelastica: LOEscale =', options.LOEscale)
-    if options.LOEscale==0.0:
+    if options.LOEscale == 0.0:
         # LOEscale=0.0 => Original LOE-WBA method, PRB 72, 201101(R) (2005) [cond-mat/0505473].
         GFp.calcGF(options.energy+options.eta*1.0j, options.kpoint[0:2], ispin=options.iSpin,
                    etaLead=options.etaLead, useSigNCfiles=options.signc, SpectralCutoff=options.SpectralCutoff)
         GFm.calcGF(options.energy+options.eta*1.0j, options.kpoint[0:2], ispin=options.iSpin,
                    etaLead=options.etaLead, useSigNCfiles=options.signc, SpectralCutoff=options.SpectralCutoff)
-        for ihw in (hw>options.modeCutoff).nonzero()[0]:
+        for ihw in (hw > options.modeCutoff).nonzero()[0]:
             calcTraces(options, GFp, GFm, basis, NCfile, ihw)
             calcTraces(options, GFm, GFp, basis, NCfile, ihw)
         writeFGRrates(options, GFp, hw, NCfile)
     else:
         # LOEscale=1.0 => Generalized LOE, PRB 89, 081405(R) (2014) [arXiv:1312.7625]
-        for ihw in (hw>options.modeCutoff).nonzero()[0]:
+        for ihw in (hw > options.modeCutoff).nonzero()[0]:
             GFp.calcGF(options.energy+hw[ihw]*options.LOEscale*VfracL+options.eta*1.0j, options.kpoint[0:2], ispin=options.iSpin,
                        etaLead=options.etaLead, useSigNCfiles=options.signc, SpectralCutoff=options.SpectralCutoff)
             GFm.calcGF(options.energy+hw[ihw]*options.LOEscale*(VfracL-1.)+options.eta*1.0j, options.kpoint[0:2], ispin=options.iSpin,
                        etaLead=options.etaLead, useSigNCfiles=options.signc, SpectralCutoff=options.SpectralCutoff)
             calcTraces(options, GFp, GFm, basis, NCfile, ihw)
-            if VfracL!=0.5:
+            if VfracL != 0.5:
                 GFp.calcGF(options.energy-hw[ihw]*options.LOEscale*(VfracL-1.)+options.eta*1.0j, options.kpoint[0:2], ispin=options.iSpin,
                            etaLead=options.etaLead, useSigNCfiles=options.signc, SpectralCutoff=options.SpectralCutoff)
                 GFm.calcGF(options.energy-hw[ihw]*options.LOEscale*VfracL+options.eta*1.0j, options.kpoint[0:2], ispin=options.iSpin,
@@ -245,7 +243,7 @@ def main(options):
 ########################################################
 
 
-def IntegrityCheck(options, GF, basis, NCfile):
+def IntegrityCheck(options, GF, NCfile):
     # Perform consistency checks for device region in
     # PH and TS calculations by comparing coordinates
     # and atom numbers
@@ -287,7 +285,7 @@ def IntegrityCheck(options, GF, basis, NCfile):
             print('        --------------------- Dynamic region ends ----------------------')
     # - check 1: Matrix sizes
     PH_H0 = NCfile.variables['H0'][:]
-    check1 = N.shape(PH_H0[0])==N.shape(GF.Gr)
+    check1 = N.shape(PH_H0[0]) == N.shape(GF.Gr)
     if check1:
         print('... Check 1 passed: Device orb. space matches')
     else:
@@ -297,7 +295,7 @@ def IntegrityCheck(options, GF, basis, NCfile):
     dist_anr = 0.0
     for i in range(len(PH_dev)):
         # Geometric distance between atoms
-        if i==0:
+        if i == 0:
             # Allow for a global offset of coordinates R
             R = PH_xyz[PH_dev[0]-1+i]-TS_xyz[options.DeviceAtoms[0]-1+i]
             print('Global offset R = [%.3f %.3f %.3f]'%(R[0], R[1], R[2]))
@@ -307,16 +305,16 @@ def IntegrityCheck(options, GF, basis, NCfile):
         # Modulo 200
         a = (PH_anr[PH_dev[0]-1+i])%200 - (TS_anr[options.DeviceAtoms[0]-1+i])%200
         dist_anr += abs(a)
-    if dist_xyz<1e-3:
+    if dist_xyz < 1e-3:
         print('... Check 2 passed: Atomic coordinates consistent')
         check2 = True
-    elif dist_xyz<0.1:
+    elif dist_xyz < 0.1:
         print('... Check 2 WARNING: Atomic coordinates deviate by %.3f Ang!!!'%dist_xyz)
         check2 = True
     else:
         print('... Check 2 failed: Atomic coordinates deviate by %.3f Ang!!!'%dist_xyz)
         check2 = False
-    if dist_anr==0:
+    if dist_anr == 0:
         print('... Check 3 passed: Atomic numbers consistent')
         check3 = True
     else:
@@ -361,7 +359,7 @@ def calcTraces(options, GF1, GF2, basis, NCfile, ihw):
     #GF.dGnin.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
     # NB: TF Should one use GF.HNO (nonorthogonal) or GF.H (orthogonalized) above?
 
-    if options.LOEscale==0.0:
+    if options.LOEscale == 0.0:
         # Check against original LOE-WBA formulation
         isym1 = MM.mm(GF1.ALT, M, GF2.AR, M)
         isym2 = MM.mm(MM.dagger(GF1.ARGLG), M, GF2.A, M)
@@ -412,20 +410,20 @@ def calcIETS(options, GFp, GFm, basis, hw):
     kT = options.Temp/11604.0 # (eV)
 
     # Generate grid for numerical integration of Hilbert term
-    max_hw=max(hw)
-    max_win=max(-options.minBias, max_hw)+20*kT+4*options.Vrms
-    min_win=min(-options.maxBias, -max_hw)-20*kT-4*options.Vrms
-    pts=int(N.floor((max_win-min_win)/kT*3))
-    Egrid=N.linspace(min_win, max_win, pts)
+    max_hw = max(hw)
+    max_win = max(-options.minBias, max_hw)+20*kT+4*options.Vrms
+    min_win = min(-options.maxBias, -max_hw)-20*kT-4*options.Vrms
+    pts = int(N.floor((max_win-min_win)/kT*3))
+    Egrid = N.linspace(min_win, max_win, pts)
     print("Inelastica.calcIETS: Hilbert integration grid : %i pts [%f,%f]" % (pts, min(Egrid), max(Egrid)))
 
     NN = options.biasPoints
     print('Inelastica.calcIETS: Biaspoints =', NN)
 
     # Add some points for the Lock in broadening
-    approxdV=(options.maxBias-options.minBias)/(NN-1)
-    NN+=int(((8*options.Vrms)/approxdV)+.5)
-    Vl=N.linspace(options.minBias-4*options.Vrms, options.maxBias+4*options.Vrms, NN)
+    approxdV = (options.maxBias-options.minBias)/(NN-1)
+    NN += int(((8*options.Vrms)/approxdV)+.5)
+    Vl = N.linspace(options.minBias-4*options.Vrms, options.maxBias+4*options.Vrms, NN)
 
     # Vector implementation on Vgrid:
     wp = (1+N.sign(Vl))/2. # weights for positive V
@@ -437,7 +435,7 @@ def calcIETS(options, GFp, GFm, basis, hw):
     t0 = N.clip(Vl/kT, -700, 700)
     cosh0 = N.cosh(t0) # Vgrid
     sinh0 = N.sinh(t0)
-    for i in (hw>options.modeCutoff).nonzero()[0]:
+    for i in (hw > options.modeCutoff).nonzero()[0]:
         P1T = wm*GFm.P1T[i]+wp*GFp.P1T[i]
         P2T = wm*GFm.P2T[i]+wp*GFp.P2T[i]
         # Bose distribution
@@ -458,7 +456,7 @@ def calcIETS(options, GFp, GFm, basis, hw):
     # Current: non-Hilbert part (InH)
     InH = N.zeros((NN,), N.float) # Vgrid
     IsymF = N.zeros((NN,), N.float)
-    for i in (hw>options.modeCutoff).nonzero()[0]:
+    for i in (hw > options.modeCutoff).nonzero()[0]:
         nHT = wm*GFm.nHT[i]+wp*GFp.nHT[i] # Vgrid
         t1 = hw[i]/(2*kT) # number
         t1 = N.clip(t1, -700, 700)
@@ -486,14 +484,14 @@ def calcIETS(options, GFp, GFm, basis, hw):
         print("... see G. Bevilacqua et al., Eur. Phys. J. B (2016) 89: 3")
         IH = N.zeros((NN,), N.float)
         IasymF = N.zeros((NN,), N.float)
-        for i in (hw>options.modeCutoff).nonzero()[0]:
+        for i in (hw > options.modeCutoff).nonzero()[0]:
             v0 = hw[i]/(2*N.pi*kT)
             vp = (hw[i]+Vl)/(2*N.pi*kT)
             vm = (hw[i]-Vl)/(2*N.pi*kT)
             Iasym = kT*(2*v0*SS.psi(1.j*v0)-vp*SS.psi(1.j*vp)-vm*SS.psi(1.j*vm)).real
             IasymF += Iasym
-            IH += GFp.HT[i]*N.array(Vl>0.0, dtype=int)*Iasym
-            IH += GFm.HT[i]*N.array(Vl<0.0, dtype=int)*Iasym
+            IH += GFp.HT[i]*N.array(Vl > 0.0, dtype=int)*Iasym
+            IH += GFm.HT[i]*N.array(Vl < 0.0, dtype=int)*Iasym
     except:
         print("Computing using explit Hilbert transformation")
         IH = N.zeros((NN,), N.float)
@@ -504,7 +502,7 @@ def calcIETS(options, GFp, GFm, basis, hw):
         # Box/window function nF(E-Vl2)-nF(E-0):
         kasse = MM.box(0, -Vl2, Egrid2, kT) # (Vgrid,Egrid)
         ker = None
-        for i in (hw>options.modeCutoff).nonzero()[0]:
+        for i in (hw > options.modeCutoff).nonzero()[0]:
             # Box/window function nF(E-hw)-nF(E+hw)
             tmp = MM.box(-hw[i], hw[i], Egrid, kT)
             hilb, ker = MM.Hilbert(tmp, ker) # Egrid
@@ -512,7 +510,7 @@ def calcIETS(options, GFp, GFm, basis, hw):
             for j in range(len(Vl)):
                 Iasym = MM.trapez(Egrid, kasse[j]*hilb, equidistant=True).real/2
                 IasymF[j] += Iasym
-                if Vl[j]>0:
+                if Vl[j] > 0:
                     IH[j] += GFp.HT[i]*Iasym
                 else:
                     IH[j] += GFm.HT[i]*Iasym
@@ -526,29 +524,29 @@ def calcIETS(options, GFp, GFm, basis, hw):
     print(GFp.dIinel)
     print(GFp.dSel)
     print(GFp.dSinel)
-    for i in (hw>options.modeCutoff).nonzero()[0]:
+    for i in (hw > options.modeCutoff).nonzero()[0]:
         # Elastic part
         Inew += GFp.dIel[i]*Vl
         Snew += GFp.dSel[i]*absVl
         # Inelastic part
-        indx = (absVl-hw[i]<0).nonzero()[0]
+        indx = (absVl-hw[i] < 0).nonzero()[0]
         fct = absVl-hw[i]
         fct[indx] = 0.0 # set elements to zero
         Inew += GFp.dIinel[i]*fct*N.sign(Vl)
         Snew += GFp.dSinel[i]*fct
 
     # Get the right units for gamma_eh, gamma_heat
-    gamma_eh_p=N.zeros((len(hw),), N.float)
-    gamma_eh_m=N.zeros((len(hw),), N.float)
-    gamma_heat_p=N.zeros((len(hw),), N.float)
-    gamma_heat_m=N.zeros((len(hw),), N.float)
-    for i in (hw>options.modeCutoff).nonzero()[0]:
+    gamma_eh_p = N.zeros((len(hw),), N.float)
+    gamma_eh_m = N.zeros((len(hw),), N.float)
+    gamma_heat_p = N.zeros((len(hw),), N.float)
+    gamma_heat_m = N.zeros((len(hw),), N.float)
+    for i in (hw > options.modeCutoff).nonzero()[0]:
         # Units [Phonons per Second per dN where dN is number extra phonons]
-        gamma_eh_p[i]=GFp.P1T[i]*hw[i]*PC.unitConv
-        gamma_eh_m[i]=GFm.P1T[i]*hw[i]*PC.unitConv
+        gamma_eh_p[i] = GFp.P1T[i]*hw[i]*PC.unitConv
+        gamma_eh_m[i] = GFm.P1T[i]*hw[i]*PC.unitConv
         # Units [Phonons per second per eV [eV-ihw]
-        gamma_heat_p[i]=GFp.P2T[i]*PC.unitConv
-        gamma_heat_m[i]=GFm.P2T[i]*PC.unitConv
+        gamma_heat_p[i] = GFp.P2T[i]*PC.unitConv
+        gamma_heat_m[i] = GFm.P2T[i]*PC.unitConv
 
     print('Inelastica.calcIETS: gamma_eh_p =', gamma_eh_p) # OK
     print('Inelastica.calcIETS: gamma_eh_m =', gamma_eh_m) # OK
@@ -560,8 +558,8 @@ def calcIETS(options, GFp, GFm, basis, hw):
     V, Ia, dIa, ddIa, BdIa, BddIa = Broaden(options, Vl, IasymF)
 
     # Interpolate quantities to new V-grid
-    NPow=N.zeros((len(Pow), len(V)), N.float)
-    NnPh=N.zeros((len(Pow), len(V)), N.float)
+    NPow = N.zeros((len(Pow), len(V)), N.float)
+    NnPh = N.zeros((len(Pow), len(V)), N.float)
     for ii in range(len(Pow)):
         NPow[ii] = MM.interpolate(V, Vl, Pow[ii])
         NnPh[ii] = MM.interpolate(V, Vl, nPh[ii])
@@ -592,7 +590,7 @@ def calcIETS(options, GFp, GFm, basis, hw):
     write2NCfile(outNC, I, 'I', 'Intrinsic I, G0 V')
     write2NCfile(outNC, dI, 'dI', 'Intrinsic dI, G0')
     write2NCfile(outNC, ddI, 'ddI', 'Intrinsic ddI, G0/V')
-    if options.LOEscale==0.0:
+    if options.LOEscale == 0.0:
         write2NCfile(outNC, GFp.nHT, 'ISymTr', 'Trace giving Symmetric current contribution (prefactor to universal function)')
         write2NCfile(outNC, GFp.HT, 'IAsymTr', 'Trace giving Asymmetric current contribution (prefactor to universal function)')
         write2NCfile(outNC, gamma_eh_p, 'gamma_eh', 'e-h damping [*deltaN=1/Second]')
@@ -659,15 +657,15 @@ def writeFGRrates(options, GF, hw, NCfile):
             M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw, options.iSpin, :, :], N.complex)
         except:
             print('Warning: Variable ImHe_ph not found')
-        rate=N.zeros((len(GF.ECleft), len(GF.ECright)), N.float)
-        totrate=0.0
+        rate = N.zeros((len(GF.ECleft), len(GF.ECright)), N.float)
+        totrate = 0.0
         inter, intra = 0.0, 0.0 # splitting total rate in two
         for iL in range(len(GF.ECleft)):
             for iR in range(len(GF.ECright)):
-                tmp=N.dot(N.conjugate(GF.ECleft[iL]), MM.mm(M, GF.ECright[iR]))
-                rate[iL, iR]=(2*N.pi)**2*abs(tmp)**2
-                totrate+=rate[iL, iR]
-                if iL==iR: intra += rate[iL, iR]
+                tmp = N.dot(N.conjugate(GF.ECleft[iL]), MM.mm(M, GF.ECright[iR]))
+                rate[iL, iR] = (2*N.pi)**2*abs(tmp)**2
+                totrate += rate[iL, iR]
+                if iL == iR: intra += rate[iL, iR]
                 else: inter += rate[iL, iR]
 
         outFile.write('\nPhonon mode %i : %f eV [Rates in units of (1/s/eV)]\n' % (ihw, hw[ihw]))
@@ -676,8 +674,8 @@ def writeFGRrates(options, GF, hw, NCfile):
         outFile.write('SymI : %e (1/(sV)) , AsymI %e (?))\n' % (GF.nHT[ihw]*PC.unitConv, GF.HT[ihw]*PC.unitConv))
         #outFile.write('Elast : %e (1/(sV)) , Inelast %e (1/(sV)))\n' % (GF.nHTel[ihw]*PC.unitConv,GF.nHTin[ihw]*PC.unitConv))
         outFile.write('down=left EC, right=right EC\n')
-        if GF.P2T[ihw]>0.0:
-            if abs(totrate/(GF.P2T[ihw])-1)<0.05:
+        if GF.P2T[ihw] > 0.0:
+            if abs(totrate/(GF.P2T[ihw])-1) < 0.05:
                 outFile.write('Sum/Tr[MALMAR] , Tr: %1.3f  %e\n'%(totrate/(GF.P2T[ihw]), PC.unitConv*GF.P2T[ihw]))
             else:
                 outFile.write('WARNING: !!!! Sum/Tr[MALMAR] , Tr: %2.2e  %e\n'%(totrate/(GF.P2T[ihw]), PC.unitConv*GF.P2T[ihw]))
