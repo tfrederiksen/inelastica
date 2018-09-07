@@ -376,7 +376,7 @@ class Symmetry(object):
         whichsnr = self.basis.snr[N.where(N.array(abundance) == N.min(abundance))[0][0]]
 
         Ulist, a1, a2, a3 = self.pointU33, self.a1, self.a2, self.a3
-        pointU, pointO = [],  []
+        pointU, pointO = [], []
         for iU, U in enumerate(Ulist):
             SIO.printDone(iU, len(Ulist), 'Looking for point group')
 
