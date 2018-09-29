@@ -1,0 +1,13 @@
+name: test-env
+channels:
+  - conda-forge
+dependencies:
+  - gcc
+  - python=3.6
+  - setuptools
+  - numpy>=1.8
+  - scipy
+  - netcdf4
+  - pip:
+    - coveralls
+    - pytest-cov

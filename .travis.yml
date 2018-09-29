@@ -1,10 +1,10 @@
-language: python
+language: minimal
+sudo: false
 
 branches:
   except:
   - /.*gh-pages.*/
 
-sudo: false
 
 notifications:
   email:
@@ -15,47 +15,37 @@ notifications:
 
 matrix:
   include:
-   - python: 2.7
-     env: PYTHONOPTIMIZE=0
-   - python: 2.7
-     env: PYTHONOPTIMIZE=2
-   - python: 3.6
+   - env:
+     - CONDA_ENV=py27
+   - env:
+     - CONDA_ENV=py36
 
-install:
-  - conda install hdf4 libnetcdf
-  - pip install pytest pytest-cov
-  - python setup.py install
-
-script:
-  - |
-    Inelastica --help
-
-#
-# These are setup scripts:
-#
-
-addons:
-  apt:
-    packages: &common_packages
-      - gcc
-      - gfortran
-      # Speedup builds, particularly when USE_CHROOT=1
-      - eatmydata
 
 before_install:
   - |
     if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-        wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-    elif [[ "$TRAVIS_PYTHON_VERSION" == "3.5" ]]; then
-        wget http://repo.continuum.io/miniconda/Miniconda3-4.2.12-Linux-x86_64.sh -O miniconda.sh
+        wget http://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
     else
         wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
     fi
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH=$HOME/miniconda/bin:$PATH
   - hash -r
-  - conda config --set always_yes yes --set changeps1 no
+  - conda config --set always_yes yes --set changeps1 no --set show_channel_urls true
 # Do actual package installations
+  - conda update -q conda
   - conda info -a
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file requirements.txt
-  - source activate test-environment
+
+
+install:
+  - conda env create -n test_env --file ci/requirements-$CONDA_ENV.yml
+  - source activate test_env
+  - conda list
+  - pip install --no-deps -e .
+
+
+script:
+  - which python
+  - python --version
+  - python -OO -c "import Inelastica"
+  - Inelastica --help
