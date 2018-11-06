@@ -82,7 +82,7 @@ def GetAngle(r1, r2, r3):
     r3 = N.array(r3, N.float)
     v12 = r1-r2
     v23 = r3-r2
-    angle = math.acos(N.dot(v12, v23)/(N.dot(v12, v12)*N.dot(v23, v23))**.5)
+    angle = math.acos(N.dot(v12, v23)/(N.dot(v12, v12)**.5*N.dot(v23, v23))**.5)
     return 360.0*angle/(2*N.pi)
 
 
