@@ -82,7 +82,7 @@ def GetAngle(r1, r2, r3):
     r3 = N.array(r3, N.float)
     v12 = r1-r2
     v23 = r3-r2
-    angle = math.acos(N.dot(v12, v23)/(N.dot(v12, v12)**.5*N.dot(v23, v23))**.5)
+    angle = math.acos(N.dot(v12, v23)/(N.dot(v12, v12)*N.dot(v23, v23))**.5)
     return 360.0*angle/(2*N.pi)
 
 
@@ -98,7 +98,7 @@ def GetDihedral(r1, r2, r3, r4):
     # see http://en.wikipedia.org/wiki/Dihedral_angle
     y = N.dot(v23, v23)**.5*N.dot(v12, CrossProd(v23, v34))
     x = N.dot(CrossProd(v12, v23), CrossProd(v23, v34))
-    angle = math.atan2(y, x)
+ge   angle = math.atan2(y, x)
     return 360.0*angle/(2*N.pi)
 
 
