@@ -98,7 +98,7 @@ def GetDihedral(r1, r2, r3, r4):
     # see http://en.wikipedia.org/wiki/Dihedral_angle
     y = N.dot(v23, v23)**.5*N.dot(v12, CrossProd(v23, v34))
     x = N.dot(CrossProd(v12, v23), CrossProd(v23, v34))
-ge   angle = math.atan2(y, x)
+    angle = math.atan2(y, x)
     return 360.0*angle/(2*N.pi)
 
 
