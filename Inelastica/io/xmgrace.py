@@ -230,7 +230,7 @@ class Dataset(object):
         "Sets the error bar linewidth (float)."
         self.EBlinewidth = EBlinewidth
 
-    def __GetXMGRstring__(self, graphnr, setnr):
+    def __GetXMGRstring__(self, setnr):
         string = ''
         if self.legend != '':
             string += '@ s%i legend \"%s\" \n'%(setnr, self.legend)
@@ -278,8 +278,7 @@ class XYset(Dataset):
         self.x = N.array(x)
         self.y = N.array(y)
         if len(x) != len(y):
-            print('ERROR: x and y data lists are not of equal length!!!')
-            error
+            raise ValueError('io.xmgrace: x and y data lists are not of equal length!!!')
         self.xmin = float(min(self.x))
         self.ymin = float(min(self.y))
         self.xmax = float(max(self.x))
@@ -293,7 +292,7 @@ class XYset(Dataset):
         "Returns a string containing the GRACE commands that describe the data set."
         string = '# ------------------ Dataset %i.%i ----------------- \n'%(graphnr, setnr)
         string += '@ target g%i.s%i \n@ type xy \n'%(graphnr, setnr)
-        string += self.__GetXMGRstring__(graphnr, setnr)
+        string += self.__GetXMGRstring__(setnr)
         for i, xi in enumerate(self.x):
             string += '   %.8f  %.8f \n'%(xi, self.y[i])
         return string
@@ -314,7 +313,7 @@ class XYDXset(XYset):
         "Returns a string containing the GRACE commands that describe the data set."
         string = '# ------------------ Dataset %i.%i ----------------- \n'%(graphnr, setnr)
         string += '@ target g%i.s%i \n@ type xydx \n'%(graphnr, setnr)
-        string += self.__GetXMGRstring__(graphnr, setnr)
+        string += self.__GetXMGRstring__(setnr)
         for i, xi in enumerate(self.x):
             string += '   %.8f  %.8f  %.8f \n'%(xi, self.y[i], self.dx[i])
         return string
@@ -335,7 +334,7 @@ class XYDYset(XYset):
         "Returns a string containing the GRACE commands that describe the data set."
         string = '# ------------------ Dataset %i.%i ----------------- \n'%(graphnr, setnr)
         string += '@ target g%i.s%i \n@ type xydy \n'%(graphnr, setnr)
-        string += self.__GetXMGRstring__(graphnr, setnr)
+        string += self.__GetXMGRstring__(setnr)
         for i, xi in enumerate(self.x):
             string += '   %.8f  %.8f  %.8f \n'%(xi, self.y[i], self.dy[i])
         return string
@@ -357,7 +356,7 @@ class XYDXDYset(XYset):
         "Returns a string containing the GRACE commands that describe the data set."
         string = '# ------------------ Dataset %i.%i ----------------- \n'%(graphnr, setnr)
         string += '@ target g%i.s%i \n@ type xydxdy \n'%(graphnr, setnr)
-        string += self.__GetXMGRstring__(graphnr, setnr)
+        string += self.__GetXMGRstring__(setnr)
         for i, xi in enumerate(self.x):
             string += '   %.8f  %.8f  %.8f  %.8f \n'%(xi, self.y[i], self.dx[i], self.dy[i])
         return string
@@ -378,7 +377,7 @@ class XYSIZEset(XYset):
         "Returns a string containing the GRACE commands that describe the data set."
         string = '# ------------------ Dataset %i.%i ----------------- \n'%(graphnr, setnr)
         string += '@ target g%i.s%i \n@ type xysize \n'%(graphnr, setnr)
-        string += self.__GetXMGRstring__(graphnr, setnr)
+        string += self.__GetXMGRstring__(setnr)
         for i, xi in enumerate(self.x):
             string += '   %.8f  %.8f  %.8f \n'%(xi, self.y[i], self.size[i])
         return string
@@ -542,6 +541,7 @@ class Graph(object):
             self.string += '@ xaxis tick minor grid %s \n'%flag[minorGridlines]
         if autoscale != '':
             xmin, ymin, xmax, ymax = self.GetWorldOfDatasets()
+            del ymin, ymax
             rng = xmax-xmin
             if rng > 1e-20:
                 unit = 2*10**math.floor(math.log(rng, 10))
@@ -552,6 +552,7 @@ class Graph(object):
             self.string += '@ xaxes scale %s \n'%scale
             # Scale axis to positive numbers
             xmin, ymin, xmax, ymax = self.GetWorldOfDatasets()
+            del ymin, ymax
             if xmin <= 0.: self.SetXaxis(vmin=1e-10)
             else: self.SetXaxis(vmin=xmin)
             if xmax <= 0.: self.SetXaxis(vmax=1e10)
@@ -614,6 +615,7 @@ class Graph(object):
             self.string += '@ yaxis tick minor grid %s \n'%flag[minorGridlines]
         if autoscale != '':
             xmin, ymin, xmax, ymax = self.GetWorldOfDatasets()
+            del xmin, xmax
             rng = ymax-ymin
             if rng > 1e-20:
                 unit = 2* 10**math.floor(math.log(rng, 10))
@@ -624,6 +626,7 @@ class Graph(object):
             self.string += '@ yaxes scale %s \n'%scale
             # Scale axis to positive numbers
             xmin, ymin, xmax, ymax = self.GetWorldOfDatasets()
+            del xmin, xmax
             if ymin <= 0.: self.SetYaxis(vmin=1e-10)
             else: self.SetYaxis(vmin=ymin)
             if ymax <= 0.: self.SetYaxis(vmax=1e10)
@@ -632,8 +635,8 @@ class Graph(object):
     def SetXaxisSpecialTicks(self, ticklist):
         "Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],...]."
         self.string += '@ xaxis tick spec type both\n@ xaxis tick spec 11\n'
-        for i in range(len(ticklist)):
-            x, lab = ticklist[i][0], ticklist[i][1]
+        for i, tick in enumerate(ticklist):
+            x, lab = tick[0], tick[1]
             if lab in symbols:
                 # replace with xmgr code for symbol
                 lab = symbols[lab]
@@ -643,8 +646,8 @@ class Graph(object):
     def SetYaxisSpecialTicks(self, ticklist):
         "Sets the axis ticks according to the ticklist [[value0,label0],[value1,label1],...]."
         self.string += '@ yaxis tick spec type both\n@ yaxis tick spec 11\n'
-        for i in range(len(ticklist)):
-            y, lab = ticklist[i][0], ticklist[i][1]
+        for i, tick in enumerate(ticklist):
+            y, lab = tick[0], tick[1]
             if lab in symbols:
                 # replace with xmgr code for symbol
                 lab = symbols[lab]
@@ -673,8 +676,7 @@ class Graph(object):
         string += '@ world %.8f, %.8f, %.8f, %.8f\n'%tuple(self.world)
         string += '@ view %.8f, %.8f, %.8f, %.8f\n'%tuple(self.view)
         string += self.string
-        for setnr in range(len(self.datasets)):
-            dset = self.datasets[setnr]
+        for setnr, dset in enumerate(self.datasets):
             string += dset.GetXMGRstring(graphnr, setnr)
         return string
 
@@ -708,8 +710,7 @@ class Plot(object):
         x1, y1 = self.frame[2], self.frame[3]
         dx = ((self.frame[2]-self.frame[0])-(nx-1)*hspace)/nx
         dy = ((self.frame[3]-self.frame[1])-(ny-1)*vspace)/ny
-        for i in range(len(self.graphs)):
-            graph = self.graphs[i]
+        for i, graph in enumerate(self.graphs):
             if order == 1:
                 print('... %i: Filling top to down, starting from upper left'%i)
                 x = x0+(i/ny)*(dx+hspace)
@@ -805,8 +806,7 @@ class Plot(object):
         print('Writing plot to file \"%s\"'%(filename))
         f = open(filename, 'w')
         f.write(self.string)
-        for i in range(len(self.graphs)):
-            graph = self.graphs[i]
+        for i, graph in enumerate(self.graphs):
             f.write(graph.GetXMGRstring(i))
         f.close()
 
