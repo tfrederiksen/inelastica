@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 import glob
-import string
 import os
 import Inelastica.MakeGeom as MG
 import numpy as N
@@ -11,7 +10,7 @@ import numpy.linalg as LA
 fns = glob.glob('NEB*/CGrun/RUN.fdf')
 
 # Fix order
-indx = [int(string.split(string.split(ii, '_')[1], '/')[0]) for ii in fns]
+indx = [int(ii.split('_')[1].split('/')[0]) for ii in fns]
 fns = [fns[ii] for ii in N.argsort(indx)]
 
 

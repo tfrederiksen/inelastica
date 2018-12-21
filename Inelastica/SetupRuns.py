@@ -22,7 +22,6 @@ to create all the other calculation directories needed.
 from __future__ import print_function
 
 import glob
-import string
 import time
 import sys
 import shutil
@@ -842,7 +841,7 @@ def WritePBS(PBStemplate, PBSout, PBSsubs):
 
     # Make default job name
     fullPath = os.path.split(os.path.abspath(PBSout))[0]
-    last2dir = string.split(fullPath, '/')[-2:]
+    last2dir = fullPath.split('/')[-2:]
     try: # Check for numbers at start ... not liked by PBS
         int(last2dir[0][0])+1
         last2dir[0] = 'a'+last2dir[0]

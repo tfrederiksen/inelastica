@@ -34,7 +34,6 @@ from __future__ import print_function
 
 import numpy as N
 import netCDF4 as NC4
-import string
 import struct
 import Inelastica.physics.constants as PC
 import Inelastica.misc.valuecheck as VC
@@ -510,7 +509,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     for i in range(numberOfAtoms):
         line = '   %i  ' %atomnumber[i]
         for j in range(3):
-            line += string.rjust('%.9f'%xyz[i][j], 16)
+            line += ('%.9f'%xyz[i][j]).rjust(16)
         fo.write(line+'\n')
 
     #Write the datagrid
