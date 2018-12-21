@@ -30,7 +30,6 @@ import os
 import copy
 import time
 import pickle
-import string
 import Inelastica.io.siesta as SIO
 import Inelastica.SetupRuns as SUR
 import Inelastica.MakeGeom as MG
@@ -373,7 +372,7 @@ def GetOptions(argv):
     usage = "usage: %prog [options] Initial Final"
     description = """
 Nudged elastic band calculation script. The script will generate the intermediate (linear interpolation) steps in a NEB calculation, submit them to the que system and repeat the calculations until finding the approximate NEB solution.
-Initial and Final states are read from the directories: Initial/CGrun, Final/CGrun. 
+Initial and Final states are read from the directories: Initial/CGrun, Final/CGrun.
 The directories should contain RUN.fdf (main fdf file), RUN.out (forces) and one .XV file containing the geometry. Constraints can be given as '%block GeometryConstraints' and/or using the Constraint option for small molecules. If the script has died, it will try to restart the calculations. It is usefull to use '-s' to make a better starting interpolation. [https://doi.org/10.1142/9789812839664_0016], note that the implementation along the trajectory novel ... if you obtain buckeling of the path, try to decrease 'acceleration' (-d), if the distance between points oscillate, decrease mixing (-t). Convergence does not demand equal spacing.
 
 Intermediate steps will be written in:
@@ -425,7 +424,7 @@ For help use --help!
 
     # Parse constraints
     if opts.const2 != None:
-        strings = string.split(opts.const2, ',')
+        strings = opts.const2.split(",")
         opts.const2 = [int(strings[0]), int(strings[1]), N.array([float(strings[2]), float(strings[3]), float(strings[4])]),
                        int(strings[5]), N.array([float(strings[6]), float(strings[7]), float(strings[8])])]
 

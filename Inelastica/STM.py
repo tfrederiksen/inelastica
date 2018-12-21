@@ -34,7 +34,6 @@ import numpy as N
 import numpy.linalg as LA
 import netCDF4 as NC
 import sys
-import string
 import glob
 import os
 import ast
@@ -160,7 +159,7 @@ def main(options):
         f, oldk = open(options.DestDir+'/kpoints', 'r'), []
         f.readline()
         for ii in f.readlines():
-            oldk += [N.array(string.split(ii), N.float)]
+            oldk += [N.array(ii.split(), N.float)]
         oldk = N.array(oldk)
 
     options.kpoints.mesh2file(options.DestDir+'/kpoints')

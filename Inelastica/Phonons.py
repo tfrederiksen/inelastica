@@ -75,7 +75,6 @@ import warnings
 import glob
 import os
 import sys
-import string
 import ast
 import Inelastica.io.siesta as SIO
 import Inelastica.io.log as Log
@@ -484,12 +483,12 @@ class DynamicalMatrix(object):
         if verbose:
             print('Phonons.CalcPhonons: Frequencies in meV:')
             for i in range(3*dyn):
-                print(string.rjust('%.3f'%(1000*hw[i]), 9), end='')
+                print(('%.3f'%(1000*hw[i])).rjust(9), end='')
                 if (i-5)%6 == 0: print()
             if (i-5)%6 != 0: print()
         #print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
         #for i in range(3*dyn):
-        #    print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
+        #    print ('%.3f'%(hw[i]/PC.invcm2eV)).rjust(9),
         #    if (i-5)%6 == 0: print
         #if (i-5)%6 != 0: print
 

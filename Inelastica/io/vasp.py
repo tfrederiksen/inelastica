@@ -11,7 +11,6 @@ IO interface with VASP
 from __future__ import print_function
 
 import numpy as N
-import string
 import gzip
 
 
@@ -98,7 +97,7 @@ def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LA
     pcarfile.write('  %.12f \n'%scalefactor)
     for ii in range(3):
         for jj in range(3):
-            pcarfile.write(string.rjust('%.9f'%vectors[ii][jj], 16)+' ')
+            pcarfile.write(('%.9f'%vectors[ii][jj]).rjust(16)+' ')
         pcarfile.write('\n')
     for lbl in specieslabels:
         pcarfile.write('  %s'%lbl)
@@ -108,9 +107,9 @@ def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LA
     pcarfile.write('\n')
     pcarfile.write('Selective dynamics\nCartesian\n')
     for ii, xyzval in enumerate(xyz):
-        line = string.rjust('%.9f'%xyzval[0], 16)+' '
-        line += string.rjust('%.9f'%xyzval[1], 16)+' '
-        line += string.rjust('%.9f'%xyzval[2], 16)+' '
+        line = ('%.9f'%xyzval[0]).rjust(16)+' '
+        line += ('%.9f'%xyzval[1]).rjust(16)+' '
+        line += ('%.9f'%xyzval[2]).rjust(16)+' '
         if len(constrained) > 0:
             for jj in range(3):
                 if constrained[ii, jj] > 0:

@@ -23,11 +23,8 @@ Classes
 
 
 """
-from __future__ import print_function
-
 import numpy as N
 import numpy.linalg as LA
-import string
 import struct
 import os.path
 import sys
@@ -92,19 +89,19 @@ def ReadXVFile(filename, InUnits='Bohr', OutUnits='Ang', ReadVelocity=False):
     # Read cell vectors (lines 1-3)
     vectors = []
     for i in range(3):
-        data = string.split(xvfile.readline())
-        vectors.append([string.atof(data[j])*convFactor for j in range(3)])
+        data = xvfile.readline().split()
+        vectors.append([float(data[j])*convFactor for j in range(3)])
     # Read number of atoms (line 4)
-    numberOfAtoms = string.atoi(string.split(xvfile.readline())[0])
+    numberOfAtoms = int(xvfile.readline().split()[0])
     # Read remaining lines
     speciesnumber, atomnumber, xyz, V = [], [], [], []
     for line in xvfile.readlines():
         if len(line) > 5: # Ignore blank lines
-            data = string.split(line)
-            speciesnumber.append(string.atoi(data[0]))
-            atomnumber.append(string.atoi(data[1]))
-            xyz.append([string.atof(data[2+j])*convFactor for j in range(3)])
-            V.append([string.atof(data[5+j])*convFactor for j in range(3)])
+            data = line.split()
+            speciesnumber.append(int(data[0]))
+            atomnumber.append(int(data[1]))
+            xyz.append([float(data[2+j])*convFactor for j in range(3)])
+            V.append([float(data[5+j])*convFactor for j in range(3)])
     xvfile.close()
     if len(speciesnumber) != numberOfAtoms:
         print('io.siesta.ReadXVFile: Inconstency in %s detected!' %filename)
@@ -128,7 +125,7 @@ def WriteXVFile(filename, vectors, speciesnumber, atomnumber, xyz,\
     for i in range(3):
         line = '  '
         for j in range(3):
-            line += string.rjust('%.9f'%(vectors[i][j]*convFactor), 16)
+            line += ('%.9f'%(vectors[i][j]*convFactor)).rjust(16)
         line += '     0.00  0.00  0.00 \n'
         xvfile.write(line)
     # Write number of atoms (line 4)
@@ -139,12 +136,12 @@ def WriteXVFile(filename, vectors, speciesnumber, atomnumber, xyz,\
         line = '  %i' %speciesnumber[i]
         line += '  %i  ' %atomnumber[i]
         for j in range(3):
-            line += string.rjust('%.9f'%(xyz[i][j]*convFactor), 16)
+            line += ('%.9f'%(xyz[i][j]*convFactor)).rjust(16)
         if len(Velocity) == 0:
             line += '     0.00  0.00  0.00 '
         else:
             for j in range(3):
-                line += string.rjust('%.9f'%(Velocity[i][j]*convFactor), 16)
+                line += ('%.9f'%(Velocity[i][j]*convFactor)).rjust(16)
         xvfile.write(line+'\n')
     xvfile.close()
 
@@ -154,7 +151,7 @@ def ReadAXVFile(filename, MDstep, tmpXVfile="tmp.XV", ReadVelocity=False):
     # Determine the number of atoms in the supercell
     f = SIO_open(filename, 'r')
     [f.readline() for i in range(3)]
-    Natoms = int(string.split(f.readline())[0])
+    Natoms = int(f.readline().split()[0])
     f.close()
     XVlines = Natoms + 4
     # Extract the XV file from MDstep and write tmpXVfile
@@ -234,17 +231,17 @@ def ReadANIFile(filename, InUnits='Ang', OutUnits='Ang'):
     anifile = SIO_open(filename, 'r')
     newNN = anifile.readline()
     while newNN != '':
-        NN = string.atoi(newNN)
+        NN = int(newNN)
         newG = MG.Geom()
         try:
-            Energy.append(string.atof(anifile.readline()))
+            Energy.append(float(anifile.readline()))
         except:
             Energy.append(0.0)
         for ii in range(NN):
-            line = string.split(anifile.readline())
-            xyz = [convFactor*string.atof(line[1]),
-                   convFactor*string.atof(line[2]),\
-                   convFactor*string.atof(line[3])]
+            line = anifile.readline().split()
+            xyz = [convFactor*float(line[1]),
+                   convFactor*float(line[2]),\
+                   convFactor*float(line[3])]
             newG.addAtom(xyz, 1, PC.PeriodicTable[line[0]])
         Geom.append(newG)
         newNN = anifile.readline()
@@ -261,13 +258,13 @@ def ReadFCFile(filename):
     fcfile = SIO_open(filename, 'rb')
     # Read comment line (line 1)
     line = fcfile.readline()
-    if string.strip(line) != 'Force constants matrix':
+    if line.strip() != 'Force constants matrix':
         print('io.siesta.ReadFCFile: Inconstency in %s detected!' %filename)
     # Read remaining lines
     FC = []
     for line in fcfile.readlines():
-        data = string.split(line)
-        FC.append([string.atof(data[j]) for j in range(3)])
+        data = line.split()
+        FC.append([float(data[j]) for j in range(3)])
     fcfile.close()
     return FC
 
@@ -354,7 +351,7 @@ def WriteMKLFile(filename, atomnumber, xyz, freq, vec, FCfirst, FClast):
     for i, iatom in enumerate(atomnumber):
         line = str(iatom)
         for j in range(3):
-            line += string.rjust('%.9f'%xyz[i][j], 16)
+            line += ('%.9f'%xyz[i][j]).rjust(16)
         line += '\n'
         mklfile.write(line)
     mklfile.write('$END\n')
@@ -393,15 +390,15 @@ def WriteMKLFile(filename, atomnumber, xyz, freq, vec, FCfirst, FClast):
 def ReadXYZFile(filename):
     xyzfile = SIO_open(filename, 'r')
     # Read number of atoms (line 4)
-    numberOfAtoms = string.atoi(string.split(xyzfile.readline())[0])
+    numberOfAtoms = int(xyzfile.readline().split()[0])
     # Read remaining lines
     label, atomnumber, xyz = [], [], []
     for line in xyzfile.readlines():
         if len(line) > 5: # Ignore blank lines
-            data = string.split(line)
+            data = line.split()
             label.append(data[0])
             atomnumber.append(PC.PeriodicTable[data[0]])
-            xyz.append([string.atof(data[1+j]) for j in range(3)])
+            xyz.append([float(data[1+j]) for j in range(3)])
     xyzfile.close()
     if len(xyz) != numberOfAtoms:
         print('io.siesta.ReadXYZFile: Inconstency in %s detected!' %filename)
@@ -427,9 +424,9 @@ def WriteXYZFile(filename, atomnumber, xyz, write_ghosts=False):
             element = PC.PeriodicTable[abs(atomnumber[i])]
         except:
             element = 'X'
-        line = string.ljust(element, 5)
+        line = element.ljust(5)
         for j in range(3):
-            line += string.rjust('%.9f'%xi[j], 16)
+            line += ('%.9f'%xi[j]).rjust(16)
         line += '\n'
         if atomnumber[i] > 0 or write_ghosts:
             xyzfile.write(line)
@@ -461,14 +458,14 @@ def WriteFDFFile(filename, vectors, speciesnumber, atomnumber, xyz):
     fdffile.write('LatticeConstant 1.0 Ang\n%block LatticeVectors\n')
     for ii in range(3):
         for jj in range(3):
-            fdffile.write(string.rjust('%.9f'%vectors[ii][jj], 16)+' ')
+            fdffile.write(('%.9f'%vectors[ii][jj]).rjust(16)+' ')
         fdffile.write('\n')
     fdffile.write('%endblock LatticeVectors\nAtomicCoordinatesFormat  Ang'+
                '\n%block AtomicCoordinatesAndAtomicSpecies\n')
     for i, xi in enumerate(xyz):
-        line = string.rjust('%.9f'%xi[0], 16)+' '
-        line += string.rjust('%.9f'%xi[1], 16)+' '
-        line += string.rjust('%.9f'%xi[2], 16)+' '
+        line = ('%.9f'%xi[0]).rjust(16)+' '
+        line += ('%.9f'%xi[1]).rjust(16)+' '
+        line += ('%.9f'%xi[2]).rjust(16)+' '
         line += str(int(speciesnumber[i]))+' # %i\n'%(i+1)
         fdffile.write(line)
     fdffile.write('%endblock AtomicCoordinatesAndAtomicSpecies\n')
@@ -492,7 +489,7 @@ def WriteFDFFileZmat(filename, vectors, speciesnumber, atomnumber, xyz, first=0,
     zmatfile.write('LatticeConstant 1.0 Ang\n%block LatticeVectors\n')
     for ii in range(3):
         for jj in range(3):
-            zmatfile.write(string.rjust('%.9f'%vectors[ii][jj], 16)+' ')
+            zmatfile.write(('%.9f'%vectors[ii][jj]).rjust(16)+' ')
         zmatfile.write('\n')
     zmatfile.write('%endblock LatticeVectors\nAtomicCoordinatesFormat Ang'+
                    '\n\nZM.UnitsLength Ang\nZM.UnitsAngle deg\n'+
@@ -504,19 +501,19 @@ def WriteFDFFileZmat(filename, vectors, speciesnumber, atomnumber, xyz, first=0,
             zmatfile.write('molecule\n')
         if i+1 >= first and i+1 <= last:
             # We are within the molecular block
-            line = string.rjust('%i'%speciesnumber[i], 2)
+            line = ('%i'%speciesnumber[i]).rjust(2)
             a, b, c, d, e, f = zmat[i+1-first]
             line += ' %i %i %i '%(a, b, c)
-            line += string.rjust('%.9f'%d, 16)
-            line += string.rjust('%.9f'%e, 16)
-            line += string.rjust('%.9f'%f, 16)
+            line += ('%.9f'%d).rjust(16)
+            line += ('%.9f'%e).rjust(16)
+            line += ('%.9f'%f).rjust(16)
             line += '   0 0 0\n'
             zmatfile.write(line)
         else:
-            line = string.rjust('%i'%speciesnumber[i], 2)
-            line += string.rjust('%.9f'%xi[0], 16)
-            line += string.rjust('%.9f'%xi[1], 16)
-            line += string.rjust('%.9f'%xi[2], 16)
+            line = ('%i'%speciesnumber[i]).rjust(2)
+            line += ('%.9f'%xi[0]).rjust(16)
+            line += ('%.9f'%xi[1]).rjust(16)
+            line += ('%.9f'%xi[2]).rjust(16)
             line += '   0 0 0\n'
             zmatfile.write(line)
         if i+1 == last:
@@ -535,18 +532,18 @@ def ReadSTRUCT_OUTFile(filename):
     # Read cell vectors (lines 1-3)
     vectors = []
     for i in range(3):
-        data = string.split(stfile.readline())
-        vectors.append([string.atof(data[j]) for j in range(3)])
+        data = stfile.readline().split()
+        vectors.append([float(data[j]) for j in range(3)])
     # Read number of atoms (line 4)
-    numberOfAtoms = string.atoi(string.split(stfile.readline())[0])
+    numberOfAtoms = int(stfile.readline().split()[0])
     # Read remaining lines
     speciesnumber, atomnumber, xyz = [], [], []
     for line in stfile.readlines():
         if len(line) > 4: # Ignore blank lines
-            data = string.split(line)
-            speciesnumber.append(string.atoi(data[0]))
-            atomnumber.append(string.atoi(data[1]))
-            xyz.append([string.atof(data[2+j]) for j in range(3)])
+            data = line.split()
+            speciesnumber.append(int(data[0]))
+            atomnumber.append(int(data[1]))
+            xyz.append([float(data[2+j]) for j in range(3)])
     stfile.close()
     if len(speciesnumber) != numberOfAtoms:
         print('io.siesta.ReadSTRUCT_OUTFile: Inconstency in %s detected!' %filename)
@@ -596,7 +593,7 @@ def ReadFDFLines(infile, head='', printAlot=True):
         if len(tmp) > 3:
             tmp = tmp.replace(':', ' ') # Remove ':' from fdf
             tmp = tmp.replace('=', ' ') # Remove '=' from fdf
-            tmp = string.split(tmp)
+            tmp = tmp.split()
             for i, s in enumerate(tmp):  # Remove comments
                 if s[0] == "#":
                     break
@@ -636,16 +633,16 @@ def Getxyz(infile, pbc=[]):
     xyz = []
     if AC_format[0] == 'Ang' or AC_format[0] == 'NotScaledCartesianAng':
         for di in data:
-            xyz.append([string.atof(di[j]) for j in range(3)])
+            xyz.append([float(di[j]) for j in range(3)])
     elif AC_format[0] == 'Bohr' or AC_format[0] == 'NotScaledCartesianBohr':
         for di in data:
-            xyz.append([string.atof(di[j])*PC.Bohr2Ang for j in range(3)])
+            xyz.append([float(di[j])*PC.Bohr2Ang for j in range(3)])
     elif AC_format[0] == 'ScaledCartesian':
         for di in data:
-            xyz.append([string.atof(di[j])*latt_const for j in range(3)])
+            xyz.append([float(di[j])*latt_const for j in range(3)])
     elif AC_format[0] == 'Fractional' or AC_format[0] == 'ScaledByLatticeVectors':
         for di in data:
-            xyz.append([string.atof(di[0])*pbc[0][j]+string.atof(di[1])*pbc[1][j]+string.atof(di[2])*pbc[2][j] for j in range(3)])
+            xyz.append([float(di[0])*pbc[0][j]+float(di[1])*pbc[1][j]+float(di[2])*pbc[2][j] for j in range(3)])
     else:
         print("Give correct AtomicCoordinates Format")
         sys.exit(1)
@@ -663,7 +660,7 @@ def Getpbc(infile):
     else:
         latt_const = float(latt_const[0])
     for di in data:
-        pbc.append([string.atof(di[j])*latt_const for j in range(3)])
+        pbc.append([float(di[j])*latt_const for j in range(3)])
     return pbc
 
 
@@ -673,7 +670,7 @@ def Getsnr(infile):
     data = GetFDFblock(infile, 'AtomicCoordinatesAndAtomicSpecies')
     snr = []
     for di in data:
-        snr.append(string.atoi(di[3]))
+        snr.append(int(di[3]))
     return snr
 
 
@@ -684,7 +681,7 @@ def Getanr(infile):
     tmp = []
     table = {}
     for i, di in enumerate(data):
-        tmp.append([string.atoi(di[j]) for j in range(2)])
+        tmp.append([int(di[j]) for j in range(2)])
         table[tmp[i][0]] = tmp[i][1]
     snr = Getsnr(infile)
     anr = []
@@ -770,9 +767,9 @@ def GetTotalEnergy(infile):
     f.close()
     E = 0.0
     for line in lines:
-        words = string.split(line)
+        words = line.split()
         if 'Total' in words and '=' in words:
-            E = string.atof(words[-1])
+            E = float(words[-1])
             break
     return E
 
@@ -785,9 +782,9 @@ def GetFermiEnergy(infile):
     f.close()
     E = 0.0
     for line in lines:
-        words = string.split(line)
+        words = line.split()
         if 'Fermi' in words and 'energy' in words:
-            E = string.atof(words[-2])
+            E = float(words[-2])
             print('... eF = %.4f eV'%E)
             break
     if E == 0.0:
@@ -798,13 +795,13 @@ def GetFermiEnergy(infile):
 def ReadEIGfile(infile, printing=False, FermiRef=True):
     # Read *EIG file and print eigenvalues with respect to eF.
     f = SIO_open(infile, 'rb')
-    eF = float(string.split(f.readline())[0])
+    eF = float(f.readline().split()[0])
     f.readline() # Skip second line
     EIG = []
-    eig = string.split(f.readline())[1:] # Skip first entry in third line
+    eig = f.readline().split()[1:] # Skip first entry in third line
     EIG += eig
     for line in f.readlines():
-        eig = string.split(line)
+        eig = line.split()
         EIG += eig
     if not FermiRef:
         # Do not take Fermi level as energy reference
@@ -860,7 +857,7 @@ def ReadMullikenPop(infile, outfile, writeallblocks=False):
             popsum = 0.0
         if mline:
             # We are inside a range of lines with mpop
-            s = string.split(line)
+            s = line.split()
             try:
                 nr, pop = int(s[0]), float(s[1])
                 dpop = pop-round(pop, 0)
@@ -888,7 +885,7 @@ def ReadForces(infile):
         if fline:
             # We are inside a range of lines with forces
             try:
-                s = string.split(line)
+                s = line.split()
                 data.append([int(s[0]), float(s[1]), float(s[2]), float(s[3])])
             except:
                 fline = False
@@ -905,12 +902,12 @@ def ReadFAFile(filename):
     file = SIO_open(filename, 'rb')
     # Read comment line (line 1)
     line = file.readline()
-    natoms = int(string.strip(line))
+    natoms = int(line.strip())
     # Read remaining lines
     FA = []
     for line in file.readlines():
-        data = string.split(line)
-        FA.append([string.atof(data[j]) for j in range(1, 4)])
+        data = line.split()
+        FA.append([float(data[j]) for j in range(1, 4)])
     file.close()
     return N.array(FA)
 
@@ -921,7 +918,7 @@ def ReadTRANSAVfile(infile):
     e = -1e10
     f = SIO_open(infile, 'r')
     for line in f.readlines():
-        s = string.split(line)
+        s = line.split()
         if float(s[0]) > e:
             data.append([float(s[0]), float(s[1])])
             e = float(s[0])
@@ -1457,23 +1454,23 @@ def ReadCubeFile(filename):
     comm2 = file.readline()
 
     # Read number of atoms and coordinate origin (line 3)
-    data = string.split(file.readline())
-    numberOfAtoms = string.atoi(data[0])
-    origin = [string.atof(data[j+1])*PC.Bohr2Ang for j in range(3)]
+    data = file.readline().split()
+    numberOfAtoms = int(data[0])
+    origin = [float(data[j+1])*PC.Bohr2Ang for j in range(3)]
 
     # Read cell vectors (lines 4-6)
     vox, vectors = [], []
     for i in range(3):
-        data = string.split(file.readline())
-        vox.append(string.atoi(data[0]))
-        vectors.append([string.atoi(data[0])*string.atof(data[j+1])*PC.Bohr2Ang for j in range(3)])
+        data = file.readline().split()
+        vox.append(int(data[0]))
+        vectors.append([int(data[0])*float(data[j+1])*PC.Bohr2Ang for j in range(3)])
 
     # Read geometry (lines 7-7+N)
     atomnumber, xyz = [], []
     for i in range(numberOfAtoms):
-        data = string.split(file.readline())
-        atomnumber.append(string.atoi(data[0]))
-        xyz.append([string.atof(data[j+2])*PC.Bohr2Ang for j in range(3)])
+        data = file.readline().split()
+        atomnumber.append(int(data[0]))
+        xyz.append([float(data[j+2])*PC.Bohr2Ang for j in range(3)])
 
     file.close()
     return vectors, atomnumber, xyz
