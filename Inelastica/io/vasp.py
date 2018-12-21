@@ -34,7 +34,7 @@ def VIO_open(filename, mode='r'):
 
 def ReadCONTCAR(filename):
     "Read CONTCAR file"
-    print('io.vasp.ReadCONTCAR: Reading', filename)
+    print('io.vasp.ReadCONTCAR: Reading %s' % filename)
     ccarfile = VIO_open(filename, 'r')
     label = ccarfile.readline()
     scalefactor = float(ccarfile.readline())
@@ -88,7 +88,7 @@ def ReadCONTCAR(filename):
 
 def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LABEL', scalefactor=1.0, constrained=[]):
     "Write POSCAR file"
-    print('io.vasp.WritePOSCAR: Writing', filename)
+    print('io.vasp.WritePOSCAR: Writing %s' % filename)
     pcarfile = open(filename, 'w')
     if label[:-2] != '\n':
         pcarfile.write(label+'\n')
@@ -124,7 +124,7 @@ def WritePOSCAR(filename, vectors, specieslabels, speciesnumbers, xyz, label='LA
 
 def GetEnergies(OUTCAR):
     ocarfile = VIO_open(OUTCAR, 'r')
-    print('io.vasp.GetEnergies: Reading', OUTCAR)
+    print('io.vasp.GetEnergies: Reading %s' % OUTCAR)
     #
     freeE, Etot, EtotSigma0 = 1e100, 1e100, 1e100
     for line in ocarfile:
@@ -145,7 +145,7 @@ def GetEnergies(OUTCAR):
 
 def GetEnergiesFromOszi(OSZICAR):
     oszicarfile = VIO_open(OSZICAR, 'r')
-    print('io.vasp.GetEnergiesFromOszi: Reading', OSZICAR)
+    print('io.vasp.GetEnergiesFromOszi: Reading %s' % OSZICAR)
     #
     f, e0 = 1e100, 1e100
     for line in oszicarfile:
@@ -158,7 +158,7 @@ def GetEnergiesFromOszi(OSZICAR):
 
 def GetMagnetization(OSZICAR):
     oszicarfile = VIO_open(OSZICAR, 'r')
-    print('io.vasp.GetMagnetization: Reading', OSZICAR)
+    print('io.vasp.GetMagnetization: Reading %s' % OSZICAR)
     #
     mag = 1e100
     for line in oszicarfile:
@@ -170,7 +170,7 @@ def GetMagnetization(OSZICAR):
 
 def GetSpecies(OUTCAR):
     ocarfile = VIO_open(OUTCAR, 'r')
-    print('io.vasp.GetSpecies: Reading', OUTCAR)
+    print('io.vasp.GetSpecies: Reading %s' % OUTCAR)
     atoms = []
     for line in ocarfile:
         if 'TITEL' in line:
@@ -182,7 +182,7 @@ def GetSpecies(OUTCAR):
 
 def GetVibModesNoScaling(OUTCAR):
     ocarfile = VIO_open(OUTCAR, 'r')
-    print('io.vasp.GetVibrations: Reading', OUTCAR)
+    print('io.vasp.GetVibrations: Reading %s' % OUTCAR)
     freq = []
     modes = []
     v = []
@@ -243,7 +243,7 @@ def GetVibModesMassScaled(OUTCAR):
 
 def ExtractPDOS(filename, outfile, atom_index=[]):
     "Read DOSCAR file and sum over group of atoms (python numbering)"
-    print('io.vasp.ExtractPDOS: Reading', filename)
+    print('io.vasp.ExtractPDOS: Reading %s' % filename)
     f = VIO_open(filename, 'r')
     # Read number of atoms on first line
     s = f.readline()
@@ -324,7 +324,7 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
         sgn2 = N.array(pts*[sgn])
         dat = dat*sgn2
     # Write output
-    print('io.vasp.ExtractPDOS: Writing', outfile)
+    print('io.vasp.ExtractPDOS: Writing %s' % outfile)
     fout = open(outfile, 'w')
     for i in range(pts):
         s = ''
