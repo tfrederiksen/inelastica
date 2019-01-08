@@ -610,10 +610,10 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
     Y = Y/phase
 
     foT = file(fn+'.abs.txt', 'w')
-    foT.write('Atom nr M L abs(Y)\n')
+    foT.write('index Atom nr   M   L abs(Y)         re(Y)        im(Y)\n')
     for ii, Yval in enumerate(Y):
-        foT.write('%3.0i %3.0i %3.1i %3.1i %1.8f \n'%
-        (basis.ii[ii], basis.atomnum[ii], basis.M[ii], basis.L[ii], abs(Yval)))
+        foT.write('%5.1i %3.0i %3.0i %3.1i %3.1i %1.8f %15.5e %12.5e\n'%
+        (ii, basis.ii[ii], basis.atomnum[ii], basis.M[ii], basis.L[ii], abs(Yval), Yval.real, Yval.imag))
     foT.close()
 
     YY, dstep, origo, nx, ny, nz = calcWF(options, geom, basis, Y)
