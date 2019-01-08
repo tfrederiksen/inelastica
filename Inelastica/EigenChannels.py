@@ -404,11 +404,16 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
     varAbsSq = ncfile.createVariable('Abs-sqr-Psi', 'd', ('nx', 'ny', 'nz'))
     varAbsSq[:] = N.absolute(N.square(YY))
 
-    vardstep = ncfile.createVariable('dstep', 'd', ('number',))
+    vardstep = ncfile.createVariable('dstep', 'd', ('number', ))
     vardstep[:] = dstep
+    vardstep.units = 'Ang'
 
-    vargeom = ncfile.createVariable('xyz', 'f', ('natoms', 'naxes'))
-    # OpenDX needs float for positions
+    varorigo = ncfile.createVariable('origo', 'd', ('naxes', ))
+    varorigo[:] = origo
+    varorigo.units = 'Ang'
+
+    # Old stuff for OpenDX visualization
+    vargeom = ncfile.createVariable('xyz-dx', 'f', ('natoms', 'naxes'))
     tmp = []
     for i in range(len(geom.xyz)):
         tmp2 = (geom.xyz[i]-origo)/dstep
@@ -416,13 +421,23 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
                     float(tmp2[1]),
                     float(tmp2[2])])
     vargeom[:] = tmp
+    vargeom.units = '(xyz-origo)/dstep'
+
+    # Absolute coordiates of atoms and cell
+    vargeom = ncfile.createVariable('xyz', 'f', ('natoms', 'naxes'))
+    vargeom[:] = geom.xyz
+    vargeom.units = 'Ang'
+
+    varcell = ncfile.createVariable('cell', 'f', ('naxes', 'naxes'))
+    varcell[:] = geom.pbc
+    varcell.units = 'Ang'
 
     varanr = ncfile.createVariable('anr', 'i', ('natoms',))
     varanr[:] = N.array(geom.anr, N.int32)
 
     # Set attributes
-    setattr(varanr, 'field', 'anr')
-    setattr(varanr, 'positions', 'xyz')
+    #setattr(varanr, 'field', 'anr')
+    #setattr(varanr, 'positions', 'xyz')
 
     #setattr(varRe,'field','Re-Psi')
     #setattr(varRe,'positions','grid, compact')
