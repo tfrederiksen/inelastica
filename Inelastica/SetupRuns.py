@@ -86,7 +86,7 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
         print('\nSetupRuns.SetupCGrun: %s already exists. OVERWRITING FILES!!!'\
               %newCGrun)
     # Copy template files
-    CopyInputFiles(templateCGrun, newCGrun, ['.fdf', '.vps', '.psf', 'pbs'])
+    CopyInputFiles(templateCGrun, newCGrun, ['.fdf', '.vps', '.psf', 'pbs', '.TSHS'])
     # Read relaxed geometry
     XVfiles = glob.glob(templateCGrun+'/*.XV*')
     if len(XVfiles) == 1:
@@ -168,7 +168,7 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
         print('\nSetupRuns.SetupFCrun: %s already exists. OVERWRITING FILES!!!'\
               %newFCrun)
     # Copy template files
-    CopyInputFiles(CGrun, newFCrun, ['.fdf', '.vps', '.psf', '.DM', '.XV', '.pbs', '.TSDE'])
+    CopyInputFiles(CGrun, newFCrun, ['.fdf', '.vps', '.psf', '.DM', '.XV', '.pbs', '.TSDE', '.TSHS'])
     # Read relaxed geometry and overwrite STRUCT files
     XVfiles = glob.glob(CGrun+'/*.XV*')
     if len(XVfiles) == 1:
