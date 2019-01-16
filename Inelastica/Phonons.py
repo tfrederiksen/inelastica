@@ -257,9 +257,9 @@ class FCrun(object):
         # Determine TSHS files
         files = glob.glob(self.directory+'/%s*.TSHS'%self.systemlabel)
         files.sort()
-        if '%s.TSHS'%self.systemlabel in files:
+        if self.directory+'/%s.TSHS'%self.systemlabel in files:
             # If present, ignore this file which does not origninate from the FCrun
-            files.remove('%s.TSHS'%self.systemlabel)
+            files.remove(self.directory+'/%s.TSHS'%self.systemlabel)
         if (FClast-FCfirst+1)*6+1 != len(files):
             warnings.warn('Phonons.GetFileLists: WARNING - Inconsistent number of *.TSHS files in %s'%self.directory)
             return
