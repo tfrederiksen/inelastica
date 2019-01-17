@@ -343,7 +343,7 @@ class OSrun(object):
                 thisHS.setkpoint(kpoint, atype=atype)
                 S = thisHS.S
                 del thisHS
-                nao = len(S)/2
+                nao = len(S) // 2
                 S0 = S[0:nao, 0:nao].copy()
                 dmat = S[0:nao, nao:nao*2].copy()
                 if file.endswith('_1.onlyS'):
@@ -364,10 +364,10 @@ class OSrun(object):
                 xyz = N.array(SIO.Getxyz(onlySdir+'/RUN_%i.fdf'%i))
                 #for j in range(1, len(xyz)):
                 #    thisd = min(thisd, (N.dot(xyz[0]-xyz[j], xyz[0]-xyz[j]))**.5)
-                j = len(xyz)/2
+                j = len(xyz) // 2
                 v = xyz[0]-xyz[j]
                 thisd = N.dot(v, v)**.5
-                Displ[(i-1)/2, 1-2*(i%2)] = thisd
+                Displ[(i-1) // 2, 1-2*(i % 2)] = thisd
                 print('Phonons.GetOnlyS: OnlyS-displacement (min) = %.5f Ang'%thisd)
             # Construct dS array
             self.S0 = S0
@@ -499,7 +499,7 @@ class DynamicalMatrix(object):
         Udisp = U.copy()
         for i in range(3*dyn):
             # Eigenvectors after division by sqrt(mass)
-            Udisp[:, i] = U[:, i]/self.Masses[i/3]**.5
+            Udisp[:, i] = U[:, i] / self.Masses[i // 3]**.5
 
         # Compute displacement vectors scaled for the characteristic length
         Ucl = N.empty_like(U)
@@ -507,7 +507,7 @@ class DynamicalMatrix(object):
             for i in range(3*dyn):
                 # Eigenvectors after multiplication by characteristic length
                 if hw[j] > 0:
-                    Ucl[j, i] = U[j, i]*(1./(self.Masses[i/3]*(hw[j]/(2*PC.Rydberg2eV)))**.5)
+                    Ucl[j, i] = U[j, i] * (1. / (self.Masses[i // 3] * abs(hw[j] / (2*PC.Rydberg2eV)))**.5)
                 else:
                     # Characteristic length not defined for non-postive frequency
                     Ucl[j, i] = U[j, i]*0.0

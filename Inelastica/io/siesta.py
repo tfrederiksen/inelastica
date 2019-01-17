@@ -352,7 +352,7 @@ def WriteMKLFile(filename, atomnumber, xyz, freq, vec, FCfirst, FClast):
     mklfile.write('$END\n')
     if len(freq) > 0:
         mklfile.write('$FREQ\n')
-        for i in range(len(freq)/3):
+        for i in range(len(freq) // 3):
             mklfile.write('C1 C1 C1\n')
             # Write frequencies
             line = ''

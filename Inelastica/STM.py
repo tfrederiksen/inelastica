@@ -219,8 +219,8 @@ def main(options):
     for ii in range(nokpts):
         file = NC.Dataset('./'+options.DestDir+'/'+str(ii)+'/FDcurr'+str(ii)+'.nc', 'r')
         ikSTMimage = file.variables['Curr'][:, :]/(nokpts)
-        STMimage += ShiftOrigin(ikSTMimage, dim1/2, dim2/2)
-        tmpSTM[ii*dim1:(ii+1)*dim1, :] = ShiftOrigin(ikSTMimage, dim1/2, dim2/2)
+        STMimage += ShiftOrigin(ikSTMimage, dim1 // 2, dim2 // 2)
+        tmpSTM[ii*dim1:(ii+1)*dim1, :] = ShiftOrigin(ikSTMimage, dim1 // 2, dim2 // 2)
     STMimagekpt = N.zeros((dim1*options.Nk1, dim2*options.Nk2))
     for ii in range(options.Nk1):
         for jj in range(options.Nk2):
