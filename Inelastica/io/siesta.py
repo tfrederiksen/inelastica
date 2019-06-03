@@ -518,6 +518,24 @@ def WriteFDFFileZmat(filename, vectors, speciesnumber, atomnumber, xyz, first=0,
     zmatfile.write('constraints\n')
     zmatfile.write('%endblock Zmatrix\n')
 
+
+def copy_chemical_info(from_p, to_p):
+    # In some cases (eg. when exporting SISL), ChemicalSpeciesLabel is also in
+    # the structure file, but it is not in the .XV file and not handled by
+    # MG.Geom, so this function allows copying the info from one fdf to another.
+    with open(from_p, "r") as f:
+        f0 = f.readlines()
+    with open(to_p, "a") as f:
+        f.writelines(filter(lambda l: l.startswith("NumberOfSpecies"), f0))
+        try:
+            start = f0.index("%block ChemicalSpeciesLabel\n")
+            end = f0.index("%endblock ChemicalSpeciesLabel\n")
+            f.writelines(f0[start:end+1])
+        except ValueError as e:
+            # There was no ChemicalSpeciesLabel in the in-file
+            pass
+
+
 #--------------------------------------------------------------------------------
 # Read systemlabel.STRUCT_OUT files
 
