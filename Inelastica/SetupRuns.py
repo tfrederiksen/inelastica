@@ -30,6 +30,7 @@ import netCDF4 as NC4
 import numpy as N
 import Inelastica.MakeGeom as MG
 import Inelastica.physics.constants as PC
+from Inelastica.io.siesta import copy_chemical_info
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -186,6 +187,9 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
     geom.writeFDF(newFCrun+'/STRUCT.fdf')
     geom.writeXYZ(newFCrun+'/STRUCT.xyz')
     geom.writeXYZ(newFCrun+'/STRUCT2.xyz', rep=[2, 2, 2])
+    if os.path.isfile(CGrun+"/STRUCT.fdf"):
+        copy_chemical_info(CGrun+"/STRUCT.fdf", newFCrun+"/STRUCT.fdf")
+
     # Prepend lines to RUN.fdf
     for elm in glob.glob(newFCrun+'/RUN.fdf'):
         if os.path.isfile(elm):
@@ -268,6 +272,9 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
     BuildOSstruct(infile, newOSrun+'/STRUCT_6.fdf', axes=[2], direction=[1], displacement=displacement)
     structfiles = ['STRUCT_1.fdf', 'STRUCT_2.fdf', 'STRUCT_3.fdf',
                    'STRUCT_4.fdf', 'STRUCT_5.fdf', 'STRUCT_6.fdf']
+    if os.path.isfile(CGrun+"/STRUCT.fdf"):
+        for struct in structfiles:
+            copy_chemical_info(CGrun+"/STRUCT.fdf", newOSrun+"/"+struct)
     inputfiles = ['RUN_1.fdf', 'RUN_2.fdf', 'RUN_3.fdf', 'RUN_4.fdf', 'RUN_5.fdf', 'RUN_6.fdf']
     # Write input files
     for i, inputfile in enumerate(inputfiles):
