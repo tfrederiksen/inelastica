@@ -403,7 +403,7 @@ def PlotElectronBands(filename, dk, elist, ticks):
     ge = XMGR.Graph(es)
     ge.SetXaxisSpecialTicks(ticks)
     ge.SetXaxis(vmax=dk[-1], majorGridlines=True)
-    ge.SetYaxis(vmin=-20, vmax=20, label='E-E\sF\N (eV)', majorUnit=5.0)
+    ge.SetYaxis(vmin=-20, vmax=20, label=r'E-E\sF\N (eV)', majorUnit=5.0)
     pe = XMGR.Plot(filename, ge)
     pe.WriteFile()
 

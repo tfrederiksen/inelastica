@@ -347,7 +347,7 @@ def writeCurrent(options, geom, Curr):
     xyz = N.array(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]])
     atomnum = geom.anr[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]]
 
-    foC = file(fn+'.curr', 'w')
+    foC = open(fn+'.curr', 'w')
     foC.write('%i\n'%(options.DeviceAtoms[1]-options.DeviceAtoms[0]+1))
 
     for ii in range(len(xyz)):
@@ -457,7 +457,7 @@ def writecube(geom, fn, YY, nx, ny, nz, origo, dstep):
     xyz = N.array(geom.xyz)
     anr = geom.anr
 
-    foR = file(fn, 'w')
+    foR = open(fn, 'w')
     foR.write('Eigenchannel wavefunction\n%s\n'%fn)
     foR.write('%i %f %f %f\n'% (len(xyz), origo[0]/PC.Bohr2Ang, origo[1]/PC.Bohr2Ang, origo[2]/PC.Bohr2Ang))
     foR.write('%i %f %f %f\n'% (nx, dstep/PC.Bohr2Ang, 0.0, 0.0))
@@ -484,7 +484,7 @@ def writemacubin(fn, YY, nx, ny, nz, origo, dstep):
     Write molekel binary format
     """
 
-    fo = file(fn, 'w')
+    fo = open(fn, 'w')
     fo.write(struct.pack('i', 36))
     xmin, xmax = origo[0], origo[0]+dstep*(nx-1)
     ymin, ymax = origo[1], origo[1]+dstep*(ny-1)
@@ -509,7 +509,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     """
     Write XSF datagrid for XCrysden
     """
-    fo = file(fn, 'w')
+    fo = open(fn, 'w')
     speciesnumber = geom.snr
     atomnumber = geom.anr
     xyz = geom.xyz
@@ -609,7 +609,7 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
             phase = Ykk/max_amp
     Y = Y/phase
 
-    foT = file(fn+'.abs.txt', 'w')
+    foT = open(fn+'.abs.txt', 'w')
     foT.write('index Atom nr   M   L abs(Y)         re(Y)        im(Y)\n')
     for ii, Yval in enumerate(Y):
         foT.write('%5.1i %3.0i %3.0i %3.1i %3.1i %1.8f %15.5e %12.5e\n'%

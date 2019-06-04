@@ -5,6 +5,7 @@ import os
 import os.path as osp
 import time
 import subprocess
+import setuptools
 
 
 def test_prereq():

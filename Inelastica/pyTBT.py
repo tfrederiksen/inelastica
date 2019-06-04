@@ -207,13 +207,13 @@ def main(options):
             thisspinlabel = outFile
         else:
             thisspinlabel = outFile+['.UP', '.DOWN'][iSpin]
-        fo = open(thisspinlabel+'.AVTRANS', 'write')
+        fo = open(thisspinlabel+'.AVTRANS', 'w')
         fo.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(mesh.type[0], mesh.Nk[0], mesh.type[1], mesh.Nk[1], options.eta, options.etaLead))
         fo.write('# E   Ttot(E)   Ti(E)(i=1-%i)   RelErrorTtot(E)\n'%options.numchan)
-        foSN = open(thisspinlabel+'.AVNOISE', 'write')
+        foSN = open(thisspinlabel+'.AVNOISE', 'w')
         foSN.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(mesh.type[0], mesh.Nk[0], mesh.type[1], mesh.Nk[1], options.eta, options.etaLead))
         foSN.write('# E   SNtot(E)   SNi(E)(i=1-%i)\n'%options.numchan)
-        foFF = open(thisspinlabel+'.FANO', 'write')
+        foFF = open(thisspinlabel+'.FANO', 'w')
         foFF.write('# Nk1(%s)=%i Nk2(%s)=%i eta=%.2e etaLead=%.2e\n'%(mesh.type[0], mesh.Nk[0], mesh.type[1], mesh.Nk[1], options.eta, options.etaLead))
         foFF.write('# E   Fano factor \n')
         # Loop over energy
@@ -273,7 +273,7 @@ def main(options):
         foFF.close()
 
         # Write k-point-resolved transmission
-        fo = open(thisspinlabel+'.TRANS', 'write')
+        fo = open(thisspinlabel+'.TRANS', 'w')
         for ik in range(mesh.NNk):
             w = mesh.w[:, ik]
             fo.write('\n\n# k = %f, %f    w = %f %f %f %f'%(mesh.k[ik, 0], mesh.k[ik, 1], w[0], w[1], w[2], w[3]))
@@ -289,7 +289,7 @@ def main(options):
         fo.close()
 
         # Write k-point-resolved shot noise
-        fo = open(thisspinlabel+'.NOISE', 'write')
+        fo = open(thisspinlabel+'.NOISE', 'w')
         for ik in range(mesh.NNk):
             w = mesh.w[:, ik]
             fo.write('\n\n# k = %f, %f    w = %f %f %f %f'%(mesh.k[ik, 0], mesh.k[ik, 1], w[0], w[1], w[2], w[3]))
@@ -363,7 +363,7 @@ def WritePDOS(fn, options, DevGF, DOS, basis):
         orb.setAttribute('l', '%i'%basis.L[io])
         orb.setAttribute('m', '%i'%basis.M[io])
         xmladd(doc, orb, 'data', myprint(DOS[:, :, ii]))
-    doc.writexml(gzip.GzipFile(fn, 'w'))
+    doc.writexml(gzip.open(fn, 'wt'))
 
     # Make plot
     atoms = list(set(basis.label))
@@ -381,7 +381,7 @@ def WritePDOS(fn, options, DevGF, DOS, basis):
             g.AddDatasets(XMGR.XYset(ee-DevGF.HS.ef, (-1)**iS*PDOS[iS], legend=name, Lwidth=2))
 
     # Set axes and write XMGR plot to file
-    g.SetXaxis(label='E-E\sF\N (eV)', autoscale=True)
+    g.SetXaxis(label=r'E-E\sF\N (eV)', autoscale=True)
     g.SetYaxis(label='DOS (1/eV/atom)', autoscale=True)
     g.SetTitle(fn, size=1.3)
     g.ShowLegend()
@@ -409,7 +409,7 @@ def WriteMPSH(fn, options, DevGF, DOS, ev0):
         mpsh.appendChild(orb)
         orb.setAttribute('index', '%i'%ii)
         xmladd(doc, orb, 'data', myprint(DOS[:, :, ii]))
-    doc.writexml(gzip.GzipFile(fn, 'w'))
+    doc.writexml(gzip.open(fn, 'wt'))
 
     # Make plot
     g = XMGR.Graph()
@@ -418,7 +418,7 @@ def WriteMPSH(fn, options, DevGF, DOS, ev0):
             g.AddDatasets(XMGR.XYset(options.Elist, (-1)**iS*DOS[iS, :, ii], legend='', Lwidth=2))
 
     # Set axes and write XMGR plot to file
-    g.SetXaxis(label='E-E\sF\N (eV)', autoscale=True)
+    g.SetXaxis(label=r'E-E\sF\N (eV)', autoscale=True)
     g.SetYaxis(label='DOS (1/eV)', autoscale=True)
     # Add MPSH eigenvalues to plot after axis scaling
     g.AddDatasets(XMGR.XYset(ev0, 0*ev0+1, Ltype=0, Stype=3))
