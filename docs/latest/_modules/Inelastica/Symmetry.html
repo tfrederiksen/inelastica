@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.Symmetry &mdash; Inelastica v1.3.5 documentation</title>
+  <title>Inelastica.Symmetry &mdash; Inelastica v1.3.6 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                v1.3.5
+                v1.3.6
               </div>
             
           
@@ -539,7 +539,7 @@
         <span class="n">whichsnr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">N</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">abundance</span><span class="p">)</span> <span class="o">==</span> <span class="n">N</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">abundance</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
 
         <span class="n">Ulist</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointU33</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a3</span>
-        <span class="n">pointU</span><span class="p">,</span>  <span class="n">pointO</span> <span class="o">=</span> <span class="p">[],</span>  <span class="p">[]</span>
+        <span class="n">pointU</span><span class="p">,</span> <span class="n">pointO</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">iU</span><span class="p">,</span> <span class="n">U</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Ulist</span><span class="p">):</span>
             <span class="n">SIO</span><span class="o">.</span><span class="n">printDone</span><span class="p">(</span><span class="n">iU</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ulist</span><span class="p">),</span> <span class="s1">&#39;Looking for point group&#39;</span><span class="p">)</span>
 
@@ -649,7 +649,7 @@
         <span class="c1"># Use least abundant atom type</span>
         <span class="c1"># Use the least common siesta atom type to find possible centers</span>
         <span class="n">abundance</span> <span class="o">=</span> <span class="p">[</span><span class="n">N</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">)</span> <span class="o">==</span> <span class="n">snr</span><span class="p">)</span> <span class="k">for</span> <span class="n">snr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">]</span>
-        <span class="n">whichsnr</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">N</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">abundance</span><span class="p">)</span> <span class="o">==</span> <span class="n">N</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">abundance</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">whichsnr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snr</span><span class="p">[</span><span class="n">N</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">abundance</span><span class="p">)</span> <span class="o">==</span> <span class="n">N</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">abundance</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
 
         <span class="c1"># Brute force ... find vectors connecting same type of atoms,</span>
         <span class="c1"># try and see if they are lattice vectors starting with shortest</span>
@@ -991,7 +991,7 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">latticeType</span> <span class="o">==</span> <span class="s1">&#39;BCC&#39;</span><span class="p">:</span>
             <span class="c1"># Table 4 - Figure 3</span>
             <span class="n">P</span> <span class="o">=</span> <span class="n">b1</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="o">+</span><span class="n">b2</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="o">+</span><span class="n">b3</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span>
-            <span class="n">NN</span><span class="o">=</span> <span class="n">b1</span><span class="o">*</span><span class="mi">0</span><span class="o">/</span><span class="mi">1</span><span class="o">+</span><span class="n">b2</span><span class="o">*</span><span class="mi">0</span><span class="o">/</span><span class="mi">1</span><span class="o">+</span><span class="n">b3</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span>
+            <span class="n">NN</span> <span class="o">=</span> <span class="n">b1</span><span class="o">*</span><span class="mi">0</span><span class="o">/</span><span class="mi">1</span><span class="o">+</span><span class="n">b2</span><span class="o">*</span><span class="mi">0</span><span class="o">/</span><span class="mi">1</span><span class="o">+</span><span class="n">b3</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span>
             <span class="n">H</span> <span class="o">=</span> <span class="n">b1</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="n">b2</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="n">b3</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="p">[[</span><span class="n">G</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">H</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">G</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">NN</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">H</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">]]</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">latticeType</span> <span class="o">==</span> <span class="s1">&#39;HEX&#39;</span><span class="p">:</span>
@@ -1243,7 +1243,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v1.3.5',
+            VERSION:'v1.3.6',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -1254,7 +1254,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

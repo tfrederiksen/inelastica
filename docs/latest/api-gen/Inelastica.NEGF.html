@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.NEGF &mdash; Inelastica v1.3.5 documentation</title>
+  <title>Inelastica.NEGF &mdash; Inelastica v1.3.6 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                v1.3.5
+                v1.3.6
               </div>
             
           
@@ -189,7 +189,7 @@
             
   <span class="target" id="module-Inelastica.NEGF"></span><div class="section" id="inelastica-negf">
 <h1><a class="reference internal" href="#module-Inelastica.NEGF" title="Inelastica.NEGF"><code class="xref py py-mod docutils literal"><span class="pre">Inelastica.NEGF</span></code></a><a class="headerlink" href="#inelastica-negf" title="Permalink to this headline">¶</a></h1>
-<p>Non-Equilibrium Green&#8217;s function</p>
+<p>Non-Equilibrium Green’s function</p>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="longtable docutils">
@@ -204,10 +204,10 @@
 <tr class="row-even"><td><a class="reference internal" href="#Inelastica.NEGF.SavedSigClass" title="Inelastica.NEGF.SavedSigClass"><code class="xref py py-obj docutils literal"><span class="pre">SavedSigClass</span></code></a>()</td>
 <td>Saves calculated Sig in files in the directory of the TSHS file for the electrode.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.NEGF.ElectrodeSelfEnergy" title="Inelastica.NEGF.ElectrodeSelfEnergy"><code class="xref py py-obj docutils literal"><span class="pre">ElectrodeSelfEnergy</span></code></a>(fn,&nbsp;NA1,&nbsp;NA2[,&nbsp;voltage,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.NEGF.ElectrodeSelfEnergy" title="Inelastica.NEGF.ElectrodeSelfEnergy"><code class="xref py py-obj docutils literal"><span class="pre">ElectrodeSelfEnergy</span></code></a>(fn,&nbsp;NA1,&nbsp;NA2[,&nbsp;voltage,&nbsp;…])</td>
 <td>Calculate surface Greens function and self energy</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Inelastica.NEGF.GF" title="Inelastica.NEGF.GF"><code class="xref py py-obj docutils literal"><span class="pre">GF</span></code></a>(TSHSfile,&nbsp;elecL,&nbsp;elecR[,&nbsp;Bulk,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="#Inelastica.NEGF.GF" title="Inelastica.NEGF.GF"><code class="xref py py-obj docutils literal"><span class="pre">GF</span></code></a>(TSHSfile,&nbsp;elecL,&nbsp;elecR[,&nbsp;Bulk,&nbsp;…])</td>
 <td></td>
 </tr>
 </tbody>
@@ -222,7 +222,7 @@
 <em class="property">class </em><code class="descclassname">Inelastica.NEGF.</code><code class="descname">ElectrodeSelfEnergy</code><span class="sig-paren">(</span><em>fn</em>, <em>NA1</em>, <em>NA2</em>, <em>voltage=0.0</em>, <em>UseF90helpers=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/NEGF.html#ElectrodeSelfEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.NEGF.ElectrodeSelfEnergy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <p>Calculate surface Greens function and self energy
-(should probably be renamed selfEnergy ...)
+(should probably be renamed selfEnergy …)
 For spinpolarized use the ispin given, for nonpolarized use
 the same self-energy for both spin</p>
 <dl class="method">
@@ -242,13 +242,13 @@ Coded by Nick Papior Andersen</p>
 <dt id="Inelastica.NEGF.ElectrodeSelfEnergy.calcg0_old">
 <code class="descname">calcg0_old</code><span class="sig-paren">(</span><em>ee</em>, <em>ispin=0</em>, <em>left=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/NEGF.html#ElectrodeSelfEnergy.calcg0_old"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.NEGF.ElectrodeSelfEnergy.calcg0_old" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only used if SciPy is not installed!
-For the left surface Green&#8217;s function  (1 is surface layer, 0 is all the other atoms):
+For the left surface Green’s function  (1 is surface layer, 0 is all the other atoms):
 (E S00-H00  E S01-H01)   (g00 g01)    ( I 0 )
 (E S10-H10  E S11-H11) * (g01 g11)  = ( 0 I ) -&gt;
-call E S - H for t ...</p>
+call E S - H for t …</p>
 <p>t00 g01 + t01 g11 = 0  -&gt; g01 = - t00^-1 t01 g11
 t10 g01 + t11 g11 = I -&gt; - t10 t00^-1 t01 g11 + t11 g11 = I -&gt;</p>
-<p>And we get the surface Green&#8217;s function:</p>
+<p>And we get the surface Green’s function:</p>
 <p>g11 = (t11 - t10 t00^-1 t01)^-1 with the right size of unitcell t00^-1 = g11!
 g11 = (E S11 - H11 - (E S10 - H10) g11 (E S01 - H01))^-1</p>
 <p>In the calculations H01^+ and S01^+ are used instead of S10 and H10.
@@ -256,7 +256,7 @@ g11 = (E S11 - H11 - (E S10 - H10) g11 (E S01 - H01))^-1</p>
 <p>For the right surface greens function same but different order on the MM.daggers!
 i.e., (E S - H - (E S01 - H01) gs (E S01^+ -H01^+)</p>
 <p>Algorith: Lopez Sancho*2 J Phys F:Met Phys 15 (1985) 851</p>
-<p>I&#8217;m still very suspicios of this algorithm ... but it works and is really quick!
+<p>I’m still very suspicios of this algorithm … but it works and is really quick!
 The convergence is always checked against gs (E S - H - (E S01^+ - H01^+) gs (E S01 -H01) ) = I!</p>
 </dd></dl>
 
@@ -266,8 +266,8 @@ The convergence is always checked against gs (E S - H - (E S01^+ - H01^+) gs (E 
 <dd><p>Get self-energy for specified 2-D surface k-point
 Copy out g0 (surface greens function for smaller electrode calculation)
 onto NA1*NA2*nuo matrix with the idiotic (TS) orbital order
-a1(0,0) a1(1,0) .. a1(0,1) a1(1,1) ...... a2(0,0)
-Where a1, a2 ... are the atoms in the electrode calculation
+a1(0,0) a1(1,0) .. a1(0,1) a1(1,1) …… a2(0,0)
+Where a1, a2 … are the atoms in the electrode calculation
 and (0,0) (1,0) indicate the replicating position.</p>
 <p>This gives self-energy from the solution of:
 Gs = (E S - H -Sigma)^-1 for Sigma</p>
@@ -284,8 +284,8 @@ The voltage is assumed to be applied symmetrically and just shifts the energies 
 <dt id="Inelastica.NEGF.ElectrodeSelfEnergy.setupHS">
 <code class="descname">setupHS</code><span class="sig-paren">(</span><em>kpoint</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/NEGF.html#ElectrodeSelfEnergy.setupHS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.NEGF.ElectrodeSelfEnergy.setupHS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup H, S, H01 and S01 where H01 has large elements in the lower left corner, i.e., H01 = Hi,i+1
-(... 0     H01^+ H     H01   0      ...  )
-(... 0     0     H01^+ H     H01    0      ...  )</p>
+(… 0     H01^+ H     H01   0      …  )
+(… 0     0     H01^+ H     H01    0      …  )</p>
 </dd></dl>
 
 </dd></dl>
@@ -436,7 +436,7 @@ Uses SpectralMatrix format for the spectralfunction matrices, see Inelastica.mat
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'v1.3.5',
+            VERSION:'v1.3.6',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -447,7 +447,7 @@ Uses SpectralMatrix format for the spectralfunction matrices, see Inelastica.mat
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.SetupRuns &mdash; Inelastica v1.3.5 documentation</title>
+  <title>Inelastica.SetupRuns &mdash; Inelastica v1.3.6 documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                v1.3.5
+                v1.3.6
               </div>
             
           
@@ -241,7 +241,7 @@ to create all the other calculation directories needed.</p>
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...] will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…] will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -280,14 +280,14 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.SetupRuns.SetupFCrun">
-<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SetupFCrun</code><span class="sig-paren">(</span><em>CGrun</em>, <em>newFCrun</em>, <em>FCfirst</em>, <em>FClast</em>, <em>displacement=0.02</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupFCrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SetupFCrun" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SetupFCrun</code><span class="sig-paren">(</span><em>CGrun</em>, <em>newFCrun</em>, <em>FCfirst</em>, <em>FClast</em>, <em>displacement=0.02</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em>, <em>main_fdf='RUN.fdf'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupFCrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SetupFCrun" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>CGrun <span class="classifier-delimiter">:</span> <span class="classifier">Path+foldername to a relaxed structure CGrun folder on</span></dt>
 <dd>which to perform a FCrun calculation. This folder must
@@ -304,7 +304,7 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -314,7 +314,7 @@ any JOBNAME string with newjobname)</div></blockquote>
 <code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SetupInelastica</code><span class="sig-paren">(</span><em>templateInelastica</em>, <em>newInelastica</em>, <em>TSrun</em>, <em>templateInputFile</em>, <em>newInputFilename</em>, <em>PhononNCfile</em>, <em>kPoints=1</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupInelastica"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SetupInelastica" title="Permalink to this definition">¶</a></dt>
 <dd><p>templateInelastica   : Path+foldername to the latest version of Inelastica
 newInelastica        : Path+foldername for the Inelastica folder to be created
-TSrun                : Path+foldername to the TSrun where TBTRANS outputs &#8216;HSSigmaLR.nc&#8217;
+TSrun                : Path+foldername to the TSrun where TBTRANS outputs ‘HSSigmaLR.nc’
 templateInputFile    : Path+filename to an Inelastica input file which holds all</p>
 <blockquote>
 <div>input variables except for the references to
@@ -334,14 +334,14 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.SetupRuns.SetupOSrun">
-<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SetupOSrun</code><span class="sig-paren">(</span><em>CGrun</em>, <em>newOSrun</em>, <em>displacement=0.02</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupOSrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SetupOSrun" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.SetupRuns.</code><code class="descname">SetupOSrun</code><span class="sig-paren">(</span><em>CGrun</em>, <em>newOSrun</em>, <em>displacement=0.02</em>, <em>main_fdf='RUN.fdf'</em>, <em>overwrite=False</em>, <em>PBStemplate=None</em>, <em>PBSsubs=None</em>, <em>submitJob=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/SetupRuns.html#SetupOSrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.SetupRuns.SetupOSrun" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>CGrun <span class="classifier-delimiter">:</span> <span class="classifier">Path+foldername to a relaxed structure CGrun folder on</span></dt>
 <dd>which to run an onlyS calculation. This folder must
@@ -356,7 +356,7 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -384,7 +384,7 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -435,7 +435,7 @@ overwrite            : (True/False) Specifies if one is allowed to write in exis
 PBSsubs              : A list of string substitutions to be applied to the template</p>
 <blockquote>
 <div>PBS script in order to generate a new PBS script
-(e.g., PBSsubs=[[&#8216;JOBNAME&#8217;,&#8217;newjobname&#8217;],...]&#8217; will replace
+(e.g., PBSsubs=[[‘JOBNAME’,’newjobname’],…]’ will replace
 any JOBNAME string with newjobname)</div></blockquote>
 <p>submitJob            : (True/False) Submit to batch queue via qsub command?</p>
 </dd></dl>
@@ -509,7 +509,7 @@ any JOBNAME string with newjobname)</div></blockquote>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'v1.3.5',
+            VERSION:'v1.3.6',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -520,7 +520,7 @@ any JOBNAME string with newjobname)</div></blockquote>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

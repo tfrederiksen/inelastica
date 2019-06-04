@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.NEGF &mdash; Inelastica v1.3.5 documentation</title>
+  <title>Inelastica.NEGF &mdash; Inelastica v1.3.6 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                v1.3.5
+                v1.3.6
               </div>
             
           
@@ -318,7 +318,7 @@
 
 <div class="viewcode-block" id="SigDir.close"><a class="viewcode-back" href="../../api-gen/Inelastica.NEGF.html#Inelastica.NEGF.SigDir.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">newFile</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">newFile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;Done&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;One&#39;</span><span class="p">,))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">newFile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;Done&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;One&#39;</span><span class="p">,))</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
 
@@ -704,7 +704,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">elecL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elecR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Bulk</span> <span class="o">=</span> <span class="n">elecL</span><span class="p">,</span> <span class="n">elecR</span><span class="p">,</span> <span class="n">Bulk</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">HS</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">HS</span><span class="p">(</span><span class="n">TSHSfile</span><span class="p">,</span> <span class="n">BufferAtoms</span><span class="o">=</span><span class="n">BufferAtoms</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;GF: UseBulk=&#39;</span><span class="p">,</span> <span class="n">Bulk</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">DeviceAtoms</span><span class="o">=</span><span class="n">DeviceAtoms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DeviceAtoms</span> <span class="o">=</span> <span class="n">DeviceAtoms</span>
         <span class="k">if</span> <span class="n">DeviceAtoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">DeviceAtoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">FoldedL</span> <span class="o">=</span> <span class="bp">False</span>
@@ -1085,7 +1085,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v1.3.5',
+            VERSION:'v1.3.6',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -1096,7 +1096,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

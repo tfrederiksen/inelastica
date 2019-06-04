@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.SetupRuns &mdash; Inelastica v1.3.5 documentation</title>
+  <title>Inelastica.SetupRuns &mdash; Inelastica v1.3.6 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                v1.3.5
+                v1.3.6
               </div>
             
           
@@ -185,7 +185,6 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 
 <span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">string</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
@@ -194,6 +193,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">Inelastica.MakeGeom</span> <span class="kn">as</span> <span class="nn">MG</span>
 <span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
+<span class="kn">from</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">import</span> <span class="n">copy_chemical_info</span>
 
 
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
@@ -250,7 +250,7 @@
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">SetupRuns.SetupCGrun: </span><span class="si">%s</span><span class="s1"> already exists. OVERWRITING FILES!!!&#39;</span>\
               <span class="o">%</span><span class="n">newCGrun</span><span class="p">)</span>
     <span class="c1"># Copy template files</span>
-    <span class="n">CopyInputFiles</span><span class="p">(</span><span class="n">templateCGrun</span><span class="p">,</span> <span class="n">newCGrun</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.vps&#39;</span><span class="p">,</span> <span class="s1">&#39;.psf&#39;</span><span class="p">,</span> <span class="s1">&#39;pbs&#39;</span><span class="p">])</span>
+    <span class="n">CopyInputFiles</span><span class="p">(</span><span class="n">templateCGrun</span><span class="p">,</span> <span class="n">newCGrun</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.vps&#39;</span><span class="p">,</span> <span class="s1">&#39;.psf&#39;</span><span class="p">,</span> <span class="s1">&#39;pbs&#39;</span><span class="p">,</span> <span class="s1">&#39;.TSHS&#39;</span><span class="p">])</span>
     <span class="c1"># Read relaxed geometry</span>
     <span class="n">XVfiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">templateCGrun</span><span class="o">+</span><span class="s1">&#39;/*.XV*&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -302,7 +302,8 @@
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="SetupFCrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.SetupFCrun">[docs]</a><span class="k">def</span> <span class="nf">SetupFCrun</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">newFCrun</span><span class="p">,</span> <span class="n">FCfirst</span><span class="p">,</span> <span class="n">FClast</span><span class="p">,</span> <span class="n">displacement</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
-               <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">PBStemplate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">submitJob</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+               <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">PBStemplate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">submitJob</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+               <span class="n">main_fdf</span><span class="o">=</span><span class="s2">&quot;RUN.fdf&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    CGrun                : Path+foldername to a relaxed structure CGrun folder on</span>
 <span class="sd">                              which to perform a FCrun calculation. This folder must</span>
@@ -332,7 +333,7 @@
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">SetupRuns.SetupFCrun: </span><span class="si">%s</span><span class="s1"> already exists. OVERWRITING FILES!!!&#39;</span>\
               <span class="o">%</span><span class="n">newFCrun</span><span class="p">)</span>
     <span class="c1"># Copy template files</span>
-    <span class="n">CopyInputFiles</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">newFCrun</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.vps&#39;</span><span class="p">,</span> <span class="s1">&#39;.psf&#39;</span><span class="p">,</span> <span class="s1">&#39;.DM&#39;</span><span class="p">,</span> <span class="s1">&#39;.XV&#39;</span><span class="p">,</span> <span class="s1">&#39;.pbs&#39;</span><span class="p">,</span> <span class="s1">&#39;.TSDE&#39;</span><span class="p">])</span>
+    <span class="n">CopyInputFiles</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">newFCrun</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.vps&#39;</span><span class="p">,</span> <span class="s1">&#39;.psf&#39;</span><span class="p">,</span> <span class="s1">&#39;.DM&#39;</span><span class="p">,</span> <span class="s1">&#39;.XV&#39;</span><span class="p">,</span> <span class="s1">&#39;.pbs&#39;</span><span class="p">,</span> <span class="s1">&#39;.TSDE&#39;</span><span class="p">,</span> <span class="s1">&#39;.TSHS&#39;</span><span class="p">])</span>
     <span class="c1"># Read relaxed geometry and overwrite STRUCT files</span>
     <span class="n">XVfiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">CGrun</span><span class="o">+</span><span class="s1">&#39;/*.XV*&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">XVfiles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -350,23 +351,29 @@
     <span class="n">geom</span><span class="o">.</span><span class="n">writeFDF</span><span class="p">(</span><span class="n">newFCrun</span><span class="o">+</span><span class="s1">&#39;/STRUCT.fdf&#39;</span><span class="p">)</span>
     <span class="n">geom</span><span class="o">.</span><span class="n">writeXYZ</span><span class="p">(</span><span class="n">newFCrun</span><span class="o">+</span><span class="s1">&#39;/STRUCT.xyz&#39;</span><span class="p">)</span>
     <span class="n">geom</span><span class="o">.</span><span class="n">writeXYZ</span><span class="p">(</span><span class="n">newFCrun</span><span class="o">+</span><span class="s1">&#39;/STRUCT2.xyz&#39;</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">CGrun</span><span class="o">+</span><span class="s2">&quot;/STRUCT.fdf&quot;</span><span class="p">):</span>
+        <span class="n">copy_chemical_info</span><span class="p">(</span><span class="n">CGrun</span><span class="o">+</span><span class="s2">&quot;/STRUCT.fdf&quot;</span><span class="p">,</span> <span class="n">newFCrun</span><span class="o">+</span><span class="s2">&quot;/STRUCT.fdf&quot;</span><span class="p">)</span>
+
     <span class="c1"># Prepend lines to RUN.fdf</span>
-    <span class="k">for</span> <span class="n">elm</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">newFCrun</span><span class="o">+</span><span class="s1">&#39;/RUN.fdf&#39;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">elm</span><span class="p">):</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;SetupRuns.SetupFCrun: Modifying </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">elm</span><span class="p">)</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">elm</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">elm</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;### Lines appended </span><span class="si">%s</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">())</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MD.TypeOfRun  FC</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MD.FCfirst   </span><span class="si">%i</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">FCfirst</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MD.FClast    </span><span class="si">%i</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">FClast</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TS.HS.Save True</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TS.SaveHS    True</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MD.FCDispl   </span><span class="si">%.8f</span><span class="s1"> Ang</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">displacement</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">elm</span> <span class="o">=</span> <span class="n">newFCrun</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">main_fdf</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">elm</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;SetupRuns.SetupFCrun: Modifying </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">elm</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">elm</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">elm</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;### Lines appended </span><span class="si">%s</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">())</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MD.TypeOfRun  FC</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MD.FCfirst   </span><span class="si">%i</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">FCfirst</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MD.FClast    </span><span class="si">%i</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">FClast</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TS.HS.Save True</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TS.SaveHS    True</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MD.FCDispl   </span><span class="si">%.8f</span><span class="s1"> Ang</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">displacement</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;{} was not found, so it cannot be edited.&quot;</span>
+              <span class="s2">&quot;Rerun with main_fdf set correctly.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">elm</span><span class="p">))</span>
     <span class="c1"># PBS files</span>
     <span class="n">MakePBS</span><span class="p">(</span><span class="n">PBStemplate</span><span class="p">,</span> <span class="n">newFCrun</span><span class="o">+</span><span class="s1">&#39;/RUN.pbs&#39;</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="p">,</span> <span class="n">submitJob</span><span class="p">,</span> <span class="n">rtype</span><span class="o">=</span><span class="s1">&#39;TS&#39;</span><span class="p">)</span></div>
 
@@ -375,7 +382,7 @@
 <span class="c1">#                                          SetupOSrun</span>
 <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="SetupOSrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.SetupOSrun">[docs]</a><span class="k">def</span> <span class="nf">SetupOSrun</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">newOSrun</span><span class="p">,</span> <span class="n">displacement</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+<div class="viewcode-block" id="SetupOSrun"><a class="viewcode-back" href="../../api-gen/Inelastica.SetupRuns.html#Inelastica.SetupRuns.SetupOSrun">[docs]</a><span class="k">def</span> <span class="nf">SetupOSrun</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">newOSrun</span><span class="p">,</span> <span class="n">displacement</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">main_fdf</span><span class="o">=</span><span class="s2">&quot;RUN.fdf&quot;</span><span class="p">,</span>
                <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">PBStemplate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">PBSsubs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">submitJob</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    CGrun                : Path+foldername to a relaxed structure CGrun folder on</span>
@@ -406,7 +413,7 @@
     <span class="c1"># Copy files from CGrun</span>
     <span class="n">CopyInputFiles</span><span class="p">(</span><span class="n">CGrun</span><span class="p">,</span> <span class="n">newOSrun</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.vps&#39;</span><span class="p">,</span> <span class="s1">&#39;.psf&#39;</span><span class="p">])</span>
     <span class="c1"># Read original RUN.fdf file</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/RUN.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">newOSrun</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">main_fdf</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="c1"># Read relaxed geometry</span>
@@ -422,7 +429,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;No XV file was found in folder </span><span class="si">%s</span><span class="s1">:&#39;</span><span class="o">%</span><span class="n">CGrun</span><span class="p">)</span>
         <span class="nb">input</span><span class="p">(</span><span class="s1">&#39;   ... Continue reading geometry from RUN.fdf?&#39;</span><span class="p">)</span>
-        <span class="n">infile</span> <span class="o">=</span> <span class="n">CGrun</span><span class="o">+</span><span class="s1">&#39;/RUN.fdf&#39;</span>
+        <span class="n">infile</span> <span class="o">=</span> <span class="n">CGrun</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">main_fdf</span>
     <span class="c1"># Multiply structure</span>
     <span class="n">BuildOSstruct</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/STRUCT_1.fdf&#39;</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">displacement</span><span class="o">=</span><span class="n">displacement</span><span class="p">)</span>
     <span class="n">BuildOSstruct</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/STRUCT_2.fdf&#39;</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">displacement</span><span class="o">=</span><span class="n">displacement</span><span class="p">)</span>
@@ -432,16 +439,22 @@
     <span class="n">BuildOSstruct</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/STRUCT_6.fdf&#39;</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">displacement</span><span class="o">=</span><span class="n">displacement</span><span class="p">)</span>
     <span class="n">structfiles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;STRUCT_1.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;STRUCT_2.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;STRUCT_3.fdf&#39;</span><span class="p">,</span>
                    <span class="s1">&#39;STRUCT_4.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;STRUCT_5.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;STRUCT_6.fdf&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">CGrun</span><span class="o">+</span><span class="s2">&quot;/STRUCT.fdf&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">struct</span> <span class="ow">in</span> <span class="n">structfiles</span><span class="p">:</span>
+            <span class="n">copy_chemical_info</span><span class="p">(</span><span class="n">CGrun</span><span class="o">+</span><span class="s2">&quot;/STRUCT.fdf&quot;</span><span class="p">,</span> <span class="n">newOSrun</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">struct</span><span class="p">)</span>
     <span class="n">inputfiles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;RUN_1.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_2.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_3.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_4.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_5.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;RUN_6.fdf&#39;</span><span class="p">]</span>
     <span class="c1"># Write input files</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">inputfile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputfiles</span><span class="p">):</span>
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;SetupRuns.SetupOSrun: Writing </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">inputfile</span><span class="p">))</span>
         <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">((</span><span class="n">newOSrun</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">inputfile</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;### Lines written </span><span class="si">%s</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">())</span>
+        <span class="c1"># Ensure we don&#39;t get lua errors...</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;MD.TypeOfRun CG&quot;</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
         <span class="c1">#f.write(&#39;MD.NumCGSteps 0\n&#39;)</span>
         <span class="c1">#f.write(&#39;DM.NumberPulay 0 \n&#39;)</span>
         <span class="c1">#f.write(&#39;MPN.onlyS .true.\n\n&#39;)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TS.onlyS .true.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TS.S.save true</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SystemName STRUCT_</span><span class="si">%i</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SystemLabel STRUCT_</span><span class="si">%i</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%i</span><span class="s1">nclude &#39;</span><span class="o">+</span><span class="s1">&#39;./STRUCT_</span><span class="si">%i</span><span class="s1">.fdf</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
@@ -1005,9 +1018,9 @@
 
     <span class="c1"># Make default job name</span>
     <span class="n">fullPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">PBSout</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">last2dir</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fullPath</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="n">last2dir</span> <span class="o">=</span> <span class="n">fullPath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
     <span class="k">try</span><span class="p">:</span> <span class="c1"># Check for numbers at start ... not liked by PBS</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">last2dir</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">last2dir</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span>
         <span class="n">last2dir</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="o">+</span><span class="n">last2dir</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -1063,7 +1076,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v1.3.5',
+            VERSION:'v1.3.6',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -1074,7 +1087,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

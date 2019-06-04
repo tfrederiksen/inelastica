@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.STM &mdash; Inelastica v1.3.5 documentation</title>
+  <title>Inelastica.STM &mdash; Inelastica v1.3.6 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                v1.3.5
+                v1.3.6
               </div>
             
           
@@ -224,10 +224,10 @@ averaged STM image and the STM images of individual k points are saved in
 <dt id="Inelastica.STM.calcWF2">
 <code class="descclassname">Inelastica.STM.</code><code class="descname">calcWF2</code><span class="sig-paren">(</span><em>options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=None, fn=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/STM.html#calcWF2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.STM.calcWF2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate wavefunction on real space mesh with optional folding
-of the periodic boundary conditions. If Fold==True the vectors &#8216;a&#8217;
+of the periodic boundary conditions. If Fold==True the vectors ‘a’
 will be choosen to be the periodic boundary condition vectors and
 the real space wavefunction folded into the cell using the k-vector.
-If Folded==False, you can choose any &#8216;a&#8217; but folding by the PBC will
+If Folded==False, you can choose any ‘a’ but folding by the PBC will
 not be done.
 Note: Folding assumes coupling only between N.N. cells</p>
 <dl class="docutils">
@@ -243,7 +243,7 @@ NN          : [N1,N2,N3,minN3,maxN3] number of points along [a1, a2, a3]</p>
 k           : k-vector to use for folding [-0.5,0.5]
 a           : if Fold==True, uses geom.pbc, if false: [a1, a2, a3]</p>
 <blockquote class="last">
-<div>along these directions, i.e., da1=a1/N1 ...</div></blockquote>
+<div>along these directions, i.e., da1=a1/N1 …</div></blockquote>
 </dd>
 </dl>
 <p>RETURNS:
@@ -303,7 +303,7 @@ YY : complex wavefunction as N1, N2, N3 matrix</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'v1.3.5',
+            VERSION:'v1.3.6',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -314,7 +314,7 @@ YY : complex wavefunction as N1, N2, N3 matrix</p>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

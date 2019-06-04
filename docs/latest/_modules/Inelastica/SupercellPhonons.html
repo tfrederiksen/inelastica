@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.SupercellPhonons &mdash; Inelastica v1.3.5 documentation</title>
+  <title>Inelastica.SupercellPhonons &mdash; Inelastica v1.3.6 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                v1.3.5
+                v1.3.6
               </div>
             
           
@@ -378,7 +378,7 @@
             <span class="n">ev</span><span class="p">[</span><span class="n">ispin</span><span class="p">],</span> <span class="n">evec</span><span class="p">[</span><span class="n">ispin</span><span class="p">]</span> <span class="o">=</span> <span class="n">SLA</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h0_k</span><span class="p">[</span><span class="n">ispin</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">s0_k</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span></div>
 
-<div class="viewcode-block" id="Supercell_DynamicalMatrix.ReadGradients"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ReadGradients">[docs]</a>    <span class="k">def</span> <span class="nf">ReadGradients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">AbsEref</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Supercell_DynamicalMatrix.ReadGradients"><a class="viewcode-back" href="../../api-gen/Inelastica.SupercellPhonons.html#Inelastica.SupercellPhonons.Supercell_DynamicalMatrix.ReadGradients">[docs]</a>    <span class="k">def</span> <span class="nf">ReadGradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Read in gradients once into memory (in the full supercell basis)</span>
         <span class="c1"># No folding yet onto k and q</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dH</span> <span class="o">=</span> <span class="p">{}</span>
@@ -857,7 +857,7 @@
 
     <span class="c1"># Compute e-ph couplings</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">kfile</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">qfile</span><span class="p">:</span>
-        <span class="n">SCDM</span><span class="o">.</span><span class="n">ReadGradients</span><span class="p">(</span><span class="n">AbsEref</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">SCDM</span><span class="o">.</span><span class="n">ReadGradients</span><span class="p">()</span>
         <span class="n">ncf</span> <span class="o">=</span> <span class="n">NC4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">DestDir</span><span class="o">+</span><span class="s1">&#39;/EPH.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;kpts&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">kpts</span><span class="p">))</span>
         <span class="n">ncf</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;qpts&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">qpts</span><span class="p">))</span>
@@ -937,7 +937,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v1.3.5',
+            VERSION:'v1.3.6',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -948,7 +948,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.EigenChannels &mdash; Inelastica v1.3.5 documentation</title>
+  <title>Inelastica.EigenChannels &mdash; Inelastica v1.3.6 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                v1.3.5
+                v1.3.6
               </div>
             
           
@@ -197,7 +197,6 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span> <span class="kn">as</span> <span class="nn">NC4</span>
-<span class="kn">import</span> <span class="nn">string</span>
 <span class="kn">import</span> <span class="nn">struct</span>
 <span class="kn">import</span> <span class="nn">Inelastica.physics.constants</span> <span class="kn">as</span> <span class="nn">PC</span>
 <span class="kn">import</span> <span class="nn">Inelastica.misc.valuecheck</span> <span class="kn">as</span> <span class="nn">VC</span>
@@ -568,11 +567,16 @@
     <span class="n">varAbsSq</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;Abs-sqr-Psi&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;nx&#39;</span><span class="p">,</span> <span class="s1">&#39;ny&#39;</span><span class="p">,</span> <span class="s1">&#39;nz&#39;</span><span class="p">))</span>
     <span class="n">varAbsSq</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">YY</span><span class="p">))</span>
 
-    <span class="n">vardstep</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;dstep&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;number&#39;</span><span class="p">,))</span>
+    <span class="n">vardstep</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;dstep&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="p">))</span>
     <span class="n">vardstep</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">dstep</span>
+    <span class="n">vardstep</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Ang&#39;</span>
 
-    <span class="n">vargeom</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;xyz&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;natoms&#39;</span><span class="p">,</span> <span class="s1">&#39;naxes&#39;</span><span class="p">))</span>
-    <span class="c1"># OpenDX needs float for positions</span>
+    <span class="n">varorigo</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;origo&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;naxes&#39;</span><span class="p">,</span> <span class="p">))</span>
+    <span class="n">varorigo</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">origo</span>
+    <span class="n">varorigo</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Ang&#39;</span>
+
+    <span class="c1"># Old stuff for OpenDX visualization</span>
+    <span class="n">vargeom</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;xyz-dx&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;natoms&#39;</span><span class="p">,</span> <span class="s1">&#39;naxes&#39;</span><span class="p">))</span>
     <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">)):</span>
         <span class="n">tmp2</span> <span class="o">=</span> <span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">origo</span><span class="p">)</span><span class="o">/</span><span class="n">dstep</span>
@@ -580,13 +584,23 @@
                     <span class="nb">float</span><span class="p">(</span><span class="n">tmp2</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
                     <span class="nb">float</span><span class="p">(</span><span class="n">tmp2</span><span class="p">[</span><span class="mi">2</span><span class="p">])])</span>
     <span class="n">vargeom</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">tmp</span>
+    <span class="n">vargeom</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;(xyz-origo)/dstep&#39;</span>
+
+    <span class="c1"># Absolute coordiates of atoms and cell</span>
+    <span class="n">vargeom</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;xyz&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;natoms&#39;</span><span class="p">,</span> <span class="s1">&#39;naxes&#39;</span><span class="p">))</span>
+    <span class="n">vargeom</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">xyz</span>
+    <span class="n">vargeom</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Ang&#39;</span>
+
+    <span class="n">varcell</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;cell&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;naxes&#39;</span><span class="p">,</span> <span class="s1">&#39;naxes&#39;</span><span class="p">))</span>
+    <span class="n">varcell</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">pbc</span>
+    <span class="n">varcell</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Ang&#39;</span>
 
     <span class="n">varanr</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;anr&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;natoms&#39;</span><span class="p">,))</span>
     <span class="n">varanr</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">anr</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
 
     <span class="c1"># Set attributes</span>
-    <span class="nb">setattr</span><span class="p">(</span><span class="n">varanr</span><span class="p">,</span> <span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="s1">&#39;anr&#39;</span><span class="p">)</span>
-    <span class="nb">setattr</span><span class="p">(</span><span class="n">varanr</span><span class="p">,</span> <span class="s1">&#39;positions&#39;</span><span class="p">,</span> <span class="s1">&#39;xyz&#39;</span><span class="p">)</span>
+    <span class="c1">#setattr(varanr, &#39;field&#39;, &#39;anr&#39;)</span>
+    <span class="c1">#setattr(varanr, &#39;positions&#39;, &#39;xyz&#39;)</span>
 
     <span class="c1">#setattr(varRe,&#39;field&#39;,&#39;Re-Psi&#39;)</span>
     <span class="c1">#setattr(varRe,&#39;positions&#39;,&#39;grid, compact&#39;)</span>
@@ -673,7 +687,7 @@
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numberOfAtoms</span><span class="p">):</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;   </span><span class="si">%i</span><span class="s1">  &#39;</span> <span class="o">%</span><span class="n">atomnumber</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-            <span class="n">line</span> <span class="o">+=</span> <span class="n">string</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%.9f</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
         <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="c1">#Write the datagrid</span>
@@ -759,10 +773,10 @@
     <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="o">/</span><span class="n">phase</span>
 
     <span class="n">foT</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">fn</span><span class="o">+</span><span class="s1">&#39;.abs.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-    <span class="n">foT</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Atom nr M L abs(Y)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">foT</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;index Atom nr   M   L abs(Y)         re(Y)        im(Y)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">Yval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Y</span><span class="p">):</span>
-        <span class="n">foT</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%3.0i</span><span class="s1"> </span><span class="si">%3.0i</span><span class="s1"> </span><span class="si">%3.1i</span><span class="s1"> </span><span class="si">%3.1i</span><span class="s1"> </span><span class="si">%1.8f</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span>
-        <span class="p">(</span><span class="n">basis</span><span class="o">.</span><span class="n">ii</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">basis</span><span class="o">.</span><span class="n">atomnum</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">basis</span><span class="o">.</span><span class="n">M</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">basis</span><span class="o">.</span><span class="n">L</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Yval</span><span class="p">)))</span>
+        <span class="n">foT</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%5.1i</span><span class="s1"> </span><span class="si">%3.0i</span><span class="s1"> </span><span class="si">%3.0i</span><span class="s1"> </span><span class="si">%3.1i</span><span class="s1"> </span><span class="si">%3.1i</span><span class="s1"> </span><span class="si">%1.8f</span><span class="s1"> </span><span class="si">%15.5e</span><span class="s1"> </span><span class="si">%12.5e</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span>
+        <span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="n">basis</span><span class="o">.</span><span class="n">ii</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">basis</span><span class="o">.</span><span class="n">atomnum</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">basis</span><span class="o">.</span><span class="n">M</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">basis</span><span class="o">.</span><span class="n">L</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Yval</span><span class="p">),</span> <span class="n">Yval</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">Yval</span><span class="o">.</span><span class="n">imag</span><span class="p">))</span>
     <span class="n">foT</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="n">YY</span><span class="p">,</span> <span class="n">dstep</span><span class="p">,</span> <span class="n">origo</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="n">calcWF</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">geom</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
@@ -834,7 +848,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v1.3.5',
+            VERSION:'v1.3.6',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -845,7 +859,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
