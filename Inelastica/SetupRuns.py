@@ -139,7 +139,8 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
 # -----------------------------------------------------------------------------------------------------
 
 def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
-               overwrite=False, PBStemplate=None, PBSsubs=None, submitJob=False):
+               overwrite=False, PBStemplate=None, PBSsubs=None, submitJob=False,
+               main_fdf="RUN.fdf"):
     """
     CGrun                : Path+foldername to a relaxed structure CGrun folder on
                               which to perform a FCrun calculation. This folder must
@@ -191,22 +192,25 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
         copy_chemical_info(CGrun+"/STRUCT.fdf", newFCrun+"/STRUCT.fdf")
 
     # Prepend lines to RUN.fdf
-    for elm in glob.glob(newFCrun+'/RUN.fdf'):
-        if os.path.isfile(elm):
-            print('SetupRuns.SetupFCrun: Modifying %s' %elm)
-            f = open(elm, 'r')
-            lines = f.readlines()
-            f.close()
-            f = open(elm, 'w')
-            f.write('### Lines appended %s \n' %time.ctime())
-            f.write('MD.TypeOfRun  FC\n')
-            f.write('MD.FCfirst   %i\n' %FCfirst)
-            f.write('MD.FClast    %i\n' %FClast)
-            f.write('TS.HS.Save True\n')
-            f.write('TS.SaveHS    True\n')
-            f.write('MD.FCDispl   %.8f Ang\n'%displacement)
-            for line in lines: f.write(line)
-            f.close()
+    elm = newFCrun + '/' + main_fdf
+    if os.path.isfile(elm):
+        print('SetupRuns.SetupFCrun: Modifying %s' % elm)
+        f = open(elm, 'r')
+        lines = f.readlines()
+        f.close()
+        f = open(elm, 'w')
+        f.write('### Lines appended %s \n' %time.ctime())
+        f.write('MD.TypeOfRun  FC\n')
+        f.write('MD.FCfirst   %i\n' %FCfirst)
+        f.write('MD.FClast    %i\n' %FClast)
+        f.write('TS.HS.Save True\n')
+        f.write('TS.SaveHS    True\n')
+        f.write('MD.FCDispl   %.8f Ang\n'%displacement)
+        f.writelines(lines)
+        f.close()
+    else:
+        print("{} was not found, so it cannot be edited."
+              "Rerun with main_fdf set correctly.".format(elm))
     # PBS files
     MakePBS(PBStemplate, newFCrun+'/RUN.pbs', PBSsubs, submitJob, rtype='TS')
 
@@ -215,7 +219,7 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
 #                                          SetupOSrun
 # -----------------------------------------------------------------------------------------------------
 
-def SetupOSrun(CGrun, newOSrun, displacement=0.02,
+def SetupOSrun(CGrun, newOSrun, displacement=0.02, main_fdf="RUN.fdf",
                overwrite=False, PBStemplate=None, PBSsubs=None, submitJob=False):
     """
     CGrun                : Path+foldername to a relaxed structure CGrun folder on
@@ -246,7 +250,7 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
     # Copy files from CGrun
     CopyInputFiles(CGrun, newOSrun, ['.fdf', '.vps', '.psf'])
     # Read original RUN.fdf file
-    f = open(newOSrun+'/RUN.fdf', 'r')
+    f = open(newOSrun + '/' + main_fdf, 'r')
     lines = f.readlines()
     f.close()
     # Read relaxed geometry
@@ -262,7 +266,7 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
     else:
         print('No XV file was found in folder %s:'%CGrun)
         input('   ... Continue reading geometry from RUN.fdf?')
-        infile = CGrun+'/RUN.fdf'
+        infile = CGrun + '/' + main_fdf
     # Multiply structure
     BuildOSstruct(infile, newOSrun+'/STRUCT_1.fdf', axes=[0], direction=[-1], displacement=displacement)
     BuildOSstruct(infile, newOSrun+'/STRUCT_2.fdf', axes=[0], direction=[1], displacement=displacement)
