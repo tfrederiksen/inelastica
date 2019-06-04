@@ -40,6 +40,10 @@ One may also wish to set the following environment variables
     export PYTHONPATH=<my-python-home>/lib/python/
     export PATH=$PATH:<my-python-home>/bin/
 
+For the required compilation of `Inelastica`'s Fortran modules (`f2py`) one may also need
+
+    sudo apt install libblas-dev liblapack-dev python-dev gfortran
+
 ## Citations ##
 If used to produce scientific contributions please include relevant citations to
 

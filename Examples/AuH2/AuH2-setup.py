@@ -12,14 +12,13 @@ from __future__ import print_function
 from Inelastica.SetupRuns import *
 from Inelastica.Phonons import *
 import os
-import numpy as N
 
 submitJob = False           # Automatically submit?
 
 # Substitution rules for generating PBS scripts
 TSPBSsubs = [['$NODES$', '1:ppn=4'], ['$MEM$', '4gb'], ['$WALLTIME$', '100:00:00']]
-PYPBSsubs = [['$NODES$', '1:ppn=1'], ['$MEM$', '1gb'], ['$WALLTIME$',  '5:00:00']]
-OSPBSsubs = [['$NODES$', '1:ppn=1'], ['$MEM$', '1gb'], ['$WALLTIME$',  '1:00:00']]
+PYPBSsubs = [['$NODES$', '1:ppn=1'], ['$MEM$', '1gb'], ['$WALLTIME$', '5:00:00']]
+OSPBSsubs = [['$NODES$', '1:ppn=1'], ['$MEM$', '1gb'], ['$WALLTIME$', '1:00:00']]
 
 # Choose which type of runs. For the example:
 # 1: Run CG, wait for geometry to relax.

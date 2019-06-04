@@ -34,7 +34,6 @@ from __future__ import print_function
 
 import numpy as N
 import netCDF4 as NC4
-import string
 import struct
 import Inelastica.physics.constants as PC
 import Inelastica.misc.valuecheck as VC
@@ -405,11 +404,16 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
     varAbsSq = ncfile.createVariable('Abs-sqr-Psi', 'd', ('nx', 'ny', 'nz'))
     varAbsSq[:] = N.absolute(N.square(YY))
 
-    vardstep = ncfile.createVariable('dstep', 'd', ('number',))
+    vardstep = ncfile.createVariable('dstep', 'd', ('number', ))
     vardstep[:] = dstep
+    vardstep.units = 'Ang'
 
-    vargeom = ncfile.createVariable('xyz', 'f', ('natoms', 'naxes'))
-    # OpenDX needs float for positions
+    varorigo = ncfile.createVariable('origo', 'd', ('naxes', ))
+    varorigo[:] = origo
+    varorigo.units = 'Ang'
+
+    # Old stuff for OpenDX visualization
+    vargeom = ncfile.createVariable('xyz-dx', 'f', ('natoms', 'naxes'))
     tmp = []
     for i in range(len(geom.xyz)):
         tmp2 = (geom.xyz[i]-origo)/dstep
@@ -417,13 +421,23 @@ def writenetcdf(geom, fn, YY, nx, ny, nz, origo, dstep):
                     float(tmp2[1]),
                     float(tmp2[2])])
     vargeom[:] = tmp
+    vargeom.units = '(xyz-origo)/dstep'
+
+    # Absolute coordiates of atoms and cell
+    vargeom = ncfile.createVariable('xyz', 'f', ('natoms', 'naxes'))
+    vargeom[:] = geom.xyz
+    vargeom.units = 'Ang'
+
+    varcell = ncfile.createVariable('cell', 'f', ('naxes', 'naxes'))
+    varcell[:] = geom.pbc
+    varcell.units = 'Ang'
 
     varanr = ncfile.createVariable('anr', 'i', ('natoms',))
     varanr[:] = N.array(geom.anr, N.int32)
 
     # Set attributes
-    setattr(varanr, 'field', 'anr')
-    setattr(varanr, 'positions', 'xyz')
+    #setattr(varanr, 'field', 'anr')
+    #setattr(varanr, 'positions', 'xyz')
 
     #setattr(varRe,'field','Re-Psi')
     #setattr(varRe,'positions','grid, compact')
@@ -510,7 +524,7 @@ def writeXSF(geom, fn, YY, nx, ny, nz, origo, dstep):
     for i in range(numberOfAtoms):
         line = '   %i  ' %atomnumber[i]
         for j in range(3):
-            line += string.rjust('%.9f'%xyz[i][j], 16)
+            line += ('%.9f'%xyz[i][j]).rjust(16)
         fo.write(line+'\n')
 
     #Write the datagrid
@@ -596,10 +610,10 @@ def writeWavefunction(options, geom, basis, Y, fn=None):
     Y = Y/phase
 
     foT = file(fn+'.abs.txt', 'w')
-    foT.write('Atom nr M L abs(Y)\n')
+    foT.write('index Atom nr   M   L abs(Y)         re(Y)        im(Y)\n')
     for ii, Yval in enumerate(Y):
-        foT.write('%3.0i %3.0i %3.1i %3.1i %1.8f \n'%
-        (basis.ii[ii], basis.atomnum[ii], basis.M[ii], basis.L[ii], abs(Yval)))
+        foT.write('%5.1i %3.0i %3.0i %3.1i %3.1i %1.8f %15.5e %12.5e\n'%
+        (ii, basis.ii[ii], basis.atomnum[ii], basis.M[ii], basis.L[ii], abs(Yval), Yval.real, Yval.imag))
     foT.close()
 
     YY, dstep, origo, nx, ny, nz = calcWF(options, geom, basis, Y)

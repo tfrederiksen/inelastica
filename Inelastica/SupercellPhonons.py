@@ -215,7 +215,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
             ev[ispin], evec[ispin] = SLA.eigh(self.h0_k[ispin], self.s0_k)
         return ev, evec
 
-    def ReadGradients(self, AbsEref=False):
+    def ReadGradients(self):
         # Read in gradients once into memory (in the full supercell basis)
         # No folding yet onto k and q
         self.dH = {}
@@ -694,7 +694,7 @@ def main(options):
 
     # Compute e-ph couplings
     if options.kfile and options.qfile:
-        SCDM.ReadGradients(AbsEref=False)
+        SCDM.ReadGradients()
         ncf = NC4.Dataset(options.DestDir+'/EPH.nc', 'w')
         ncf.createDimension('kpts', len(kpts))
         ncf.createDimension('qpts', len(qpts))

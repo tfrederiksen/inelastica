@@ -75,10 +75,8 @@ import warnings
 import glob
 import os
 import sys
-import string
 import ast
 import Inelastica.io.siesta as SIO
-import Inelastica.Symmetry as Symmetry
 import Inelastica.io.log as Log
 import Inelastica.MakeGeom as MG
 import Inelastica.physics.constants as PC
@@ -105,6 +103,8 @@ def GetOptions(argv):
 
     p = argparse.ArgumentParser(description='Methods to calculate vibrations and e-ph couplings from SIESTA output')
     p.add_argument('DestDir', help='Destination directory')
+    p.add_argument('-f', '--fdf', dest='fdf', default='./RUN.fdf', type=str,
+                 help='Input fdf-file for SIESTA/TranSIESTA calculation [%(default)s]')
     p.add_argument('-c', '--CalcCoupl', dest='CalcCoupl', action='store_true', default=False,
                    help='Calculate e-ph couplings [default=%(default)s]')
     p.add_argument('-r', '--Restart', dest='Restart', action='store_true', default=False,
@@ -115,20 +115,20 @@ def GetOptions(argv):
                    help='Calculate e-ph couplings using single precision arrays [default=%(default)s]')
     p.add_argument('-F', '--DeviceFirst', dest='DeviceFirst', type=int, default=1,
                    help='First device atom index (in the electronic basis) [default=%(default)s]')
-    p.add_argument('-L', '--DeviceLast', dest='DeviceLast', type=int, default=1000,
-                   help='Last device atom index (in the electronic basis) [default=%(default)s]')
+    p.add_argument('-L', '--DeviceLast', dest='DeviceLast', type=int, default=0,
+                   help='Last device atom index (in the electronic basis) [default=NumberOfAtoms]')
     p.add_argument('--FCfirst', dest='FCfirst', type=int, default=1,
                    help='First FC atom index [default=%(default)s]')
-    p.add_argument('--FClast', dest='FClast', type=int, default=1000,
-                   help='Last FC atom index [default=%(default)s]')
+    p.add_argument('--FClast', dest='FClast', type=int, default=0,
+                   help='Last FC atom index [default=NumberOfAtoms]')
     p.add_argument('--EPHfirst', dest='EPHfirst', type=int, default=1,
                    help='First atom index for which the e-ph. couplings are evaluated [default=FCfirst]')
-    p.add_argument('--EPHlast', dest='EPHlast', type=int, default=1000,
+    p.add_argument('--EPHlast', dest='EPHlast', type=int, default=0,
                    help='Last atom index for which the e-ph. couplings are evaluated [default=FClast]')
     p.add_argument('--PBCFirst', dest='PBCFirst', type=int, default=1,
                    help='For eliminating interactions through periodic boundary conditions in z-direction [default=%(default)s]')
-    p.add_argument('--PBCLast', dest='PBCLast', type=int, default=1000,
-                   help='For eliminating interactions through periodic boundary conditions in z-direction [default=%(default)s]')
+    p.add_argument('--PBCLast', dest='PBCLast', type=int, default=0,
+                   help='For eliminating interactions through periodic boundary conditions in z-direction [default=NumberOfAtoms]')
     p.add_argument('--FCwildcard', dest='FCwildcard', type=str, default='./FC*',
                    help='Wildcard for FC directories [default=%(default)s]')
     p.add_argument('--OSdir', dest='onlySdir', type=str, default='./OSrun',
@@ -167,6 +167,20 @@ def GetOptions(argv):
             options.atype = N.complex64
         else:
             options.atype = N.complex128
+
+    # Check if we need to set the last atom(s)
+    if options.FClast*options.DeviceLast*options.EPHlast*options.PBCLast == 0:
+        # We need NumberOfAtoms
+        fdf = glob.glob(options.FCwildcard+'/'+options.fdf)
+        natoms = SIO.GetFDFlineWithDefault(fdf[0], 'NumberOfAtoms', int, 1000, 'Phonons')
+    if options.FClast == 0:
+        options.FClast = natoms
+    if options.DeviceLast == 0:
+        options.DeviceLast = natoms
+    if options.EPHlast == 0:
+        options.EPHlast = natoms
+    if options.PBCLast == 0:
+        options.PBCLast = natoms
 
     # Dynamic atoms
     options.DynamicAtoms = list(range(options.FCfirst, options.FClast+1))
@@ -243,6 +257,9 @@ class FCrun(object):
         # Determine TSHS files
         files = glob.glob(self.directory+'/%s*.TSHS'%self.systemlabel)
         files.sort()
+        if self.directory+'/%s.TSHS'%self.systemlabel in files:
+            # If present, ignore this file which does not origninate from the FCrun
+            files.remove(self.directory+'/%s.TSHS'%self.systemlabel)
         if (FClast-FCfirst+1)*6+1 != len(files):
             warnings.warn('Phonons.GetFileLists: WARNING - Inconsistent number of *.TSHS files in %s'%self.directory)
             return
@@ -298,8 +315,6 @@ class OTSrun(FCrun): # Only TranSiesta run
         self.geom = MG.Geom(runfdf)
         # Compare with XV file corrected for last displacement
         XV = self.directory+'/%s.XV'%self.systemlabel
-        geomXV = MG.Geom(XV)
-        natoms = self.geom.natoms
         # Determine TSHS files
         files = glob.glob(self.directory+'/%s*.TSHS'%self.systemlabel)
         # Build dictionary over TSHS files and corresponding displacement amplitudes
@@ -328,7 +343,7 @@ class OSrun(object):
                 thisHS.setkpoint(kpoint, atype=atype)
                 S = thisHS.S
                 del thisHS
-                nao = len(S)/2
+                nao = len(S) // 2
                 S0 = S[0:nao, 0:nao].copy()
                 dmat = S[0:nao, nao:nao*2].copy()
                 if file.endswith('_1.onlyS'):
@@ -349,10 +364,10 @@ class OSrun(object):
                 xyz = N.array(SIO.Getxyz(onlySdir+'/RUN_%i.fdf'%i))
                 #for j in range(1, len(xyz)):
                 #    thisd = min(thisd, (N.dot(xyz[0]-xyz[j], xyz[0]-xyz[j]))**.5)
-                j = len(xyz)/2
+                j = len(xyz) // 2
                 v = xyz[0]-xyz[j]
                 thisd = N.dot(v, v)**.5
-                Displ[(i-1)/2, 1-2*(i%2)] = thisd
+                Displ[(i-1) // 2, 1-2*(i % 2)] = thisd
                 print('Phonons.GetOnlyS: OnlyS-displacement (min) = %.5f Ang'%thisd)
             # Construct dS array
             self.S0 = S0
@@ -432,7 +447,7 @@ class DynamicalMatrix(object):
             for j in range(3):
                 FC[i, j, v-1, :] = 0.0
                 FC[i, j, v-1, :] = -N.sum(FC[i, j], axis=0)
-        print('Total sumrule change in FC: %.3e eV/Ang' % N.sum(abs(FC0)-abs(FC)))
+        print('Total sumrule change in FC: %.3e eV/Ang^2' % N.sum(abs(FC0)-abs(FC)))
         return FC
 
     def ComputePhononModes(self, FC, verbose=True):
@@ -471,12 +486,12 @@ class DynamicalMatrix(object):
         if verbose:
             print('Phonons.CalcPhonons: Frequencies in meV:')
             for i in range(3*dyn):
-                print(string.rjust('%.3f'%(1000*hw[i]), 9), end='')
+                print(('%.3f'%(1000*hw[i])).rjust(9), end='')
                 if (i-5)%6 == 0: print()
             if (i-5)%6 != 0: print()
         #print 'Phonons.CalcPhonons: Frequencies in cm^-1:'
         #for i in range(3*dyn):
-        #    print string.rjust('%.3f'%(hw[i]/PC.invcm2eV),9),
+        #    print ('%.3f'%(hw[i]/PC.invcm2eV)).rjust(9),
         #    if (i-5)%6 == 0: print
         #if (i-5)%6 != 0: print
 
@@ -484,7 +499,7 @@ class DynamicalMatrix(object):
         Udisp = U.copy()
         for i in range(3*dyn):
             # Eigenvectors after division by sqrt(mass)
-            Udisp[:, i] = U[:, i]/self.Masses[i/3]**.5
+            Udisp[:, i] = U[:, i] / self.Masses[i // 3]**.5
 
         # Compute displacement vectors scaled for the characteristic length
         Ucl = N.empty_like(U)
@@ -492,7 +507,7 @@ class DynamicalMatrix(object):
             for i in range(3*dyn):
                 # Eigenvectors after multiplication by characteristic length
                 if hw[j] > 0:
-                    Ucl[j, i] = U[j, i]*(1./(self.Masses[i/3]*(hw[j]/(2*PC.Rydberg2eV)))**.5)
+                    Ucl[j, i] = U[j, i] * (1. / (self.Masses[i // 3] * abs(hw[j] / (2*PC.Rydberg2eV)))**.5)
                 else:
                     # Characteristic length not defined for non-postive frequency
                     Ucl[j, i] = U[j, i]*0.0
@@ -688,10 +703,10 @@ class DynamicalMatrix(object):
         ncdf.variables['GeometryXYZ'][:] = self.geom.xyz
         ncdf.variables['GeometryXYZ'].info = 'Atomic coordinates of all atoms in cell'
         ncdf.variables['GeometryXYZ'].unit = 'Ang'
-        ncdf.createVariable('FC', 'd', ('dyn_atoms', 'xyz','natoms','xyz'))
+        ncdf.createVariable('FC', 'd', ('dyn_atoms', 'xyz', 'natoms', 'xyz'))
         ncdf.variables['FC'][:] = self.mean
         ncdf.variables['FC'].info = 'Force matrix'
-        ncdf.variables['FC'].unit = 'ev/Ang^2'
+        ncdf.variables['FC'].unit = 'eV/Ang^2'
         ncdf.createVariable('AtomNumbers', 'i', ('natoms',))
         ncdf.variables['AtomNumbers'][:] = self.geom.anr
         ncdf.variables['AtomNumbers'].info = 'Element number for each atom (anr)'
@@ -743,7 +758,7 @@ class DynamicalMatrix(object):
             ncdf.createVariable('He_ph', atype, ('modes', 'nspin', 'norb', 'norb'))
             ncdf.variables['He_ph'][:] = self.heph.real
             ncdf.variables['He_ph'].info = 'Real part of EPH couplings'
-            ncdf.variables['He_ph'].unit = 'eV/Ang'
+            ncdf.variables['He_ph'].unit = 'eV'
             if not GammaPoint:
                 ncdf.createVariable('ImHe_ph', atype, ('modes', 'nspin', 'norb', 'norb'))
                 ncdf.variables['ImHe_ph'][:] = self.heph.imag
@@ -869,7 +884,7 @@ def main(options):
     Log.PrintMainHeader(options)
 
     # Determine SIESTA input fdf files in FCruns
-    fdf = glob.glob(options.FCwildcard+'/RUN.fdf')
+    fdf = glob.glob(options.FCwildcard+'/'+options.fdf)
 
     print('Phonons.Analyze: This run uses')
     FCfirst, FClast = min(options.DynamicAtoms), max(options.DynamicAtoms)

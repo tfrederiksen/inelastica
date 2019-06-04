@@ -261,8 +261,8 @@ class Geom(object):
         else:
             RotateThese = RotateSubset
         if RotationCenter.any():
-            # Move origo to center of rotation
-            self.move([-x for x in RotationCenter])
+            RotationCenter = N.array(RotationCenter) # Avoid changes, if reference to an atom
+            self.move(-RotationCenter)
         for i in RotateThese:
             r0 = N.array(self.xyz[i])
             r = r0*math.cos(angle) \
@@ -571,7 +571,7 @@ class Geom(object):
         hw = ncfile.variables['hw'][modeindex]
         U = ncfile.variables['U'][modeindex]
         print('MakeGeom.StretchAlongEigenvector: Stretching %.3e Ang along mode #%i (hw = %.4f eV).'%(displacement, modeindex, hw))
-        d = len(U)/3
+        d = len(U) // 3
         U = N.reshape(U, (d, 3))
         firstdynatom = int(ncfile.variables['DynamicAtoms'][0]-1)
         for i in range(d):
@@ -655,8 +655,8 @@ class Geom(object):
     def readCONTCAR(self, fn):
         "Read geometry from VASP CONTCAR file"
         label, scalefactor, vectors, specieslabels, speciesnumbers, xyz = VIO.ReadCONTCAR(fn)
-        self.pbc = N.array(vectors)
-        self.xyz = N.array(xyz[:, :3])
+        self.pbc = N.array(vectors)*scalefactor
+        self.xyz = N.array(xyz[:, :3])*scalefactor
         self.constrained = N.array(xyz[:, 3:])
         self.natoms = len(xyz)
         self.snr = []

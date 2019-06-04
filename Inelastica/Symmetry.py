@@ -376,7 +376,7 @@ class Symmetry(object):
         whichsnr = self.basis.snr[N.where(N.array(abundance) == N.min(abundance))[0][0]]
 
         Ulist, a1, a2, a3 = self.pointU33, self.a1, self.a2, self.a3
-        pointU,  pointO = [],  []
+        pointU, pointO = [], []
         for iU, U in enumerate(Ulist):
             SIO.printDone(iU, len(Ulist), 'Looking for point group')
 
@@ -486,7 +486,7 @@ class Symmetry(object):
         # Use least abundant atom type
         # Use the least common siesta atom type to find possible centers
         abundance = [N.sum(N.array(self.snr) == snr) for snr in self.snr]
-        whichsnr  = self.snr[N.where(N.array(abundance) == N.min(abundance))[0][0]]
+        whichsnr = self.snr[N.where(N.array(abundance) == N.min(abundance))[0][0]]
 
         # Brute force ... find vectors connecting same type of atoms,
         # try and see if they are lattice vectors starting with shortest
@@ -828,7 +828,7 @@ class Symmetry(object):
         elif self.latticeType == 'BCC':
             # Table 4 - Figure 3
             P = b1*1/4+b2*1/4+b3*1/4
-            NN= b1*0/1+b2*0/1+b3*1/2
+            NN = b1*0/1+b2*0/1+b3*1/2
             H = b1*1/2-b2*1/2+b3*1/2
             self.path = [[G, 'G'], [H, 'H'], [P, 'P'], [G, 'G'], [NN, 'N'], [H, 'H']]
         elif self.latticeType == 'HEX':

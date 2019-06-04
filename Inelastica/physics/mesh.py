@@ -134,10 +134,10 @@ class kmesh(object):
         """
         print(' ... Applying inversion symmetry (the simple way)')
         # No brute force (and therefore terribly slow) pairing here
-        indx = [[ii, 2] for ii in range(self.NNk/2, self.NNk)] # Keep the last half of the k-points with double weight
-        k0 = self.k[self.NNk/2]
+        indx = [[ii, 2] for ii in range(self.NNk // 2, self.NNk)]  # Keep the last half of the k-points with double weight
+        k0 = self.k[self.NNk // 2]
         if N.dot(k0, k0) == 0: # Gamma in the kptlist
-            indx[0] = [self.NNk/2, 1] # lower weight to one
+            indx[0] = [self.NNk // 2, 1] # lower weight to one
         indx, weight = N.array([ii[0] for ii in indx]), N.array([ii[1] for ii in indx])
         kpts, wgts = self.k[indx], self.w[:, indx]*weight
         self.k = kpts
@@ -185,7 +185,6 @@ def test():
     print('   f(x,y,z)=x*y*z => \int f dxdydz =', N.sum(f*mesh.w[0]))
     f = (mesh.k[:, 0]+1)*(mesh.k[:, 1]+1)*(mesh.k[:, 2]+1)
     print('   f(x,y,z)=(x+1)*(y+1)*(z+1) => \int f dxdydz =', N.sum(f*mesh.w[0]))
-    import math
     for i, s in enumerate(['x', 'y', 'z']):
         f = N.cos(2*mesh.k[:, i])
         print('   f(x,y,z)=cos(2%s) => \int f dxdydz ='%s, N.sum(f*mesh.w[0]), '[exact: sin(1) ~ 0.841470984807897]')

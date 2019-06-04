@@ -1,12 +1,10 @@
 from __future__ import print_function
 
 import sys
-import profile
 sys.path += ['../..']
 
 import Inelastica.io.siesta as SIO
 import numpy as N
-import numpy.random as RA
 
 
 def main():

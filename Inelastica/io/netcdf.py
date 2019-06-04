@@ -70,7 +70,7 @@ class NCfile(object):
                 d = self.invdim[i]
             except:
                 d = 'd%.2i'%len(self.dimensions)
-                'io.netcdf: Generating dimension %s'%d
+                print('io.netcdf: Generating dimension %s'%d)
                 self.file.createDimension(d, i)
                 self.invdim[i] = d
             dim.append(d)

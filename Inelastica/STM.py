@@ -34,7 +34,6 @@ import numpy as N
 import numpy.linalg as LA
 import netCDF4 as NC
 import sys
-import string
 import glob
 import os
 import ast
@@ -160,7 +159,7 @@ def main(options):
         f, oldk = open(options.DestDir+'/kpoints', 'r'), []
         f.readline()
         for ii in f.readlines():
-            oldk += [N.array(string.split(ii), N.float)]
+            oldk += [N.array(ii.split(), N.float)]
         oldk = N.array(oldk)
 
     options.kpoints.mesh2file(options.DestDir+'/kpoints')
@@ -220,8 +219,8 @@ def main(options):
     for ii in range(nokpts):
         file = NC.Dataset('./'+options.DestDir+'/'+str(ii)+'/FDcurr'+str(ii)+'.nc', 'r')
         ikSTMimage = file.variables['Curr'][:, :]/(nokpts)
-        STMimage += ShiftOrigin(ikSTMimage, dim1/2, dim2/2)
-        tmpSTM[ii*dim1:(ii+1)*dim1, :] = ShiftOrigin(ikSTMimage, dim1/2, dim2/2)
+        STMimage += ShiftOrigin(ikSTMimage, dim1 // 2, dim2 // 2)
+        tmpSTM[ii*dim1:(ii+1)*dim1, :] = ShiftOrigin(ikSTMimage, dim1 // 2, dim2 // 2)
     STMimagekpt = N.zeros((dim1*options.Nk1, dim2*options.Nk2))
     for ii in range(options.Nk1):
         for jj in range(options.Nk2):
