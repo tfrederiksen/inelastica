@@ -571,7 +571,7 @@ class Geom(object):
         hw = ncfile.variables['hw'][modeindex]
         U = ncfile.variables['U'][modeindex]
         print('MakeGeom.StretchAlongEigenvector: Stretching %.3e Ang along mode #%i (hw = %.4f eV).'%(displacement, modeindex, hw))
-        d = len(U)/3
+        d = len(U) // 3
         U = N.reshape(U, (d, 3))
         firstdynatom = int(ncfile.variables['DynamicAtoms'][0]-1)
         for i in range(d):

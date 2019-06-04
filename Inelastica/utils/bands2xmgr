@@ -176,7 +176,7 @@ if __name__ == '__main__':
 
     if spins==2:
         # Splitting eigenvalues and DOS
-        eval = (len(EvsK[0])-1)/2
+        eval = (len(EvsK[0])-1) // 2
         upEvsK = EvsK[:, :eval+1].copy()
         downEvsK = EvsK[:, eval:].copy()
         downEvsK[:, 0] = EvsK[:, 0]
