@@ -274,10 +274,13 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02,
         print('SetupRuns.SetupOSrun: Writing %s' %(newOSrun+'/'+inputfile))
         f = open((newOSrun+'/'+inputfile), 'w')
         f.write('### Lines written %s \n' %time.ctime())
+        # Ensure we don't get lua errors...
+        print("MD.TypeOfRun CG", file=f)
         #f.write('MD.NumCGSteps 0\n')
         #f.write('DM.NumberPulay 0 \n')
         #f.write('MPN.onlyS .true.\n\n')
         f.write('TS.onlyS .true.\n')
+        f.write('TS.S.save true\n')
         f.write('SystemName STRUCT_%i\n'%(i+1))
         f.write('SystemLabel STRUCT_%i\n\n'%(i+1))
         f.write('%include '+'./STRUCT_%i.fdf\n\n'%(i+1))
