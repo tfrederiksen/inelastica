@@ -329,9 +329,9 @@ def printDone(i, n, mess):
     # Print progress report
     if n > 10:
         if i%(int(n/10)+1) == 0:
-            print(mess, ": %3.0f %% done" %(10.0*int(10.0*float(i+1)/n)))
+            print(mess + ": %3.0f %% done" %(10.0*int(10.0*float(i+1)/n)))
         if i+1 == n:
-            print(mess, ": 100 % done")
+            print(mess + ": 100 % done")
         sys.stdout.flush()
 
 #--------------------------------------------------------------------------------
@@ -1157,11 +1157,11 @@ def GetPDOSfromOrbitals(dom, index=[], atom_index=[], species=[], nlist=[], llis
                 data[i] = float(di)
             pdos += N.array(data)
     # Generate some output-related information
-    if atom_index != []: print('... Atom indices =', atom_index)
-    if species != []: print('... Species =', species)
-    if nlist != []: print('... Allowed n quantum numbers =', nlist)
-    if llist != []: print('... Allowed l quantum numbers =', llist)
-    if mlist != []: print('... Allowed m quantum numbers =', mlist)
+    if atom_index != []: print('... Atom indices = ' + str(atom_index) )
+    if species != []: print('... Species = ' + str(species) )
+    if nlist != []: print('... Allowed n quantum numbers = ' + str(nlist) )
+    if llist != []: print('... Allowed l quantum numbers = ' + str(llist) )
+    if mlist != []: print('... Allowed m quantum numbers = ' + str(mlist) )
     print('... Orbitals included = %i' %len(usedOrbitals))
     usedAtoms = []
     for orb in usedOrbitals:
@@ -1185,7 +1185,7 @@ def ReadPDOSFile(filename, index=[], atom_index=[], species=[], nlist=[], llist=
 
 
 def ExtractPDOS(filename, outfile, index=[], atom_index=[], species=[], nlist=[], llist=[], mlist=[], FermiRef=True, Normalize=False):
-    print('io.siesta.ExtractPDOS: Reading', filename)
+    print('io.siesta.ExtractPDOS: Reading %s' % filename)
     head, tail = os.path.split(filename)
     nspin, norb, ev, pdos, usedOrbitals, usedAtoms, eF = ReadPDOSFile(filename, index, atom_index, species, nlist, llist, mlist)
     if FermiRef:
@@ -1373,7 +1373,7 @@ def ReadIonNCFile(filename, printnorm=False):
     ion.cutoff = N.array(file.variables['cutoff'][:], N.float)
     ion.delta = N.array(file.variables['delta'][:], N.float)
 
-    print('   Element: %s   Atom number: %i,  L-orbs ' % (ion.element, ion.atomnum), ion.L)
+    print('   Element: %s   Atom number: %i,  L-orbs %s' % (ion.element, ion.atomnum, str(ion.L) ) )
     for i, l in enumerate(ion.L):
         rr = ion.delta[i] * N.array(list(range(len(ion.orb[i]))), N.float)
         ion.orb[i] = ion.orb[i]*(rr**ion.L[i])/(PC.Bohr2Ang**(3./2.))
@@ -1807,7 +1807,7 @@ class HS(object):
                      "Trying to set non-zero k-point for Gamma point calculation.")
         if N.any(N.abs(self.kpoint-kpoint) > VC.GetCheck("same-kpoint")):
             if verbose:
-                print("io.siesta.HS.setkpoint: %s k =" % self.fn, kpoint)
+                print("io.siesta.HS.setkpoint: %s k = %s" % (self.fn, str(kpoint)) )
             self.kpoint = kpoint
             self.S = self.setkpointhelper(self.Ssparse, kpoint, UseF90helpers, atype=atype)
             if not self.onlyS:
