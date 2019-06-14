@@ -6,7 +6,7 @@ MD.TypeOfRun        CG
 MD.NumCGsteps       0
 MD.MaxCGDispl       0.05 Ang
 DM.NumberPulay      10
-DM.MixingWeight     0.01
+DM.MixingWeight     0.05
 DM.Tolerance        1.d-4
 MaxSCFIterations    200
 MeshCutoff          200. Ry 
@@ -14,7 +14,7 @@ MeshCutoff          200. Ry
 %block kgrid_Monkhorst_Pack
  1    0    0    0.0
  0    1    0    0.0
- 0    0    2    0.0
+ 0    0    5    0.0
 %endblock kgrid_Monkhorst_Pack
 
 %block ChemicalSpeciesLabel
