@@ -467,7 +467,7 @@ class Geom(object):
         BlocksLeft/BlocksRight, and including enlargement of the unit cell.
         """
         # Determine interlayer separation
-        LayersPerBlock = BlockSize/AtomsPerLayer
+        LayersPerBlock = BlockSize//AtomsPerLayer
         LayerSep = self.xyz[AtomsPerLayer][2]-self.xyz[0][2]
 
         print('MakeGeom.PasteElectrodeLayers:')
@@ -487,7 +487,7 @@ class Geom(object):
             pieceL.addAtom(self.xyz[i], self.snr[i], self.anr[i])
 
         # Append layers to the right
-        BlocksRight = LayersRight/LayersPerBlock
+        BlocksRight = LayersRight//LayersPerBlock
         ExtraLayersRight = LayersRight%LayersPerBlock
         pieceR.move(self.pbc[2])
         for i in range(BlocksRight):
@@ -498,7 +498,7 @@ class Geom(object):
         self.pbc[2][2] += (BlocksRight*LayersPerBlock+ExtraLayersRight)*LayerSep
 
         # Prepend layers to the left
-        BlocksLeft = LayersLeft/LayersPerBlock
+        BlocksLeft = LayersLeft//LayersPerBlock
         ExtraLayersLeft = LayersLeft%LayersPerBlock
         pieceL.reverse()
         for i in range(BlocksLeft):
