@@ -6,6 +6,26 @@ Publications using Inelastica
 `Inelastica <docs_>`_ was used in the research publications listed below.
 Please help maintaining the list complete via a `pull request <pr_>`_ or simply an email to `thomas_frederiksen@ehu.eus <mailto:thomas_frederiksen@ehu.eus>`_. 
 
+#. M. Mohr, T. Jasper-Toennies, T. Frederiksen, A. Garcia-Lekue, S. Ulrich, R. Herges, and R. Berndt,
+   *Conductance channels of a platform molecule on Au(111) probed with shot noise*,
+   Phys. Rev. B **99**, `245417 (2019) <https://doi.org/10.1103/PhysRevB.99.245417>`_.
+
+#. E. Montes, G. Foti, and H. Vázquez,
+   *Crossover in the inelastic electron tunneling spectra of conjugated molecules with direct Au–C links*,
+   Phys. Chem. Chem. Phys. **21**, `1564-1571 (2019) <https://pubs.rsc.org/en/content/articlehtml/2019/cp/c8cp06290k>`_.
+
+#. T. Jasper-Toennies, A. Garcia-Lekue, T. Frederiksen, S. Ulrich, R. Herges and R. Berndt,
+   *High-conductance contacts to functionalized molecular platforms physisorbed on Au(111)*,
+   J. Phys.: Condens. Matter **31**, `18LT01 (2019) <https://iopscience.iop.org/article/10.1088/1361-648X/ab0489>`_.
+
+#. B. de la Torre, M. Svec, G. Foti, O. Krejci, P. Hapala, A. Garcia-Lekue, T. Frederiksen, R. Zboril, A. Arnau, H. Vazquez, and P. Jelinek,
+   *Submolecular resolution by variation of inelastic electron tunneling spectroscopy amplitude and its relation to the AFM/STM signal*,
+   Phys. Rev. Lett. **119**, `166001 (2017) <https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.119.166001>`_.
+
+#. E. Minamitani, R. Arafune, T. Frederiksen, T. Suzuki, S. M. F. Shahed, T. Kobayashi, N. Endo, H. Fukidome, S. Watanabe, and T. Komeda,
+   *Atomic-scale characterization of the interfacial phonon in graphene/SiC*,
+   Phys. Rev. B **96**, `155431 (2017) <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.96.155431>`_.
+
 #. T. Jasper-Tönnies, A. Garcia-Lekue, T. Frederiksen, S. Ulrich, R. Herges, and R. Berndt,
    *Conductance of a freestanding conjugated molecular wire*,
    Phys. Rev. Lett. **119**, `066801 (2017) <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.119.066801>`_.
@@ -22,6 +42,10 @@ Please help maintaining the list complete via a `pull request <pr_>`_ or simply 
 #. G. Foti and H. Vazquez,
    *Interface Tuning of Current-Induced Cooling in Molecular Circuits*,
    J. Phys. Chem. C **121**, `1082 (2017) <http://pubs.acs.org/doi/abs/10.1021/acs.jpcc.6b11955>`_.
+
+#. J. Guo, J.-T. Lü, Y. Feng, J. Chen, J. Peng, Z. Lin, X. Meng, Z. Wang, X.-Z. Li, E.-G. Wang, and Y. Jiang,
+   *Nuclear quantum effects of hydrogen bonds probed by tip-enhanced inelastic electron tunneling*,
+   Science **352**, `321-325 (2016) <http://science.sciencemag.org/content/352/6283/321.abstract>`_.
 
 #. G. Foti and H. Vazquez,
    *Mapping the intramolecular contributions to the inelastic electron tunneling signal of a molecular junction*,
