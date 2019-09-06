@@ -104,7 +104,7 @@ def ReadXVFile(filename, InUnits='Bohr', OutUnits='Ang', ReadVelocity=False):
             V.append([float(data[5+j])*convFactor for j in range(3)])
     xvfile.close()
     if len(speciesnumber) != numberOfAtoms:
-        print('io.siesta.ReadXVFile: Inconstency in %s detected!' % filename)
+        print('io.siesta.ReadXVFile: Inconsistency in %s detected!' % filename)
     if ReadVelocity:
         return N.array(vectors), N.array(speciesnumber), N.array(atomnumber), N.array(xyz), N.array(V)
     else:
@@ -259,7 +259,7 @@ def ReadFCFile(filename):
     # Read comment line (line 1)
     line = fcfile.readline()
     if line.strip() != 'Force constants matrix':
-        print('io.siesta.ReadFCFile: Inconstency in %s detected!' % filename)
+        print('io.siesta.ReadFCFile: Inconsistency in %s detected!' % filename)
     # Read remaining lines
     FC = []
     for line in fcfile.readlines():
@@ -396,7 +396,7 @@ def ReadXYZFile(filename):
             xyz.append([float(data[1+j]) for j in range(3)])
     xyzfile.close()
     if len(xyz) != numberOfAtoms:
-        print('io.siesta.ReadXYZFile: Inconstency in %s detected!' % filename)
+        print('io.siesta.ReadXYZFile: Inconsistency in %s detected!' % filename)
     return label, N.array(atomnumber), N.array(xyz)
 
 
@@ -559,7 +559,7 @@ def ReadSTRUCT_OUTFile(filename):
             xyz.append([float(data[2+j]) for j in range(3)])
     stfile.close()
     if len(speciesnumber) != numberOfAtoms:
-        print('io.siesta.ReadSTRUCT_OUTFile: Inconstency in %s detected!' % filename)
+        print('io.siesta.ReadSTRUCT_OUTFile: Inconsistency in %s detected!' % filename)
     xyz = N.array(xyz, N.float)
     vectors = N.array(vectors, N.float)
     for i, xi in enumerate(xyz):
