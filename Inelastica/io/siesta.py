@@ -258,7 +258,7 @@ def ReadFCFile(filename):
     fcfile = SIO_open(filename, 'rb')
     # Read comment line (line 1)
     line = fcfile.readline()
-    if line.strip() != 'Force constants matrix':
+    if not line.strip().startswith('Force constants matrix'):
         print('io.siesta.ReadFCFile: Inconsistency in %s detected!' % filename)
     # Read remaining lines
     FC = []
