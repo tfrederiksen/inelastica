@@ -255,7 +255,7 @@ def ReadANIFile(filename, InUnits='Ang', OutUnits='Ang'):
 def ReadFCFile(filename):
     "Returns FC from an FC-file"
     print('io.siesta.ReadFCFile: Reading %s' % filename)
-    fcfile = SIO_open(filename, 'rb')
+    fcfile = SIO_open(filename, 'r')
     # Read comment line (line 1)
     line = fcfile.readline()
     if not line.strip().startswith('Force constants matrix'):
@@ -775,7 +775,7 @@ def GetFDFblock(infile, KeyWord=''):
 
 def GetTotalEnergy(infile):
     # Find total energy from SIESTA stdout file
-    f = SIO_open(infile, 'rb')
+    f = SIO_open(infile, 'r')
     lines = f.readlines()
     f.close()
     E = 0.0
@@ -790,7 +790,7 @@ def GetTotalEnergy(infile):
 def GetFermiEnergy(infile):
     # Read Fermi energy from SIESTA stdout file
     print('io.siesta.GetFermiEnergy: Reading %s' % infile)
-    f = SIO_open(infile, 'rb')
+    f = SIO_open(infile, 'r')
     lines = f.readlines()
     f.close()
     E = 0.0
@@ -807,7 +807,7 @@ def GetFermiEnergy(infile):
 
 def ReadEIGfile(infile, printing=False, FermiRef=True):
     # Read *EIG file and print eigenvalues with respect to eF.
-    f = SIO_open(infile, 'rb')
+    f = SIO_open(infile, 'r')
     eF = float(f.readline().split()[0])
     f.readline() # Skip second line
     EIG = []
@@ -912,7 +912,7 @@ def ReadForces(infile):
 def ReadFAFile(filename):
     "Returns forces from a FA-file"
     print('io.siesta.ReadFAFile: Reading %s' % filename)
-    file = SIO_open(filename, 'rb')
+    file = SIO_open(filename, 'r')
     # Read comment line (line 1)
     line = file.readline()
     natoms = int(line.strip())
