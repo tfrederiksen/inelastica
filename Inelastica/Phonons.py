@@ -507,6 +507,11 @@ class DynamicalMatrix(object):
             N.array(self.Masses).repeat(3).reshape(1, -1) * PC.amu2kg
             * hw[hw > 0].reshape(-1, 1) * PC.eV2Joule
             ) * 1e10 * U[hw > 0, :]
+        # Note that if we displace by the characteristic length
+        # via E=1/2 <u|FC|u>, the energy should change by the
+        # characteristic energy (which is hw/2), i.e.,
+        # np.diag(Ucl.dot(fcmat).dot(Ucl.T)).real[hw > 0]
+        # should be identical to hw
 
         # Expand vectors to full geometry
         UU = N.zeros((len(hw), self.geom.natoms, 3), N.complex)
