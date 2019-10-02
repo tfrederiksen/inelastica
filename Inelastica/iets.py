@@ -333,27 +333,24 @@ def calcTraces(options, GF1, GF2, basis, NCfile, ihw):
         M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw, options.iSpin, :, :], N.complex)
     except:
         print('Warning: Variable ImHe_ph not found')
-    # Calculation of intermediate quantity
-    MARGLGM = MM.mm(M, GF1.ARGLG, M)
-    MARGLGM2 = MM.mm(M, GF2.ARGLG, M)
     # LOE expressions in compact form
-    t1 = MM.mm(MARGLGM, GF2.AR)
-    t2 = MM.mm(MARGLGM2, GF1.AL)
+    t1 = MM.trace(M, GF1.ARGLG, M, GF2.AR)
+    t2 = MM.trace(M, GF2.ARGLG, M, GF1.AL)
     # Note that compared with Eq. (10) of PRB89, 081405 (2014) we here use
     # the definition B_lambda = MM.trace(t1-dagger(t2)), which in turn gives
     # ReB = MM.trace(t1).real-MM.trace(t2).real
     # ImB = MM.trace(t1).imag+MM.trace(t2).imag
-    K23 = MM.trace(t1).imag+MM.trace(t2).imag
-    K4 = MM.trace(MM.mm(M, GF1.ALT, M, GF2.AR))
-    aK23 = 2*(MM.trace(t1).real-MM.trace(t2).real) # asymmetric part
+    K23 = t1.imag+t2.imag
+    K4 = MM.trace(M, GF1.ALT, M, GF2.AR)
+    aK23 = 2*(t1.real-t2.real) # asymmetric part
     # Non-Hilbert term defined here with a minus sign
     GF1.nHT[ihw] = NEGF.AssertReal(K23+K4, 'nHT[%i]'%ihw)
     GF1.HT[ihw] = NEGF.AssertReal(aK23, 'HT[%i]'%ihw)
     # Power, damping and current rates
-    GF1.P1T[ihw] = NEGF.AssertReal(MM.trace(MM.mm(M, GF1.A, M, GF2.A)), 'P1T[%i]'%ihw)
-    GF1.P2T[ihw] = NEGF.AssertReal(MM.trace(MM.mm(M, GF1.AL, M, GF2.AR)), 'P2T[%i]'%ihw)
-    GF1.ehDampL[ihw] = NEGF.AssertReal(MM.trace(MM.mm(M, GF1.AL, M, GF2.AL)), 'ehDampL[%i]'%ihw)
-    GF1.ehDampR[ihw] = NEGF.AssertReal(MM.trace(MM.mm(M, GF1.AR, M, GF2.AR)), 'ehDampR[%i]'%ihw)
+    GF1.P1T[ihw] = NEGF.AssertReal(MM.trace(M, GF1.A, M, GF2.A), 'P1T[%i]'%ihw)
+    GF1.P2T[ihw] = NEGF.AssertReal(MM.trace(M, GF1.AL, M, GF2.AR), 'P2T[%i]'%ihw)
+    GF1.ehDampL[ihw] = NEGF.AssertReal(MM.trace(M, GF1.AL, M, GF2.AL), 'ehDampL[%i]'%ihw)
+    GF1.ehDampR[ihw] = NEGF.AssertReal(MM.trace(M, GF1.AR, M, GF2.AR), 'ehDampR[%i]'%ihw)
     # Remains from older version (see before rev. 219):
     #GF.dGnout.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,-0.5j*(tmp1-dagger(tmp1)),Us)))
     #GF.dGnin.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
@@ -361,14 +358,20 @@ def calcTraces(options, GF1, GF2, basis, NCfile, ihw):
 
     if options.LOEscale == 0.0:
         # Check against original LOE-WBA formulation
-        isym1 = MM.mm(GF1.ALT, M, GF2.AR, M)
-        isym2 = MM.mm(MM.dagger(GF1.ARGLG), M, GF2.A, M)
-        isym3 = MM.mm(GF1.ARGLG, M, GF2.A, M)
-        isym = MM.trace(isym1)+1j/2.*(MM.trace(isym2)-MM.trace(isym3))
+        isym1 = MM.trace(GF1.ALT, M, GF2.AR, M)
+        gf2am = MM.mm(GF2.A, M)
+        gf1_dagarglg_m = MM.mm(MM.dagger(GF1.ARGLG), M)
+        gf1_arglg_m = MM.mm(GF1.ARGLG, M)
+        isym2 = MM.trace(gf1_dagarglg_m, gf2am)
+        isym3 = MM.trace(gf1_arglg_m, gf2am)
+        del gf2am
+        isym = isym1+1j/2.*(isym2-isym3)
         print('LOE-WBA check: Isym diff', K23+K4-isym)
-        iasym1 = MM.mm(MM.dagger(GF1.ARGLG), M, GF2.AR-GF2.AL, M)
-        iasym2 = MM.mm(GF1.ARGLG, M, GF2.AR-GF2.AL, M)
-        iasym = MM.trace(iasym1)+MM.trace(iasym2)
+        gf2_ar_al_M = MM.mm(GF2.AR-GF2.AL, M)
+        iasym1 = MM.trace(gf1_dagarglg_m, gf2_ar_al_M)
+        iasym2 = MM.trace(gf1_arglg_m, gf2_ar_al_M)
+        iasym = iasym1+iasym2
+        del gf1_dagarglg_m, gf1_arglg_m
         print('LOE-WBA check: Iasym diff', aK23-iasym)
 
         # Compute inelastic shot noise terms according to the papers
@@ -377,26 +380,34 @@ def calcTraces(options, GF1, GF2, basis, NCfile, ihw):
         # Zero-temperature limit
         TT = MM.mm(GF1.GammaL, GF1.AR) # this matrix has the correct shape for MM
         ReGr = (GF1.Gr+GF1.Ga)/2.
-        tmp = MM.mm(GF1.Gr, M, ReGr, M, GF1.AR)
+        Gf1GrM = MM.mm(GF1.Gr, M)
+        MAR = MM.mm(M, GF1.AR)
+        tmp = MM.mm(Gf1GrM, ReGr, MAR)
+        del ReGr
         tmp = tmp+MM.dagger(tmp)
         Tlambda0 = MM.mm(GF1.GammaL, tmp)
-        tmp1 = MM.mm(M, GF1.AR, M)
-        tmp2 = MM.mm(M, GF1.A, M, GF1.Gr, GF1.GammaR)
+        tmp1 = MM.mm(MAR, M)
+        GrGammaR = MM.mm(GF1.Gr, GF1.GammaR)
+        GammaLGr = MM.mm(GF1.GammaL, GF1.Gr)
+        tmp2 = MM.mm(M, GF1.A, M, GrGammaR)
         tmp = tmp1+1j/2.*(MM.dagger(tmp2)-tmp2)
-        Tlambda1 = MM.mm(GF1.GammaL, GF1.Gr, tmp, GF1.Ga)
-        MARGL = MM.mm(M, GF1.AR, GF1.GammaL)
+        Tlambda1 = MM.mm(GammaLGr, tmp, GF1.Ga)
+        MARGL = MM.mm(MAR, GF1.GammaL)
+        del MAR
         tmp1 = MM.mm(MARGL, GF1.AR, M)
-        tmp2 = MM.mm(MARGL, GF1.Gr, M, GF1.Gr, GF1.GammaR)
-        tmp = tmp1+tmp2
+        tmp2 = MM.mm(MARGL, Gf1GrM, GrGammaR)
+        del Gf1GrM, GrGammaR, MARGL
+        tmp = tmp1 + tmp2
+        del tmp1, tmp2
         tmp = tmp + MM.dagger(tmp)
-        Qlambda = MM.mm(-GF1.Ga, GF1.GammaL, GF1.Gr, tmp)
+        Qlambda = -MM.trace(GF1.Ga, GammaLGr, tmp)
         tmp = -2*TT
         OneMinusTwoT = tmp+N.identity(len(GF1.GammaL))
         # Store relevant traces
         GF1.dIel[ihw] = NEGF.AssertReal(MM.trace(Tlambda0), 'dIel[%i]'%ihw)
         GF1.dIinel[ihw] = NEGF.AssertReal(MM.trace(Tlambda1), 'dIinel[%i]'%ihw)
-        GF1.dSel[ihw] = NEGF.AssertReal(MM.trace(MM.mm(OneMinusTwoT, Tlambda0)), 'dSel[%i]'%ihw)
-        GF1.dSinel[ihw] = NEGF.AssertReal(MM.trace(Qlambda+MM.mm(OneMinusTwoT, Tlambda1)), 'dSinel[%i]'%ihw)
+        GF1.dSel[ihw] = NEGF.AssertReal(MM.trace(OneMinusTwoT, Tlambda0), 'dSel[%i]'%ihw)
+        GF1.dSinel[ihw] = NEGF.AssertReal(Qlambda+MM.trace(OneMinusTwoT, Tlambda1), 'dSinel[%i]'%ihw)
 
 
 def calcIETS(options, GFp, GFm, basis, hw):
@@ -662,7 +673,7 @@ def writeFGRrates(options, GF, hw, NCfile):
         inter, intra = 0.0, 0.0 # splitting total rate in two
         for iL in range(len(GF.ECleft)):
             for iR in range(len(GF.ECright)):
-                tmp = N.dot(N.conjugate(GF.ECleft[iL]), MM.mm(M, GF.ECright[iR]))
+                tmp = N.conjugate(GF.ECleft[iL]).dot(M.dot(GF.ECright[iR]))
                 rate[iL, iR] = (2*N.pi)**2*abs(tmp)**2
                 totrate += rate[iL, iR]
                 if iL == iR: intra += rate[iL, iR]

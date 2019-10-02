@@ -4,21 +4,29 @@ import numpy as N
 import numpy.linalg as LA
 
 
-def mm(* args):
-    """
-    Matrix multiplication with arbitrary number of arguments
-    and the SpectralMatrix type.
-    """
-    args = list(args)
+def mm(*args, trace=False):
+    """ Matrix multiplication with numpy einsum. """
+    operands = []
+    alphabet = [chr(i) for i in range(97, 123)]
+    op_index = []  # ["ab", "bc", "cd", ...]
+    for op in args:
+        if isinstance(op, SpectralMatrix):
+            operands.append(op.L)
+            op_index.append(alphabet.pop() + alphabet[0])
+            operands.append(op.R)
+            op_index.append(alphabet.pop() + alphabet[0])
+        else:
+            operands.append(op)
+            op_index.append(alphabet.pop() + alphabet[0])
+    indices = ",".join(op_index)
+    if trace:
+        # The first and last indices should then be the same
+        indices = indices[:-1] + indices[0]
+    return N.einsum(indices, *operands, optimize="greedy")
 
-    # Look for SpectralMatrices
-    where = N.where(N.array([isinstance(ii, SpectralMatrix) for ii in args]))[0]
-    if len(where) > 0:
-        res = __mmSpectralMatrix(args, where)
-    else:
-        res = __mm(args)
 
-    return res
+def trace(*args):
+    return mm(*args, trace=True)
 
 
 def __mmSpectralMatrix(args, where):
@@ -182,16 +190,6 @@ class SpectralMatrix(object):
         tmp.L = dagger(self.R)
         tmp.R = dagger(self.L)
         return tmp
-
-
-def trace(a):
-    """
-    Returns the trace of a normal or spectral matrix.
-    """
-    if isinstance(a, SpectralMatrix):
-        return N.trace(mm(a.R, a.L)) # Switch sum around to make faster!
-    else:
-        return N.trace(a)
 
 
 def dagger(x):
