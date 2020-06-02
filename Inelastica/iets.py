@@ -208,15 +208,18 @@ def main(options):
     IntegrityCheck(options, GFp, NCfile)
     # Calculate trace factors one mode at a time
     print('Inelastica: LOEscale =', options.LOEscale)
+
     if options.LOEscale == 0.0:
         # LOEscale=0.0 => Original LOE-WBA method, PRB 72, 201101(R) (2005) [cond-mat/0505473].
         GFp.calcGF(options.energy+options.eta*1.0j, options.kpoint[0:2], ispin=options.iSpin,
                    etaLead=options.etaLead, useSigNCfiles=options.signc, SpectralCutoff=options.SpectralCutoff)
         GFm.calcGF(options.energy+options.eta*1.0j, options.kpoint[0:2], ispin=options.iSpin,
                    etaLead=options.etaLead, useSigNCfiles=options.signc, SpectralCutoff=options.SpectralCutoff)
+        recycle_p = dict()
+        recycle_m = dict()
         for ihw in (hw > options.modeCutoff).nonzero()[0]:
-            calcTraces(options, GFp, GFm, basis, NCfile, ihw)
-            calcTraces(options, GFm, GFp, basis, NCfile, ihw)
+            calcTraces(options, GFp, GFm, basis, NCfile, ihw, recycle=recycle_p)
+            calcTraces(options, GFm, GFp, basis, NCfile, ihw, recycle=recycle_m)
         writeFGRrates(options, GFp, hw, NCfile)
     else:
         # LOEscale=1.0 => Generalized LOE, PRB 89, 081405(R) (2014) [arXiv:1312.7625]
@@ -324,7 +327,7 @@ def IntegrityCheck(options, GF, NCfile):
         sys.exit('Inelastica: Error - inconsistency detected for device region.\n')
 
 
-def calcTraces(options, GF1, GF2, basis, NCfile, ihw):
+def calcTraces(options, GF1, GF2, basis, NCfile, ihw, recycle=None):
     # Calculate various traces over the electronic structure
     # Electron-phonon couplings
     ihw = int(ihw)
@@ -378,7 +381,15 @@ def calcTraces(options, GF1, GF2, basis, NCfile, ihw):
         # Haupt, Novotny & Belzig, PRB 82, 165441 (2010) and
         # Avriller & Frederiksen, PRB 86, 155411 (2012)
         # Zero-temperature limit
-        TT = MM.mm(GF1.GammaL, GF1.AR) # this matrix has the correct shape for MM
+        if recycle is not None:
+            if "TT" not in recycle:
+                recycle["TT"] = MM.mm(GF1.GammaL, GF1.AR)
+            if "GrGammas" not in recycle:
+                GrGammaR = MM.mm(GF1.Gr, GF1.GammaR)
+                GammaLGr = MM.mm(GF1.GammaL, GF1.Gr)
+                recycle["GrGammas"] = (GrGammaR, GammaLGr)
+            TT = recycle["TT"]
+            GrGammaR, GammaLGr = recycle["GrGammas"]
         ReGr = (GF1.Gr+GF1.Ga)/2.
         Gf1GrM = MM.mm(GF1.Gr, M)
         MAR = MM.mm(M, GF1.AR)
@@ -387,8 +398,6 @@ def calcTraces(options, GF1, GF2, basis, NCfile, ihw):
         tmp = tmp+MM.dagger(tmp)
         Tlambda0 = MM.mm(GF1.GammaL, tmp)
         tmp1 = MM.mm(MAR, M)
-        GrGammaR = MM.mm(GF1.Gr, GF1.GammaR)
-        GammaLGr = MM.mm(GF1.GammaL, GF1.Gr)
         tmp2 = MM.mm(M, GF1.A, M, GrGammaR)
         tmp = tmp1+1j/2.*(MM.dagger(tmp2)-tmp2)
         Tlambda1 = MM.mm(GammaLGr, tmp, GF1.Ga)
