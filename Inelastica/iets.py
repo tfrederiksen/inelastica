@@ -119,6 +119,7 @@ def GetOptions(argv):
                    help='Scale factor to interpolate between LOE-WBA (0.0) and generalized LOE (1.0), see PRB 89, 081405(R) (2014) [default: %(default)s]')
     p.add_argument('--VfracL', dest='VfracL', type=float, default=0.5,
                    help='Voltage fraction over the left-center interface [default: %(default)s]')
+    p.add_argument("--calc-noise", action="store_true", help="Calculate noise terms -- WBA only.")
 
     # Parse the options
     options = p.parse_args(argv)
@@ -359,7 +360,7 @@ def calcTraces(options, GF1, GF2, basis, NCfile, ihw, recycle=None):
     #GF.dGnin.append(EC.calcCurrent(options,basis,GF.HNO,mm(Us,mm(G,MA1M,Gd)-0.5j*(tmp2-dagger(tmp2)),Us)))
     # NB: TF Should one use GF.HNO (nonorthogonal) or GF.H (orthogonalized) above?
 
-    if options.LOEscale == 0.0:
+    if options.LOEscale == 0.0 and options.calc_noise:
         # Check against original LOE-WBA formulation
         isym1 = MM.trace(GF1.ALT, M, GF2.AR, M)
         gf2am = MM.mm(GF2.A, M)
@@ -535,25 +536,26 @@ def calcIETS(options, GFp, GFm, basis, hw):
                 else:
                     IH[j] += GFm.HT[i]*Iasym
 
-    # Compute inelastic shot noise terms here:
-    absVl = N.absolute(Vl)
-    Inew = N.zeros(len(Vl), N.float)
-    Snew = N.zeros(len(Vl), N.float)
-    print('Noise factors:')
-    print(GFp.dIel)
-    print(GFp.dIinel)
-    print(GFp.dSel)
-    print(GFp.dSinel)
-    for i in (hw > options.modeCutoff).nonzero()[0]:
-        # Elastic part
-        Inew += GFp.dIel[i]*Vl
-        Snew += GFp.dSel[i]*absVl
-        # Inelastic part
-        indx = (absVl-hw[i] < 0).nonzero()[0]
-        fct = absVl-hw[i]
-        fct[indx] = 0.0 # set elements to zero
-        Inew += GFp.dIinel[i]*fct*N.sign(Vl)
-        Snew += GFp.dSinel[i]*fct
+    if options.calc_noise:
+        # Compute inelastic shot noise terms here:
+        absVl = N.absolute(Vl)
+        Inew = N.zeros(len(Vl), N.float)
+        Snew = N.zeros(len(Vl), N.float)
+        print('Noise factors:')
+        print(GFp.dIel)
+        print(GFp.dIinel)
+        print(GFp.dSel)
+        print(GFp.dSinel)
+        for i in (hw > options.modeCutoff).nonzero()[0]:
+            # Elastic part
+            Inew += GFp.dIel[i]*Vl
+            Snew += GFp.dSel[i]*absVl
+            # Inelastic part
+            indx = (absVl-hw[i] < 0).nonzero()[0]
+            fct = absVl-hw[i]
+            fct[indx] = 0.0 # set elements to zero
+            Inew += GFp.dIinel[i]*fct*N.sign(Vl)
+            Snew += GFp.dSinel[i]*fct
 
     # Get the right units for gamma_eh, gamma_heat
     gamma_eh_p = N.zeros((len(hw),), N.float)
@@ -584,9 +586,10 @@ def calcIETS(options, GFp, GFm, basis, hw):
         NPow[ii] = MM.interpolate(V, Vl, Pow[ii])
         NnPh[ii] = MM.interpolate(V, Vl, nPh[ii])
 
-    # Interpolate inelastic noise
-    NV, NI, NdI, NddI, NBdI, NBddI = Broaden(options, Vl, GFp.TeF*Vl+Inew)
-    NV, NS, NdS, NddS, NBdS, NBddS = Broaden(options, Vl, Snew)
+    if options.calc_noise:
+        # Interpolate inelastic noise
+        NV, NI, NdI, NddI, NBdI, NBddI = Broaden(options, Vl, GFp.TeF*Vl+Inew)
+        NV, NS, NdS, NddS, NBdS, NBddS = Broaden(options, Vl, Snew)
 
     print('Inelastica.calcIETS: V[:5]        =', V[:5]) # OK
     print('Inelastica.calcIETS: V[-5:][::-1] =', V[-5:][::-1]) # OK
@@ -615,6 +618,7 @@ def calcIETS(options, GFp, GFm, basis, hw):
         write2NCfile(outNC, GFp.HT, 'IAsymTr', 'Trace giving Asymmetric current contribution (prefactor to universal function)')
         write2NCfile(outNC, gamma_eh_p, 'gamma_eh', 'e-h damping [*deltaN=1/Second]')
         write2NCfile(outNC, gamma_heat_p, 'gamma_heat', 'Phonon heating [*(bias-hw) (eV) = 1/Second]')
+    if options.LOEscale == 0.0 and options.calc_noise:
         # New stuff related to the noise implementation
         write2NCfile(outNC, NI, 'Inew', 'Intrinsic Inew (new implementation incl. elastic renormalization, T=0)')
         write2NCfile(outNC, NdI, 'dInew', 'Intrinsic dInew (new implementation incl. elastic renormalization, T=0)')
