@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>&lt;no title&gt; &mdash; Inelastica v1.3.6 documentation</title>
+  <title>&lt;no title&gt; &mdash; Inelastica v1.3.7 documentation</title>
   
 
   
@@ -17,35 +17,38 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="&lt;no title&gt;" href="Inelastica.math.sphericalharmonics.html" />
     <link rel="prev" title="&lt;no title&gt;" href="Inelastica.math.misc.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -62,7 +65,7 @@
             
             
               <div class="version">
-                v1.3.6
+                v1.3.7
               </div>
             
           
@@ -171,14 +174,14 @@
   <span class="target" id="module-Inelastica.math.spectral"></span><dl class="class">
 <dt id="Inelastica.math.spectral.SpectralMatrix">
 <em class="property">class </em><code class="descclassname">Inelastica.math.spectral.</code><code class="descname">SpectralMatrix</code><span class="sig-paren">(</span><em>A=None</em>, <em>cutoff=1e-08</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#SpectralMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.spectral.SpectralMatrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Matrix class for spectral matrices.</p>
-<p>Idea: Split a spectral matrix <span class="math">\(\mathbf{A}^{(mxm)}\)</span> into two smaller matrices
-<span class="math">\(\mathbf{A} = \mathbf{L}.\mathbf{R}\)</span>
-where <span class="math">\(\mathbf{L}^{(mxn)} = [\lambda_1 \mathbf{v}_1, ..., \lambda_n \mathbf{v}_n]\)</span>
-and <span class="math">\(\mathbf{R}^{(nxm)} = [\mathbf{v}_1, ..., \mathbf{v}_n]^\dagger\)</span>
-are constructed from a call to <code class="docutils literal"><span class="pre">LA.eigh(A)</span></code> keeping only
-<span class="math">\(n\)</span> eigensolutions with eigenvalues above the specified cutoff.</p>
+<p>Idea: Split a spectral matrix <span class="math notranslate nohighlight">\(\mathbf{A}^{(mxm)}\)</span> into two smaller matrices
+<span class="math notranslate nohighlight">\(\mathbf{A} = \mathbf{L}.\mathbf{R}\)</span>
+where <span class="math notranslate nohighlight">\(\mathbf{L}^{(mxn)} = [\lambda_1 \mathbf{v}_1, ..., \lambda_n \mathbf{v}_n]\)</span>
+and <span class="math notranslate nohighlight">\(\mathbf{R}^{(nxm)} = [\mathbf{v}_1, ..., \mathbf{v}_n]^\dagger\)</span>
+are constructed from a call to <code class="docutils literal notranslate"><span class="pre">LA.eigh(A)</span></code> keeping only
+<span class="math notranslate nohighlight">\(n\)</span> eigensolutions with eigenvalues above the specified cutoff.</p>
 <p>The magic takes place in Matrix multiply function.</p>
 <p>Todo: Adding two gives full matrix! Should be easy to fix.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -207,7 +210,7 @@ are constructed from a call to <code class="docutils literal"><span class="pre">
 <dl class="method">
 <dt id="Inelastica.math.spectral.SpectralMatrix.full">
 <code class="descname">full</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#SpectralMatrix.full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.spectral.SpectralMatrix.full" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the dense ndarray via matrix multiplication <span class="math">\(\mathbf{A}^{(mxm)} = \mathbf{L}.\mathbf{R}\)</span>.</p>
+<dd><p>Returns the dense ndarray via matrix multiplication <span class="math notranslate nohighlight">\(\mathbf{A}^{(mxm)} = \mathbf{L}.\mathbf{R}\)</span>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -243,7 +246,7 @@ and the SpectralMatrix type.</p>
         <a href="Inelastica.math.sphericalharmonics.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="Inelastica.math.misc.html" class="btn btn-neutral" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="Inelastica.math.misc.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -252,7 +255,7 @@ and the SpectralMatrix type.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen
 
     </p>
   </div>
@@ -269,36 +272,16 @@ and the SpectralMatrix type.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'v1.3.6',
-            LANGUAGE:'en',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

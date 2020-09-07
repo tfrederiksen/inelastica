@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>CO/Cu(111) &mdash; Inelastica v1.3.6 documentation</title>
+  <title>CO/Cu(111) &mdash; Inelastica v1.3.7 documentation</title>
   
 
   
@@ -17,35 +17,38 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="NEB methods" href="neb.html" />
     <link rel="prev" title="Graphene/SiC" href="graphene_sic.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -62,7 +65,7 @@
             
             
               <div class="version">
-                v1.3.6
+                v1.3.7
               </div>
             
           
@@ -183,7 +186,7 @@
   <div class="section" id="co-cu-111">
 <span id="co-cu111"></span><h1>CO/Cu(111)<a class="headerlink" href="#co-cu-111" title="Permalink to this headline">¶</a></h1>
 <p>In this example we describe how to obtain STM images of a CO molecule adsorbed on a Cu(111) surface consisting of 3x3 Cu atoms with lattice constant 3.646 Å (interatomic distance 2.57 Å), using 5x5 k points along the surface plane. The vertical distance between the oxygen atom and the tip-apex copper atom is 7.4 Å (see /Examples/COatCu111-Cutip-3x3surf/).</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1">#TranSiesta:</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#TranSiesta:</span>
 XC.functional   GGA
 XC.authors      PBE
 MeshCutoff      <span class="m">200</span>. Ry
@@ -198,13 +201,13 @@ STM -F <span class="m">64</span> -L <span class="m">87</span> -n <span class="m"
 <h2>STM image<a class="headerlink" href="#stm-image" title="Permalink to this headline">¶</a></h2>
 <p><strong>Geometry</strong></p>
 <p>Relaxed geometry of the STM device region:</p>
-<a class="reference internal image-reference" href="../_images/STMimage_CO_at_Cu111_geom.png"><img alt="" class="align-center" src="../_images/STMimage_CO_at_Cu111_geom.png" style="width: 160.0px; height: 243.2px;" /></a>
+<a class="reference internal image-reference" href="../_images/STMimage_CO_at_Cu111_geom.png"><img alt="" class="align-center" src="../_images/STMimage_CO_at_Cu111_geom.png" style="width: 160.0px; height: 243.20000000000002px;" /></a>
 <p><strong>k averaged STM image</strong></p>
 <p>The k averaged STM image and its cross-section conductance:</p>
 <a class="reference internal image-reference" href="../_images/STMimage_CO_at_Cu111.png"><img alt="" class="align-center" src="../_images/STMimage_CO_at_Cu111.png" style="width: 562.4px; height: 190.4px;" /></a>
 <p><strong>Images of individual k points</strong></p>
 <p>STM images of individual k points along the surface plane:</p>
-<a class="reference internal image-reference" href="../_images/STMimage_CO_at_Cu111_kspace.png"><img alt="" class="align-center" src="../_images/STMimage_CO_at_Cu111_kspace.png" style="width: 347.2px; height: 201.6px;" /></a>
+<a class="reference internal image-reference" href="../_images/STMimage_CO_at_Cu111_kspace.png"><img alt="" class="align-center" src="../_images/STMimage_CO_at_Cu111_kspace.png" style="width: 347.20000000000005px; height: 201.60000000000002px;" /></a>
 </div>
 <div class="section" id="convergence-in-k-space">
 <h2>Convergence in k space<a class="headerlink" href="#convergence-in-k-space" title="Permalink to this headline">¶</a></h2>
@@ -224,7 +227,7 @@ STM -F <span class="m">64</span> -L <span class="m">87</span> -n <span class="m"
         <a href="neb.html" class="btn btn-neutral float-right" title="NEB methods" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="graphene_sic.html" class="btn btn-neutral" title="Graphene/SiC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="graphene_sic.html" class="btn btn-neutral float-left" title="Graphene/SiC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -233,7 +236,7 @@ STM -F <span class="m">64</span> -L <span class="m">87</span> -n <span class="m"
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen
 
     </p>
   </div>
@@ -250,36 +253,16 @@ STM -F <span class="m">64</span> -L <span class="m">87</span> -n <span class="m"
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'v1.3.6',
-            LANGUAGE:'en',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

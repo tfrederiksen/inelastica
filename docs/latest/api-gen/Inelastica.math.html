@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.math package &mdash; Inelastica v1.3.6 documentation</title>
+  <title>Inelastica.math package &mdash; Inelastica v1.3.7 documentation</title>
   
 
   
@@ -17,33 +17,36 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -60,7 +63,7 @@
             
             
               <div class="version">
-                v1.3.6
+                v1.3.7
               </div>
             
           
@@ -98,12 +101,12 @@
 <p class="caption"><span class="caption-text">API documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="Inelastica.html">Inelastica package</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="Inelastica.html#inelastica"><code class="docutils literal"><span class="pre">Inelastica</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inelastica.html#inelastica"><code class="docutils literal notranslate"><span class="pre">Inelastica</span></code></a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="Inelastica.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="Inelastica.fortran.html">Inelastica.fortran package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Inelastica.io.html">Inelastica.io package</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Inelastica.math package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#inelastica-math"><code class="docutils literal"><span class="pre">Inelastica.math</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inelastica-math"><code class="docutils literal notranslate"><span class="pre">Inelastica.math</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
 </ul>
 </li>
@@ -183,14 +186,14 @@
   <div class="section" id="module-Inelastica.math">
 <span id="inelastica-math-package"></span><h1>Inelastica.math package<a class="headerlink" href="#module-Inelastica.math" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="inelastica-math">
-<h2><a class="reference internal" href="#module-Inelastica.math" title="Inelastica.math"><code class="xref py py-mod docutils literal"><span class="pre">Inelastica.math</span></code></a><a class="headerlink" href="#inelastica-math" title="Permalink to this headline">¶</a></h2>
+<h2><a class="reference internal" href="#module-Inelastica.math" title="Inelastica.math"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Inelastica.math</span></code></a><a class="headerlink" href="#inelastica-math" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.math.SpectralMatrix" title="Inelastica.math.SpectralMatrix"><code class="xref py py-obj docutils literal"><span class="pre">SpectralMatrix</span></code></a>([A,&nbsp;cutoff])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.math.SpectralMatrix" title="Inelastica.math.SpectralMatrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpectralMatrix</span></code></a>([A,&nbsp;cutoff])</td>
 <td>Matrix class for spectral matrices.</td>
 </tr>
 </tbody>
@@ -198,13 +201,13 @@
 <span class="target" id="module-Inelastica.math"></span><dl class="function">
 <dt id="Inelastica.math.GaussKronrod">
 <code class="descclassname">Inelastica.math.</code><code class="descname">GaussKronrod</code><span class="sig-paren">(</span><em>n</em>, <em>tol=1e-10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/gausskronrod.html#GaussKronrod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.GaussKronrod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the (<span class="math">\(2n+1\)</span>)-point Gauss-Kronrod quadrature abscissa <span class="math">\(\{x_i\}\)</span>
-and weights <span class="math">\(\{w_{1,i}\}\)</span>, <span class="math">\(\{w_{2,i}\}\)</span>.
-Kronrod adds <span class="math">\(n+1\)</span> points to an <span class="math">\(n\)</span>-point Gaussian rule.</p>
+<dd><p>Computes the (<span class="math notranslate nohighlight">\(2n+1\)</span>)-point Gauss-Kronrod quadrature abscissa <span class="math notranslate nohighlight">\(\{x_i\}\)</span>
+and weights <span class="math notranslate nohighlight">\(\{w_{1,i}\}\)</span>, <span class="math notranslate nohighlight">\(\{w_{2,i}\}\)</span>.
+Kronrod adds <span class="math notranslate nohighlight">\(n+1\)</span> points to an <span class="math notranslate nohighlight">\(n\)</span>-point Gaussian rule.</p>
 <p>Definition:</p>
-<p><span class="math">\(\int_{-1/2}^{1/2} f(x) dx \sim \sum_i w_{1,i} f(x_i)\)</span>.</p>
+<p><span class="math notranslate nohighlight">\(\int_{-1/2}^{1/2} f(x) dx \sim \sum_i w_{1,i} f(x_i)\)</span>.</p>
 <p>The integration range corresponds to the first Brillouin zone in Inelastica.</p>
-<p>The weights <span class="math">\(\{w_{2,i}\}\)</span> are used for error estimation.</p>
+<p>The weights <span class="math notranslate nohighlight">\(\{w_{2,i}\}\)</span> are used for error estimation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -240,24 +243,24 @@ Kronrod adds <span class="math">\(n+1\)</span> points to an <span class="math">\
 <dl class="function">
 <dt id="Inelastica.math.Hilbert">
 <code class="descclassname">Inelastica.math.</code><code class="descname">Hilbert</code><span class="sig-paren">(</span><em>f</em>, <em>ker=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/hilbert.html#Hilbert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.Hilbert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hilbert transform <span class="math">\(\mathcal{H}[f](y)\)</span> of a function <span class="math">\(f(x)\)</span>
-with finite support, sampled on an equidistant grid <span class="math">\(\{x_1,x_2,x_{nh}\}\)</span>.</p>
+<dd><p>Hilbert transform <span class="math notranslate nohighlight">\(\mathcal{H}[f](y)\)</span> of a function <span class="math notranslate nohighlight">\(f(x)\)</span>
+with finite support, sampled on an equidistant grid <span class="math notranslate nohighlight">\(\{x_1,x_2,x_{nh}\}\)</span>.</p>
 <p>Definition:</p>
-<p><span class="math">\(\mathcal{H}[f](y)= \frac{1}{\pi} p.v.\int_{-\infty}^{\infty} dx \frac{f(x)}{x-y}\)</span>.</p>
+<p><span class="math notranslate nohighlight">\(\mathcal{H}[f](y)= \frac{1}{\pi} p.v.\int_{-\infty}^{\infty} dx \frac{f(x)}{x-y}\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>f</strong> : ndarray</p>
 <blockquote>
-<div><p>List of function values <span class="math">\(f(x)\)</span>.</p>
+<div><p>List of function values <span class="math notranslate nohighlight">\(f(x)\)</span>.</p>
 </div></blockquote>
 <p><strong>ker</strong> : ndarray (optional)</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Hf</strong> : ndarray</p>
 <blockquote>
-<div><p>Hilbert transform of <span class="math">\(f(x)\)</span>.</p>
+<div><p>Hilbert transform of <span class="math notranslate nohighlight">\(f(x)\)</span>.</p>
 </div></blockquote>
 <p><strong>ker</strong> : ndarray</p>
 <blockquote class="last">
@@ -272,14 +275,14 @@ with finite support, sampled on an equidistant grid <span class="math">\(\{x_1,x
 <dl class="class">
 <dt id="Inelastica.math.SpectralMatrix">
 <em class="property">class </em><code class="descclassname">Inelastica.math.</code><code class="descname">SpectralMatrix</code><span class="sig-paren">(</span><em>A=None</em>, <em>cutoff=1e-08</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#SpectralMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.SpectralMatrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Matrix class for spectral matrices.</p>
-<p>Idea: Split a spectral matrix <span class="math">\(\mathbf{A}^{(mxm)}\)</span> into two smaller matrices
-<span class="math">\(\mathbf{A} = \mathbf{L}.\mathbf{R}\)</span>
-where <span class="math">\(\mathbf{L}^{(mxn)} = [\lambda_1 \mathbf{v}_1, ..., \lambda_n \mathbf{v}_n]\)</span>
-and <span class="math">\(\mathbf{R}^{(nxm)} = [\mathbf{v}_1, ..., \mathbf{v}_n]^\dagger\)</span>
-are constructed from a call to <code class="docutils literal"><span class="pre">LA.eigh(A)</span></code> keeping only
-<span class="math">\(n\)</span> eigensolutions with eigenvalues above the specified cutoff.</p>
+<p>Idea: Split a spectral matrix <span class="math notranslate nohighlight">\(\mathbf{A}^{(mxm)}\)</span> into two smaller matrices
+<span class="math notranslate nohighlight">\(\mathbf{A} = \mathbf{L}.\mathbf{R}\)</span>
+where <span class="math notranslate nohighlight">\(\mathbf{L}^{(mxn)} = [\lambda_1 \mathbf{v}_1, ..., \lambda_n \mathbf{v}_n]\)</span>
+and <span class="math notranslate nohighlight">\(\mathbf{R}^{(nxm)} = [\mathbf{v}_1, ..., \mathbf{v}_n]^\dagger\)</span>
+are constructed from a call to <code class="docutils literal notranslate"><span class="pre">LA.eigh(A)</span></code> keeping only
+<span class="math notranslate nohighlight">\(n\)</span> eigensolutions with eigenvalues above the specified cutoff.</p>
 <p>The magic takes place in Matrix multiply function.</p>
 <p>Todo: Adding two gives full matrix! Should be easy to fix.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -308,51 +311,51 @@ are constructed from a call to <code class="docutils literal"><span class="pre">
 <dl class="method">
 <dt id="Inelastica.math.SpectralMatrix.full">
 <code class="descname">full</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#SpectralMatrix.full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.SpectralMatrix.full" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the dense ndarray via matrix multiplication <span class="math">\(\mathbf{A}^{(mxm)} = \mathbf{L}.\mathbf{R}\)</span>.</p>
+<dd><p>Returns the dense ndarray via matrix multiplication <span class="math notranslate nohighlight">\(\mathbf{A}^{(mxm)} = \mathbf{L}.\mathbf{R}\)</span>.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.acos">
-<code class="descclassname">Inelastica.math.</code><code class="descname">acos</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.acos" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">acos</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.acos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the arc cosine (measured in radians) of x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.acosh">
-<code class="descclassname">Inelastica.math.</code><code class="descname">acosh</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.acosh" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">acosh</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.acosh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the inverse hyperbolic cosine of x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.asin">
-<code class="descclassname">Inelastica.math.</code><code class="descname">asin</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.asin" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">asin</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.asin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the arc sine (measured in radians) of x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.asinh">
-<code class="descclassname">Inelastica.math.</code><code class="descname">asinh</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.asinh" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">asinh</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.asinh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the inverse hyperbolic sine of x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.atan">
-<code class="descclassname">Inelastica.math.</code><code class="descname">atan</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.atan" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">atan</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.atan" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the arc tangent (measured in radians) of x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.atan2">
-<code class="descclassname">Inelastica.math.</code><code class="descname">atan2</code><span class="sig-paren">(</span><em>y</em>, <em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.atan2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the arc tangent (measured in radians) of y/x.
-Unlike atan(y/x), the signs of both x and y are considered.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">atan2</code><span class="sig-paren">(</span><em>$module</em>, <em>y</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.atan2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the arc tangent (measured in radians) of y/x.</p>
+<p>Unlike atan(y/x), the signs of both x and y are considered.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.atanh">
-<code class="descclassname">Inelastica.math.</code><code class="descname">atanh</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.atanh" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">atanh</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.atanh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the inverse hyperbolic tangent of x.</p>
 </dd></dl>
 
@@ -360,31 +363,46 @@ Unlike atan(y/x), the signs of both x and y are considered.</p>
 <dt id="Inelastica.math.box">
 <code class="descclassname">Inelastica.math.</code><code class="descname">box</code><span class="sig-paren">(</span><em>mu1</em>, <em>mu2</em>, <em>grid</em>, <em>kT</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#box"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.box" title="Permalink to this definition">¶</a></dt>
 <dd><p>Window (box) function defined as
-<span class="math">\(n_F(\mu_2)-n_F(\mu_1)\)</span></p>
+<span class="math notranslate nohighlight">\(n_F(\mu_2)-n_F(\mu_1)\)</span></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.ceil">
-<code class="descclassname">Inelastica.math.</code><code class="descname">ceil</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.ceil" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the ceiling of x as a float.
-This is the smallest integral value &gt;= x.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">ceil</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.ceil" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ceiling of x as an Integral.</p>
+<p>This is the smallest integer &gt;= x.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.comb">
+<code class="descclassname">Inelastica.math.</code><code class="descname">comb</code><span class="sig-paren">(</span><em>$module</em>, <em>n</em>, <em>k</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.comb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of ways to choose k items from n items without repetition and without order.</p>
+<p>Evaluates to n! / (k! * (n - k)!) when k &lt;= n and evaluates
+to zero when k &gt; n.</p>
+<p>Also called the binomial coefficient because it is equivalent
+to the coefficient of k-th term in polynomial expansion of the
+expression (1 + x)**n.</p>
+<p>Raises TypeError if either of the arguments are not integers.
+Raises ValueError if either of the arguments are negative.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.copysign">
-<code class="descclassname">Inelastica.math.</code><code class="descname">copysign</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.copysign" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return x with the sign of y.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">copysign</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>y</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.copysign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a float with the magnitude (absolute value) of x but the sign of y.</p>
+<p>On platforms that support signed zeros, copysign(1.0, -0.0)
+returns -1.0.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.cos">
-<code class="descclassname">Inelastica.math.</code><code class="descname">cos</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.cos" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">cos</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.cos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the cosine of x (measured in radians).</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.cosh">
-<code class="descclassname">Inelastica.math.</code><code class="descname">cosh</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.cosh" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">cosh</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.cosh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the hyperbolic cosine of x.</p>
 </dd></dl>
 
@@ -396,103 +414,122 @@ This is the smallest integral value &gt;= x.</p>
 
 <dl class="function">
 <dt id="Inelastica.math.degrees">
-<code class="descclassname">Inelastica.math.</code><code class="descname">degrees</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.degrees" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">degrees</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.degrees" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert angle x from radians to degrees.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.dist">
 <code class="descclassname">Inelastica.math.</code><code class="descname">dist</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.dist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Euclidian norm <span class="math">\(||x||\)</span> of a vector <span class="math">\(x\)</span>.</p>
+<dd><p>Euclidian norm <span class="math notranslate nohighlight">\(||x||\)</span> of a vector <span class="math notranslate nohighlight">\(x\)</span>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.erf">
-<code class="descclassname">Inelastica.math.</code><code class="descname">erf</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.erf" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">erf</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.erf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Error function at x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.erfc">
-<code class="descclassname">Inelastica.math.</code><code class="descname">erfc</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.erfc" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">erfc</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.erfc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Complementary error function at x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.exp">
-<code class="descclassname">Inelastica.math.</code><code class="descname">exp</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.exp" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">exp</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.exp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return e raised to the power of x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.expm1">
-<code class="descclassname">Inelastica.math.</code><code class="descname">expm1</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.expm1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return exp(x)-1.
-This function avoids the loss of precision involved in the direct evaluation of exp(x)-1 for small x.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">expm1</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.expm1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return exp(x)-1.</p>
+<p>This function avoids the loss of precision involved in the direct evaluation of exp(x)-1 for small x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.fabs">
-<code class="descclassname">Inelastica.math.</code><code class="descname">fabs</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.fabs" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">fabs</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.fabs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the absolute value of the float x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.factorial">
-<code class="descclassname">Inelastica.math.</code><code class="descname">factorial</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span> &#x2192; Integral<a class="headerlink" href="#Inelastica.math.factorial" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find x!. Raise a ValueError if x is negative or non-integral.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">factorial</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.factorial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find x!.</p>
+<p>Raise a ValueError if x is negative or non-integral.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.fermi">
 <code class="descclassname">Inelastica.math.</code><code class="descname">fermi</code><span class="sig-paren">(</span><em>mu</em>, <em>E</em>, <em>kT</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#fermi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.fermi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fermi function <span class="math">\(n_F(\mu) = 1/[exp((E-\mu)/k_BT)+1]\)</span>.</p>
+<dd><p>Fermi function <span class="math notranslate nohighlight">\(n_F(\mu) = 1/[exp((E-\mu)/k_BT)+1]\)</span>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.floor">
-<code class="descclassname">Inelastica.math.</code><code class="descname">floor</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.floor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the floor of x as a float.
-This is the largest integral value &lt;= x.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">floor</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.floor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the floor of x as an Integral.</p>
+<p>This is the largest integer &lt;= x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.fmod">
-<code class="descclassname">Inelastica.math.</code><code class="descname">fmod</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.fmod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return fmod(x, y), according to platform C.  x % y may differ.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">fmod</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>y</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.fmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return fmod(x, y), according to platform C.</p>
+<p>x % y may differ.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.frexp">
-<code class="descclassname">Inelastica.math.</code><code class="descname">frexp</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.frexp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the mantissa and exponent of x, as pair (m, e).
-m is a float and e is an int, such that x = m * 2.**e.
+<code class="descclassname">Inelastica.math.</code><code class="descname">frexp</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.frexp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the mantissa and exponent of x, as pair (m, e).</p>
+<p>m is a float and e is an int, such that x = m * 2.**e.
 If x is 0, m and e are both 0.  Else 0.5 &lt;= abs(m) &lt; 1.0.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.fsum">
-<code class="descclassname">Inelastica.math.</code><code class="descname">fsum</code><span class="sig-paren">(</span><em>iterable</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.fsum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an accurate floating point sum of values in the iterable.
-Assumes IEEE-754 floating point arithmetic.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">fsum</code><span class="sig-paren">(</span><em>$module</em>, <em>seq</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.fsum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an accurate floating point sum of values in the iterable seq.</p>
+<p>Assumes IEEE-754 floating point arithmetic.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.gamma">
-<code class="descclassname">Inelastica.math.</code><code class="descname">gamma</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.gamma" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">gamma</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.gamma" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gamma function at x.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="Inelastica.math.gcd">
+<code class="descclassname">Inelastica.math.</code><code class="descname">gcd</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>y</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.gcd" title="Permalink to this definition">¶</a></dt>
+<dd><p>greatest common divisor of x and y</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="Inelastica.math.hypot">
-<code class="descclassname">Inelastica.math.</code><code class="descname">hypot</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.hypot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the Euclidean distance, sqrt(x*x + y*y).</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">hypot</code><span class="sig-paren">(</span><em>*coordinates</em><span class="sig-paren">)</span> &#x2192; value<a class="headerlink" href="#Inelastica.math.hypot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multidimensional Euclidean distance from the origin to a point.</p>
+<dl class="docutils">
+<dt>Roughly equivalent to:</dt>
+<dd>sqrt(sum(x**2 for x in coordinates))</dd>
+</dl>
+<p>For a two dimensional point (x, y), gives the hypotenuse
+using the Pythagorean theorem:  sqrt(x*x + y*y).</p>
+<p>For example, the hypotenuse of a 3/4/5 right triangle is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hypot</span><span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">)</span>
+<span class="go">5.0</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.interpolate">
 <code class="descclassname">Inelastica.math.</code><code class="descname">interpolate</code><span class="sig-paren">(</span><em>nx</em>, <em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.interpolate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate <span class="math">\(f(x)=y\)</span> to find <span class="math">\(f(nx)\)</span>. Extrapolation allowed.</p>
+<dd><p>Interpolate <span class="math notranslate nohighlight">\(f(x)=y\)</span> to find <span class="math notranslate nohighlight">\(f(nx)\)</span>. Extrapolation allowed.</p>
 <p>NB: Makes no checks for nx inside x region!!!</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -523,47 +560,88 @@ Assumes IEEE-754 floating point arithmetic.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="Inelastica.math.isclose">
+<code class="descclassname">Inelastica.math.</code><code class="descname">isclose</code><span class="sig-paren">(</span><em>$module</em>, <em>/</em>, <em>a</em>, <em>b</em>, <em>*</em>, <em>rel_tol=1e-09</em>, <em>abs_tol=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.isclose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine whether two floating point numbers are close in value.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>rel_tol</dt>
+<dd>maximum difference for being considered “close”, relative to the
+magnitude of the input values</dd>
+<dt>abs_tol</dt>
+<dd>maximum difference for being considered “close”, regardless of the
+magnitude of the input values</dd>
+</dl>
+</div></blockquote>
+<p>Return True if a is close in value to b, and False otherwise.</p>
+<p>For the values to be considered close, the difference between them
+must be smaller than at least one of the tolerances.</p>
+<p>-inf, inf and NaN behave similarly to the IEEE 754 Standard.  That
+is, NaN is not close to anything, even itself.  inf and -inf are
+only close to themselves.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.isfinite">
+<code class="descclassname">Inelastica.math.</code><code class="descname">isfinite</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.isfinite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if x is neither an infinity nor a NaN, and False otherwise.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="Inelastica.math.isinf">
-<code class="descclassname">Inelastica.math.</code><code class="descname">isinf</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#Inelastica.math.isinf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if float x is infinite (positive or negative).</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">isinf</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.isinf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if x is a positive or negative infinity, and False otherwise.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.isnan">
-<code class="descclassname">Inelastica.math.</code><code class="descname">isnan</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#Inelastica.math.isnan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if float x is not a number (NaN).</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">isnan</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.isnan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if x is a NaN (not a number), and False otherwise.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.isqrt">
+<code class="descclassname">Inelastica.math.</code><code class="descname">isqrt</code><span class="sig-paren">(</span><em>$module</em>, <em>n</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.isqrt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the integer part of the square root of the input.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.ldexp">
-<code class="descclassname">Inelastica.math.</code><code class="descname">ldexp</code><span class="sig-paren">(</span><em>x</em>, <em>i</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.ldexp" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">ldexp</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>i</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.ldexp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return x * (2**i).</p>
+<p>This is essentially the inverse of frexp().</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.lgamma">
-<code class="descclassname">Inelastica.math.</code><code class="descname">lgamma</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.lgamma" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">lgamma</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.lgamma" title="Permalink to this definition">¶</a></dt>
 <dd><p>Natural logarithm of absolute value of Gamma function at x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.log">
-<code class="descclassname">Inelastica.math.</code><code class="descname">log</code><span class="sig-paren">(</span><em>x</em><span class="optional">[</span>, <em>base</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the logarithm of x to the given base.
-If the base not specified, returns the natural logarithm (base e) of x.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">log</code><span class="sig-paren">(</span><em>x</em><span class="optional">[</span>, <em>base=math.e</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the logarithm of x to the given base.</p>
+<p>If the base not specified, returns the natural logarithm (base e) of x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.log10">
-<code class="descclassname">Inelastica.math.</code><code class="descname">log10</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.log10" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">log10</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.log10" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the base 10 logarithm of x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.log1p">
-<code class="descclassname">Inelastica.math.</code><code class="descname">log1p</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.log1p" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the natural logarithm of 1+x (base e).
-The result is computed in a way which is accurate for x near zero.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">log1p</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.log1p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the natural logarithm of 1+x (base e).</p>
+<p>The result is computed in a way which is accurate for x near zero.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.log2">
+<code class="descclassname">Inelastica.math.</code><code class="descname">log2</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.log2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the base 2 logarithm of x.</p>
 </dd></dl>
 
 <dl class="function">
@@ -575,9 +653,9 @@ and the SpectralMatrix type.</p>
 
 <dl class="function">
 <dt id="Inelastica.math.modf">
-<code class="descclassname">Inelastica.math.</code><code class="descname">modf</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.modf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the fractional and integer parts of x.  Both results carry the sign
-of x and are floats.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">modf</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.modf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the fractional and integer parts of x.</p>
+<p>Both results carry the sign of x and are floats.</p>
 </dd></dl>
 
 <dl class="function">
@@ -589,37 +667,68 @@ of x and are floats.</p>
 <dl class="function">
 <dt id="Inelastica.math.outerAdd">
 <code class="descclassname">Inelastica.math.</code><code class="descname">outerAdd</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/misc.html#outerAdd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.outerAdd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns <span class="math">\(A_{ijk}=B_i+C_j+D_k\)</span>.</p>
+<dd><p>Returns <span class="math notranslate nohighlight">\(A_{ijk}=B_i+C_j+D_k\)</span>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Inelastica.math.perm">
+<code class="descclassname">Inelastica.math.</code><code class="descname">perm</code><span class="sig-paren">(</span><em>$module</em>, <em>n</em>, <em>k=None</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.perm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of ways to choose k items from n items without repetition and with order.</p>
+<p>Evaluates to n! / (n - k)! when k &lt;= n and evaluates
+to zero when k &gt; n.</p>
+<p>If k is not specified or is None, then k defaults to n
+and the function returns n!.</p>
+<p>Raises TypeError if either of the arguments are not integers.
+Raises ValueError if either of the arguments are negative.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.pow">
-<code class="descclassname">Inelastica.math.</code><code class="descname">pow</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.pow" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">pow</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>y</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.pow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return x**y (x to the power of y).</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="Inelastica.math.prod">
+<code class="descclassname">Inelastica.math.</code><code class="descname">prod</code><span class="sig-paren">(</span><em>$module</em>, <em>iterable</em>, <em>/</em>, <em>*</em>, <em>start=1</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.prod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the product of all the elements in the input iterable.</p>
+<p>The default start value for the product is 1.</p>
+<p>When the iterable is empty, return the start value.  This function is
+intended specifically for use with numeric values and may reject
+non-numeric types.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="Inelastica.math.radians">
-<code class="descclassname">Inelastica.math.</code><code class="descname">radians</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.radians" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">radians</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.radians" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert angle x from degrees to radians.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="Inelastica.math.remainder">
+<code class="descclassname">Inelastica.math.</code><code class="descname">remainder</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>y</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.remainder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Difference between x and the closest integer multiple of y.</p>
+<p>Return x - n*y where n*y is the closest integer multiple of y.
+In the case where x is exactly halfway between two multiples of
+y, the nearest even value of n is used. The result is always exact.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="Inelastica.math.sin">
-<code class="descclassname">Inelastica.math.</code><code class="descname">sin</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.sin" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">sin</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.sin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the sine of x (measured in radians).</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.sinh">
-<code class="descclassname">Inelastica.math.</code><code class="descname">sinh</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.sinh" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">sinh</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.sinh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the hyperbolic sine of x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.sphericalHarmonics">
 <code class="descclassname">Inelastica.math.</code><code class="descname">sphericalHarmonics</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>costh</em>, <em>sinfi</em>, <em>cosfi</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/sphericalharmonics.html#sphericalHarmonics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.math.sphericalHarmonics" title="Permalink to this definition">¶</a></dt>
-<dd><p>Spherical harmonics <span class="math">\(Y_\ell^m(\theta,\phi)\)</span> derived from <code class="docutils literal"><span class="pre">scipy.special</span></code>.</p>
+<dd><p>Spherical harmonics <span class="math notranslate nohighlight">\(Y_\ell^m(\theta,\phi)\)</span> derived from <code class="docutils literal notranslate"><span class="pre">scipy.special</span></code>.</p>
 <p>Note: This function has been checked up to d-orbitals with the Siesta overlap matrix.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -641,19 +750,19 @@ of x and are floats.</p>
 
 <dl class="function">
 <dt id="Inelastica.math.sqrt">
-<code class="descclassname">Inelastica.math.</code><code class="descname">sqrt</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.sqrt" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">sqrt</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.sqrt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the square root of x.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.tan">
-<code class="descclassname">Inelastica.math.</code><code class="descname">tan</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.tan" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">tan</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.tan" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the tangent of x (measured in radians).</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Inelastica.math.tanh">
-<code class="descclassname">Inelastica.math.</code><code class="descname">tanh</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.tanh" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Inelastica.math.</code><code class="descname">tanh</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.tanh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the hyperbolic tangent of x.</p>
 </dd></dl>
 
@@ -693,8 +802,9 @@ The grid x does not have to be equidistant.</p>
 
 <dl class="function">
 <dt id="Inelastica.math.trunc">
-<code class="descclassname">Inelastica.math.</code><code class="descname">trunc</code><span class="sig-paren">(</span><em>x:Real</em><span class="sig-paren">)</span> &#x2192; Integral<a class="headerlink" href="#Inelastica.math.trunc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Truncates x to the nearest Integral toward 0. Uses the __trunc__ magic method.</p>
+<code class="descclassname">Inelastica.math.</code><code class="descname">trunc</code><span class="sig-paren">(</span><em>$module</em>, <em>x</em>, <em>/</em><span class="sig-paren">)</span><a class="headerlink" href="#Inelastica.math.trunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Truncates the Real x to the nearest Integral toward 0.</p>
+<p>Uses the __trunc__ magic method.</p>
 </dd></dl>
 
 </div>
@@ -716,7 +826,7 @@ The grid x does not have to be equidistant.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen
 
     </p>
   </div>
@@ -733,36 +843,16 @@ The grid x does not have to be equidistant.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'v1.3.6',
-            LANGUAGE:'en',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.pyTBT &mdash; Inelastica v1.3.6 documentation</title>
+  <title>Inelastica.pyTBT &mdash; Inelastica v1.3.7 documentation</title>
   
 
   
@@ -17,33 +17,36 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -60,7 +63,7 @@
             
             
               <div class="version">
-                v1.3.6
+                v1.3.7
               </div>
             
           
@@ -370,13 +373,13 @@
             <span class="n">thisspinlabel</span> <span class="o">=</span> <span class="n">outFile</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">thisspinlabel</span> <span class="o">=</span> <span class="n">outFile</span><span class="o">+</span><span class="p">[</span><span class="s1">&#39;.UP&#39;</span><span class="p">,</span> <span class="s1">&#39;.DOWN&#39;</span><span class="p">][</span><span class="n">iSpin</span><span class="p">]</span>
-        <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">thisspinlabel</span><span class="o">+</span><span class="s1">&#39;.AVTRANS&#39;</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">)</span>
+        <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">thisspinlabel</span><span class="o">+</span><span class="s1">&#39;.AVTRANS&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Nk1(</span><span class="si">%s</span><span class="s1">)=</span><span class="si">%i</span><span class="s1"> Nk2(</span><span class="si">%s</span><span class="s1">)=</span><span class="si">%i</span><span class="s1"> eta=</span><span class="si">%.2e</span><span class="s1"> etaLead=</span><span class="si">%.2e</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Nk</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Nk</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">options</span><span class="o">.</span><span class="n">eta</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">etaLead</span><span class="p">))</span>
         <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# E   Ttot(E)   Ti(E)(i=1-</span><span class="si">%i</span><span class="s1">)   RelErrorTtot(E)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">options</span><span class="o">.</span><span class="n">numchan</span><span class="p">)</span>
-        <span class="n">foSN</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">thisspinlabel</span><span class="o">+</span><span class="s1">&#39;.AVNOISE&#39;</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">)</span>
+        <span class="n">foSN</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">thisspinlabel</span><span class="o">+</span><span class="s1">&#39;.AVNOISE&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="n">foSN</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Nk1(</span><span class="si">%s</span><span class="s1">)=</span><span class="si">%i</span><span class="s1"> Nk2(</span><span class="si">%s</span><span class="s1">)=</span><span class="si">%i</span><span class="s1"> eta=</span><span class="si">%.2e</span><span class="s1"> etaLead=</span><span class="si">%.2e</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Nk</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Nk</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">options</span><span class="o">.</span><span class="n">eta</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">etaLead</span><span class="p">))</span>
         <span class="n">foSN</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# E   SNtot(E)   SNi(E)(i=1-</span><span class="si">%i</span><span class="s1">)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">options</span><span class="o">.</span><span class="n">numchan</span><span class="p">)</span>
-        <span class="n">foFF</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">thisspinlabel</span><span class="o">+</span><span class="s1">&#39;.FANO&#39;</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">)</span>
+        <span class="n">foFF</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">thisspinlabel</span><span class="o">+</span><span class="s1">&#39;.FANO&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="n">foFF</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Nk1(</span><span class="si">%s</span><span class="s1">)=</span><span class="si">%i</span><span class="s1"> Nk2(</span><span class="si">%s</span><span class="s1">)=</span><span class="si">%i</span><span class="s1"> eta=</span><span class="si">%.2e</span><span class="s1"> etaLead=</span><span class="si">%.2e</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Nk</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">type</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Nk</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">options</span><span class="o">.</span><span class="n">eta</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">etaLead</span><span class="p">))</span>
         <span class="n">foFF</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# E   Fano factor </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="c1"># Loop over energy</span>
@@ -436,7 +439,7 @@
         <span class="n">foFF</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="c1"># Write k-point-resolved transmission</span>
-        <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">thisspinlabel</span><span class="o">+</span><span class="s1">&#39;.TRANS&#39;</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">)</span>
+        <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">thisspinlabel</span><span class="o">+</span><span class="s1">&#39;.TRANS&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">ik</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">NNk</span><span class="p">):</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">w</span><span class="p">[:,</span> <span class="n">ik</span><span class="p">]</span>
             <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1"># k = </span><span class="si">%f</span><span class="s1">, </span><span class="si">%f</span><span class="s1">    w = </span><span class="si">%f</span><span class="s1"> </span><span class="si">%f</span><span class="s1"> </span><span class="si">%f</span><span class="s1"> </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">ik</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">ik</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
@@ -452,7 +455,7 @@
         <span class="n">fo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="c1"># Write k-point-resolved shot noise</span>
-        <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">thisspinlabel</span><span class="o">+</span><span class="s1">&#39;.NOISE&#39;</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">)</span>
+        <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">thisspinlabel</span><span class="o">+</span><span class="s1">&#39;.NOISE&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">ik</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">NNk</span><span class="p">):</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">w</span><span class="p">[:,</span> <span class="n">ik</span><span class="p">]</span>
             <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1"># k = </span><span class="si">%f</span><span class="s1">, </span><span class="si">%f</span><span class="s1">    w = </span><span class="si">%f</span><span class="s1"> </span><span class="si">%f</span><span class="s1"> </span><span class="si">%f</span><span class="s1"> </span><span class="si">%f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">ik</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">mesh</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">ik</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
@@ -526,7 +529,7 @@
         <span class="n">orb</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">basis</span><span class="o">.</span><span class="n">L</span><span class="p">[</span><span class="n">io</span><span class="p">])</span>
         <span class="n">orb</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">basis</span><span class="o">.</span><span class="n">M</span><span class="p">[</span><span class="n">io</span><span class="p">])</span>
         <span class="n">xmladd</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">orb</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">myprint</span><span class="p">(</span><span class="n">DOS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">ii</span><span class="p">]))</span>
-    <span class="n">doc</span><span class="o">.</span><span class="n">writexml</span><span class="p">(</span><span class="n">gzip</span><span class="o">.</span><span class="n">GzipFile</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">))</span>
+    <span class="n">doc</span><span class="o">.</span><span class="n">writexml</span><span class="p">(</span><span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;wt&#39;</span><span class="p">))</span>
 
     <span class="c1"># Make plot</span>
     <span class="n">atoms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">basis</span><span class="o">.</span><span class="n">label</span><span class="p">))</span>
@@ -544,7 +547,7 @@
             <span class="n">g</span><span class="o">.</span><span class="n">AddDatasets</span><span class="p">(</span><span class="n">XMGR</span><span class="o">.</span><span class="n">XYset</span><span class="p">(</span><span class="n">ee</span><span class="o">-</span><span class="n">DevGF</span><span class="o">.</span><span class="n">HS</span><span class="o">.</span><span class="n">ef</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="n">iS</span><span class="o">*</span><span class="n">PDOS</span><span class="p">[</span><span class="n">iS</span><span class="p">],</span> <span class="n">legend</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">Lwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 
     <span class="c1"># Set axes and write XMGR plot to file</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;E-E\sF\N (eV)&#39;</span><span class="p">,</span> <span class="n">autoscale</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;E-E\sF\N (eV)&#39;</span><span class="p">,</span> <span class="n">autoscale</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">g</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;DOS (1/eV/atom)&#39;</span><span class="p">,</span> <span class="n">autoscale</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">g</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mf">1.3</span><span class="p">)</span>
     <span class="n">g</span><span class="o">.</span><span class="n">ShowLegend</span><span class="p">()</span>
@@ -572,7 +575,7 @@
         <span class="n">mpsh</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">orb</span><span class="p">)</span>
         <span class="n">orb</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">ii</span><span class="p">)</span>
         <span class="n">xmladd</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">orb</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">myprint</span><span class="p">(</span><span class="n">DOS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">ii</span><span class="p">]))</span>
-    <span class="n">doc</span><span class="o">.</span><span class="n">writexml</span><span class="p">(</span><span class="n">gzip</span><span class="o">.</span><span class="n">GzipFile</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">))</span>
+    <span class="n">doc</span><span class="o">.</span><span class="n">writexml</span><span class="p">(</span><span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;wt&#39;</span><span class="p">))</span>
 
     <span class="c1"># Make plot</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">XMGR</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
@@ -581,7 +584,7 @@
             <span class="n">g</span><span class="o">.</span><span class="n">AddDatasets</span><span class="p">(</span><span class="n">XMGR</span><span class="o">.</span><span class="n">XYset</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">Elist</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="n">iS</span><span class="o">*</span><span class="n">DOS</span><span class="p">[</span><span class="n">iS</span><span class="p">,</span> <span class="p">:,</span> <span class="n">ii</span><span class="p">],</span> <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">Lwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 
     <span class="c1"># Set axes and write XMGR plot to file</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;E-E\sF\N (eV)&#39;</span><span class="p">,</span> <span class="n">autoscale</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">SetXaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;E-E\sF\N (eV)&#39;</span><span class="p">,</span> <span class="n">autoscale</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">g</span><span class="o">.</span><span class="n">SetYaxis</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;DOS (1/eV)&#39;</span><span class="p">,</span> <span class="n">autoscale</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="c1"># Add MPSH eigenvalues to plot after axis scaling</span>
     <span class="n">g</span><span class="o">.</span><span class="n">AddDatasets</span><span class="p">(</span><span class="n">XMGR</span><span class="o">.</span><span class="n">XYset</span><span class="p">(</span><span class="n">ev0</span><span class="p">,</span> <span class="mi">0</span><span class="o">*</span><span class="n">ev0</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">Ltype</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Stype</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
@@ -625,7 +628,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen
 
     </p>
   </div>
@@ -642,36 +645,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'v1.3.6',
-            LANGUAGE:'en',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

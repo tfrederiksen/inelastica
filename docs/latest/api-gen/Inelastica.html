@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica package &mdash; Inelastica v1.3.6 documentation</title>
+  <title>Inelastica package &mdash; Inelastica v1.3.7 documentation</title>
   
 
   
@@ -17,35 +17,38 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Inelastica.fortran package" href="Inelastica.fortran.html" />
     <link rel="prev" title="Publications using Inelastica" href="../publications.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -62,7 +65,7 @@
             
             
               <div class="version">
-                v1.3.6
+                v1.3.7
               </div>
             
           
@@ -100,7 +103,7 @@
 <p class="caption"><span class="caption-text">API documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Inelastica package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#inelastica"><code class="docutils literal"><span class="pre">Inelastica</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inelastica"><code class="docutils literal notranslate"><span class="pre">Inelastica</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Inelastica.fortran.html">Inelastica.fortran package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Inelastica.io.html">Inelastica.io package</a></li>
@@ -110,19 +113,19 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.BandStruct.html"><code class="docutils literal"><span class="pre">Inelastica.BandStruct</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.EigenChannels.html"><code class="docutils literal"><span class="pre">Inelastica.EigenChannels</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.MakeGeom.html"><code class="docutils literal"><span class="pre">Inelastica.MakeGeom</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.NEB.html"><code class="docutils literal"><span class="pre">Inelastica.NEB</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.NEGF.html"><code class="docutils literal"><span class="pre">Inelastica.NEGF</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.Phonons.html"><code class="docutils literal"><span class="pre">Inelastica.Phonons</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.STM.html"><code class="docutils literal"><span class="pre">Inelastica.STM</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.STMFD.html"><code class="docutils literal"><span class="pre">Inelastica.STMFD</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.SetupRuns.html"><code class="docutils literal"><span class="pre">Inelastica.SetupRuns</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.SupercellPhonons.html"><code class="docutils literal"><span class="pre">Inelastica.SupercellPhonons</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.Symmetry.html"><code class="docutils literal"><span class="pre">Inelastica.Symmetry</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.iets.html"><code class="docutils literal"><span class="pre">Inelastica.iets</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.pyTBT.html"><code class="docutils literal"><span class="pre">Inelastica.pyTBT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.BandStruct.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.BandStruct</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.EigenChannels.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.EigenChannels</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.MakeGeom.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.MakeGeom</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.NEB.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.NEB</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.NEGF.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.NEGF</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.Phonons.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.Phonons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.STM.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.STM</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.STMFD.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.STMFD</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.SetupRuns.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.SetupRuns</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.SupercellPhonons.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.SupercellPhonons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.Symmetry.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.Symmetry</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.iets.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.iets</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.pyTBT.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.pyTBT</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -194,7 +197,7 @@
   <div class="section" id="module-Inelastica">
 <span id="inelastica-package"></span><h1>Inelastica package<a class="headerlink" href="#module-Inelastica" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="inelastica">
-<h2><a class="reference internal" href="#module-Inelastica" title="Inelastica"><code class="xref py py-mod docutils literal"><span class="pre">Inelastica</span></code></a><a class="headerlink" href="#inelastica" title="Permalink to this headline">¶</a></h2>
+<h2><a class="reference internal" href="#module-Inelastica" title="Inelastica"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Inelastica</span></code></a><a class="headerlink" href="#inelastica" title="Permalink to this headline">¶</a></h2>
 <p>Inelastica is a <a class="reference external" href="https://www.python.org/">Python</a> package that provides modules/scripts for
 electronic structure and elastic/inelastic transport calculations.</p>
 <span class="target" id="module-Inelastica"></span></div>
@@ -202,25 +205,28 @@ electronic structure and elastic/inelastic transport calculations.</p>
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.fortran.html">Inelastica.fortran package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.fortran.html">Inelastica.fortran package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Inelastica.fortran.html#inelastica-fortran"><code class="docutils literal notranslate"><span class="pre">Inelastica.fortran</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Inelastica.io.html">Inelastica.io package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Inelastica.io.html#module-Inelastica.io"><code class="docutils literal"><span class="pre">Inelastica.io</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inelastica.io.html#module-Inelastica.io"><code class="docutils literal notranslate"><span class="pre">Inelastica.io</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.io.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.io.log.html"><code class="docutils literal"><span class="pre">Inelastica.io.log</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.io.netcdf.html"><code class="docutils literal"><span class="pre">Inelastica.io.netcdf</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.io.log.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.io.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.io.netcdf.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.io.netcdf</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.io.netcdf.html#classes">Classes</a><ul class="simple">
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.io.siesta.html"><code class="docutils literal"><span class="pre">Inelastica.io.siesta</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.io.siesta.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.io.siesta</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.io.siesta.html#classes">Classes</a><ul class="simple">
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.io.vasp.html"><code class="docutils literal"><span class="pre">Inelastica.io.vasp</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.io.xmgrace.html"><code class="docutils literal"><span class="pre">Inelastica.io.xmgrace</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.io.vasp.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.io.vasp</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.io.xmgrace.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.io.xmgrace</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.io.xmgrace.html#scripting">Scripting</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.io.xmgrace.html#classes">Classes</a><ul class="simple">
 </ul>
@@ -232,7 +238,7 @@ electronic structure and elastic/inelastic transport calculations.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Inelastica.math.html">Inelastica.math package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Inelastica.math.html#inelastica-math"><code class="docutils literal"><span class="pre">Inelastica.math</span></code></a><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="Inelastica.math.html#inelastica-math"><code class="docutils literal notranslate"><span class="pre">Inelastica.math</span></code></a><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.math.html#submodules">Submodules</a><ul class="simple">
@@ -241,19 +247,19 @@ electronic structure and elastic/inelastic transport calculations.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Inelastica.misc.html">Inelastica.misc package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Inelastica.misc.html#inelastica-misc"><code class="docutils literal"><span class="pre">Inelastica.misc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inelastica.misc.html#inelastica-misc"><code class="docutils literal notranslate"><span class="pre">Inelastica.misc</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.misc.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.misc.multiproc.html"><code class="docutils literal"><span class="pre">Inelastica.misc.multiproc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.misc.valuecheck.html"><code class="docutils literal"><span class="pre">Inelastica.misc.valuecheck</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.misc.multiproc.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.misc.multiproc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.misc.valuecheck.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.misc.valuecheck</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Inelastica.physics.html">Inelastica.physics package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Inelastica.physics.html#inelastica-physics"><code class="docutils literal"><span class="pre">Inelastica.physics</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inelastica.physics.html#inelastica-physics"><code class="docutils literal notranslate"><span class="pre">Inelastica.physics</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.physics.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.physics.constants.html"><code class="docutils literal"><span class="pre">Inelastica.physics.constants</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Inelastica.physics.mesh.html"><code class="docutils literal"><span class="pre">Inelastica.physics.mesh</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.physics.constants.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.physics.constants</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Inelastica.physics.mesh.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.physics.mesh</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.physics.mesh.html#classes">Classes</a><ul class="simple">
 </ul>
 </li>
@@ -270,33 +276,33 @@ electronic structure and elastic/inelastic transport calculations.</p>
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.BandStruct.html"><code class="docutils literal"><span class="pre">Inelastica.BandStruct</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.EigenChannels.html"><code class="docutils literal"><span class="pre">Inelastica.EigenChannels</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.BandStruct.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.BandStruct</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.EigenChannels.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.EigenChannels</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.EigenChannels.html#scripting">Scripting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.EigenChannels.html#classes">Classes</a><ul class="simple">
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.MakeGeom.html"><code class="docutils literal"><span class="pre">Inelastica.MakeGeom</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.MakeGeom.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.MakeGeom</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.MakeGeom.html#classes">Classes</a><ul class="simple">
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.NEB.html"><code class="docutils literal"><span class="pre">Inelastica.NEB</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.NEB.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.NEB</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.NEB.html#classes">Classes</a><ul class="simple">
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.NEGF.html"><code class="docutils literal"><span class="pre">Inelastica.NEGF</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.NEGF.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.NEGF</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.NEGF.html#classes">Classes</a><ul class="simple">
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.Phonons.html"><code class="docutils literal"><span class="pre">Inelastica.Phonons</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.Phonons.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.Phonons</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.Phonons.html#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.Phonons.html#scripting">Scripting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.Phonons.html#classes-and-methods">Classes and methods</a><ul class="simple">
@@ -304,29 +310,29 @@ electronic structure and elastic/inelastic transport calculations.</p>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.STM.html"><code class="docutils literal"><span class="pre">Inelastica.STM</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.STMFD.html"><code class="docutils literal"><span class="pre">Inelastica.STMFD</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.SetupRuns.html"><code class="docutils literal"><span class="pre">Inelastica.SetupRuns</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.SupercellPhonons.html"><code class="docutils literal"><span class="pre">Inelastica.SupercellPhonons</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.STM.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.STM</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.STMFD.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.STMFD</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.SetupRuns.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.SetupRuns</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.SupercellPhonons.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.SupercellPhonons</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.SupercellPhonons.html#classes">Classes</a><ul class="simple">
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.Symmetry.html"><code class="docutils literal"><span class="pre">Inelastica.Symmetry</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.Symmetry.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.Symmetry</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.Symmetry.html#classes">Classes</a><ul class="simple">
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.iets.html"><code class="docutils literal"><span class="pre">Inelastica.iets</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.iets.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.iets</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.iets.html#scripting">Scripting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.iets.html#classes">Classes</a><ul class="simple">
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Inelastica.pyTBT.html"><code class="docutils literal"><span class="pre">Inelastica.pyTBT</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="Inelastica.pyTBT.html"><code class="docutils literal notranslate"><span class="pre">Inelastica.pyTBT</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.pyTBT.html#scripting">Scripting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Inelastica.pyTBT.html#classes">Classes</a><ul class="simple">
 </ul>
@@ -350,7 +356,7 @@ electronic structure and elastic/inelastic transport calculations.</p>
         <a href="Inelastica.fortran.html" class="btn btn-neutral float-right" title="Inelastica.fortran package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../publications.html" class="btn btn-neutral" title="Publications using Inelastica" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../publications.html" class="btn btn-neutral float-left" title="Publications using Inelastica" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -359,7 +365,7 @@ electronic structure and elastic/inelastic transport calculations.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen
 
     </p>
   </div>
@@ -376,36 +382,16 @@ electronic structure and elastic/inelastic transport calculations.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'v1.3.6',
-            LANGUAGE:'en',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

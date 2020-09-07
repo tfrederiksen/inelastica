@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Inelastica.io.siesta &mdash; Inelastica v1.3.6 documentation</title>
+  <title>Inelastica.io.siesta &mdash; Inelastica v1.3.7 documentation</title>
   
 
   
@@ -17,33 +17,36 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -60,7 +63,7 @@
             
             
               <div class="version">
-                v1.3.6
+                v1.3.7
               </div>
             
           
@@ -98,11 +101,11 @@
 <p class="caption"><span class="caption-text">API documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="Inelastica.html">Inelastica package</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="Inelastica.html#inelastica"><code class="docutils literal"><span class="pre">Inelastica</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inelastica.html#inelastica"><code class="docutils literal notranslate"><span class="pre">Inelastica</span></code></a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="Inelastica.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="Inelastica.fortran.html">Inelastica.fortran package</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="Inelastica.io.html">Inelastica.io package</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="Inelastica.io.html#module-Inelastica.io"><code class="docutils literal"><span class="pre">Inelastica.io</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="Inelastica.io.html#module-Inelastica.io"><code class="docutils literal notranslate"><span class="pre">Inelastica.io</span></code></a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="Inelastica.io.html#submodules">Submodules</a></li>
 </ul>
 </li>
@@ -163,7 +166,7 @@
         
           <li><a href="Inelastica.io.html">Inelastica.io package</a> &raquo;</li>
         
-      <li><code class="docutils literal"><span class="pre">Inelastica.io.siesta</span></code></li>
+      <li><code class="docutils literal notranslate"><span class="pre">Inelastica.io.siesta</span></code></li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -183,7 +186,7 @@
            <div itemprop="articleBody">
             
   <span class="target" id="module-Inelastica.io.siesta"></span><div class="section" id="inelastica-io-siesta">
-<h1><a class="reference internal" href="#module-Inelastica.io.siesta" title="Inelastica.io.siesta"><code class="xref py py-mod docutils literal"><span class="pre">Inelastica.io.siesta</span></code></a><a class="headerlink" href="#inelastica-io-siesta" title="Permalink to this headline">¶</a></h1>
+<h1><a class="reference internal" href="#module-Inelastica.io.siesta" title="Inelastica.io.siesta"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Inelastica.io.siesta</span></code></a><a class="headerlink" href="#inelastica-io-siesta" title="Permalink to this headline">¶</a></h1>
 <p>Routines for IO in different formats:</p>
 <ol class="arabic simple">
 <li>Geometries in xyz, XV, ANI, fdf, mkl etc formats</li>
@@ -200,7 +203,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.io.siesta.HS" title="Inelastica.io.siesta.HS"><code class="xref py py-obj docutils literal"><span class="pre">HS</span></code></a>(fn[,&nbsp;BufferAtoms,&nbsp;dtype,&nbsp;UseF90helpers])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Inelastica.io.siesta.HS" title="Inelastica.io.siesta.HS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HS</span></code></a>(fn[,&nbsp;BufferAtoms,&nbsp;dtype,&nbsp;UseF90helpers])</td>
 <td>Create full <em>HS</em> from <em>TSHS</em> file.</td>
 </tr>
 </tbody>
@@ -392,7 +395,7 @@ infile = FDF input file</p>
 <dl class="class">
 <dt id="Inelastica.io.siesta.HS">
 <em class="property">class </em><code class="descclassname">Inelastica.io.siesta.</code><code class="descname">HS</code><span class="sig-paren">(</span><em>fn</em>, <em>BufferAtoms=array([]</em>, <em>dtype=float64)</em>, <em>UseF90helpers=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.HS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Create full <em>HS</em> from <em>TSHS</em> file. Read fn and assemble for specified k-point</p>
 <p>External variables:</p>
 <ul class="simple">
@@ -468,13 +471,13 @@ The garbage collector cannot tell if H or S will be used subsequently</p>
 
 <dl class="method">
 <dt id="Inelastica.io.siesta.HS.setkpoint">
-<code class="descname">setkpoint</code><span class="sig-paren">(</span><em>kpoint</em>, <em>UseF90helpers=True</em>, <em>atype=&lt;type 'complex'&gt;</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.setkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.HS.setkpoint" title="Permalink to this definition">¶</a></dt>
+<code class="descname">setkpoint</code><span class="sig-paren">(</span><em>kpoint</em>, <em>UseF90helpers=True</em>, <em>atype=&lt;class 'complex'&gt;</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.setkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.HS.setkpoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make full matrices from sparse for specific k-point</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="Inelastica.io.siesta.HS.setkpointhelper">
-<code class="descname">setkpointhelper</code><span class="sig-paren">(</span><em>Sparse</em>, <em>kpoint</em>, <em>UseF90helpers=True</em>, <em>atype=&lt;type 'complex'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.setkpointhelper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.HS.setkpointhelper" title="Permalink to this definition">¶</a></dt>
+<code class="descname">setkpointhelper</code><span class="sig-paren">(</span><em>Sparse</em>, <em>kpoint</em>, <em>UseF90helpers=True</em>, <em>atype=&lt;class 'complex'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/io/siesta.html#HS.setkpointhelper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Inelastica.io.siesta.HS.setkpointhelper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make full matrices from sparse for specific k-point
 NOTE: Assumption for Fourier transform
 Psi(i) =           sum_R exp(i k.R) Psi_k(i)               NOTE sign!
@@ -714,7 +717,7 @@ zmat[:,3:] : fractional part of z-matrix (angles)</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.
+        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen
 
     </p>
   </div>
@@ -731,36 +734,16 @@ zmat[:,3:] : fractional part of z-matrix (angles)</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'v1.3.6',
-            LANGUAGE:'en',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
