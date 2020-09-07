@@ -9,7 +9,5 @@ Interface to fortran routines.
 
 """
 
-import F90helpers
-import F90_lapack
 
-__all__ = [s for s in dir() if not s.startswith('_')]
+from Inelastica.fortran import F90helpers, F90_lapack

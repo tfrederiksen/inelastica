@@ -647,7 +647,7 @@ def writeFGRrates(options, GF, hw, NCfile):
     NCfile = NC4.Dataset(options.PhononNetCDF, 'r')
     print('Reading ', options.PhononNetCDF)
 
-    outFile = file('%s/%s.IN.FGR'%(options.DestDir, options.systemlabel), 'w')
+    outFile = open('%s/%s.IN.FGR'%(options.DestDir, options.systemlabel), 'w')
     outFile.write('Total transmission [in units of (1/s/eV)] : %e\n' % (PC.unitConv*GF.TeF,))
 
     for ihw in range(len(hw)):

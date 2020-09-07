@@ -104,7 +104,7 @@ def ReadXVFile(filename, InUnits='Bohr', OutUnits='Ang', ReadVelocity=False):
             V.append([float(data[5+j])*convFactor for j in range(3)])
     xvfile.close()
     if len(speciesnumber) != numberOfAtoms:
-        print('io.siesta.ReadXVFile: Inconstency in %s detected!' % filename)
+        print('io.siesta.ReadXVFile: Inconsistency in %s detected!' % filename)
     if ReadVelocity:
         return N.array(vectors), N.array(speciesnumber), N.array(atomnumber), N.array(xyz), N.array(V)
     else:
@@ -255,11 +255,11 @@ def ReadANIFile(filename, InUnits='Ang', OutUnits='Ang'):
 def ReadFCFile(filename):
     "Returns FC from an FC-file"
     print('io.siesta.ReadFCFile: Reading %s' % filename)
-    fcfile = SIO_open(filename, 'rb')
+    fcfile = SIO_open(filename, 'r')
     # Read comment line (line 1)
     line = fcfile.readline()
-    if line.strip() != 'Force constants matrix':
-        print('io.siesta.ReadFCFile: Inconstency in %s detected!' % filename)
+    if not line.strip().startswith('Force constants matrix'):
+        print('io.siesta.ReadFCFile: Inconsistency in %s detected!' % filename)
     # Read remaining lines
     FC = []
     for line in fcfile.readlines():
@@ -396,7 +396,7 @@ def ReadXYZFile(filename):
             xyz.append([float(data[1+j]) for j in range(3)])
     xyzfile.close()
     if len(xyz) != numberOfAtoms:
-        print('io.siesta.ReadXYZFile: Inconstency in %s detected!' % filename)
+        print('io.siesta.ReadXYZFile: Inconsistency in %s detected!' % filename)
     return label, N.array(atomnumber), N.array(xyz)
 
 
@@ -559,7 +559,7 @@ def ReadSTRUCT_OUTFile(filename):
             xyz.append([float(data[2+j]) for j in range(3)])
     stfile.close()
     if len(speciesnumber) != numberOfAtoms:
-        print('io.siesta.ReadSTRUCT_OUTFile: Inconstency in %s detected!' % filename)
+        print('io.siesta.ReadSTRUCT_OUTFile: Inconsistency in %s detected!' % filename)
     xyz = N.array(xyz, N.float)
     vectors = N.array(vectors, N.float)
     for i, xi in enumerate(xyz):
@@ -775,7 +775,7 @@ def GetFDFblock(infile, KeyWord=''):
 
 def GetTotalEnergy(infile):
     # Find total energy from SIESTA stdout file
-    f = SIO_open(infile, 'rb')
+    f = SIO_open(infile, 'r')
     lines = f.readlines()
     f.close()
     E = 0.0
@@ -790,7 +790,7 @@ def GetTotalEnergy(infile):
 def GetFermiEnergy(infile):
     # Read Fermi energy from SIESTA stdout file
     print('io.siesta.GetFermiEnergy: Reading %s' % infile)
-    f = SIO_open(infile, 'rb')
+    f = SIO_open(infile, 'r')
     lines = f.readlines()
     f.close()
     E = 0.0
@@ -807,7 +807,7 @@ def GetFermiEnergy(infile):
 
 def ReadEIGfile(infile, printing=False, FermiRef=True):
     # Read *EIG file and print eigenvalues with respect to eF.
-    f = SIO_open(infile, 'rb')
+    f = SIO_open(infile, 'r')
     eF = float(f.readline().split()[0])
     f.readline() # Skip second line
     EIG = []
@@ -912,7 +912,7 @@ def ReadForces(infile):
 def ReadFAFile(filename):
     "Returns forces from a FA-file"
     print('io.siesta.ReadFAFile: Reading %s' % filename)
-    file = SIO_open(filename, 'rb')
+    file = SIO_open(filename, 'r')
     # Read comment line (line 1)
     line = file.readline()
     natoms = int(line.strip())

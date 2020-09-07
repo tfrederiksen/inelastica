@@ -5,6 +5,7 @@ import os
 import os.path as osp
 import time
 import subprocess
+import setuptools
 
 
 def test_prereq():
@@ -86,10 +87,10 @@ def git_version():
     # Default release info
     MAJOR = 1
     MINOR = 3
-    MICRO = 6
+    MICRO = 7
     VERSION = [MAJOR, MINOR, MICRO]
     # Git revision prior to release:
-    GIT_REVISION = "859e51381ba02c30d71579d060cde2b653d5fb7f"
+    GIT_REVISION = "29560ad5a63dfccd2874fffc69ac27fd1eba7689"
     GIT_LABEL = '.'.join(map(str, [MAJOR, MINOR, MICRO]))
 
     def _minimal_ext_cmd(cmd):
