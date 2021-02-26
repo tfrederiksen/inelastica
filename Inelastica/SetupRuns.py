@@ -205,7 +205,8 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
         f.write('MD.FClast    %i\n' %FClast)
         f.write('TS.HS.Save True\n')
         f.write('TS.SaveHS    True\n')
-        f.write('MD.FCDispl   %.8f Ang\n'%displacement)
+        f.write('MD.FCDispl   %.8f Ang\n' % displacement)
+        f.write('%include STRUCT.fdf\n')
         f.writelines(lines)
         f.close()
     else:
