@@ -1,0 +1,65 @@
+TS.Voltage 0 eV
+%block TS.ChemPots
+  Left
+  Right
+%endblock TS.ChemPots
+
+%block TS.ChemPot.Left
+  mu V/2
+  contour.eq
+    begin
+      C
+      T
+    end
+%endblock TS.ChemPot.Left
+%block TS.ChemPot.Right
+  mu -V/2
+  contour.eq
+    begin
+      C
+      T
+    end
+%endblock TS.ChemPot.Right
+
+TS.Contours.Eq.Pole 2.5 eV
+%block TS.Contour.C
+  part circle
+   from -40. eV + V/2 to -10 kT + V/2
+     points 25
+      method g-legendre
+       opt right
+%endblock TS.Contour.C
+%block TS.Contour.T
+  part tail
+   from prev to inf
+     points 10
+      method g-fermi
+%endblock TS.Contour.T
+
+%block TS.Contours.nEq
+  neq
+%endblock TS.Contours.nEq
+%block TS.Contour.nEq.neq
+  part line
+   from -|V|/2 - 5 kT to |V|/2 + 5 kT
+     delta 0.01 eV
+      method mid-rule
+%endblock TS.Contour.nEq.neq
+
+%block TS.Elecs
+  Left
+  Right
+%endblock TS.Elecs
+
+%block TS.Elec.Left
+  HS ../ELEC/elec.TSHS
+  chemical-potential Left
+  semi-inf-direction -a1
+  electrode-position 1
+%endblock TS.Elec.Left
+%block TS.Elec.Right
+  HS ../ELEC/elec.TSHS
+  chemical-potential Right
+  semi-inf-direction +a1
+  electrode-position end -1
+%endblock TS.Elec.Right
