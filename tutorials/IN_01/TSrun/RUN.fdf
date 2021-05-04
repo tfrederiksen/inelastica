@@ -1,0 +1,50 @@
+SystemTitle     device
+SystemLabel     device
+
+SolutionMethod  transiesta
+%include ./ELEC.fdf
+%include ./TBT.fdf
+
+MeshCutoff      200. Ry
+
+MD.TypeOfRun    CG
+MD.NumCGsteps   0
+MD.MaxForceTol  0.02 eV/Ang
+MD.UseSaveXV    true
+MD.MaxCGDispl   0.02 Bohr
+
+%block GeometryConstraints
+position from 1 to 6
+position from 9 to 14
+%endblock GeometryConstraints
+
+DM.UseSaveDM    true
+DM.NumberPulay  8
+DM.MixingWeight 0.1
+DM.Tolerance    1e-5
+
+MaxSCFIterations 1000
+
+TS.HS.Save   true
+
+PAO.BasisSize   SZP
+PAO.BasisType   split
+PAO.EnergyShift 0.001 Ry
+
+NumberOfSpecies 3
+%block ChemicalSpeciesLabel
+ 1 29 Cu.mpn
+ 2 6 C.mpn
+ 3 8 O.mpn
+%endblock ChemicalSpeciesLabel
+
+%block kgrid_Monkhorst_Pack
+ 2    0    0    0.5
+ 0    1    0    0.0
+ 0    0    1    0.0
+%endblock kgrid_Monkhorst_Pack
+
+XC.functional   GGA
+XC.authors      PBE
+
+%include ./STRUCT.fdf

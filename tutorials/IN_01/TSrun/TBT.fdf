@@ -1,0 +1,13 @@
+%block TBT.Atoms.Device
+  atom [5 -- 10]
+%endblock
+
+TBT.Contours.Eta 0. eV
+%block TBT.Contours
+  line
+%endblock
+%block TBT.Contour.line
+  from -2. eV to 2. eV
+  delta 0.01 eV
+  method mid-rule
+%endblock
