@@ -37,6 +37,8 @@ fdf-*.log
 *.TSGF*
 *.onlyS
 *.TBT.*
+*.out
 time.json
 INPUT_TMP.*
-C-chains/A*/v*
+fort.*
+*.xyz
