@@ -1,5 +1,5 @@
-SystemTitle     device
-SystemLabel     device
+SystemTitle     molecule
+SystemLabel     molecule
 
 SolutionMethod  diagon
 MeshCutoff      200. Ry
@@ -11,8 +11,7 @@ MD.UseSaveXV    true
 MD.MaxCGDispl   0.02 Bohr
 
 %block GeometryConstraints
-position from 1 to 6
-position from 9 to 14
+position 1
 %endblock GeometryConstraints
 
 DM.UseSaveDM    true
@@ -28,17 +27,10 @@ PAO.BasisSize   SZP
 PAO.BasisType   split
 PAO.EnergyShift 0.001 Ry
 
-NumberOfSpecies 3
-%block ChemicalSpeciesLabel
- 1 29 Cu.mpn
- 2 6 C.mpn
- 3 8 O.mpn
-%endblock ChemicalSpeciesLabel
-
 %block kgrid_Monkhorst_Pack
  1    0    0    0.0
  0    1    0    0.0
- 0    0    2    0.5
+ 0    0    1    0.5
 %endblock kgrid_Monkhorst_Pack
 
 XC.functional   GGA

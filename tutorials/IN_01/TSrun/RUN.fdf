@@ -20,7 +20,7 @@ position from 9 to 14
 
 DM.UseSaveDM    true
 DM.NumberPulay  8
-DM.MixingWeight 0.1
+DM.MixingWeight 0.10
 DM.Tolerance    1e-5
 
 MaxSCFIterations 1000
@@ -39,9 +39,9 @@ NumberOfSpecies 3
 %endblock ChemicalSpeciesLabel
 
 %block kgrid_Monkhorst_Pack
- 2    0    0    0.5
+ 1    0    0    0.0
  0    1    0    0.0
- 0    0    1    0.0
+ 0    0    2    0.5
 %endblock kgrid_Monkhorst_Pack
 
 XC.functional   GGA

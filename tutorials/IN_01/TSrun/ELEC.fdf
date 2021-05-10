@@ -54,12 +54,12 @@ TS.Contours.Eq.Pole 2.5 eV
 %block TS.Elec.Left
   HS ../ELEC/elec.TSHS
   chemical-potential Left
-  semi-inf-direction -a1
+  semi-inf-direction -a3
   electrode-position 1
 %endblock TS.Elec.Left
 %block TS.Elec.Right
   HS ../ELEC/elec.TSHS
   chemical-potential Right
-  semi-inf-direction +a1
+  semi-inf-direction +a3
   electrode-position end -1
 %endblock TS.Elec.Right

@@ -7,7 +7,9 @@ TBT.Contours.Eta 0. eV
   line
 %endblock
 %block TBT.Contour.line
-  from -2. eV to 2. eV
-  delta 0.01 eV
+  from -3. eV to 6. eV
+  delta 0.02 eV
   method mid-rule
 %endblock
+
+TBT.T.Eig 3
