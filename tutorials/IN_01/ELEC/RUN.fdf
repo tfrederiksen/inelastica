@@ -1,0 +1,28 @@
+SystemTitle elec
+SystemLabel elec
+
+SolutionMethod        diagon
+MeshCutoff          200. Ry
+
+DM.NumberPulay 5
+DM.MixingWeight 0.10
+DM.Tolerance    1e-5
+MaxSCFIterations 1000
+
+DM.UseSaveDM true
+TS.HS.Save   true
+
+PAO.BasisSize SZP
+PAO.BasisType   split
+PAO.EnergyShift 0.001 Ry
+
+%block kgrid_Monkhorst_Pack
+ 1    0    0    0.0
+ 0    1    0    0.0
+ 0    0  100    0.0
+%endblock kgrid_Monkhorst_Pack
+
+XC.functional   GGA
+XC.authors      PBE
+
+%include ./STRUCT.fdf
