@@ -17,9 +17,9 @@ PAO.BasisType   split
 PAO.EnergyShift 0.001 Ry
 
 %block kgrid_Monkhorst_Pack
-100    0    0    0.0
+ 1    0    0    0.0
  0    1    0    0.0
- 0    0    1    0.0
+ 0    0  100    0.0
 %endblock kgrid_Monkhorst_Pack
 
 XC.functional   GGA
