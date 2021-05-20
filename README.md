@@ -36,7 +36,7 @@ As alternative to the command line interface (CLI), it is also possible to inter
     
     # Phonons and EPC couplings
     options = Phonons.GetOptions('-F 5 -L 10 PHrun')
-    options.DynamicAtoms = [7, 8]
+    options.DynamicAtoms = [6, 9] # non-consecutive atoms
     options.EPHAtoms = options.DynamicAtoms
     options.CalcCoupl = True
     Phonons.main(options) # Compute Phonons
