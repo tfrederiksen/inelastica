@@ -234,11 +234,11 @@ def main(options):
             calcTraces(options, GFm, GFp, basis, NCfile, ihw)
 
     # Multiply traces with voltage-dependent functions
-    data = calcIETS(options, GFp, GFm, basis, hw)
+    V, I, dI, ddI, BdI, BddI = calcIETS(options, GFp, GFm, basis, hw)
     NCfile.close()
     NEGF.SavedSig.close()
     Log.PrintMainFooter(options)
-    return data
+    return V, I, dI, ddI, BdI, BddI
 
 ########################################################
 
