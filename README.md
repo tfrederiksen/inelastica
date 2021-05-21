@@ -33,6 +33,8 @@ As alternative to the command line interface (CLI), it is also possible to inter
     options.energy = 0.50 # overwrite the default value
     options.fn = 'TSrun/RUN.fdf'
     ecrun = EigenChannels.main(options) # Compute EigenChannels
+    left_states = ecrun.ECleft
+    teig = ecrun.EigTleft[:options.numchan].real
     
     # Phonons and EPC couplings
     options = Phonons.GetOptions('-F 5 -L 10 PHrun')
@@ -40,6 +42,8 @@ As alternative to the command line interface (CLI), it is also possible to inter
     options.EPHAtoms = options.DynamicAtoms
     options.CalcCoupl = True
     phrun = Phonons.main(options) # Compute Phonons
+    hw = phrun.hw
+    normal_modes = phrun.UU.real
     
     # IETS simulation
     options = iets.GetOptions('--LOEscale 0 INrun')
@@ -49,6 +53,7 @@ As alternative to the command line interface (CLI), it is also possible to inter
     options.fn = 'TSrun/RUN.fdf'
     # Compute IETS with Inelastica
     V, I, dI, ddI, BdI, BddI = iets.main(options)
+    IETS = BddI / BdI
 
 ## Dependencies ##
 Before installation of Inelastica the following packages are required
