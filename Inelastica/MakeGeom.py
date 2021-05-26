@@ -228,6 +228,26 @@ class Geom(object):
             for i, xyzval in enumerate(xyz):
                 self.addAtom(xyzval, self.snr[i], self.anr[i])
 
+    def tile(self, vec, rep=3):
+        # Similar to 'repeteGeom', but should be faster, and named after numpys
+        # nomenclature.
+        if rep == 1:
+            return self
+        n_original = self.xyz.shape[0]
+        self.xyz = N.tile(self.xyz, [rep, 1])
+        self.xyz += vec * N.repeat(N.arange(rep), n_original)[:, N.newaxis]
+
+        self.snr = N.tile(self.snr, rep)
+        self.anr = N.tile(self.anr, rep)
+
+        self.natoms *= rep
+        new_constrained = N.zeros(((rep-1) * n_original, 3))
+        self.constrained = N.concatenate(
+            (N.array(self.constrained), new_constrained), axis=0)
+
+        return self
+
+
     def addGeom(self, Other):
         #TF/050606
         for i in range(Other.natoms):
@@ -588,7 +608,7 @@ class Geom(object):
     def writeXV(self, fn, rep=[1, 1, 1]):
         geom = copy.deepcopy(self)
         for i in range(3):
-            geom.repeteGeom(self.pbc[i], rep=rep[i])
+            geom.tile(self.pbc[i], rep=rep[i])
             geom.pbc[i] = [rep[i]*x for x in self.pbc[i]]
         SIO.WriteXVFile(fn, geom.pbc, geom.snr, geom.anr, geom.xyz)
 
@@ -611,7 +631,7 @@ class Geom(object):
         "Write .mkl file with unitcell repeated rep times"
         geom = copy.deepcopy(self)
         for i in range(3):
-            geom.repeteGeom(self.pbc[i], rep=rep[i])
+            geom.tile(self.pbc[i], rep=rep[i])
             geom.pbc[i] = [rep[i]*x for x in self.pbc[i]]
         SIO.WriteXYZFile(fn, geom.anr, geom.xyz, write_ghosts)
 
@@ -622,7 +642,7 @@ class Geom(object):
         "Write STRUCT.fdf file"
         geom = copy.deepcopy(self)
         for i in range(3):
-            geom.repeteGeom(self.pbc[i], rep=rep[i])
+            geom.tile(self.pbc[i], rep=rep[i])
             geom.pbc[i] = [rep[i]*x for x in self.pbc[i]]
         SIO.WriteFDFFile(fn, geom.pbc, geom.snr, geom.anr, geom.xyz)
 
@@ -630,7 +650,7 @@ class Geom(object):
         "Write STRUCT.fdf file"
         geom = copy.deepcopy(self)
         for i in range(3):
-            geom.repeteGeom(self.pbc[i], rep=rep[i])
+            geom.tile(self.pbc[i], rep=rep[i])
             geom.pbc[i] = [rep[i]*x for x in self.pbc[i]]
         if first > 0 and last >= first:
             zmat = geom.CalcZmatrix(first, last)
@@ -645,7 +665,7 @@ class Geom(object):
         "Write .mkl file with unitcell repeated rep times"
         geom = copy.deepcopy(self)
         for i in range(3):
-            geom.repeteGeom(self.pbc[i], rep=rep[i])
+            geom.tile(self.pbc[i], rep=rep[i])
             geom.pbc[i] = [rep[i]*x for x in self.pbc[i]]
         SIO.WriteMKLFile(fn, geom.anr, geom.xyz, [], [], 0, 0)
 
@@ -734,7 +754,7 @@ def repeteANI(ANIinfile, XVinfile, outfile, rep=[1, 1, 1]):
         geom = copy.deepcopy(GeomList[i])
         geom.pbc = N.zeros((3, 3), N.float)
         for i in range(3):
-            geom.repeteGeom(initGeom.pbc[i], rep=rep[i])
+            geom.tile(initGeom.pbc[i], rep=rep[i])
             geom.pbc[i] = [rep[i]*x for x in initGeom.pbc[i]]
         newGeomList.append(geom)
     SIO.WriteANIFile(outfile, newGeomList, Energy)

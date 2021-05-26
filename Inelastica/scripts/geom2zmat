@@ -30,6 +30,6 @@ print('Converting %s to %s with repetition'%(args.GIN, args.GOUT), rep)
 g = MG.Geom(args.GIN)
 for i in range(3):
     if rep[i]>1:
-        g.repeteGeom(g.pbc[i], rep=rep[i])
+        g.tile(g.pbc[i], rep=rep[i])
         g.pbc[i]=g.pbc[i]*rep[i]
 g.writeFDFZmat(args.GOUT, args.first, args.last)
