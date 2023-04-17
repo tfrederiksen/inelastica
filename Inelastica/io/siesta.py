@@ -1895,9 +1895,10 @@ def GetBufferAtomsList(fn, fdf):
         for sl in data:
             sl = [s.lower() for s in sl]
             if sl[0] not in ['position', 'atom']: continue
-            # Currently Inelastica only accepts the from <> to <>
-            # and from <> plus/minus <>
-            # and [<> -- <>]
+            # Currently Inelastica accepts formats:
+            #   from <> to <>
+            #   from <> plus/minus <>
+            #   [<> -- <>]
             if (sl[1] == 'from') or (sl[1] == '['):
                 f = int(sl[2])
                 if f < 0: f = nua + f + 1
