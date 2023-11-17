@@ -659,7 +659,7 @@ def Getxyz(infile, pbc=[]):
     else:
         print("Give correct AtomicCoordinates Format")
         sys.exit(1)
-    return xyz
+    return N.array(xyz)
 
 
 def Getpbc(infile):
@@ -674,7 +674,7 @@ def Getpbc(infile):
         latt_const = float(latt_const[0])
     for di in data:
         pbc.append([float(di[j])*latt_const for j in range(3)])
-    return pbc
+    return N.array(pbc)
 
 
 def Getsnr(infile):
