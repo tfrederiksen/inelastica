@@ -22,6 +22,39 @@ while they worked in the group of Mads Brandbyge at the Technical University of 
    - `Inelastica`: Inelastic transport characteristics (IETS spectroscopy, inelastic shot noise, local heating, etc.)
    - `STM`: Calculation of STM images using the Bardeen approximation
 
+## Scripting ##
+
+As alternative to the command line interface (CLI), it is also possible to interact with Inelastica via scripting, e.g.,
+
+    from Inelastica import EigenChannels, Phonons, iets
+    
+    # Eigenchannels
+    options = EigenChannels.GetOptions('ECrun') # get default options
+    options.energy = 0.50 # overwrite the default value
+    options.fn = 'TSrun/RUN.fdf'
+    ecrun = EigenChannels.main(options) # Compute EigenChannels
+    left_states = ecrun.ECleft
+    teig = ecrun.EigTleft[:options.numchan].real
+    
+    # Phonons and EPC couplings
+    options = Phonons.GetOptions('-F 5 -L 10 PHrun')
+    options.DynamicAtoms = [6, 9] # non-consecutive atoms
+    options.EPHAtoms = options.DynamicAtoms
+    options.CalcCoupl = True
+    phrun = Phonons.main(options) # Compute Phonons
+    hw = phrun.hw
+    normal_modes = phrun.UU.real
+    
+    # IETS simulation
+    options = iets.GetOptions('--LOEscale 0 INrun')
+    options.DeviceFirst = 5
+    options.DeviceLast = 10
+    options.PhononNetCDF = 'PHrun/Output.nc'
+    options.fn = 'TSrun/RUN.fdf'
+    # Compute IETS with Inelastica
+    V, I, dI, ddI, BdI, BddI = iets.main(options)
+    IETS = BddI / BdI
+
 ## Dependencies ##
 Before installation of Inelastica the following packages are required
    - numpy >= 1.8

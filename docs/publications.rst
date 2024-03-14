@@ -6,6 +6,102 @@ Publications using Inelastica
 `Inelastica <docs_>`_ was used in the research publications listed below.
 Please help maintaining the list complete via a `pull request <pr_>`_ or simply an email to `thomas_frederiksen@ehu.eus <mailto:thomas_frederiksen@ehu.eus>`_. 
 
+#. A. Ostovan, K. Z. Milowska, and C. J. García-Cervera,
+   *A twist for tunable electronic and thermal transport properties of nanodevices*,
+   `Nanoscale (2024) <https://pubs.rsc.org/en/content/articlelanding/2024/nr/d4nr00058g>`_.
+
+#. S. Ghosh, P. Roy, A. Pramanik, and P. Sarkar,
+   *Photoinduced conductance and carrier switching in homoannulene ester derivatives: A theoretical exploration*,
+   Comput. Theor. Chem. **1233**, `114509 (2024) <https://doi.org/10.1016/j.comptc.2024.114509>`_
+
+#. D. Cho, and J. Y. Lee,
+   *Organic Stable Radical Oligomers as Spin Filters*,
+   J. Phys. Chem. C **127**, `8256-8262 (2023) <https://doi.org/10.1021/acs.jpcc.3c00179>`_
+
+#. X. Wu, N. Néel, M. Brandbyge, and J. Kröger,
+   *Enhancement of Graphene Phonon Excitation by a Chemically Engineered Molecular Resonance*,
+   Phys. Rev. Lett. **130**, `116201 (2023) <https://doi.org/10.1103/PhysRevLett.130.116201>`_
+
+#. Z. Jiang, K.-M. Yam, Y. S. Ang, N. Guo, Y. Zhang, H. Wang, and C. Zhang,
+   *Symmetry-driven half-integer conductance quantization in Cobalt-fulvalene sandwich nanowire*,
+   npj Computational Materials **9**, `198 (2023) <https://www.nature.com/articles/s41524-023-01151-z>`_
+
+#. S. Tyagi, P. C. Rout, and U. Schwingenschlögl,
+   *High-performance junction-free field-effect transistor based on blue phosphorene*,
+   npj 2D Materials and Applications **6**, `86 (2022) <https://doi.org/10.1038/s41699-022-00361-1>`_
+
+#. L. Ma, G. Tian, and J.-T. Lü,
+   *Switchable single-molecule electronic and thermoelectric device induced by light in a designed diarylethene molecule*,
+   Phys. Rev. B **106**, `165416 (2022) <https://doi.org/10.1103/PhysRevB.106.165416>`_
+
+#. Y. Liu, T. Frauenheim, and C. Yam,
+   *Carrier Multiplication in Transition Metal Dichalcogenides Beyond Threshold Limit*,
+   Adv. Sci. **9**, `2203400 (2022) <https://doi.org/10.1002/advs.202203400>`_
+
+#. L. Watts, E.-A. Haidar, and C. Stampfl,
+   *Electron Transport Study of Hydrogen Peroxide Sensing with 2D Phosphorene and Molybdenum Disulfide*,
+   J. Phys. Chem. C **126**, `15397-15404 (2022) <https://doi.org/10.1021/acs.jpcc.2c02520>`_
+
+#. V. Shukla, R. L. Kumawat, N. K. Jena, B. Pathak, and R. Ahuja,
+   *Electronic and Transport Properties of Bilayer Phosphorene Nanojunction: Effect of Paired Substitution Doping*,
+   ACS Appl. Electron. Mater. **3**, `733-742 (2021) <https://doi.org/10.1021/acsaelm.0c00897>`_
+
+#. A. Ostovan, N. Papior, and S. S. Naghavi,
+   *Half-metallic porphyrin-based molecular junctions for spintronic applications*,
+   Phys. Rev. B **104**, `235435 (2021) <https://doi.org/10.1103/PhysRevB.104.235435>`_
+
+#. A. Notario-Estévez, X. López, and C. de Graaf,
+   *Computational study of the staircase molecular conductivity of polyoxovanadates adsorbed on Au(111)*,
+   Dalton Trans. **50**, `5540-5551 (2021) <https://doi.org/10.1039/D1DT00731A>`_
+
+#. E.-A. Haidar, S. A. Tawfik, and C. Stampfl,
+   *Twist-Dependent Electron Charge Transfer and Transport in Phosphorene-Graphene Heterobilayers*,
+   J. Phys. Chem. C **125**, `25886-25897 (2021) <https://doi.org/10.1021/acs.jpcc.1c08282>`_
+
+#. E.-A. Haidar, S. A. Tawfik, C. Stampfl, K. Hirao, K. Yoshizawa, T. Nakajima, K. A. Soliman, and A. M. El-Nahas,
+   *Attenuation of Redox Switching and Rectification in Azulenequinones/Hydroquinones after B and N Doping: A First-Principles Investigation*,
+   Adv. Theory Simul. **4**, `2000203 (2021) <https://doi.org/10.1002/adts.202000203>`_
+
+#. H. Bi, C.-A. Palma, Y. Gong, K. Stallhofer, M. Nuber, C. Jing, F. Meggendorfer, S. Wen, C. Yam, R. Kienberger, M. Elbing, M. Mayor, H. Iglev, J. V. Barth, and J. Reichert,
+   *Electron-Phonon Coupling in Current-Driven Single-Molecule Junctions*,
+   J. Am. Chem. Soc. **142**, `3384-3391 (2020) <https://doi.org/10.1021/jacs.9b07757>`_
+
+#. K. R. Nisioka, J. C. d. S. dos Santos, J. Del Nero, and C. A. B. da Silva,
+   *Electronic transport in zigzag PhaGraphene NanoRibbon doped with boron and nitrogen*,
+   Applied Surface Science **504**, `144410 (2020) <https://doi.org/10.1016/j.apsusc.2019.144410>`_
+
+#. L. Ma, L.-L. Nian, and J.-T. Lü,
+   *Design and optimization of a heat engine based on a porphyrin single-molecule junction with graphene electrodes*,
+   Phys. Rev. B **101**, `045410 (2020) <https://doi.org/10.1103/PhysRevB.101.045410>`_
+
+#. A. Sampaio-Silva, S. Maciel Correa, J. Silva Carlos Alberto B., and J. Del Nero,
+   *Electronic transport and its inelastic effects for a doped phagraphene device*,
+   J. Appl. Phys. **128**, `055104 (2020) <https://doi.org/10.1063/5.0021492>`_
+
+#. J.-T. Lü, S. Leitherer, N. R. Papior, and M. Brandbyge,
+   *Ab initio current-induced molecular dynamics*,
+   Phys. Rev. B **101**, `201406 (2020) <https://doi.org/10.1103/PhysRevB.101.201406>`_
+
+#. A. Roohforouz, and A. Shokri,
+   *Low bias electron transport properties of the graphene-Ge2Sb2Te5 heterostructure device*,
+   Results in Physics **16**, `102880 (2020) <https://doi.org/10.1016/j.rinp.2019.102880>`_
+
+#. M. Moura-Moreira, D. Felipe Silva Ferreira, S. Liu, J. N. Fry, J. Del Nero, and H.-P. Cheng,
+   *Molecular junction by tunneling in 1D and quasi-1D systems*,
+   Journal of Physics: Condensed Matter **31**, `445501 (2019) <https://dx.doi.org/10.1088/1361-648X/ab315a>`_
+
+#. A. Roohforouz, and A. Shokri,
+   *Subthreshold electron transport properties of ultrathin film phase change material Ge2Sb2Te5*,
+   AIP Advances **9**, `055120 (2019) <https://doi.org/10.1063/1.5089798>`_
+
+#. A. Joshi, and C. N. Ramachandran,
+   *High-bias negative differential resistance effect in pure, doped and co-doped carbon nanotubes connected to boron nitride nanotubes*,
+   Physica E: Low-dimensional Systems and Nanostructures **113**, `1-7 (2019) <https://doi.org/10.1016/j.physe.2019.04.021>`_
+
+#. E.-A. Haidar, S. A. Tawfik, C. Stampfl, K. Hirao, K. Yoshizawa, S. H. El-Demerdash, T. Nakajima, and A. M. El-Nahas,
+   *Electronic transport investigation of redox-switching of azulenequinones/hydroquinones via first-principles studies*,
+   Phys. Chem. Chem. Phys. **21** `17859-17867 (2019) <https://doi.org/10.1039/C9CP03233A>`_
+
 #. M. Mohr, T. Jasper-Toennies, T. Frederiksen, A. Garcia-Lekue, S. Ulrich, R. Herges, and R. Berndt,
    *Conductance channels of a platform molecule on Au(111) probed with shot noise*,
    Phys. Rev. B **99**, `245417 (2019) <https://doi.org/10.1103/PhysRevB.99.245417>`_.
@@ -17,6 +113,63 @@ Please help maintaining the list complete via a `pull request <pr_>`_ or simply 
 #. T. Jasper-Toennies, A. Garcia-Lekue, T. Frederiksen, S. Ulrich, R. Herges and R. Berndt,
    *High-conductance contacts to functionalized molecular platforms physisorbed on Au(111)*,
    J. Phys.: Condens. Matter **31**, `18LT01 (2019) <https://iopscience.iop.org/article/10.1088/1361-648X/ab0489>`_.
+
+#. J. da Silva C. A. B., S. M. Côrrea, J. C. d. S. dos Santos, K. R. Nisioka, M. Moura-Moreira, Y.-P. Wang, J. Del Nero, and H.-P. Cheng,
+   *Topological insulator-metal transition and molecular electronics device based on zigzag phagraphene nanoribbon*,
+   J. Appl. Phys. **124**, `084303 (2018) <https://doi.org/10.1063/1.5029845>`_
+
+#. A. E. Rossini, F. Gala, M. Chinappi, and G. Zollo,
+   *Peptide bond detection via graphene nanogaps: a proof of principle study*,
+   Nanoscale **10**, `5928-5937 (2018) <https://doi.org/10.1039/C7NR08315G>`_
+
+#. P. Roy, S. Biswas, A. Pramanik, and P. Sarkar,
+   *Substitution induced carrier switching in S,N-heteroacene molecular junctions: A first principle analysis*,
+   Chemical Physics Letters **708**, `87-93 (2018) <https://doi.org/10.1016/j.cplett.2018.08.007>`_
+
+#. N. L. Zaitsev, P. Jakob, and R. Tonner,
+   *Structure and vibrational properties of the PTCDA/Ag(1 1 1) interface: bilayer versus monolayer*,
+   Journal of Physics: Condensed Matter **30**, `354001 (2018) <https://iopscience.iop.org/article/10.1088/1361-648X/aad576/meta>`_
+
+#. M. Azizi, and B. Ghavami,
+   *Charge transport in germanium doped phosphorene nanoribbons*,
+   RSC Adv. **8**, `19479-19485 (2018) <https://doi.org/10.1039/C8RA03041C>`_
+
+#. A. Ostovan, Z. Mahdavifar, and M. Bamdad,
+   *Length-dependence of conductance in benzothiadiazole molecular wires between graphene nanoribbon electrodes: Effect of conformational changes*,
+   Journal of Molecular Liquids **269**, `639-649 (2018) <https://doi.org/10.1016/j.molliq.2018.08.085>`_
+
+#. N. P. Arasu, and H. Vázquez,
+   *Direct Au-C contacts based on biphenylene for single molecule circuits*,
+   Phys. Chem. Chem. Phys. **20**, `10378-10383 (2018) <https://doi.org/10.1039/C8CP00613J>`_
+
+#. E. Minamitani, N. Takagi, R. Arafune, T. Frederiksen, T. Komeda, H. Ueba, and S. Watanabe,
+   *Inelastic electron tunneling spectroscopy by STM of phonons at solid surfaces and interfaces*,
+   Prog. Surf. Sci. **93**, `131-145 (2018) <https://doi.org/10.1016/j.progsurf.2018.09.002>`_
+
+#. J. Guo, (Ed.),
+   *Single Molecule Vibrational Spectroscopy of Interfacial Water*,
+   In *High Resolution Imaging, Spectroscopy and Nuclear Quantum Effects of Interfacial Water*,
+   Springer Theses. Springer, Singapore, pp. `73-82 (2018) <https://doi.org/10.1007/978-981-13-1663-0_4>`_
+
+#. J. Guo, X.-Z. Li, J. Peng, E.-G. Wang, and Y. Jiang,
+   *Atomic-scale investigation of nuclear quantum effects of surface water: Experiments and theory*,
+   Progress in Surface Science **92**, `203-239 (2017) <https://doi.org/10.1016/j.progsurf.2017.11.001>`_
+
+#. S. M. Corrêa, D. F. S. Ferreira, M. R. S. Siqueira, J. C. Reis-Silva, J. F. P. Leal, C. A. B. da Silva, and J. Del Nero,
+   *Investigation of electronic transport under mechanical strain in a molecular junction composed of a polyyne bridge connected to SWCNT electrodes*,
+   Phys. Chem. Chem. Phys. **19**, `22078-22087 (2017) <https://doi.org/10.1039/C7CP03080K>`_
+
+#. G. Foti, and H. Vázquez,
+   *Adsorbate-driven cooling of carbene-based molecular junctions*,
+   Beilstein J. Nanotechnol. **8**, `2060-2068 (2017) <https://doi.org/10.3762/bjnano.8.206>`_
+
+#. A. Politano, D. Campi, D. Stradi, and G. Chiarello,
+   *Site-dependent lattice dynamics in periodically rippled graphene on Ru(0001)*,
+   Europhysics Letters **118**, `27007 (2017) <https://iopscience.iop.org/article/10.1209/0295-5075/118/27007/meta>`_
+
+#. A. Gustafsson, and M. Paulsson,
+   *STM contrast of a CO dimer on a Cu(1 1 1) surface: a wave-function analysis*,
+   Journal of Physics: Condensed Matter **29**, `505301 (2017) <https://iopscience.iop.org/article/10.1088/1361-648X/aa986d/meta>`_
 
 #. B. de la Torre, M. Svec, G. Foti, O. Krejci, P. Hapala, A. Garcia-Lekue, T. Frederiksen, R. Zboril, A. Arnau, H. Vazquez, and P. Jelinek,
    *Submolecular resolution by variation of inelastic electron tunneling spectroscopy amplitude and its relation to the AFM/STM signal*,
@@ -259,4 +412,3 @@ Please help maintaining the list complete via a `pull request <pr_>`_ or simply 
    *Inelastic Scattering and Local Heating in Atomic Gold Wires*,
    Phys. Rev. Lett. **93**, `256601 (2004) <http://link.aps.org/doi/10.1103/PhysRevLett.93.256601>`_
    `[arXiv:0410700] <http://arxiv.org/abs/cond-mat/0410700>`_.
-

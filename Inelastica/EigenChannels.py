@@ -230,7 +230,7 @@ def main(options):
             print('for the molecular eigenstates in the nonorthogonal basis')
 
     Log.PrintMainFooter(options)
-
+    return DevGF
 
 def calcWF(options, geom, basis, Y):
     """

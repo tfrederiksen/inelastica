@@ -172,8 +172,10 @@ label   = '{description}'
                                     count=GIT_COUNT,
                                     git=GIT_REV,
                                     description=GIT_LAB))
+    VERSION = '.'.join(map(str, GIT_VER))
+    return VERSION
 
-write_version()
+VERSION = write_version()
 
 # Main setup of python modules
 setup(name='Inelastica',
@@ -183,6 +185,7 @@ setup(name='Inelastica',
       author_email='magnus.paulsson@lnu.se / thomas_frederiksen@ehu.es',
       url='https://github.com/tfrederiksen/inelastica',
       license='GPL',
+      version=VERSION,
       scripts=['Inelastica/scripts/Inelastica',
                'Inelastica/scripts/EigenChannels',
                'Inelastica/scripts/pyTBT',

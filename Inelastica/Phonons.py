@@ -908,11 +908,7 @@ def main(options):
         DM.PrepareGradients(options.onlySdir, options.kpoint, options.DeviceFirst, options.DeviceLast, options.AbsEref, options.atype)
         DM.ComputeEPHcouplings(options.PBCFirst, options.PBCLast, options.EPHAtoms, options.Restart, options.CheckPointNetCDF,
                                WriteGradients=options.WriteGradients)
-        # Write data to files
-        DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        Log.PrintMainFooter(options)
-        return DM.h0, DM.s0, DM.hw, DM.heph
-    else:
-        DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
-        Log.PrintMainFooter(options)
-        return DM.hw
+    # Write data to files
+    DM.WriteOutput(options.DestDir+'/Output', options.SinglePrec, options.GammaPoint)
+    Log.PrintMainFooter(options)
+    return DM

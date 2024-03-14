@@ -659,7 +659,7 @@ def Getxyz(infile, pbc=[]):
     else:
         print("Give correct AtomicCoordinates Format")
         sys.exit(1)
-    return xyz
+    return N.array(xyz)
 
 
 def Getpbc(infile):
@@ -674,7 +674,7 @@ def Getpbc(infile):
         latt_const = float(latt_const[0])
     for di in data:
         pbc.append([float(di[j])*latt_const for j in range(3)])
-    return pbc
+    return N.array(pbc)
 
 
 def Getsnr(infile):
@@ -1895,9 +1895,11 @@ def GetBufferAtomsList(fn, fdf):
         for sl in data:
             sl = [s.lower() for s in sl]
             if sl[0] not in ['position', 'atom']: continue
-            # Currently Inelastica only accepts the from <> to <>
-            # and from <> plus/minus <>
-            if sl[1] == 'from':
+            # Currently Inelastica accepts formats:
+            #   from <> to <>
+            #   from <> plus/minus <>
+            #   [<> -- <>]
+            if (sl[1] == 'from') or (sl[1] == '['):
                 f = int(sl[2])
                 if f < 0: f = nua + f + 1
                 t = int(sl[4])
@@ -1907,7 +1909,7 @@ def GetBufferAtomsList(fn, fdf):
                     t = f - t + 1
                 if t < 0: t = nua + t + 1
                 s = 1
-                if len(sl) > 5:
+                if (len(sl) > 5) and (sl[5] !=']'):
                     try:
                         s = int(sl[6])
                     except:

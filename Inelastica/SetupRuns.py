@@ -31,6 +31,12 @@ import numpy as N
 import Inelastica.MakeGeom as MG
 import Inelastica.physics.constants as PC
 from Inelastica.io.siesta import copy_chemical_info
+try:
+    from Inelastica.templating import j2
+except ImportError as e:
+    j2 = None
+    def raise_j2():
+        raise e
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -87,7 +93,7 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
         print('\nSetupRuns.SetupCGrun: %s already exists. OVERWRITING FILES!!!'\
               %newCGrun)
     # Copy template files
-    CopyInputFiles(templateCGrun, newCGrun, ['.fdf', '.vps', '.psf', 'pbs', '.TSHS'])
+    CopyInputFiles(templateCGrun, newCGrun, ['.fdf', '.vps', '.psf', '.pbs', '.slurm', '.TSHS'])
     # Read relaxed geometry
     XVfiles = glob.glob(templateCGrun+'/*.XV*')
     if len(XVfiles) == 1:
@@ -140,7 +146,7 @@ def SetupCGrun(templateCGrun, newCGrun, NewContactSeparation, AtomsPerLayer,
 
 def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
                overwrite=False, PBStemplate=None, PBSsubs=None, submitJob=False,
-               main_fdf="RUN.fdf"):
+               main_fdf="RUN.fdf", pbs_use_jinja=False):
     """
     CGrun                : Path+foldername to a relaxed structure CGrun folder on
                               which to perform a FCrun calculation. This folder must
@@ -170,7 +176,7 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
         print('\nSetupRuns.SetupFCrun: %s already exists. OVERWRITING FILES!!!'\
               %newFCrun)
     # Copy template files
-    CopyInputFiles(CGrun, newFCrun, ['.fdf', '.vps', '.psf', '.DM', '.XV', '.pbs', '.TSDE', '.TSHS'])
+    CopyInputFiles(CGrun, newFCrun, ['.fdf', '.vps', '.psf', '.DM', '.XV', '.pbs', '.slurm', '.TSDE', '.TSHS'])
     # Read relaxed geometry and overwrite STRUCT files
     XVfiles = glob.glob(CGrun+'/*.XV*')
     if len(XVfiles) == 1:
@@ -205,14 +211,16 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
         f.write('MD.FClast    %i\n' %FClast)
         f.write('TS.HS.Save True\n')
         f.write('TS.SaveHS    True\n')
-        f.write('MD.FCDispl   %.8f Ang\n'%displacement)
+        f.write('MD.FCDispl   %.8f Ang\n' % displacement)
+        f.write('%include STRUCT.fdf\n')
         f.writelines(lines)
         f.close()
     else:
         print("{} was not found, so it cannot be edited."
               "Rerun with main_fdf set correctly.".format(elm))
     # PBS files
-    MakePBS(PBStemplate, newFCrun+'/RUN.pbs', PBSsubs, submitJob, rtype='TS')
+    MakePBS(PBStemplate, newFCrun+'/RUN.pbs', PBSsubs, submitJob, rtype='TS',
+            use_jinja=pbs_use_jinja)
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -220,7 +228,8 @@ def SetupFCrun(CGrun, newFCrun, FCfirst, FClast, displacement=0.02,
 # -----------------------------------------------------------------------------------------------------
 
 def SetupOSrun(CGrun, newOSrun, displacement=0.02, main_fdf="RUN.fdf",
-               overwrite=False, PBStemplate=None, PBSsubs=None, submitJob=False):
+               overwrite=False, PBStemplate=None, PBSsubs=None, submitJob=False,
+               pbs_use_jinja=False):
     """
     CGrun                : Path+foldername to a relaxed structure CGrun folder on
                               which to run an onlyS calculation. This folder must
@@ -248,7 +257,7 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02, main_fdf="RUN.fdf",
         print('\nSetupRuns.SetupOSrun: %s already exists. OVERWRITING FILES!!!'\
               %newOSrun)
     # Copy files from CGrun
-    CopyInputFiles(CGrun, newOSrun, ['.fdf', '.vps', '.psf'])
+    CopyInputFiles(CGrun, newOSrun, ['.fdf', '.vps', '.psf', '.pbs', '.slurm'])
     # Read original RUN.fdf file
     f = open(newOSrun + '/' + main_fdf, 'r')
     lines = f.readlines()
@@ -302,7 +311,8 @@ def SetupOSrun(CGrun, newOSrun, displacement=0.02, main_fdf="RUN.fdf",
             else: f.write(line)
         f.close()
     # PBS files
-    MakePBS(PBStemplate, newOSrun+'/RUN.pbs', PBSsubs, submitJob, rtype='OS')
+    MakePBS(PBStemplate, newOSrun+'/RUN.pbs', PBSsubs, submitJob, rtype='OS',
+            use_jinja=pbs_use_jinja)
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -372,7 +382,7 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
         if os.path.isdir(elm):
             CopyTree(elm, newTSrun+'/'+tail, overwrite=overwrite)
     # Copy template files
-    CopyInputFiles(templateTSrun, newTSrun, ['.fdf', '.vps', '.psf', '.pbs'])
+    CopyInputFiles(templateTSrun, newTSrun, ['.fdf', '.vps', '.psf', '.pbs', '.slurm'])
     # Read relaxed geometry
     XVfiles = glob.glob(CGrun+'/*.XV*')
     if len(XVfiles) == 1:
@@ -829,7 +839,8 @@ def FindElectrodeSep(directory, AtomsPerLayer):
     return g.ContactSeparation, DeviceFirst, DeviceLast
 
 
-def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, rtype='TS'):
+def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, rtype='TS',
+            use_jinja=False):
     if PBStemplate == None:
         rtypes = {'TS': 'RUN.TS.pbs', 'OS': 'RUN.OS.pbs', 'PY': 'RUN.py.pbs'}
         PBStemplate = rtypes[rtype]
@@ -840,7 +851,7 @@ def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, rtype='TS'):
             PBStemplate = os.path.abspath(InelasticaDir+'/PBS/'+PBStemplate)
 
     if os.path.exists(PBStemplate):
-        WritePBS(PBStemplate, PBSout, PBSsubs)
+        WritePBS(PBStemplate, PBSout, PBSsubs, use_jinja=use_jinja)
         if submitJob:
             print(PBStemplate)
             workingFolder, PBSfile = os.path.split(os.path.abspath(PBSout))
@@ -849,9 +860,32 @@ def MakePBS(PBStemplate, PBSout, PBSsubs, submitJob, rtype='TS'):
         print("WARNING: Could not find PBS template file", PBStemplate)
 
 
-def WritePBS(PBStemplate, PBSout, PBSsubs):
+def WritePBS(PBStemplate, PBSout, PBSsubs, use_jinja=False):
     print('SetupRuns.WritePBS: Reading', PBStemplate)
     print('SetupRuns.WritePBS: Writing', PBSout)
+
+    if use_jinja:
+        dirlvls = PBSsubs.get("jobname", 2)
+        if isinstance(dirlvls, str):
+            jobname = dirlvls
+        else:
+            assert isinstance(dirlvls, int)
+            try:
+                from pathlib import Path
+            except ImportError:
+                class OldPythonException(Exception):
+                    pass
+                raise OldPythonException(
+                    "Your python does not have pathlib, please upgrade to a recent version.")
+            p = Path(PBSout).parent
+            jobname = []
+            for i in range(dirlvls):
+                jobname.append(p.name)
+                p = p.parent
+            jobname = "-".join(jobname)
+        PBSsubs = dict(PBSsubs)
+        PBSsubs.update(jobname=jobname)
+        return write_pbs_jinja(PBStemplate, PBSout, PBSsubs)
 
     # Make default job name
     fullPath = os.path.split(os.path.abspath(PBSout))[0]
@@ -871,6 +905,15 @@ def WritePBS(PBStemplate, PBSout, PBSsubs):
         outfile.write(line)
     infile.close()
     outfile.close()
+
+
+def write_pbs_jinja(template, outpath, variables):
+    if j2 is None:
+        raise_j2()
+    t = j2.get_template(template)
+    text = t.render(**variables)
+    with open(outpath, "w") as f:
+        f.write(text)
 
 
 def SubmitPBS(workingfolder, pbsfile):
