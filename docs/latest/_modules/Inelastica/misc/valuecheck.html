@@ -1,74 +1,31 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inelastica.misc.valuecheck &mdash; Inelastica v1.3.7 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+        <script src="../../../_static/documentation_options.js?v=2f149631"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../../index.html" class="icon icon-home"> Inelastica
-          
-
-          
-            
-            <img src="../../../_static/82px-Inelastica-logo-mini.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 v1.3.7
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -76,93 +33,47 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">User guide</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../scripts.html">Scripts</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Publications</span></p>
+<p class="caption" role="heading"><span class="caption-text">Publications</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../cite.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../publications.html">Publications using Inelastica</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api-gen/Inelastica.html">Inelastica package</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">Inelastica</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
-        
       <li>Inelastica.misc.valuecheck</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for Inelastica.misc.valuecheck</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 
@@ -183,8 +94,8 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 
-<span class="kn">import</span> <span class="nn">sys</span> <span class="kn">as</span> <span class="nn">s</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">_np</span>
+<span class="kn">import</span> <span class="nn">sys</span> <span class="k">as</span> <span class="nn">s</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 
 
 <span class="c1"># Python 3-version</span>
@@ -221,13 +132,18 @@
 <span class="k">del</span> <span class="n">_s</span>
 
 
-<div class="viewcode-block" id="GetCheck"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.GetCheck">[docs]</a><span class="k">def</span> <span class="nf">GetCheck</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="GetCheck">
+<a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.GetCheck">[docs]</a>
+<span class="k">def</span> <span class="nf">GetCheck</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">_check</span>
     <span class="k">return</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="EditCheck"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.EditCheck">[docs]</a><span class="k">def</span> <span class="nf">EditCheck</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EditCheck">
+<a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.EditCheck">[docs]</a>
+<span class="k">def</span> <span class="nf">EditCheck</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets the check of &quot;name&quot; to the value &quot;value&quot;.</span>
 <span class="sd">    It will notify the user so that any log files will retain</span>
 <span class="sd">    this information.</span>
@@ -237,13 +153,16 @@
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_check</span><span class="p">:</span>
         <span class="n">ov</span> <span class="o">=</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
     <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Overriding variable &#39;{0}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         Old value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ov</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;         New value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Overriding variable &#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;         Old value: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ov</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;         New value: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Check"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.Check">[docs]</a><span class="k">def</span> <span class="nf">Check</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">msgs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Check">
+<a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.Check">[docs]</a>
+<span class="k">def</span> <span class="nf">Check</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">msgs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks the value and exits if the value &quot;val&quot; is</span>
 <span class="sd">    above the one specified</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -257,30 +176,33 @@
         <span class="k">return</span>
 
     <span class="k">if</span> <span class="n">_np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]):</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;ERROR:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR:&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">msgs</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;       Check against &#39;{0}&#39; failed...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;       Maximum value: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">val</span><span class="p">)))</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;       Error value  : {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;       Check against &#39;</span><span class="si">{0}</span><span class="s2">&#39; failed...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;       Maximum value: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">val</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;       Error value  : </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_check</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span>
         <span class="k">raise</span> <span class="ne">ArithmeticError</span><span class="p">(</span><span class="s2">&quot;Criteria not met. Please check output...&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="OptionsCheck"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.OptionsCheck">[docs]</a><span class="k">def</span> <span class="nf">OptionsCheck</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="OptionsCheck">
+<a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.OptionsCheck">[docs]</a>
+<span class="k">def</span> <span class="nf">OptionsCheck</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic routine for adjusting most used options for routines.</span>
 <span class="sd">    I.e. Inelastica/EigenChannels/pyTBT.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="kn">as</span> <span class="nn">SIO</span>
+    <span class="kn">import</span> <span class="nn">Inelastica.io.siesta</span> <span class="k">as</span> <span class="nn">SIO</span>
     <span class="kn">import</span> <span class="nn">os</span>
-    <span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">osp</span>
+    <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
 
     <span class="c1"># Module name</span>
     <span class="n">exe</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">module</span>
 
     <span class="c1"># Destination directory</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">osp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DestDir</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">exe</span><span class="o">+</span><span class="s1">&#39;: Creating folder {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DestDir</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">exe</span><span class="o">+</span><span class="s1">&#39;: Creating folder </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DestDir</span><span class="p">))</span>
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DestDir</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">osp</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">):</span>
@@ -290,7 +212,7 @@
     <span class="n">opts</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">head</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="c1"># set filepath if missing</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">exe</span><span class="o">+</span><span class="s2">&quot;: Reading keywords from {0} </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">exe</span><span class="o">+</span><span class="s2">&quot;: Reading keywords from </span><span class="si">{0}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">))</span>
 
     <span class="n">opts</span><span class="o">.</span><span class="n">systemlabel</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;SystemLabel&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;siesta&#39;</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">TSHS</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">.TSHS&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">head</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">systemlabel</span><span class="p">)</span>
@@ -302,7 +224,7 @@
         <span class="c1"># Note NRP:</span>
         <span class="c1">#  in principle this is now a per-electrode setting which</span>
         <span class="c1">#  may be useful for certain systems...</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">UseBulk</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.UseBulkInElectrodes&#39;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
+        <span class="n">opts</span><span class="o">.</span><span class="n">UseBulk</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.UseBulkInElectrodes&#39;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">UseBulk</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;TS.Elecs.Bulk&#39;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">UseBulk</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_elec_vars</span><span class="p">(</span><span class="n">lr</span><span class="p">):</span>
@@ -317,7 +239,7 @@
 
         <span class="c1"># Proceed looking up new format, which precedes</span>
         <span class="n">belec</span> <span class="o">=</span> <span class="s1">&#39;TS.Elec.&#39;</span> <span class="o">+</span> <span class="n">lr</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Looking for new electrode format in: </span><span class="si">%%</span><span class="s1">block {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">belec</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Looking for new electrode format in: </span><span class="si">%%</span><span class="s1">block </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">belec</span><span class="p">))</span>
 
         <span class="c1"># Default replication stuff</span>
         <span class="n">TSHS</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">belec</span><span class="o">+</span><span class="s1">&#39;.TSHS&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">TSHS</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
@@ -329,7 +251,7 @@
         <span class="n">block</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFblock</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">KeyWord</span><span class="o">=</span><span class="n">belec</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="c1"># Lower-case, FDF is case-insensitive</span>
             <span class="n">key</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;tshs&#39;</span><span class="p">,</span> <span class="s1">&#39;tshs-file&#39;</span><span class="p">,</span> <span class="s1">&#39;hs&#39;</span><span class="p">,</span> <span class="s1">&#39;hs-file&#39;</span><span class="p">]:</span>
@@ -376,7 +298,7 @@
         <span class="n">opts</span><span class="o">.</span><span class="n">fnL</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA1L</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA2L</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">semiinfL</span> <span class="o">=</span> <span class="n">get_elec_vars</span><span class="p">(</span><span class="n">block</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">fnR</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA1R</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NA2R</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">semiinfR</span> <span class="o">=</span> <span class="n">get_elec_vars</span><span class="p">(</span><span class="n">block</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Currently only two electrodes are supported&#39;</span><span class="p">)</span>
 
     <span class="c1"># Read in number of buffer atoms</span>
@@ -399,7 +321,7 @@
     <span class="n">opts</span><span class="o">.</span><span class="n">NumberOfAtoms</span> <span class="o">=</span> <span class="n">SIO</span><span class="o">.</span><span class="n">GetFDFlineWithDefault</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;NumberOfAtoms&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="mf">1e10</span><span class="p">,</span> <span class="n">exe</span><span class="p">)</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">NumberOfAtoms</span> <span class="o">-=</span> <span class="n">L</span> <span class="o">+</span> <span class="n">R</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">&lt;</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">exe</span><span class="o">+</span><span class="s1">&#39; error: DeviceLast&lt;DeviceFirst not allowed. Setting DeviceLast=DeviceFirst&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">exe</span><span class="o">+</span><span class="s1">&#39; error: DeviceLast&lt;DeviceFirst not allowed. Setting DeviceLast=DeviceFirst&#39;</span><span class="p">)</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span>
     <span class="n">opts</span><span class="o">.</span><span class="n">DeviceAtoms</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DeviceFirst</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">DeviceLast</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NumberOfAtoms</span><span class="p">)]</span>
 
@@ -455,50 +377,42 @@
                 <span class="n">opts</span><span class="o">.</span><span class="n">Elist</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">Emin</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">Emax</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">NPoints</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GetPositional"><a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.GetPositional">[docs]</a><span class="k">def</span> <span class="nf">GetPositional</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;You have not specified any positional argument&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GetPositional">
+<a class="viewcode-back" href="../../../api-gen/Inelastica.misc.valuecheck.html#Inelastica.misc.valuecheck.GetPositional">[docs]</a>
+<span class="k">def</span> <span class="nf">GetPositional</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;You have not specified any positional argument&quot;</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="n">pos</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pos</span></div>
+
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen
-
-    </p>
+    <p>&#169; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

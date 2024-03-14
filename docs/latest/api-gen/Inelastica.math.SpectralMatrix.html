@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&lt;no title&gt; &mdash; Inelastica v1.3.7 documentation</title>
+  <title>Inelastica.math.SpectralMatrix &mdash; Inelastica v1.3.7 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -16,8 +16,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="Inelastica.math.hilbert.html" />
-    <link rel="prev" title="Inelastica.math.SpectralMatrix" href="Inelastica.math.SpectralMatrix.html" /> 
+    <link rel="next" title="&lt;no title&gt;" href="Inelastica.math.gausskronrod.html" />
+    <link rel="prev" title="Inelastica.math package" href="Inelastica.math.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,7 +57,7 @@
 <li class="toctree-l3"><a class="reference internal" href="Inelastica.fortran.html">Inelastica.fortran package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Inelastica.io.html">Inelastica.io package</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="Inelastica.math.html">Inelastica.math package</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="Inelastica.math.html#inelastica-math"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Inelastica.math</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="Inelastica.math.html#inelastica-math"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Inelastica.math</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.math.html#Inelastica.math.GaussKronrod"><code class="docutils literal notranslate"><span class="pre">GaussKronrod()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.math.html#Inelastica.math.Hilbert"><code class="docutils literal notranslate"><span class="pre">Hilbert()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.math.html#Inelastica.math.SpectralMatrix"><code class="docutils literal notranslate"><span class="pre">SpectralMatrix</span></code></a></li>
@@ -124,7 +124,7 @@
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.math.html#Inelastica.math.trapez"><code class="docutils literal notranslate"><span class="pre">trapez()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.math.html#Inelastica.math.trunc"><code class="docutils literal notranslate"><span class="pre">trunc()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="Inelastica.math.html#Inelastica.math.ulp"><code class="docutils literal notranslate"><span class="pre">ulp()</span></code></a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="Inelastica.math.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Inelastica.math.html#submodules">Submodules</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="Inelastica.misc.html">Inelastica.misc package</a></li>
@@ -152,9 +152,9 @@
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="Inelastica.html">Inelastica package</a> &raquo;</li>
           <li><a href="Inelastica.math.html">Inelastica.math package</a> &raquo;</li>
-      <li>&lt;no title&gt;</li>
+      <li>Inelastica.math.SpectralMatrix</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/api-gen/Inelastica.math.gausskronrod.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api-gen/Inelastica.math.SpectralMatrix.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -162,45 +162,59 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-Inelastica.math.gausskronrod"></span><dl class="py function">
-<dt class="sig sig-object py" id="Inelastica.math.gausskronrod.GaussKronrod">
-<span class="sig-prename descclassname"><span class="pre">Inelastica.math.gausskronrod.</span></span><span class="sig-name descname"><span class="pre">GaussKronrod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/gausskronrod.html#GaussKronrod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Inelastica.math.gausskronrod.GaussKronrod" title="Link to this definition"></a></dt>
-<dd><p>Computes the (<span class="math notranslate nohighlight">\(2n+1\)</span>)-point Gauss-Kronrod quadrature abscissa <span class="math notranslate nohighlight">\(\{x_i\}\)</span>
-and weights <span class="math notranslate nohighlight">\(\{w_{1,i}\}\)</span>, <span class="math notranslate nohighlight">\(\{w_{2,i}\}\)</span>.
-Kronrod adds <span class="math notranslate nohighlight">\(n+1\)</span> points to an <span class="math notranslate nohighlight">\(n\)</span>-point Gaussian rule.</p>
-<p>Definition:</p>
-<p><span class="math notranslate nohighlight">\(\int_{-1/2}^{1/2} f(x) dx \sim \sum_i w_{1,i} f(x_i)\)</span>.</p>
-<p>The integration range corresponds to the first Brillouin zone in Inelastica.</p>
-<p>The weights <span class="math notranslate nohighlight">\(\{w_{2,i}\}\)</span> are used for error estimation.</p>
+  <section id="inelastica-math-spectralmatrix">
+<h1>Inelastica.math.SpectralMatrix<a class="headerlink" href="#inelastica-math-spectralmatrix" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="Inelastica.math.SpectralMatrix">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Inelastica.math.</span></span><span class="sig-name descname"><span class="pre">SpectralMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#SpectralMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Inelastica.math.SpectralMatrix" title="Link to this definition"></a></dt>
+<dd><p>Matrix class for spectral matrices.</p>
+<p>Idea: Split a spectral matrix <span class="math notranslate nohighlight">\(\mathbf{A}^{(mxm)}\)</span> into two smaller matrices
+<span class="math notranslate nohighlight">\(\mathbf{A} = \mathbf{L}.\mathbf{R}\)</span>
+where <span class="math notranslate nohighlight">\(\mathbf{L}^{(mxn)} = [\lambda_1 \mathbf{v}_1, ..., \lambda_n \mathbf{v}_n]\)</span>
+and <span class="math notranslate nohighlight">\(\mathbf{R}^{(nxm)} = [\mathbf{v}_1, ..., \mathbf{v}_n]^\dagger\)</span>
+are constructed from a call to <code class="docutils literal notranslate"><span class="pre">LA.eigh(A)</span></code> keeping only
+<span class="math notranslate nohighlight">\(n\)</span> eigensolutions with eigenvalues above the specified cutoff.</p>
+<p>The magic takes place in Matrix multiply function.</p>
+<p>Todo: Adding two gives full matrix! Should be easy to fix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Points for the Gaussian rule.</p>
-</dd>
-<dt><strong>tol</strong><span class="classifier">float</span></dt><dd><p>The requested absolute accuracy of the abscissas.</p>
-</dd>
+<dt><strong>A</strong><span class="classifier">ndarray</span></dt><dd></dd>
 </dl>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>x</strong><span class="classifier">ndarray</span></dt><dd><p>Abscissa for which the function is to be evaluated.</p>
-</dd>
-<dt><strong>w1</strong><span class="classifier">ndarray</span></dt><dd><p>Integration weights.</p>
-</dd>
-<dt><strong>w2</strong><span class="classifier">ndarray</span></dt><dd><p>Weights for error estimation.</p>
-</dd>
+<dt><strong>L</strong><span class="classifier">ndarray</span></dt><dd></dd>
+<dt><strong>R</strong><span class="classifier">ndarray</span></dt><dd></dd>
 </dl>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="Inelastica.math.SpectralMatrix.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/math/spectral.html#SpectralMatrix.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Inelastica.math.SpectralMatrix.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Inelastica.math.SpectralMatrix.__init__" title="Inelastica.math.SpectralMatrix.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([A, cutoff])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Inelastica.math.html#Inelastica.math.SpectralMatrix.full" title="Inelastica.math.SpectralMatrix.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full</span></code></a>()</p></td>
+<td><p>Returns the dense ndarray via matrix multiplication <span class="math notranslate nohighlight">\(\mathbf{A}^{(mxm)} = \mathbf{L}.\mathbf{R}\)</span>.</p></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Inelastica.math.SpectralMatrix.html" class="btn btn-neutral float-left" title="Inelastica.math.SpectralMatrix" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Inelastica.math.hilbert.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Inelastica.math.html" class="btn btn-neutral float-left" title="Inelastica.math package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Inelastica.math.gausskronrod.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,76 +1,34 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Phonons &mdash; Inelastica v1.3.7 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+        <script src="../_static/documentation_options.js?v=2f149631"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="STM" href="stm.html" />
     <link rel="prev" title="pyTBT" href="pytbt.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> Inelastica
-          
-
-          
-            
-            <img src="../_static/82px-Inelastica-logo-mini.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 v1.3.7
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -78,18 +36,8 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">User guide</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
@@ -107,244 +55,166 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Publications</span></p>
+<p class="caption" role="heading"><span class="caption-text">Publications</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../cite.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using Inelastica</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../api-gen/Inelastica.html">Inelastica package</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Inelastica</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../scripts.html">Scripts</a> &raquo;</li>
-        
       <li>Phonons</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/scripts/phonons.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="phonons">
-<span id="id1"></span><h1>Phonons<a class="headerlink" href="#phonons" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="phonons">
+<span id="id1"></span><h1>Phonons<a class="headerlink" href="#phonons" title="Link to this heading"></a></h1>
 <p>Methods to calculate vibrations and e-ph couplings from SIESTA output</p>
-<dl class="docutils">
-<dt>usage:</dt>
-<dd>Phonons [-h] [-c] [-r] [–CheckPointNetCDF CHECKPOINTNETCDF] [-s] [-F DEVICEFIRST] [-L DEVICELAST] [–FCfirst FCFIRST] [–FClast FCLAST] [–EPHfirst EPHFIRST] [–EPHlast EPHLAST] [–PBCFirst PBCFIRST] [–PBCLast PBCLAST] [–FCwildcard FCWILDCARD] [–OSdir ONLYSDIR] [-a] [-i ISOTOPES] [-x K1] [-y K2] [-z K3] [-g] DestDir</dd>
-<dt>positional arguments:</dt>
-<dd>DestDir               Destination directory</dd>
-<dt>optional arguments:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
-<td>show this help message and exit</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-c</span>, <span class="option">--CalcCoupl</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Calculate e-ph couplings [default=False]</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-r</span>, <span class="option">--Restart</span></kbd></td>
-<td>Restart from a previous run [default=False]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--CheckPointNetCDF <var>CHECKPOINTNETCDF</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Old NetCDF file used for restart [default=None]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-s</span>, <span class="option">--SinglePrec</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Calculate e-ph couplings using single precision arrays
-[default=False]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-F <var>DEVICEFIRST</var></span>, <span class="option">--DeviceFirst <var>DEVICEFIRST</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>First device atom index (in the electronic basis)
-[default=1]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-L <var>DEVICELAST</var></span>, <span class="option">--DeviceLast <var>DEVICELAST</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Last device atom index (in the electronic basis)
-[default=1000]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--FCfirst <var>FCFIRST</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>First FC atom index [default=1]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--FClast <var>FCLAST</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Last FC atom index [default=1000]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--EPHfirst <var>EPHFIRST</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>First atom index for which the e-ph. couplings are
-evaluated [default=FCfirst]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--EPHlast <var>EPHLAST</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Last atom index for which the e-ph. couplings are
-evaluated [default=FClast]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--PBCFirst <var>PBCFIRST</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>For eliminating interactions through periodic boundary
-conditions in z-direction [default=1]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--PBCLast <var>PBCLAST</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>For eliminating interactions through periodic boundary
-conditions in z-direction [default=1000]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--FCwildcard <var>FCWILDCARD</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Wildcard for FC directories [default=./FC*]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--OSdir <var>ONLYSDIR</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Location of OnlyS directory [default=./OSrun]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-a</span>, <span class="option">--AbsoluteEnergyReference</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Use an absolute energy reference (Fermi energy of
+<dl>
+<dt>usage:</dt><dd><p>Phonons [-h] [-c] [-r] [–CheckPointNetCDF CHECKPOINTNETCDF] [-s] [-F DEVICEFIRST] [-L DEVICELAST] [–FCfirst FCFIRST] [–FClast FCLAST] [–EPHfirst EPHFIRST] [–EPHlast EPHLAST] [–PBCFirst PBCFIRST] [–PBCLast PBCLAST] [–FCwildcard FCWILDCARD] [–OSdir ONLYSDIR] [-a] [-i ISOTOPES] [-x K1] [-y K2] [-z K3] [-g] DestDir</p>
+</dd>
+<dt>positional arguments:</dt><dd><p>DestDir               Destination directory</p>
+</dd>
+<dt>optional arguments:</dt><dd><dl class="option-list">
+<dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
+<dd><p>show this help message and exit</p>
+</dd>
+<dt><kbd><span class="option">-c</span>, <span class="option">--CalcCoupl</span></kbd></dt>
+<dd><p>Calculate e-ph couplings [default=False]</p>
+</dd>
+<dt><kbd><span class="option">-r</span>, <span class="option">--Restart</span></kbd></dt>
+<dd><p>Restart from a previous run [default=False]</p>
+</dd>
+<dt><kbd><span class="option">--CheckPointNetCDF <var>CHECKPOINTNETCDF</var></span></kbd></dt>
+<dd><p>Old NetCDF file used for restart [default=None]</p>
+</dd>
+<dt><kbd><span class="option">-s</span>, <span class="option">--SinglePrec</span></kbd></dt>
+<dd><p>Calculate e-ph couplings using single precision arrays
+[default=False]</p>
+</dd>
+<dt><kbd><span class="option">-F <var>DEVICEFIRST</var></span>, <span class="option">--DeviceFirst <var>DEVICEFIRST</var></span></kbd></dt>
+<dd><p>First device atom index (in the electronic basis)
+[default=1]</p>
+</dd>
+<dt><kbd><span class="option">-L <var>DEVICELAST</var></span>, <span class="option">--DeviceLast <var>DEVICELAST</var></span></kbd></dt>
+<dd><p>Last device atom index (in the electronic basis)
+[default=1000]</p>
+</dd>
+<dt><kbd><span class="option">--FCfirst <var>FCFIRST</var></span></kbd></dt>
+<dd><p>First FC atom index [default=1]</p>
+</dd>
+<dt><kbd><span class="option">--FClast <var>FCLAST</var></span></kbd></dt>
+<dd><p>Last FC atom index [default=1000]</p>
+</dd>
+<dt><kbd><span class="option">--EPHfirst <var>EPHFIRST</var></span></kbd></dt>
+<dd><p>First atom index for which the e-ph. couplings are
+evaluated [default=FCfirst]</p>
+</dd>
+<dt><kbd><span class="option">--EPHlast <var>EPHLAST</var></span></kbd></dt>
+<dd><p>Last atom index for which the e-ph. couplings are
+evaluated [default=FClast]</p>
+</dd>
+<dt><kbd><span class="option">--PBCFirst <var>PBCFIRST</var></span></kbd></dt>
+<dd><p>For eliminating interactions through periodic boundary
+conditions in z-direction [default=1]</p>
+</dd>
+<dt><kbd><span class="option">--PBCLast <var>PBCLAST</var></span></kbd></dt>
+<dd><p>For eliminating interactions through periodic boundary
+conditions in z-direction [default=1000]</p>
+</dd>
+<dt><kbd><span class="option">--FCwildcard <var>FCWILDCARD</var></span></kbd></dt>
+<dd><p>Wildcard for FC directories [default=./FC*]</p>
+</dd>
+<dt><kbd><span class="option">--OSdir <var>ONLYSDIR</var></span></kbd></dt>
+<dd><p>Location of OnlyS directory [default=./OSrun]</p>
+</dd>
+<dt><kbd><span class="option">-a</span>, <span class="option">--AbsoluteEnergyReference</span></kbd></dt>
+<dd><p>Use an absolute energy reference (Fermi energy of
 equilibrium structure) for displaced Hamiltonians
 (e.g., when eF is not well-defined) instead of the
 instantaneous Fermi energy for the displaced
 geometries, cf. Eq.(17) in PRB 75, 205413 (2007)
-[default=False]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-i <var>ISOTOPES</var></span>, <span class="option">--Isotopes <var>ISOTOPES</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>String, formatted as a list [[i1,m1],…], where the
+[default=False]</p>
+</dd>
+<dt><kbd><span class="option">-i <var>ISOTOPES</var></span>, <span class="option">--Isotopes <var>ISOTOPES</var></span></kbd></dt>
+<dd><p>String, formatted as a list [[i1,m1],…], where the
 mass of atom index i1 (SIESTA numbering) will be set
 to m1. Alternatively, the argument can be a file with
-the string [default=[]]</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-x <var>K1</var></span>, <span class="option">--k1 <var>K1</var></span></kbd></td>
-<td>k-point along a1 where e-ph couplings are evaluated
-[0.0]</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-y <var>K2</var></span>, <span class="option">--k2 <var>K2</var></span></kbd></td>
-<td>k-point along a2 where e-ph couplings are evaluated
-[0.0]</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-z <var>K3</var></span>, <span class="option">--k3 <var>K3</var></span></kbd></td>
-<td>k-point along a3 where e-ph couplings are evaluated
-[0.0]</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-g</span>, <span class="option">--WriteGradients</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Write real-space gradients dH/dR to NetCDF
-[default=False]</td></tr>
-</tbody>
-</table>
+the string [default=[]]</p>
+</dd>
+<dt><kbd><span class="option">-x <var>K1</var></span>, <span class="option">--k1 <var>K1</var></span></kbd></dt>
+<dd><p>k-point along a1 where e-ph couplings are evaluated
+[0.0]</p>
+</dd>
+<dt><kbd><span class="option">-y <var>K2</var></span>, <span class="option">--k2 <var>K2</var></span></kbd></dt>
+<dd><p>k-point along a2 where e-ph couplings are evaluated
+[0.0]</p>
+</dd>
+<dt><kbd><span class="option">-z <var>K3</var></span>, <span class="option">--k3 <var>K3</var></span></kbd></dt>
+<dd><p>k-point along a3 where e-ph couplings are evaluated
+[0.0]</p>
+</dd>
+<dt><kbd><span class="option">-g</span>, <span class="option">--WriteGradients</span></kbd></dt>
+<dd><p>Write real-space gradients dH/dR to NetCDF
+[default=False]</p>
 </dd>
 </dl>
-</div>
+</dd>
+</dl>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="stm.html" class="btn btn-neutral float-right" title="STM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="pytbt.html" class="btn btn-neutral float-left" title="pyTBT" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pytbt.html" class="btn btn-neutral float-left" title="pyTBT" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="stm.html" class="btn btn-neutral float-right" title="STM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen
-
-    </p>
+    <p>&#169; Copyright 2003-2018, Magnus Paulsson and Thomas Frederiksen.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

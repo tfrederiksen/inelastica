@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inelastica.physics.mesh &mdash; Inelastica v1.3.7 documentation</title>
+  <title>Inelastica.physics.mesh.kmesh &mdash; Inelastica v1.3.7 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -15,8 +15,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Inelastica.physics.mesh.kmesh" href="Inelastica.physics.mesh.kmesh.html" />
-    <link rel="prev" title="Inelastica.physics.constants" href="Inelastica.physics.constants.html" /> 
+    <link rel="next" title="&lt;no title&gt;" href="Inelastica.BandStruct.html" />
+    <link rel="prev" title="Inelastica.physics.mesh" href="Inelastica.physics.mesh.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -85,9 +85,10 @@
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="Inelastica.html">Inelastica package</a> &raquo;</li>
           <li><a href="Inelastica.physics.html">Inelastica.physics package</a> &raquo;</li>
-      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">Inelastica.physics.mesh</span></code></li>
+          <li><a href="Inelastica.physics.mesh.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Inelastica.physics.mesh</span></code></a> &raquo;</li>
+      <li>Inelastica.physics.mesh.kmesh</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/api-gen/Inelastica.physics.mesh.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api-gen/Inelastica.physics.mesh.kmesh.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -95,31 +96,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="inelastica-physics-mesh">
-<span id="module-Inelastica.physics.mesh"></span><h1><a class="reference internal" href="#module-Inelastica.physics.mesh" title="Inelastica.physics.mesh"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Inelastica.physics.mesh</span></code></a><a class="headerlink" href="#inelastica-physics-mesh" title="Link to this heading"></a></h1>
-<p>Written by Thomas Frederiksen.</p>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="Inelastica.physics.mesh.kmesh.html#Inelastica.physics.mesh.kmesh" title="Inelastica.physics.mesh.kmesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kmesh</span></code></a>(Nk1, Nk2, Nk3[, meshtype, invsymmetry])</p></td>
-<td><p>Create a k-mesh samling where each of the three components sample the range [-0.5,0.5]).</p></td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<dl class="py function">
-<dt class="sig sig-object py" id="Inelastica.physics.mesh.generatelinmesh">
-<span class="sig-prename descclassname"><span class="pre">Inelastica.physics.mesh.</span></span><span class="sig-name descname"><span class="pre">generatelinmesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Nk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/physics/mesh.html#generatelinmesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Inelastica.physics.mesh.generatelinmesh" title="Link to this definition"></a></dt>
-<dd><p>Generate Nk points sampling linearly the interval [-0.5;0.5]</p>
-</dd></dl>
-
+  <section id="inelastica-physics-mesh-kmesh">
+<h1>Inelastica.physics.mesh.kmesh<a class="headerlink" href="#inelastica-physics-mesh-kmesh" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="Inelastica.physics.mesh.kmesh">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Inelastica.physics.mesh.</span></span><span class="sig-name descname"><span class="pre">kmesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Nk1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nk2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nk3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meshtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['LIN',</span> <span class="pre">'LIN',</span> <span class="pre">'LIN']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invsymmetry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/physics/mesh.html#kmesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Inelastica.physics.mesh.kmesh" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Create a k-mesh samling where each of the three components
+<dd><p>Create a k-mesh samling where each of the three components
 sample the range [-0.5,0.5]). They are not in reciprocal space.
 Instead they correspond to the mathematical orthogonal space
 that is Fourier transformed.</p>
@@ -136,52 +118,44 @@ within the GK method.</p>
 Nk   : Array with sampling for each axis
 type : List of sampling type for each axis</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="Inelastica.physics.mesh.kmesh.SymmetryReduce">
-<span class="sig-name descname"><span class="pre">SymmetryReduce</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/physics/mesh.html#kmesh.SymmetryReduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Inelastica.physics.mesh.kmesh.SymmetryReduce" title="Link to this definition"></a></dt>
-<dd><p>Remove duplicates for symmetry
-INVERSION SYMMETRY:
-If the Bloch function</p>
-<blockquote>
-<div><p>psi(k) = exp(ikr)u(k),</p>
-</div></blockquote>
-<dl class="simple">
-<dt>with crystal momentum k, is an eigenstate of the Schroedinger equation then also</dt><dd><p>psi^dagger(k) = exp(-ikr)u^dagger(k)</p>
-</dd>
-</dl>
-<p>with crystal momentum -k, is an eigenstate with same eigenvalue.
-Hence E(k) = E(-k).
-TIME REVERSAL SYMMETRY:
-t,psi(r,t) –&gt; -t,psi^dagger(r,-t). T(k) = T(-k).
-(Elastic) propagation from L to R is always identical to propagation from R to L.</p>
+<dt class="sig sig-object py" id="Inelastica.physics.mesh.kmesh.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Nk1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nk2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nk3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meshtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['LIN',</span> <span class="pre">'LIN',</span> <span class="pre">'LIN']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invsymmetry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/physics/mesh.html#kmesh.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Inelastica.physics.mesh.kmesh.__init__" title="Link to this definition"></a></dt>
+<dd><p>Returns an instance of a k-mesh with each of the k-vector axes
+sampled either linearly (LIN) or using a Gauss-Kronrod (GK) scheme.</p>
+<p>An axis i sampled by (Nki,LIN) generates Nk points, while
+(Nki,GK) returns 2*Nk+1 points.</p>
+<p>By applying inversion symmetry (k=-k) the number of points in the mesh
+can be reduced by a factor two (except when the Gamma point is included
+which have no partner).</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="Inelastica.physics.mesh.kmesh.genkmesh">
-<span class="sig-name descname"><span class="pre">genkmesh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/physics/mesh.html#kmesh.genkmesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Inelastica.physics.mesh.kmesh.genkmesh" title="Link to this definition"></a></dt>
-<dd><p>Generate mesh for a given sampling of the axes</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="Inelastica.physics.mesh.html#Inelastica.physics.mesh.kmesh.SymmetryReduce" title="Inelastica.physics.mesh.kmesh.SymmetryReduce"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SymmetryReduce</span></code></a>()</p></td>
+<td><p>Remove duplicates for symmetry INVERSION SYMMETRY: If the Bloch function    psi(k) = exp(ikr)u(k), with crystal momentum k, is an eigenstate of the Schroedinger equation then also    psi^dagger(k) = exp(-ikr)u^dagger(k) with crystal momentum -k, is an eigenstate with same eigenvalue. Hence E(k) = E(-k). TIME REVERSAL SYMMETRY: t,psi(r,t) --&gt; -t,psi^dagger(r,-t). T(k) = T(-k). (Elastic) propagation from L to R is always identical to propagation from R to L.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Inelastica.physics.mesh.kmesh.__init__" title="Inelastica.physics.mesh.kmesh.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(Nk1, Nk2, Nk3[, meshtype, invsymmetry])</p></td>
+<td><p>Returns an instance of a k-mesh with each of the k-vector axes sampled either linearly (LIN) or using a Gauss-Kronrod (GK) scheme.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Inelastica.physics.mesh.html#Inelastica.physics.mesh.kmesh.genkmesh" title="Inelastica.physics.mesh.kmesh.genkmesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genkmesh</span></code></a>()</p></td>
+<td><p>Generate mesh for a given sampling of the axes</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Inelastica.physics.mesh.html#Inelastica.physics.mesh.kmesh.mesh2file" title="Inelastica.physics.mesh.kmesh.mesh2file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh2file</span></code></a>(fn)</p></td>
+<td><p>Writes the k-mesh to file</p></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="Inelastica.physics.mesh.kmesh.mesh2file">
-<span class="sig-name descname"><span class="pre">mesh2file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/physics/mesh.html#kmesh.mesh2file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Inelastica.physics.mesh.kmesh.mesh2file" title="Link to this definition"></a></dt>
-<dd><p>Writes the k-mesh to file</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="Inelastica.physics.mesh.test">
-<span class="sig-prename descclassname"><span class="pre">Inelastica.physics.mesh.</span></span><span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Inelastica/physics/mesh.html#test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Inelastica.physics.mesh.test" title="Link to this definition"></a></dt>
-<dd><p>Test function</p>
-</dd></dl>
-
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Inelastica.physics.constants.html" class="btn btn-neutral float-left" title="Inelastica.physics.constants" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Inelastica.physics.mesh.kmesh.html" class="btn btn-neutral float-right" title="Inelastica.physics.mesh.kmesh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Inelastica.physics.mesh.html" class="btn btn-neutral float-left" title="Inelastica.physics.mesh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Inelastica.BandStruct.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
