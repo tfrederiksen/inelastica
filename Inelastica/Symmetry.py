@@ -870,7 +870,9 @@ class Symmetry(object):
             self.path = [[G, 'G'], [X, 'X'], [S, 'S'], [Y, 'Y'], [G, 'G'], [Z, 'Z']]
         else:
             print("Symmetry: ERROR. Do not know what directions to calculate the phonon bandstructure for lattice %s."%self.latticeType)
-            sys.exit('Error: unknown lattice type')
+            X = b1*1/2+b2*0/2+b3*0/2
+            Y = b1*0/2+b2*1/2+b3*0/2
+            self.path = [[G, 'G'], [X, 'X'], [Y, 'Y']]
         return self.path
 
 
