@@ -254,7 +254,7 @@ def calcWF(options, geom, basis, Y):
     origo = N.array([xmin, ymin, zmin], N.float)
 
     # Def cube
-    YY = N.zeros((nx, ny, nz), N.complex)
+    YY = N.zeros((nx, ny, nz), N.complex128)
     rx = N.array(list(range(nx)), N.float)*dx+origo[0]
     ry = N.array(list(range(ny)), N.float)*dy+origo[1]
     rz = N.array(list(range(nz)), N.float)*dz+origo[2]

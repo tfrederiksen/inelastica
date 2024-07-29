@@ -19,7 +19,7 @@ def test_prereq():
 
     # Make sure that numpy is compiled with optimized LAPACK/BLAS
     st = time.time()
-    a = N.ones((600, 600), N.complex)
+    a = N.ones((600, 600), N.complex128)
     b = N.dot(a, a)
     LA.eigh(b)
     en = time.time()

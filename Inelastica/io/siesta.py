@@ -1799,7 +1799,7 @@ class HS(object):
                     #if juo!=jo and N.max(abs(self.xij[self.listhptr[iuo]+jnz,:]))<0.1:
                     #    print self.xij[self.listhptr[iuo]+jnz,:]
 
-    def setkpoint(self, kpoint, UseF90helpers=True, atype=N.complex, verbose=True):
+    def setkpoint(self, kpoint, UseF90helpers=True, atype=N.complex128, verbose=True):
         "Make full matrices from sparse for specific k-point"
         kpoint = N.array(kpoint, N.float)
         if self.gamma:
@@ -1816,7 +1816,7 @@ class HS(object):
                     self.H[ispin, :, :] = self.setkpointhelper(self.Hsparse[:, ispin], kpoint, UseF90helpers, atype=atype) \
                         - self.ef * self.S
 
-    def setkpointhelper(self, Sparse, kpoint, UseF90helpers=True, atype=N.complex):
+    def setkpointhelper(self, Sparse, kpoint, UseF90helpers=True, atype=N.complex128):
         """
         Make full matrices from sparse for specific k-point
         NOTE: Assumption for Fourier transform

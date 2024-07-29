@@ -397,7 +397,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
     except:
         NNY = 1
     # Def cube
-    YY = [N.zeros((N1, N2, NN3), N.complex) for ii in range(NNY)]
+    YY = [N.zeros((N1, N2, NN3), N.complex128) for ii in range(NNY)]
     # Help indices
     i1 = MM.outerAdd(N.arange(N1), N.zeros(N2), N.zeros(NN3))
     i2 = MM.outerAdd(N.zeros(N1), N.arange(N2), N.zeros(NN3))

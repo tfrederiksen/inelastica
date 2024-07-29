@@ -163,8 +163,8 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     SubChans = N.shape(glob.glob(pathkpt+options.systemlabel+'.AL*.nc'))[0]
     TipChans = N.shape(glob.glob(pathkpt+options.systemlabel+'.AR*.nc'))[0]
 
-    Subwfs = N.zeros((SubChans, dim[0], dim[1], dim[2]), N.complex)
-    Tipwfs = N.zeros((TipChans, dim[0], dim[1], dim[2]), N.complex)
+    Subwfs = N.zeros((SubChans, dim[0], dim[1], dim[2]), N.complex128)
+    Tipwfs = N.zeros((TipChans, dim[0], dim[1], dim[2]), N.complex128)
 
     print('\nReading localized-basis wave functions from substrate side...')
     for ii in range(SubChans):
@@ -327,7 +327,7 @@ def Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint):
     by = mixY/a2**2
     bz = 1./a3**2
     bands = 23
-    D2 = N.zeros((bands, NN), N.complex)
+    D2 = N.zeros((bands, NN), N.complex128)
 
     #tau z
     D2[0, Nx*Ny:NN] = [-bz for ii in range(Nx*Ny, NN)]
@@ -423,7 +423,7 @@ def SplitHam(Ham, inda, indb):
 
 def LinearSolve(options, WFs, inda, indb, Ef, Tau, Hb, NN, Nx, Ny, Nz, Chans):
     Na, Nb = len(inda), len(indb)
-    pmodes = N.zeros((Chans, NN), N.complex)
+    pmodes = N.zeros((Chans, NN), N.complex128)
     timemodeprop = time.clock()
     print('\nMode propagation starts')
     for mode in range(Chans):
@@ -441,7 +441,7 @@ def LinearSolve(options, WFs, inda, indb, Ef, Tau, Hb, NN, Nx, Ny, Nz, Chans):
         index[0:Na] = inda
         index[Na:NN] = indb
         invindex = N.argsort(index)
-        phi = N.zeros(NN, N.complex)
+        phi = N.zeros(NN, N.complex128)
         phi[0:Na] = psiA
         phi[Na:NN] = sol[0]
         phi = phi[invindex]
@@ -456,12 +456,12 @@ def Current(options, propSubModes, propTipModes, Nx, Ny, Nz, Max, ucSize, ChansL
     Ltmp, Rtmp = propSubModes, propTipModes
     a3 = ucSize[2]
     print('\nComputing wave functions and gradients at separation surface ...')
-    L = N.zeros((ChansL, Nx, Ny), N.complex)
-    R = N.zeros((ChansR, Nx, Ny), N.complex)
-    dL = N.zeros((ChansL, Nx, Ny), N.complex)
-    dR = N.zeros((ChansR, Nx, Ny), N.complex)
-    L2, dL2 = N.zeros((ChansL, 2*Nx, 2*Ny), N.complex), N.zeros((ChansL, 2*Nx, 2*Ny), N.complex)
-    R2, dR2 = N.zeros((ChansR, 2*Nx, 2*Ny), N.complex), N.zeros((ChansR, 2*Nx, 2*Ny), N.complex)
+    L = N.zeros((ChansL, Nx, Ny), N.complex128)
+    R = N.zeros((ChansR, Nx, Ny), N.complex128)
+    dL = N.zeros((ChansL, Nx, Ny), N.complex128)
+    dR = N.zeros((ChansR, Nx, Ny), N.complex128)
+    L2, dL2 = N.zeros((ChansL, 2*Nx, 2*Ny), N.complex128), N.zeros((ChansL, 2*Nx, 2*Ny), N.complex128)
+    R2, dR2 = N.zeros((ChansR, 2*Nx, 2*Ny), N.complex128), N.zeros((ChansR, 2*Nx, 2*Ny), N.complex128)
     for ii in range(ChansL):
         L2[ii, :Nx, :Ny] = Ltmp[ii, Max*Nx*Ny:(Max+1)*Nx*Ny].reshape(Ny, Nx).transpose()
         L2[ii, Nx:, Ny:] = L2[ii, :Nx, :Ny]*N.exp(2.0j*N.pi*(kpoint[0]+kpoint[1]))

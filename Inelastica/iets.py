@@ -328,9 +328,9 @@ def calcTraces(options, GF1, GF2, basis, NCfile, ihw):
     # Calculate various traces over the electronic structure
     # Electron-phonon couplings
     ihw = int(ihw)
-    M = N.array(NCfile.variables['He_ph'][ihw, options.iSpin, :, :], N.complex)
+    M = N.array(NCfile.variables['He_ph'][ihw, options.iSpin, :, :], N.complex128)
     try:
-        M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw, options.iSpin, :, :], N.complex)
+        M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw, options.iSpin, :, :], N.complex128)
     except:
         print('Warning: Variable ImHe_ph not found')
     # Calculation of intermediate quantity
@@ -652,9 +652,9 @@ def writeFGRrates(options, GF, hw, NCfile):
 
     for ihw in range(len(hw)):
         SIO.printDone(ihw, len(hw), 'Golden Rate')
-        M = N.array(NCfile.variables['He_ph'][ihw, options.iSpin, :, :], N.complex)
+        M = N.array(NCfile.variables['He_ph'][ihw, options.iSpin, :, :], N.complex128)
         try:
-            M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw, options.iSpin, :, :], N.complex)
+            M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw, options.iSpin, :, :], N.complex128)
         except:
             print('Warning: Variable ImHe_ph not found')
         rate = N.zeros((len(GF.ECleft), len(GF.ECright)), N.float)

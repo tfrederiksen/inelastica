@@ -327,7 +327,7 @@ class OTSrun(FCrun): # Only TranSiesta run
 
 class OSrun(object):
 
-    def __init__(self, onlySdir, kpoint, atype=N.complex):
+    def __init__(self, onlySdir, kpoint, atype=N.complex128):
         print('Phonons.GetOnlyS: Reading from: ' + onlySdir)
         onlySfiles = glob.glob(onlySdir+'/*.onlyS*')
         onlySfiles.sort()
@@ -394,8 +394,8 @@ class DynamicalMatrix(object):
     def SetDynamicAtoms(self, DynamicAtoms):
         self.DynamicAtoms = DynamicAtoms
         NN = len(DynamicAtoms)
-        self.m = N.zeros((NN, 3, self.geom.natoms, 3), N.complex)
-        self.p = N.zeros((NN, 3, self.geom.natoms, 3), N.complex)
+        self.m = N.zeros((NN, 3, self.geom.natoms, 3), N.complex128)
+        self.p = N.zeros((NN, 3, self.geom.natoms, 3), N.complex128)
         self.Displ = {}
         self.TSHS = {}
         try:
@@ -452,7 +452,7 @@ class DynamicalMatrix(object):
 
     def ComputePhononModes(self, FC, verbose=True):
         dyn = len(self.DynamicAtoms)
-        FCtilde = N.zeros((dyn, 3, dyn, 3), N.complex)
+        FCtilde = N.zeros((dyn, 3, dyn, 3), N.complex128)
         # Symmetrize and mass-scale
         for i, v in enumerate(self.DynamicAtoms):
             for j, w in enumerate(self.DynamicAtoms):
@@ -464,7 +464,7 @@ class DynamicalMatrix(object):
         evalue, evec = LA.eigh(FCtilde)
         #evalue,evec = LA.eig(FCtilde)
         evec = N.transpose(evec)
-        evalue = N.array(evalue, N.complex)
+        evalue = N.array(evalue, N.complex128)
         # Calculate frequencies
         const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
         hw = const*evalue**0.5 # Units in eV
@@ -514,9 +514,9 @@ class DynamicalMatrix(object):
         # should be identical to hw
 
         # Expand vectors to full geometry
-        UU = N.zeros((len(hw), self.geom.natoms, 3), N.complex)
-        UUdisp = N.zeros((len(hw), self.geom.natoms, 3), N.complex)
-        UUcl = N.zeros((len(hw), self.geom.natoms, 3), N.complex)
+        UU = N.zeros((len(hw), self.geom.natoms, 3), N.complex128)
+        UUdisp = N.zeros((len(hw), self.geom.natoms, 3), N.complex128)
+        UUcl = N.zeros((len(hw), self.geom.natoms, 3), N.complex128)
         for i in range(len(hw)):
             for j, v in enumerate(self.DynamicAtoms):
                 UU[i, v-1, :] = [U[i, 3*j], U[i, 3*j+1], U[i, 3*j+2]]

@@ -257,8 +257,8 @@ class ElectrodeSelfEnergy(object):
 
         elif SIO.F90imported and UseF90helpers:
 
-            g0 = N.empty((nuo, nuo, NA1*NA2), N.complex, order='F')
-            mESH = N.empty((nuo, nuo, NA1*NA2), N.complex, order='F')
+            g0 = N.empty((nuo, nuo, NA1*NA2), N.complex128, order='F')
+            mESH = N.empty((nuo, nuo, NA1*NA2), N.complex128, order='F')
 
             iq = -1
             for ik2 in range(NA2):
@@ -297,8 +297,8 @@ class ElectrodeSelfEnergy(object):
             # To obtain Sigma we also need H expanded, i.e.,
             # Gs = (E S - H - Sig)^-1 -> Sig = E S - H-SGF^-1
             # ESmH = E S - H
-            SGF = N.zeros((NA1*NA2*nuo, NA1*NA2*nuo), N.complex)
-            ESH = N.zeros((NA1*NA2*nuo, NA1*NA2*nuo), N.complex) # Temporary E S00 - H00
+            SGF = N.zeros((NA1*NA2*nuo, NA1*NA2*nuo), N.complex128)
+            ESH = N.zeros((NA1*NA2*nuo, NA1*NA2*nuo), N.complex128) # Temporary E S00 - H00
             for ik2 in range(NA2):
                 for ik1 in range(NA1):
                     kpoint = qp.copy() # Checked against 1x1 and 3x3 electrode calculation
@@ -360,7 +360,7 @@ class ElectrodeSelfEnergy(object):
         # Solve generalized eigen-problem
         # ( e I - h00 , -I) (eps)          (h01 , 0) (eps)
         # ( h10       ,  0) (xi ) = lambda (0   , I) (xi )
-        a, b = N.zeros((2*NN, 2*NN), N.complex), N.zeros((2*NN, 2*NN), N.complex)
+        a, b = N.zeros((2*NN, 2*NN), N.complex128), N.zeros((2*NN, 2*NN), N.complex128)
         a[0:NN, 0:NN] = ee*s00-h00
         a[0:NN, NN:2*NN] = -N.eye(NN)
         a[NN:2*NN, 0:NN] = MM.dagger(h01)-ee*MM.dagger(s01)
@@ -468,7 +468,7 @@ class ElectrodeSelfEnergy(object):
                     test = ee*S-H-MM.mm(ee*MM.dagger(S01)-MM.dagger(H01), gs, ee*S01-H01)
                 else:
                     test = ee*S-H-MM.mm(ee*S01-H01, gs, ee*MM.dagger(S01)-MM.dagger(H01))
-                myConvTest = N.max(abs(MM.mm(test, gs)-N.identity((self.HS.nuo), N.complex)))
+                myConvTest = N.max(abs(MM.mm(test, gs)-N.identity((self.HS.nuo), N.complex128)))
                 if myConvTest < VC.GetCheck("Lopez-Sancho"):
                     converged = True
                     if myConvTest > VC.GetCheck("Lopez-Sancho-warning"):
@@ -745,9 +745,9 @@ class GF(object):
         print('NEGF.calcGF: Energy and total transmission Tr[TT].real:', ee, N.trace(self.TT).real)
         # Write also the Gammas in the full space of Gr/Ga/A
         # (needed for the inelastic shot noise)
-        self.GammaL = N.zeros(self.Gr.shape, N.complex)
+        self.GammaL = N.zeros(self.Gr.shape, N.complex128)
         self.GammaL[0:nuoL, 0:nuoL] = self.GamL
-        self.GammaR = N.zeros(self.Gr.shape, N.complex)
+        self.GammaR = N.zeros(self.Gr.shape, N.complex128)
         self.GammaR[nuo-nuoR:nuo, nuo-nuoR:nuo] = self.GamR
 
     def setkpoint(self, kpoint, ispin=0):
@@ -840,12 +840,12 @@ class GF(object):
         # Sigmas/Gammas in pyTBT GF can be smaller than device region
         # First give them the shape of the device region
         nnL, nnR = len(self.SigL), len(self.SigR)
-        S1, S2 = N.zeros(self.H.shape, N.complex), N.zeros(self.H.shape, N.complex)
+        S1, S2 = N.zeros(self.H.shape, N.complex128), N.zeros(self.H.shape, N.complex128)
         S1[0:nnL, 0:nnL],  S2[-nnR:, -nnR:] = self.SigL, self.SigR
         # Resetting Sigmas to orthogonalized quantities
         self.SigL, self.SigR = MM.mm(Us, S1, Us), MM.mm(Us, S2, Us)
         # ... now the same for the Gammas
-        G1, G2 = N.zeros(self.H.shape, N.complex), N.zeros(self.H.shape, N.complex)
+        G1, G2 = N.zeros(self.H.shape, N.complex128), N.zeros(self.H.shape, N.complex128)
         G1[0:nnL, 0:nnL],  G2[-nnR:, -nnR:] = self.GamL, self.GamR
         # Resetting Gammas to orthogonalized quantities
         self.GamL, self.GamR = MM.mm(Us, G1, Us), MM.mm(Us, G2, Us)

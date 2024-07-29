@@ -149,7 +149,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         if verbose:
             print('\nSupercellPhonons.ComputePhononModes_q: Computing force constants at q = ', qpoint, '(1/Ang)')
         NN = self.Sym.basis.NN
-        self.q = N.zeros((NN, 3, NN, 3), N.complex)
+        self.q = N.zeros((NN, 3, NN, 3), N.complex128)
         # Loop over basis atoms
         for n in range(NN):
             # Loop over all atoms in the supercell
@@ -177,7 +177,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         # in the primitive cell
         sh = list(H.shape)
         sh[-1], sh[-2] = self.rednao, self.rednao
-        H_k = N.zeros(tuple(sh), N.complex)
+        H_k = N.zeros(tuple(sh), N.complex128)
         # Loop over basis atoms
         for n in range(self.Sym.basis.NN):
             # Loop over all atoms in the supercell
@@ -200,7 +200,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
             # kpoint has unit of '2*pi/a'
             kpt = kpoint/(2*N.pi)
             kpt2 = MM.mm(N.array([self.Sym.a1, self.Sym.a2, self.Sym.a3]), kpt)
-            self.TSHS0.setkpoint(kpt2, atype=N.complex, verbose=verbose)
+            self.TSHS0.setkpoint(kpt2, atype=N.complex128, verbose=verbose)
             self.h0_k = self.TSHS0.H[:, :, :]
             self.s0_k = self.TSHS0.S[:, :]
         else:
@@ -210,7 +210,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
             self.h0_k = self.Fold2PrimitiveCell(self.h0, kpoint)
             self.s0_k = self.Fold2PrimitiveCell(self.s0, kpoint)
         ev = N.empty((self.nspin, self.rednao), N.float)
-        evec = N.empty((self.nspin, self.rednao, self.rednao), N.complex)
+        evec = N.empty((self.nspin, self.rednao, self.rednao), N.complex128)
         for ispin in range(self.nspin):
             ev[ispin], evec[ispin] = SLA.eigh(self.h0_k[ispin], self.s0_k)
         return ev, evec
@@ -231,7 +231,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
     def FoldMatrix_DoubleSum(self, H, kpoint, qpoint):
         sh = list(H.shape)
         sh[-1], sh[-2] = self.rednao, self.rednao
-        H_kq = N.zeros(tuple(sh), N.complex)
+        H_kq = N.zeros(tuple(sh), N.complex128)
         # Loop over atoms
         for n in range(len(self.latticevectors[0])):
             fn, ln = self.OrbIndx[n]
@@ -257,8 +257,8 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
             print('SupercellPhonons.ComputeEPHcouplings_kq: k = ', kpoint, ' q = ', qpoint, '(1/Ang)')
         # This assumes that phonon modes UU has been computed at that q
         const = PC.hbar2SI*(1e20/(PC.eV2Joule*PC.amu2kg))**0.5
-        M = N.zeros((len(self.hw), self.nspin, self.nao, self.nao), N.complex)
-        G = N.zeros((len(self.hw), self.nspin, self.nao, self.nao), N.complex)
+        M = N.zeros((len(self.hw), self.nspin, self.nao, self.nao), N.complex128)
+        G = N.zeros((len(self.hw), self.nspin, self.nao, self.nao), N.complex128)
         # Loop over dynamic atoms
         for i, v in enumerate(self.DynamicAtoms):
             # Loop over axes
@@ -503,7 +503,7 @@ def main(options):
     if options.kfile:
         # Prepare Hamiltonian etc in Gamma for whole supercell
         natoms = SIO.GetFDFlineWithDefault(fdf[0], 'NumberOfAtoms', int, -1, 'Error')
-        SCDM.PrepareGradients(options.onlySdir, N.array([0., 0., 0.]), 1, natoms, AbsEref=False, atype=N.complex, TSrun=TSrun)
+        SCDM.PrepareGradients(options.onlySdir, N.array([0., 0., 0.]), 1, natoms, AbsEref=False, atype=N.complex128, TSrun=TSrun)
         SCDM.nao = SCDM.h0.shape[-1]
         SCDM.FirstOrb = SCDM.OrbIndx[0][0] # First atom = 1
         SCDM.LastOrb = SCDM.OrbIndx[SCDM.Sym.basis.NN-1][1] # Last atom = Sym.NN

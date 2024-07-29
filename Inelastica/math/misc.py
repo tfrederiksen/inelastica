@@ -27,7 +27,7 @@ def mysqrt(x):
     ev, U = LA.eig(x)
     U = N.transpose(U)
 
-    tmp = N.zeros((len(ev), len(ev)), N.complex)
+    tmp = N.zeros((len(ev), len(ev)), N.complex128)
     for ii, evi in enumerate(ev):
         tmp[ii, ii] = N.sqrt(evi)
 
@@ -70,7 +70,7 @@ def trapez(x, f, equidistant=False):
     """
     if equidistant:
         # Trapez method!
-        d = N.array((x[1]-x[0])*N.ones(len(x)), N.complex)
+        d = N.array((x[1]-x[0])*N.ones(len(x)), N.complex128)
         d[0] = d[0]/2
         d[-1] = d[-1]/2
         return N.dot(d, f)

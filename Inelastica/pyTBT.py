@@ -220,8 +220,8 @@ def main(options):
         for ie, ee in enumerate(options.Elist):
             Tavg = N.zeros((options.numchan+1, len(mesh.w)), N.float)
             SNavg = N.zeros((options.numchan+1, len(mesh.w)), N.float)
-            AavL = N.zeros((DevGF.nuo, DevGF.nuo), N.complex)
-            AavR = N.zeros((DevGF.nuo, DevGF.nuo), N.complex)
+            AavL = N.zeros((DevGF.nuo, DevGF.nuo), N.complex128)
+            AavR = N.zeros((DevGF.nuo, DevGF.nuo), N.complex128)
             # Loops over k-points
             for ik in range(mesh.NNk):
                 DevGF.calcGF(ee+options.eta*1.0j, mesh.k[ik, :2], ispin=iSpin,
