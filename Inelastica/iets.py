@@ -197,7 +197,7 @@ def main(options):
                etaLead=options.etaLead, useSigNCfiles=options.signc, SpectralCutoff=options.SpectralCutoff)
     L = options.bufferL
     # Pad lasto with zeroes to enable basis generation...
-    lasto = N.zeros((GFp.HS.nua+L+1,), N.int)
+    lasto = N.zeros((GFp.HS.nua+L+1,), N.int32)
     lasto[L:] = GFp.HS.lasto
     basis = SIO.BuildBasis(options.fn, options.DeviceAtoms[0]+L, options.DeviceAtoms[1]+L, lasto)
     basis.ii -= L

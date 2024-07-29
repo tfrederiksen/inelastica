@@ -31,11 +31,11 @@ def Hilbert(f, ker=None):
         'Hilbert transform kernel'
         nh = len(f)
         n = 2 * nh
-        aux = N.empty(nh+1, N.float)
+        aux = N.empty(nh+1, N.float64)
         aux[0] = 0
         tmp = N.arange(1, nh+1)
         aux[1:] = N.log(tmp) * tmp
-        ker = N.empty(n, N.float)
+        ker = N.empty(n, N.float64)
         ker[0] = 0
         ker[1:nh] = aux[2:nh+1] - 2*aux[1:nh] + aux[:nh-1]
         ker[nh+1:] = -ker[1:nh][::-1]

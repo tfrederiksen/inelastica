@@ -311,7 +311,7 @@ def main(options):
         # Read basis
         L = options.bufferL
         # Pad lasto with zeroes to enable basis generation...
-        lasto = N.zeros((DevGF.HS.nua+L+1,), N.int)
+        lasto = N.zeros((DevGF.HS.nua+L+1,), N.int32)
         lasto[L:] = DevGF.HS.lasto
         basis = SIO.BuildBasis(options.fn, 1+L, DevGF.HS.nua+L,
                                lasto)

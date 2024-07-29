@@ -83,7 +83,7 @@ def test():
     b = N.diag([1, 2, 3])
     c = a-b
     d = N.ones((3, 3, 3))/10
-    e = N.arange(10, dtype=N.float)/100.
+    e = N.arange(10, dtype=N.float64)/100.
     #
     fn = 'test.nc'
     write(fn, a, 'a')

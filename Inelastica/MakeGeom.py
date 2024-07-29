@@ -692,7 +692,7 @@ class Geom(object):
         "Write POSCAR coordinate file for VASP"
         geom = copy.deepcopy(self)
         tmp = []
-        anrnum = N.zeros(max(geom.anr)+1, N.int)
+        anrnum = N.zeros(max(geom.anr)+1, N.int32)
         for i, xyz in enumerate(geom.xyz):
             if geom.anr[i] > 0:
                 tmp += [[geom.anr[i], i]]

@@ -160,7 +160,7 @@ def main(options):
     options.nspin = DevGF.HS.nspin
     L = options.bufferL
     # Pad lasto with zeroes to enable basis generation...
-    lasto = N.zeros((DevGF.HS.nua+L+1,), N.int)
+    lasto = N.zeros((DevGF.HS.nua+L+1,), N.int32)
     lasto[L:] = DevGF.HS.lasto
     basis = SIO.BuildBasis(options.fn,
                            options.DeviceAtoms[0]+L,
@@ -280,7 +280,7 @@ def calcWF(options, geom, basis, Y):
         imax = (basis.coff[ii]-2*basis.delta[ii])/basis.delta[ii]
         ri = dr/basis.delta[ii]
         ri = N.where(ri < imax, ri, imax)
-        ri = ri.astype(N.int)
+        ri = ri.astype(N.int32)
         costh = MM.outerAdd(0*ddx, 0*ddy, ddz)/dr
         cosfi, sinfi = MM.outerAdd(ddx, 0*ddy, 0*ddz)/drho, MM.outerAdd(0*ddx, ddy, 0*ddz)/drho
 

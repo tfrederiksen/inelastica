@@ -190,7 +190,7 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     a1, a2, a3 = SLA.norm(steps[0]), SLA.norm(steps[1]), SLA.norm(steps[2])
     avec = [a1, a2, a3]
     orig = N.array(ncfile.variables['origin'][:], N.float64)[2]
-    Nzi = N.int(orig/a3)
+    Nzi = int(orig/a3)
     Nzf = Nzi+Nz
     PotDevice = pot[Nzi:Nzf, :, :]
     SubPot = N.transpose(PotDevice, [2, 1, 0])
@@ -218,7 +218,7 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
     print('          [a1 a2 a3] = ['+str(N.round(a1*PC.Bohr2Ang, 4)), str(N.round(a2*PC.Bohr2Ang, 4)), str(N.round(a3*PC.Bohr2Ang, 4))+'] Ang')
     print('Angle spanned by the lateral unit vectors a1 and a2: '+str(N.round(theta, 5))+' rad (Pi/'+str(N.round(N.pi/theta, 3))+')')
     print('\nPositioning the separation plane on which the wave functions are evaluated:')
-    iShiftSep = N.int(options.ShiftSeparationPlane/PC.Bohr2Ang/a3)
+    iShiftSep = int(options.ShiftSeparationPlane/PC.Bohr2Ang/a3)
     usedPlane = iShiftSep*a3*PC.Bohr2Ang
     if options.ShiftSeparationPlane != 0:
         print('Requested separation-plane shift: '+str(options.ShiftSeparationPlane)+' Ang. Used: '+str(N.round(usedPlane, 4))+' Ang.')
@@ -254,7 +254,7 @@ def readDFT(options, kpt, pathkpt, posZMol, posZTip):
 def sampling(options, Nx, Ny, Nz, Subwfs, Tipwfs, SubChans, TipChans, SubPot, TipPot, SubRho, TipRho):
     ssc = options.samplingscale
     interMethod = 'linear'
-    NX, NY, NZ = N.int(N.floor(Nx/ssc)), N.int(N.floor(Ny/ssc)), Nz
+    NX, NY, NZ = int(N.floor(Nx/ssc)), int(N.floor(Ny/ssc)), Nz
     x, y = N.arange(0, Nx), N.arange(0, Ny)
     xnew, ynew = N.arange(0, Nx, ssc), N.arange(0, Ny, ssc)
 
@@ -381,7 +381,7 @@ def Hamiltonian(options, a1, a2, a3, Nx, Ny, Nz, NN, Pot, theta, kpoint):
     D2[11, :] = 2*(bx+by+bz)
     D2[11] = D2[11]+Pot
     #Bands below diagonal:
-    for ii in range(N.int((bands-1)/2)):
+    for ii in range(int((bands-1)/2)):
         D2[12+ii, :] = D2[10-ii, ::-1]
     #Define Hamiltonian as sparse array
     mtx = sparse.spdiags([D2[0], D2[1], D2[2],

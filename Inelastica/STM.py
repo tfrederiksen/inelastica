@@ -329,7 +329,7 @@ def calcTSWF(options, ikpoint):
     options.nspin = DevGF.HS.nspin
     L = options.bufferL
     #Pad lasto with zeroes to enable basis generation...
-    lasto = N.zeros((DevGF.HS.nua+L+1,), N.int)
+    lasto = N.zeros((DevGF.HS.nua+L+1,), N.int32)
     lasto[L:] = DevGF.HS.lasto
     basis = SIO.BuildBasis(options.fn,
                            options.DeviceAtoms[0]+L,
@@ -344,7 +344,7 @@ def calcTSWF(options, ikpoint):
     #Find device region in a3 axis
     U = LA.inv(N.array([cell[0]/N1, cell[1]/N2, cell[2]/N3]).transpose())
     gridindx = N.dot(geom.xyz[options.DeviceAtoms[0]-1:options.DeviceAtoms[1]]/PC.Bohr2Ang, U)
-    minN3, maxN3 = N.floor(N.min(gridindx[:, 2])).astype(N.int), N.ceil(N.max(gridindx[:, 2])).astype(N.int)
+    minN3, maxN3 = N.floor(N.min(gridindx[:, 2])).astype(N.int32), N.ceil(N.max(gridindx[:, 2])).astype(N.int32)
     if not N.allclose(geom.pbc, cell*PC.Bohr2Ang):
         print('Error: TotalPotential.grid.nc has different cell compared to geometry')
         sys.exit(1)
@@ -463,7 +463,7 @@ def calcWF2(options, geom, DeviceAtoms, basis, Y, NN, Fold=True, k=[0, 0, 0], a=
                     indx = N.where(dr2 < basis.coff[basisorb]**2) # Find points close to atom
 
                     idr, idrho = N.sqrt(dr2[indx]), N.sqrt(drho2[indx])
-                    iri = (idr/basis.delta[basisorb]).astype(N.int)
+                    iri = (idr/basis.delta[basisorb]).astype(N.int32)
                     idx, idy, idz = dx[indx], dy[indx], dz[indx]
 
                     costh = idz/idr

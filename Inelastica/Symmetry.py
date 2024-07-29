@@ -145,7 +145,7 @@ class Symmetry(object):
 
         # Find out which basis atom corresponds to each atom
         xyz = moveIntoCell(self.xyz, self.a1, self.a2, self.a3, self.accuracy)
-        self.basisatom = N.zeros((self.NN), N.int)
+        self.basisatom = N.zeros((self.NN), N.int32)
         for ii in range(self.basis.NN):
             indx = N.where(N.sum(N.abs(xyz-self.basis.xyz[ii, :]), axis=1) < self.accuracy)
             self.basisatom[indx[0]] = ii
@@ -169,8 +169,8 @@ class Symmetry(object):
 
         UL = [N.transpose(self.U33[ii]) for ii in range(NU)]
         UR = [self.U33[ii] for ii in range(NU)]
-        PL = N.zeros((NU, NFC, NN, NN), N.int)
-        PR = N.zeros((NU, NFC), N.int)
+        PL = N.zeros((NU, NFC, NN, NN), N.int32)
+        PR = N.zeros((NU, NFC), N.int32)
         for iU in range(NU):
             for ii in range(NFC):
                 SIO.printDone(iU*NFC+ii, NU*NFC, 'Symmetrizing')
@@ -313,7 +313,7 @@ class Symmetry(object):
     def reduce(self, Ulist):
         # Find least number of symmetry operations that generate the whole group
         keep = [ii for ii in N.array(Ulist).copy()]
-        ChT = N.zeros((len(keep), len(keep)), N.int) # Character table
+        ChT = N.zeros((len(keep), len(keep)), N.int32) # Character table
         for ii in range(len(keep)):
             for jj in range(len(keep)):
                 tmp = mm(keep[ii], keep[jj])
@@ -331,7 +331,7 @@ class Symmetry(object):
         def pick(x, y):
             tmp = []
             for ii in y:
-                tmp = N.concatenate((tmp, x[ii, N.array(y+self.accuracy, N.int)]))
+                tmp = N.concatenate((tmp, x[ii, N.array(y+self.accuracy, N.int32)]))
             return N.array(tmp).reshape((-1, ))
 
         def grow(x):
@@ -344,7 +344,7 @@ class Symmetry(object):
 
         # Sort and start with largest rank
         order = N.argsort(-abs(N.array(rotn))).reshape((-1, ))
-        irr = grow(N.array([order[0]], N.int))
+        irr = grow(N.array([order[0]], N.int32))
         basis = [order[0]]
         for ii in order:
             if N.sum(irr == ii) == 0:
@@ -601,7 +601,7 @@ class Symmetry(object):
 
         # Find out which basis atom corresponds to each atom
         xyz = moveIntoCell(self.xyz, self.a1, self.a2, self.a3, self.accuracy)
-        self.basisatom = N.zeros((self.NN), N.int)
+        self.basisatom = N.zeros((self.NN), N.int32)
         for ii in range(self.basis.NN):
             indx = N.where(N.sum(N.abs(xyz-self.basis.xyz[ii, :]), axis=1) < self.accuracy)
             self.basisatom[indx[0]] = ii

@@ -560,8 +560,8 @@ def ReadSTRUCT_OUTFile(filename):
     stfile.close()
     if len(speciesnumber) != numberOfAtoms:
         print('io.siesta.ReadSTRUCT_OUTFile: Inconsistency in %s detected!' % filename)
-    xyz = N.array(xyz, N.float)
-    vectors = N.array(vectors, N.float)
+    xyz = N.array(xyz, N.float64)
+    vectors = N.array(vectors, N.float64)
     for i, xi in enumerate(xyz):
         xyz[i] = N.dot(vectors, xi)
     return vectors, speciesnumber, atomnumber, xyz
@@ -1126,7 +1126,7 @@ def GetPDOSenergyValues(dom):
 
 def GetPDOSfromOrbitals(dom, index=[], atom_index=[], species=[], nlist=[], llist=[], mlist=[]):
     dim = len(GetPDOSenergyValues(dom))*GetPDOSnspin(dom)
-    pdos = N.zeros(dim, N.float)
+    pdos = N.zeros(dim, N.float64)
     nodes = dom.getElementsByTagName('orbital')
     usedOrbitals = []
     for node in nodes:
@@ -1365,17 +1365,17 @@ def ReadIonNCFile(filename, printnorm=False):
     ion.numorb = file.Number_of_orbitals
 
     # Variables
-    ion.L = N.array(file.variables['orbnl_l'][:], N.int)
-    ion.N = N.array(file.variables['orbnl_n'][:], N.int)
-    ion.Z = N.array(file.variables['orbnl_z'][:], N.int)
-    ion.ispol = N.array(file.variables['orbnl_ispol'][:], N.int)
-    ion.orb = N.array(file.variables['orb'][:], N.float)
-    ion.cutoff = N.array(file.variables['cutoff'][:], N.float)
-    ion.delta = N.array(file.variables['delta'][:], N.float)
+    ion.L = N.array(file.variables['orbnl_l'][:], N.int32)
+    ion.N = N.array(file.variables['orbnl_n'][:], N.int32)
+    ion.Z = N.array(file.variables['orbnl_z'][:], N.int32)
+    ion.ispol = N.array(file.variables['orbnl_ispol'][:], N.int32)
+    ion.orb = N.array(file.variables['orb'][:], N.float64)
+    ion.cutoff = N.array(file.variables['cutoff'][:], N.float64)
+    ion.delta = N.array(file.variables['delta'][:], N.float64)
 
     print('   Element: %s   Atom number: %i,  L-orbs %s' % (ion.element, ion.atomnum, str(ion.L) ) )
     for i, l in enumerate(ion.L):
-        rr = ion.delta[i] * N.array(list(range(len(ion.orb[i]))), N.float)
+        rr = ion.delta[i] * N.array(list(range(len(ion.orb[i]))), N.float64)
         ion.orb[i] = ion.orb[i]*(rr**ion.L[i])/(PC.Bohr2Ang**(3./2.))
         rr = rr*PC.Bohr2Ang
         # check normalization:
@@ -1420,15 +1420,15 @@ def BuildBasis(FDFfile, FirstAtom, LastAtom, lasto):
         sys.exit(1)
 
     # Initiate basis variables
-    basis.ii = N.zeros((nn,), N.int)
-    basis.L = N.zeros((nn,), N.int)
-    basis.M = N.zeros((nn,), N.int)
-    basis.N = N.zeros((nn,), N.int)
-    basis.atomnum = N.zeros((nn,), N.int)
-    basis.xyz = N.zeros((nn, 3), N.float)
-    basis.delta = N.zeros((nn,), N.float)
+    basis.ii = N.zeros((nn,), N.int32)
+    basis.L = N.zeros((nn,), N.int32)
+    basis.M = N.zeros((nn,), N.int32)
+    basis.N = N.zeros((nn,), N.int32)
+    basis.atomnum = N.zeros((nn,), N.int32)
+    basis.xyz = N.zeros((nn, 3), N.float64)
+    basis.delta = N.zeros((nn,), N.float64)
     basis.orb, basis.label = [], []
-    basis.coff = N.zeros((nn,), N.float)
+    basis.coff = N.zeros((nn,), N.float64)
 
     # Describe each basis orbital
     iorb = 0
@@ -1655,7 +1655,7 @@ class HS(object):
         Resets the kpoint and H,S.
         The garbage collector cannot tell if H or S will be used subsequently
         """
-        self.kpoint = N.array([1e10, 1e10, 1e10], N.float)
+        self.kpoint = N.array([1e10, 1e10, 1e10], N.float64)
         if 'H' in dir(self):
             del self.H
         if 'S' in dir(self):
@@ -1691,8 +1691,8 @@ class HS(object):
             indxuo = N.array(ReadFortranBin(fortfile, fortranLong, nos))
         else:
             # For gamma point make indxuo such that indexes not pointing to unitcell give error, i.e., -1.
-            tmp1 = N.array(list(range(1, nou+1)), N.int)
-            tmp2 = -N.ones((nos-nou), N.int)
+            tmp1 = N.array(list(range(1, nou+1)), N.int32)
+            tmp2 = -N.ones((nos-nou), N.int32)
             indxuo = N.concatenate((tmp1, tmp2))
         numhg = N.array(ReadFortranBin(fortfile, fortranLong, nou))
         qtot, temp = ReadFortranBin(fortfile, 'd', 2)
@@ -1702,7 +1702,7 @@ class HS(object):
         for ii in range(nou):
             listh += list(ReadFortranBin(fortfile, fortranLong, numhg[ii]))
         listh = N.array(listh)
-        Ssparse, cnt = N.zeros(maxnh, N.float), 0
+        Ssparse, cnt = N.zeros(maxnh, N.float64), 0
         for ii in range(nou):
             Ssparse[cnt:cnt+numhg[ii]] = ReadFortranBin(fortfile, 'd', numhg[ii])
             cnt = cnt+numhg[ii]
@@ -1750,12 +1750,12 @@ class HS(object):
 
         # numh(1:nuo)  : Number of non-zero elements in row of H
         if not 'listhptr' in self.__dict__:
-            self.listhptr = N.empty(self.nuo, N.int)
+            self.listhptr = N.empty(self.nuo, N.int32)
             self.listhptr[0] = 0
             self.listhptr[1:] = N.cumsum(self.numh[:-1])
 
         # lasto(0:nua) : Last orbital of atom in unitcell
-        self.atomindx = N.empty(self.nuo, N.int)
+        self.atomindx = N.empty(self.nuo, N.int32)
         atom = 0
         for io in range(self.nuo):
             while io >= self.lasto[atom]:
@@ -1801,7 +1801,7 @@ class HS(object):
 
     def setkpoint(self, kpoint, UseF90helpers=True, atype=N.complex128, verbose=True):
         "Make full matrices from sparse for specific k-point"
-        kpoint = N.array(kpoint, N.float)
+        kpoint = N.array(kpoint, N.float64)
         if self.gamma:
             VC.Check("same-kpoint", abs(kpoint),
                      "Trying to set non-zero k-point for Gamma point calculation.")
@@ -1855,7 +1855,7 @@ class HS(object):
                     Full[iuo, juo] += Sparse[si]*phase[si]
         if not Full.dtype == atype:
             print('io.siesta: Forcing array from %s to %s' % (Full.dtype, atype))
-        if (atype == N.float) or (atype == N.float32) or (atype == N.float64):
+        if (atype == N.float32) or (atype == N.float64):
             return N.array(Full.real, atype)
         else:
             return N.array(Full, atype)

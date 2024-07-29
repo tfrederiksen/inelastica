@@ -38,18 +38,18 @@ def ReadCONTCAR(filename):
     ccarfile = VIO_open(filename, 'r')
     label = ccarfile.readline()
     scalefactor = float(ccarfile.readline())
-    vectors = N.zeros((3, 3), N.float)
+    vectors = N.zeros((3, 3), N.float64)
     for ii in range(3):
         tmp = ccarfile.readline().split()
-        vectors[ii] = N.array(tmp, N.float)
+        vectors[ii] = N.array(tmp, N.float64)
     # The species labels are not always included in CONTCAR
     firstline = ccarfile.readline().split()
     line = ccarfile.readline().split()
     try:
         specieslabels = firstline
-        speciesnumbers = N.array(line, N.int)
+        speciesnumbers = N.array(line, N.int32)
     except:
-        speciesnumbers = N.array(firstline, N.int)
+        speciesnumbers = N.array(firstline, N.int32)
         specieslabels = []
         for i, s in enumerate(speciesnumbers):
             specieslabels += [input('Element label for group %i (%i atoms): '%(i+1, s))]
@@ -63,17 +63,17 @@ def ReadCONTCAR(filename):
         if line[0].upper() == 'CARTESIAN':
             dircoor = False
     # Read coordinates and degrees of freedom
-    xyz = N.zeros((natoms, 6), N.float)
+    xyz = N.zeros((natoms, 6), N.float64)
     for ii in range(natoms):
         line = ccarfile.readline()
         line = line.replace('F', '0')
         line = line.replace('T', '1')
         line = line.split()
         try:
-            xyz[ii] = N.array(line, N.float)
+            xyz[ii] = N.array(line, N.float64)
         except:
             # No constraints given
-            xyz[ii, :3] = N.array(line, N.float)
+            xyz[ii, :3] = N.array(line, N.float64)
     # Ignore rest of the file
     ccarfile.close()
     # Convert to cartesian coordinates
@@ -266,7 +266,7 @@ def ExtractPDOS(filename, outfile, atom_index=[]):
     if atom_index == []:
         atom_index = list(range(atoms))
     # Loop over atom PDOS
-    dat = N.zeros((pts, 19), N.float)
+    dat = N.zeros((pts, 19), N.float64)
     extrablock = 0
     for j in range(atoms):
         for e in range(pts):
