@@ -152,7 +152,7 @@ def GetOptions(argv):
     options.module = 'Phonons'
 
     # k-point
-    options.kpoint = N.array([options.k1, options.k2, options.k3], N.float)
+    options.kpoint = N.array([options.k1, options.k2, options.k3], N.float64)
     del options.k1, options.k2, options.k3
 
     # Determine array type for H,S,dH,...
@@ -237,8 +237,8 @@ class FCrun(object):
                      %(runfdf, XV, FClast))
         # Set up FC[i,a,j,b]: Force constant (eV/A^2) from moved atom i, axis a to atom j, axis b
         natoms = self.geom.natoms
-        self.m = N.zeros((FClast-FCfirst+1, 3, natoms, 3), N.float)
-        self.p = N.zeros((FClast-FCfirst+1, 3, natoms, 3), N.float)
+        self.m = N.zeros((FClast-FCfirst+1, 3, natoms, 3), N.float64)
+        self.p = N.zeros((FClast-FCfirst+1, 3, natoms, 3), N.float64)
         fc = N.array(SIO.ReadFCFile(self.directory+'/%s.FC'%self.systemlabel))
         for i in range(FClast-FCfirst+1):
             for j in range(3):
@@ -803,7 +803,7 @@ def WriteVibDOSFile(filename, hw, type='Gaussian'):
     eta = N.linspace(0.001, 0.01, 11)
     ERNG = N.outer(erng, 0*eta+1.)
     ETA = N.outer(0*erng+1, eta)
-    spectrum = N.zeros((len(erng), len(eta)), N.float)
+    spectrum = N.zeros((len(erng), len(eta)), N.float64)
     for i in range(len(hw)):
         if type == 'Gaussian':
             spectrum += (2*N.pi)**(-.5)/ETA*N.exp(N.clip(-1.0*(hw[i]-ERNG)**2/(2*ETA**2), -300, 300))
@@ -850,7 +850,7 @@ def WriteAXSFFiles(filename, xyz, anr, hw, U, FCfirst, FClast):
 def WriteAXSFFilesPer(filename, vectors, xyz, anr, hw, U, FCfirst, FClast):
     'Writes the vibrational normal coordinates in xcrysden axsf-format (periodic structure)'
     print('Phonons.WriteAXSFFilePer: Writing ' + filename)
-    VEC = N.zeros((len(hw), 3*len(xyz)), N.float)
+    VEC = N.zeros((len(hw), 3*len(xyz)), N.float64)
     VEC[:, 3*(FCfirst-1):3*FClast] = U
     f = open(filename, 'w')
     f.write('ANIMSTEPS %i\nCRYSTAL\n'%len(hw))

@@ -53,12 +53,12 @@ def compare_H(HS1, HS2, not_checks={}):
         """
         if False:
             for ii in range(2):
-                k = N.array(RA.random(3), N.float)
+                k = N.array(RA.random(3), N.float64)
                 print(" Checking k-point: %f, %f, %f"%(k[0], k[1], k[2]))
-                HS1.kpoint = N.zeros((3,), N.float) # To ensure it is calculated!
+                HS1.kpoint = N.zeros((3,), N.float64) # To ensure it is calculated!
                 HS1.setkpoint(k)
                 H1, S1 = HS1.H.copy(), HS1.S.copy()
-                HS2.kpoint = N.zeros((3,), N.float) # To ensure it is calculated!
+                HS2.kpoint = N.zeros((3,), N.float64) # To ensure it is calculated!
                 HS2.setkpoint(k)
                 H2, S2 = HS2.H.copy(), HS2.S.copy()
                 tmp1 = N.max(abs(H1-H2))
@@ -101,12 +101,12 @@ def main():
     print("Maximum difference between Xij :", maxerr)
 
     for ii in range(10):
-        k = N.array(RA.random(3), N.float)
+        k = N.array(RA.random(3), N.float64)
         print(" Checking k-point: %f, %f, %f"%(k[0], k[1], k[2]))
-        elec1.HS.kpoint = N.zeros((3,), N.float) # To ensure it is calculated!
+        elec1.HS.kpoint = N.zeros((3,), N.float64) # To ensure it is calculated!
         elec1.HS.setkpoint(k, UseF90helpers=True)
         H1, S1 = elec1.HS.H.copy(), elec1.HS.S.copy()
-        elec2.HS.kpoint = N.zeros((3,), N.float) # To ensure it is calculated!
+        elec2.HS.kpoint = N.zeros((3,), N.float64) # To ensure it is calculated!
         elec2.HS.setkpoint(k, UseF90helpers=False)
         H2, S2 = elec2.HS.H.copy(), elec2.HS.S.copy()
         tmp1 = N.max(abs(H1-H2))
@@ -134,12 +134,12 @@ def main():
     elecNoF90 = NEGF.ElectrodeSelfEnergy('../TestCalculations/Self-energy-FCC111/ELEC-1x1/Au3D_BCA.TSHS', 3, 3, UseF90helpers=False)
 
     for ii in range(10):
-        k = N.array(RA.random(3), N.float)
+        k = N.array(RA.random(3), N.float64)
         print(" Checking k-point: %f, %f, %f"%(k[0], k[1], k[2]))
-        elecF90.HS.kpoint = N.zeros((3,), N.float) # To ensure it is calculated!
+        elecF90.HS.kpoint = N.zeros((3,), N.float64) # To ensure it is calculated!
         elecF90.HS.setkpoint(k, UseF90helpers=True)
         H1, S1 = elecF90.HS.H.copy(), elecF90.HS.S.copy()
-        elecNoF90.HS.kpoint = N.zeros((3,), N.float) # To ensure it is calculated!
+        elecNoF90.HS.kpoint = N.zeros((3,), N.float64) # To ensure it is calculated!
         elecNoF90.HS.setkpoint(k, UseF90helpers=False)
         H2, S2 = elecNoF90.HS.H.copy(), elecNoF90.HS.S.copy()
         tmp1 = N.max(abs(H1-H2))

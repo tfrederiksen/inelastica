@@ -127,7 +127,7 @@ def GetOptions(argv):
     options.module = 'Inelastica'
 
     # k-point
-    options.kpoint = N.array([options.k1, options.k2, 0.0], N.float)
+    options.kpoint = N.array([options.k1, options.k2, 0.0], N.float64)
     del options.k1, options.k2
 
     return options
@@ -168,30 +168,30 @@ def main(options):
     # Prepare lists for various trace factors
     #GF.dGnout = []
     #GF.dGnin = []
-    GFp.P1T = N.zeros(len(hw), N.float)     # M.A.M.A (total e-h damping)
-    GFp.P2T = N.zeros(len(hw), N.float)     # M.AL.M.AR (emission)
-    GFp.ehDampL = N.zeros(len(hw), N.float) # M.AL.M.AL (L e-h damping)
-    GFp.ehDampR = N.zeros(len(hw), N.float) # M.AR.M.AR (R e-h damping)
-    GFp.nHT = N.zeros(len(hw), N.float)     # non-Hilbert/Isym factor
-    GFp.HT = N.zeros(len(hw), N.float)      # Hilbert/Iasym factor
-    GFp.dIel = N.zeros(len(hw), N.float)
-    GFp.dIinel = N.zeros(len(hw), N.float)
-    GFp.dSel = N.zeros(len(hw), N.float)
-    GFp.dSinel = N.zeros(len(hw), N.float)
+    GFp.P1T = N.zeros(len(hw), N.float64)     # M.A.M.A (total e-h damping)
+    GFp.P2T = N.zeros(len(hw), N.float64)     # M.AL.M.AR (emission)
+    GFp.ehDampL = N.zeros(len(hw), N.float64) # M.AL.M.AL (L e-h damping)
+    GFp.ehDampR = N.zeros(len(hw), N.float64) # M.AR.M.AR (R e-h damping)
+    GFp.nHT = N.zeros(len(hw), N.float64)     # non-Hilbert/Isym factor
+    GFp.HT = N.zeros(len(hw), N.float64)      # Hilbert/Iasym factor
+    GFp.dIel = N.zeros(len(hw), N.float64)
+    GFp.dIinel = N.zeros(len(hw), N.float64)
+    GFp.dSel = N.zeros(len(hw), N.float64)
+    GFp.dSinel = N.zeros(len(hw), N.float64)
     #
     GFm = NEGF.GF(options.TSHS, elecL, elecR,
                   Bulk=options.UseBulk, DeviceAtoms=options.DeviceAtoms,
                   BufferAtoms=options.buffer)
-    GFm.P1T = N.zeros(len(hw), N.float)     # M.A.M.A (total e-h damping)
-    GFm.P2T = N.zeros(len(hw), N.float)     # M.AL.M.AR (emission)
-    GFm.ehDampL = N.zeros(len(hw), N.float) # M.AL.M.AL (L e-h damping)
-    GFm.ehDampR = N.zeros(len(hw), N.float) # M.AR.M.AR (R e-h damping)
-    GFm.nHT = N.zeros(len(hw), N.float)     # non-Hilbert/Isym factor
-    GFm.HT = N.zeros(len(hw), N.float)      # Hilbert/Iasym factor
-    GFm.dIel = N.zeros(len(hw), N.float)
-    GFm.dIinel = N.zeros(len(hw), N.float)
-    GFm.dSel = N.zeros(len(hw), N.float)
-    GFm.dSinel = N.zeros(len(hw), N.float)
+    GFm.P1T = N.zeros(len(hw), N.float64)     # M.A.M.A (total e-h damping)
+    GFm.P2T = N.zeros(len(hw), N.float64)     # M.AL.M.AR (emission)
+    GFm.ehDampL = N.zeros(len(hw), N.float64) # M.AL.M.AL (L e-h damping)
+    GFm.ehDampR = N.zeros(len(hw), N.float64) # M.AR.M.AR (R e-h damping)
+    GFm.nHT = N.zeros(len(hw), N.float64)     # non-Hilbert/Isym factor
+    GFm.HT = N.zeros(len(hw), N.float64)      # Hilbert/Iasym factor
+    GFm.dIel = N.zeros(len(hw), N.float64)
+    GFm.dIinel = N.zeros(len(hw), N.float64)
+    GFm.dSel = N.zeros(len(hw), N.float64)
+    GFm.dSinel = N.zeros(len(hw), N.float64)
     # Calculate transmission at Fermi level
     GFp.calcGF(options.energy+options.eta*1.0j, options.kpoint[0:2], ispin=options.iSpin,
                etaLead=options.etaLead, useSigNCfiles=options.signc, SpectralCutoff=options.SpectralCutoff)
@@ -430,8 +430,8 @@ def calcIETS(options, GFp, GFm, basis, hw):
     wm = (1-N.sign(Vl))/2. # weights for negative V
 
     # Mode occupation and power dissipation
-    Pow = N.zeros((len(hw), NN), N.float) # (modes,Vgrid)
-    nPh = N.zeros((len(hw), NN), N.float)
+    Pow = N.zeros((len(hw), NN), N.float64) # (modes,Vgrid)
+    nPh = N.zeros((len(hw), NN), N.float64)
     t0 = N.clip(Vl/kT, -700, 700)
     cosh0 = N.cosh(t0) # Vgrid
     sinh0 = N.sinh(t0)
@@ -454,8 +454,8 @@ def calcIETS(options, GFp, GFm, basis, hw):
         Pow[i, :] = hw[i]*((nB-nPh[i])*damp+emis)
 
     # Current: non-Hilbert part (InH)
-    InH = N.zeros((NN,), N.float) # Vgrid
-    IsymF = N.zeros((NN,), N.float)
+    InH = N.zeros((NN,), N.float64) # Vgrid
+    IsymF = N.zeros((NN,), N.float64)
     for i in (hw > options.modeCutoff).nonzero()[0]:
         nHT = wm*GFm.nHT[i]+wp*GFp.nHT[i] # Vgrid
         t1 = hw[i]/(2*kT) # number
@@ -482,8 +482,8 @@ def calcIETS(options, GFp, GFm, basis, hw):
         import scipy.special as SS
         print("Inelastica: Computing asymmetric term using digamma function,")
         print("... see G. Bevilacqua et al., Eur. Phys. J. B (2016) 89: 3")
-        IH = N.zeros((NN,), N.float)
-        IasymF = N.zeros((NN,), N.float)
+        IH = N.zeros((NN,), N.float64)
+        IasymF = N.zeros((NN,), N.float64)
         for i in (hw > options.modeCutoff).nonzero()[0]:
             v0 = hw[i]/(2*N.pi*kT)
             vp = (hw[i]+Vl)/(2*N.pi*kT)
@@ -494,8 +494,8 @@ def calcIETS(options, GFp, GFm, basis, hw):
             IH += GFm.HT[i]*N.array(Vl < 0.0, dtype=int)*Iasym
     except:
         print("Computing using explit Hilbert transformation")
-        IH = N.zeros((NN,), N.float)
-        IasymF = N.zeros((NN,), N.float)
+        IH = N.zeros((NN,), N.float64)
+        IasymF = N.zeros((NN,), N.float64)
         # Prepare box/window function on array
         Vl2 = N.outer(Vl, N.ones(Egrid.shape))
         Egrid2 = N.outer(N.ones(Vl.shape), Egrid)
@@ -517,8 +517,8 @@ def calcIETS(options, GFp, GFm, basis, hw):
 
     # Compute inelastic shot noise terms here:
     absVl = N.absolute(Vl)
-    Inew = N.zeros(len(Vl), N.float)
-    Snew = N.zeros(len(Vl), N.float)
+    Inew = N.zeros(len(Vl), N.float64)
+    Snew = N.zeros(len(Vl), N.float64)
     print('Noise factors:')
     print(GFp.dIel)
     print(GFp.dIinel)
@@ -536,10 +536,10 @@ def calcIETS(options, GFp, GFm, basis, hw):
         Snew += GFp.dSinel[i]*fct
 
     # Get the right units for gamma_eh, gamma_heat
-    gamma_eh_p = N.zeros((len(hw),), N.float)
-    gamma_eh_m = N.zeros((len(hw),), N.float)
-    gamma_heat_p = N.zeros((len(hw),), N.float)
-    gamma_heat_m = N.zeros((len(hw),), N.float)
+    gamma_eh_p = N.zeros((len(hw),), N.float64)
+    gamma_eh_m = N.zeros((len(hw),), N.float64)
+    gamma_heat_p = N.zeros((len(hw),), N.float64)
+    gamma_heat_m = N.zeros((len(hw),), N.float64)
     for i in (hw > options.modeCutoff).nonzero()[0]:
         # Units [Phonons per Second per dN where dN is number extra phonons]
         gamma_eh_p[i] = GFp.P1T[i]*hw[i]*PC.unitConv
@@ -558,8 +558,8 @@ def calcIETS(options, GFp, GFm, basis, hw):
     V, Ia, dIa, ddIa, BdIa, BddIa = Broaden(options, Vl, IasymF)
 
     # Interpolate quantities to new V-grid
-    NPow = N.zeros((len(Pow), len(V)), N.float)
-    NnPh = N.zeros((len(Pow), len(V)), N.float)
+    NPow = N.zeros((len(Pow), len(V)), N.float64)
+    NnPh = N.zeros((len(Pow), len(V)), N.float64)
     for ii in range(len(Pow)):
         NPow[ii] = MM.interpolate(V, Vl, Pow[ii])
         NnPh[ii] = MM.interpolate(V, Vl, nPh[ii])
@@ -657,7 +657,7 @@ def writeFGRrates(options, GF, hw, NCfile):
             M += 1.j*N.array(NCfile.variables['ImHe_ph'][ihw, options.iSpin, :, :], N.complex128)
         except:
             print('Warning: Variable ImHe_ph not found')
-        rate = N.zeros((len(GF.ECleft), len(GF.ECright)), N.float)
+        rate = N.zeros((len(GF.ECleft), len(GF.ECright)), N.float64)
         totrate = 0.0
         inter, intra = 0.0, 0.0 # splitting total rate in two
         for iL in range(len(GF.ECleft)):

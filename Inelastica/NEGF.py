@@ -209,11 +209,11 @@ class ElectrodeSelfEnergy(object):
             raise IOError("Are you trying to sneak a Gamma point electrode calculation past me?")
         self.NA1 = NA1
         self.NA2 = NA2
-        self.kpoint = N.array([1e10, 1e10], N.float)
+        self.kpoint = N.array([1e10, 1e10], N.float64)
         self.voltage = voltage
         self.scaling = 1.0 # Default scale factor for coupling to device
 
-    def getSig(self, ee, qp=N.array([0, 0], N.float), left=True, Bulk=False, ispin=0, UseF90helpers=True, etaLead=0.0, useSigNCfiles=False):
+    def getSig(self, ee, qp=N.array([0, 0], N.float64), left=True, Bulk=False, ispin=0, UseF90helpers=True, etaLead=0.0, useSigNCfiles=False):
         """
         Get self-energy for specified 2-D surface k-point
         Copy out g0 (surface greens function for smaller electrode calculation)
@@ -491,7 +491,7 @@ class ElectrodeSelfEnergy(object):
             self.kpoint = kpoint.copy()
             # Do the trick:
             # H(k=0)+H(kz=0.5) = H + H01 + H10 + H - H01 - H10 = 2 H
-            kp = N.zeros((3), N.float)
+            kp = N.zeros((3), N.float64)
 
             kp[0:2] = kpoint
             self.HS.setkpoint(kp, verbose=False)
@@ -567,7 +567,7 @@ class GF(object):
 
         if self.FoldedL or self.FoldedR:
             # Check that device region is large enough!
-            kpoint = N.zeros((2,), N.float)
+            kpoint = N.zeros((2,), N.float64)
             self.setkpoint(kpoint, ispin=0) # At least for one spin
 
             devSt, devEnd = self.DeviceOrbs[0], self.DeviceOrbs[1]
@@ -754,7 +754,7 @@ class GF(object):
         # Initiate H, S to correct kpoint
         nuo, nuoL, nuoR = self.nuo0, self.nuoL0, self.nuoR0
 
-        kpoint3 = N.zeros((3), N.float)
+        kpoint3 = N.zeros((3), N.float64)
         kpoint3[0:2] = kpoint[:]
         self.HS.setkpoint(kpoint3, verbose=False)
         # Remove PBC in z-direction

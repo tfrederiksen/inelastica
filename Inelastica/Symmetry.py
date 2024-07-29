@@ -808,7 +808,7 @@ class Symmetry(object):
         # Here we adopt the solid-state physics definition
         # a_i b_j=2*pi*delta_ij
         b1, b2, b3 = 2*N.pi*b1, 2*N.pi*b2, 2*N.pi*b3
-        G = N.zeros(3, N.float)
+        G = N.zeros(3, N.float64)
         # Symmetry k-points from this publication:
         # https://dx.doi.org/10.1016%2Fj.commatsci.2010.05.010
         if self.latticeType == 'CUBIC':

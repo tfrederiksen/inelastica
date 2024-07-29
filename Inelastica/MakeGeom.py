@@ -70,16 +70,16 @@ def CrossProd(A, B):
 
 
 def GetDist(r1, r2):
-    r1 = N.array(r1, N.float)
-    r2 = N.array(r2, N.float)
+    r1 = N.array(r1, N.float64)
+    r2 = N.array(r2, N.float64)
     v12 = r2-r1
     return N.dot(v12, v12)**.5
 
 
 def GetAngle(r1, r2, r3):
-    r1 = N.array(r1, N.float)
-    r2 = N.array(r2, N.float)
-    r3 = N.array(r3, N.float)
+    r1 = N.array(r1, N.float64)
+    r2 = N.array(r2, N.float64)
+    r3 = N.array(r3, N.float64)
     v12 = r1-r2
     v23 = r3-r2
     angle = math.acos(N.dot(v12, v23)/(N.dot(v12, v12)*N.dot(v23, v23))**.5)
@@ -87,10 +87,10 @@ def GetAngle(r1, r2, r3):
 
 
 def GetDihedral(r1, r2, r3, r4):
-    r1 = N.array(r1, N.float)
-    r2 = N.array(r2, N.float)
-    r3 = N.array(r3, N.float)
-    r4 = N.array(r4, N.float)
+    r1 = N.array(r1, N.float64)
+    r2 = N.array(r2, N.float64)
+    r3 = N.array(r3, N.float64)
+    r4 = N.array(r4, N.float64)
     v12 = r2-r1
     v23 = r3-r2
     v34 = r4-r3
@@ -303,9 +303,9 @@ class Geom(object):
 
     def AlignPlane(self, v1, v2, normal=[0, 0, 1]):
         # Align a plane (specified by v1 and v2) such that "normal" becomes a normal vector
-        v1 = N.array(v1, N.float)
-        v2 = N.array(v2, N.float)
-        normal = N.array(normal, N.float)
+        v1 = N.array(v1, N.float64)
+        v2 = N.array(v2, N.float64)
+        normal = N.array(normal, N.float64)
         p12 = CrossProd(v1, v2)
         p12n = CrossProd(p12, normal)
         angle = math.acos(N.dot(p12, normal)/(N.dot(p12, p12)*N.dot(normal, normal))**.5)
@@ -343,7 +343,7 @@ class Geom(object):
 
     def CalcZmatrix(self, first, last):
         'Calculates the Zmatrix for a molecule (SIESTA numbering)'
-        zmat = N.zeros((last-first+1, 6), N.float)
+        zmat = N.zeros((last-first+1, 6), N.float64)
         print('MakeGeom.CalcZmatrix: Calculating Zmatrix (from atom %i to %i, SIESTA numbering)...'%(first, last), end=' ')
         f = first-1 # Python numbering
         # 1st - Cartesian coordinates
@@ -571,7 +571,7 @@ class Geom(object):
             maxz = max(AddLeftList[:, 2])
             for ii in reversed(list(range(len(AddLeftList)))):
                 geom.prependAtom(AddLeftList[ii, :]+
-                                 (-maxz+minz-dz)*N.array([0, 0, 1], N.float),
+                                 (-maxz+minz-dz)*N.array([0, 0, 1], N.float64),
                                  geom.snr[0], geom.anr[0])
             geom.pbc[2][2] += len(AddLeftList)/AtomsPerLayer*dz
         if len(AddRightList) > 0:
@@ -580,7 +580,7 @@ class Geom(object):
             minz = min(AddRightList[:, 2])
             for ii in range(len(AddRightList)):
                 geom.addAtom(AddRightList[ii, :]+
-                             (maxz-minz+dz)*N.array([0, 0, 1], N.float),
+                             (maxz-minz+dz)*N.array([0, 0, 1], N.float64),
                              geom.snr[0], geom.anr[0])
             geom.pbc[2][2] += len(AddRightList)/AtomsPerLayer*dz
 
@@ -752,7 +752,7 @@ def repeteANI(ANIinfile, XVinfile, outfile, rep=[1, 1, 1]):
     newGeomList = []
     for i in range(len(GeomList)):
         geom = copy.deepcopy(GeomList[i])
-        geom.pbc = N.zeros((3, 3), N.float)
+        geom.pbc = N.zeros((3, 3), N.float64)
         for i in range(3):
             geom.tile(initGeom.pbc[i], rep=rep[i])
             geom.pbc[i] = [rep[i]*x for x in initGeom.pbc[i]]

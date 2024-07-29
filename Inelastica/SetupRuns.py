@@ -428,7 +428,7 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
         minz = min(tmp[:, 2])
         maxz = max(AddLeftList[:, 2])
         for ii in reversed(list(range(len(AddLeftList)))):
-            tmp = list(AddLeftList[ii, :]+(-maxz+minz-dz)*N.array([0.0, 0.0, 1.0], N.float))
+            tmp = list(AddLeftList[ii, :]+(-maxz+minz-dz)*N.array([0.0, 0.0, 1.0], N.float64))
             geom.prependAtom(tmp,
                          geom.snr[0], geom.anr[0])
         geom.pbc[2][2] += len(AddLeftList)/AtomsPerLayer*dz
@@ -440,7 +440,7 @@ def SetupTSrun(CGrun, templateTSrun, newTSrun,
         minz = min(AddRightList[:, 2])
         for ii in range(len(AddRightList)):
             geom.addAtom(list(AddRightList[ii, :]+
-                              (maxz-minz+dz)*N.array([0, 0, 1], N.float)),
+                              (maxz-minz+dz)*N.array([0, 0, 1], N.float64)),
                          geom.snr[0], geom.anr[0])
         geom.pbc[2][2] += len(AddRightList)/AtomsPerLayer*dz
     # Write structure to files

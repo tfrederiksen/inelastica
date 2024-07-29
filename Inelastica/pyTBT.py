@@ -183,12 +183,12 @@ def main(options):
         mesh = Kmesh.kmesh(3, 3, 1)
 
     if options.dos:
-        DOSL = N.zeros((nspin, len(options.Elist), DevGF.nuo), N.float)
-        DOSR = N.zeros((nspin, len(options.Elist), DevGF.nuo), N.float)
+        DOSL = N.zeros((nspin, len(options.Elist), DevGF.nuo), N.float64)
+        DOSR = N.zeros((nspin, len(options.Elist), DevGF.nuo), N.float64)
 
         # MPSH projections?
-        MPSHL = N.zeros((nspin, len(options.Elist), DevGF.nuo), N.float)
-        MPSHR = N.zeros((nspin, len(options.Elist), DevGF.nuo), N.float)
+        MPSHL = N.zeros((nspin, len(options.Elist), DevGF.nuo), N.float64)
+        MPSHR = N.zeros((nspin, len(options.Elist), DevGF.nuo), N.float64)
         # evaluate eigenstates at Gamma
         import scipy.linalg as SLA
         DevGF.setkpoint(N.zeros(2))
@@ -199,8 +199,8 @@ def main(options):
     # Loop over spin
     for iSpin in range(nspin):
         # initialize transmission and shot noise arrays
-        Tkpt = N.zeros((len(options.Elist), mesh.NNk, options.numchan+1), N.float)
-        SNkpt = N.zeros((len(options.Elist), mesh.NNk, options.numchan+1), N.float)
+        Tkpt = N.zeros((len(options.Elist), mesh.NNk, options.numchan+1), N.float64)
+        SNkpt = N.zeros((len(options.Elist), mesh.NNk, options.numchan+1), N.float64)
         # prepare output files
         outFile = options.DestDir+'/%s.%ix%i'%(options.systemlabel, mesh.Nk[0], mesh.Nk[1])
         if nspin < 2:
@@ -218,8 +218,8 @@ def main(options):
         foFF.write('# E   Fano factor \n')
         # Loop over energy
         for ie, ee in enumerate(options.Elist):
-            Tavg = N.zeros((options.numchan+1, len(mesh.w)), N.float)
-            SNavg = N.zeros((options.numchan+1, len(mesh.w)), N.float)
+            Tavg = N.zeros((options.numchan+1, len(mesh.w)), N.float64)
+            SNavg = N.zeros((options.numchan+1, len(mesh.w)), N.float64)
             AavL = N.zeros((DevGF.nuo, DevGF.nuo), N.complex128)
             AavR = N.zeros((DevGF.nuo, DevGF.nuo), N.complex128)
             # Loops over k-points

@@ -96,12 +96,12 @@ def readHS():
 def calcFS(ispin):
     # Calculate Fermi-surface
     NNk = 31
-    bands = N.zeros((NNk, NNk, NNk, HS.N), N.float)
+    bands = N.zeros((NNk, NNk, NNk, HS.N), N.float64)
     for ix in range(NNk):
         for iy in range(NNk):
             for iz in range(NNk):
                 # "unitless" k-vect
-                kpnt = N.array([ix, iy, iz], N.float)/float(NNk-1)
+                kpnt = N.array([ix, iy, iz], N.float64)/float(NNk-1)
                 HS.setkpoint(kpnt, verbose=False)
                 eival = SLA.eigh(HS.H[ispin], HS.S, eigvals_only=True)
                 ipiv = N.argsort(eival)
@@ -170,7 +170,7 @@ def calcBands(ispin):
         korig, kdir = f, t-f
         Nk = general.NNk
 
-        ev = N.zeros((Nk, HS.N), N.float)
+        ev = N.zeros((Nk, HS.N), N.float64)
         for ii in range(Nk):
             kpnt = korig + kdir*(ii/float(Nk-1))
             # Change to "unitless" k-vect
@@ -200,7 +200,7 @@ def writeBands(ispin, what, bands):
         Nk = general.NNk
 
         f = open(general.DestDir+'/'+txt+sspin+'.dat', 'w')
-        xx = N.array(list(range(Nk)), N.float)/(Nk-1.0)
+        xx = N.array(list(range(Nk)), N.float64)/(Nk-1.0)
         iColor, Datasets = 1, []
         for ii in range(len(bands[jj][0, :])):
             # Choose bands within +-5 eV from Ef

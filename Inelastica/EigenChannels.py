@@ -116,7 +116,7 @@ def GetOptions(argv):
     options.module = 'EigenChannels'
 
     # k-point
-    options.kpoint = N.array([options.k1, options.k2, 0.0], N.float)
+    options.kpoint = N.array([options.k1, options.k2, 0.0], N.float64)
     del options.k1, options.k2
 
     return options
@@ -251,13 +251,13 @@ def calcWF(options, geom, basis, Y):
     dx, dy, dz = options.res, options.res, options.res
     nx, ny, nz = int(xl/dx)+1, int(yl/dy)+1, int(zl/dz)+1
 
-    origo = N.array([xmin, ymin, zmin], N.float)
+    origo = N.array([xmin, ymin, zmin], N.float64)
 
     # Def cube
     YY = N.zeros((nx, ny, nz), N.complex128)
-    rx = N.array(list(range(nx)), N.float)*dx+origo[0]
-    ry = N.array(list(range(ny)), N.float)*dy+origo[1]
-    rz = N.array(list(range(nz)), N.float)*dz+origo[2]
+    rx = N.array(list(range(nx)), N.float64)*dx+origo[0]
+    ry = N.array(list(range(ny)), N.float64)*dy+origo[1]
+    rz = N.array(list(range(nz)), N.float64)*dz+origo[2]
 
     for ii, Yval in enumerate(Y):
         if ii > 0:# and ii%(int(len(Y)/10)) == 0:
@@ -315,7 +315,7 @@ def calcCurrent(options, basis, H, Y):
         Y = MM.mm(Y.L, Y.R)
     NN = len(H)
     NN2 = options.DeviceAtoms[1]-options.DeviceAtoms[0]+1
-    Curr = N.zeros((NN2, NN2), N.float)
+    Curr = N.zeros((NN2, NN2), N.float64)
 
     if len(Y.shape) == 2:
         for ii in range(NN):
@@ -363,7 +363,7 @@ def writeCurrent(options, geom, Curr):
     for i in range(len(Curr)):
         for j in range(len(Curr)):
             if i != j:
-                R = N.zeros(3, N.float)
+                R = N.zeros(3, N.float64)
                 for k in range(-1, 2): # Loop over neighbors
                     for l in range(-1, 2):
                         r = xyz[i]-xyz[j]+k*geom.pbc[0]+l*geom.pbc[1]

@@ -130,7 +130,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
         # Calculate lattice vectors for phase factors
         # The closest cell might be different depending on which atom is moved
         sxyz = Sym.xyz.copy()
-        latticevectors = N.zeros((Sym.NN, Sym.NN, 3), N.float)
+        latticevectors = N.zeros((Sym.NN, Sym.NN, 3), N.float64)
         for ii in range(Sym.NN):
             micxyz = Symmetry.moveIntoClosest(sxyz-sxyz[ii], Sym.pbc[0], Sym.pbc[1], Sym.pbc[2])
             for jj in range(Sym.NN):
@@ -209,7 +209,7 @@ class Supercell_DynamicalMatrix(PH.DynamicalMatrix):
             # Fold onto primitive cell
             self.h0_k = self.Fold2PrimitiveCell(self.h0, kpoint)
             self.s0_k = self.Fold2PrimitiveCell(self.s0, kpoint)
-        ev = N.empty((self.nspin, self.rednao), N.float)
+        ev = N.empty((self.nspin, self.rednao), N.float64)
         evec = N.empty((self.nspin, self.rednao, self.rednao), N.complex128)
         for ispin in range(self.nspin):
             ev[ispin], evec[ispin] = SLA.eigh(self.h0_k[ispin], self.s0_k)
@@ -306,8 +306,8 @@ def ReadKpoints_ascii(filename):
     ln = f.readlines()[0]
     s = ln.split()
     if len(s) == 3 or len(s) == 4:
-        klist += [N.array([N.float(s[0]), N.float(s[1]), N.float(s[2])])]
-        dk = N.zeros(3, N.float)
+        klist += [N.array([float(s[0]), float(s[1]), float(s[2])])]
+        dk = N.zeros(3, N.float64)
         dklist += [N.dot(dk, dk)**.5]
         if len(s) == 4:
             labels += [s[3]]
@@ -320,7 +320,7 @@ def ReadKpoints_ascii(filename):
         i = len(klist)
         s = ln.split()
         if len(s) == 3 or len(s) == 4:
-            klist += [N.array([N.float(s[0]), N.float(s[1]), N.float(s[2])])]
+            klist += [N.array([float(s[0]), float(s[1]), float(s[2])])]
             dk = klist[i]-klist[i-1]
             dklist += [dklist[i-1]+N.dot(dk, dk)**.5]
             if len(s) == 4:
@@ -454,8 +454,8 @@ def ComputeDOS(ncfile, outfile, emin=0.0, emax=1.0, pts=1001, smear=1e-3):
 
 def WriteDOS(outfile, bands, emin, emax, pts, smear):
     egrid = N.linspace(emin, emax, pts)
-    id1 = N.ones(bands.shape, N.float)
-    id2 = N.ones(egrid.shape, N.float)
+    id1 = N.ones(bands.shape, N.float64)
+    id2 = N.ones(egrid.shape, N.float64)
     dE = N.outer(egrid, id1)-N.outer(id2, bands) # [e,kn]
     w = N.exp(-dE**2/(2*smear**2))/(smear*(2*N.pi)**.5) # [e,b]
     dos = N.sum(w, axis=1)/len(bands) # sum over bands
@@ -567,7 +567,7 @@ def main(options):
         ncf.sync()
         # Include basis orbitals in netcdf file
         if SCDM.Sym.basis.NN == len(SCDM.OrbIndx):
-            lasto = N.zeros(SCDM.Sym.basis.NN+1, N.float)
+            lasto = N.zeros(SCDM.Sym.basis.NN+1, N.float64)
             lasto[:SCDM.Sym.basis.NN] = SCDM.OrbIndx[:SCDM.Sym.basis.NN, 0]
             lasto[SCDM.Sym.basis.NN] = SCDM.OrbIndx[SCDM.Sym.basis.NN-1, 1]+1
         else:

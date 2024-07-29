@@ -159,7 +159,7 @@ def main(options):
         f, oldk = open(options.DestDir+'/kpoints', 'r'), []
         f.readline()
         for ii in f.readlines():
-            oldk += [N.array(ii.split(), N.float)]
+            oldk += [N.array(ii.split(), N.float64)]
         oldk = N.array(oldk)
 
     options.kpoints.mesh2file(options.DestDir+'/kpoints')
@@ -207,7 +207,7 @@ def main(options):
         return NewMat
 
     file = NC.Dataset('TotalPotential.grid.nc', 'r')
-    steps = N.array(file.variables['cell'][:], N.float)
+    steps = N.array(file.variables['cell'][:], N.float64)
     theta = N.arccos(N.dot(steps[0], steps[1])/(LA.norm(steps[0])*LA.norm(steps[1])))
 
     currtmp = NC.Dataset('./'+options.DestDir+'/0/FDcurr0.nc', 'r')
